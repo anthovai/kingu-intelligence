@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { OrcaRuntimeService } from './orca-runtime'
+import { KinguRuntimeService } from './kingu-runtime'
 import {
   getStructuredAgentSessionHost,
   setStructuredAgentSessionHost
@@ -29,7 +29,7 @@ type InstallEffects = {
 
 /** Stands in for `install()` by performing the three effects it performs, so a probe that
  *  reinstalls the host is caught by what the install *does*, not by a call count alone. */
-function stubStructuredHostInstall(runtime: OrcaRuntimeService): {
+function stubStructuredHostInstall(runtime: KinguRuntimeService): {
   effects: InstallEffects
   ensure: ReturnType<typeof vi.fn>
 } {
@@ -67,8 +67,8 @@ type SupportResult = {
   reason?: 'agent' | 'remote' | 'wsl'
 }
 
-function createRuntime(location: TestLocation): OrcaRuntimeService {
-  const runtime = new OrcaRuntimeService({ getSettings: () => ({}) } as never)
+function createRuntime(location: TestLocation): KinguRuntimeService {
+  const runtime = new KinguRuntimeService({ getSettings: () => ({}) } as never)
   const internal = runtime as unknown as {
     resolveStructuredAgentSessionLocation: () => Promise<unknown>
   }

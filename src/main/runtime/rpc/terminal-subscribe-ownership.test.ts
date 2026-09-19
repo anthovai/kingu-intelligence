@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import type { OrcaRuntimeService } from '../orca-runtime'
+import type { KinguRuntimeService } from '../kingu-runtime'
 import type { RpcRequest } from './core'
 import { RpcDispatcher } from './dispatcher'
 import { TERMINAL_METHODS } from './methods/terminal'
@@ -13,7 +13,7 @@ function stubRuntime(
   registry: ReturnType<typeof createSubscriptionRegistryDouble>,
   waiters: Waiter[],
   overrides: Record<string, unknown> = {}
-): OrcaRuntimeService {
+): KinguRuntimeService {
   return {
     getRuntimeId: () => 'test-runtime',
     registerRemoteTerminalViewSubscriber: () => () => {},
@@ -41,7 +41,7 @@ function stubRuntime(
       return vi.fn()
     }),
     ...overrides
-  } as unknown as OrcaRuntimeService
+  } as unknown as KinguRuntimeService
 }
 
 const makeRequest = (params: unknown): RpcRequest => ({

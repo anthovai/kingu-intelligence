@@ -1,14 +1,14 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { OrcaRuntimeService } from '../orca-runtime'
+import type { KinguRuntimeService } from '../kingu-runtime'
 import type { RpcRequest } from './core'
 import { RpcDispatcher } from './dispatcher'
 import { TERMINAL_METHODS } from './methods/terminal'
 
-function stubRuntime(overrides: Partial<OrcaRuntimeService>): OrcaRuntimeService {
+function stubRuntime(overrides: Partial<KinguRuntimeService>): KinguRuntimeService {
   return {
     getRuntimeId: () => 'test-runtime',
     ...overrides
-  } as OrcaRuntimeService
+  } as KinguRuntimeService
 }
 
 function guardedSendRequest(): RpcRequest {

@@ -27,14 +27,14 @@ async function loadModule() {
 beforeEach(() => {
   process.env = { ...OLD_ENV }
   for (const key of [
-    'ORCA_BITBUCKET_ACCESS_TOKEN',
-    'ORCA_BITBUCKET_EMAIL',
-    'ORCA_BITBUCKET_API_TOKEN',
-    'ORCA_BITBUCKET_API_BASE_URL'
+    'KINGU_BITBUCKET_ACCESS_TOKEN',
+    'KINGU_BITBUCKET_EMAIL',
+    'KINGU_BITBUCKET_API_TOKEN',
+    'KINGU_BITBUCKET_API_BASE_URL'
   ]) {
     delete process.env[key]
   }
-  tempHome = mkdtempSync(join(tmpdir(), 'orca-bitbucket-conn-'))
+  tempHome = mkdtempSync(join(tmpdir(), 'kingu-bitbucket-conn-'))
 })
 
 afterEach(() => {
@@ -143,7 +143,7 @@ describe('Bitbucket credential connection', () => {
       apiToken: 'tok'
     })
 
-    process.env.ORCA_BITBUCKET_ACCESS_TOKEN = 'env-token'
+    process.env.KINGU_BITBUCKET_ACCESS_TOKEN = 'env-token'
     expect(conn.getBitbucketConnectionStatus()).toMatchObject({
       configured: true,
       source: 'environment',
@@ -165,7 +165,7 @@ describe('Bitbucket credential connection', () => {
 
     // Only the base URL is in the env, so `hasAuth(env)` is false — precedence
     // is per-setting, not all-or-nothing.
-    process.env.ORCA_BITBUCKET_API_BASE_URL = 'https://env.example.com/2.0'
+    process.env.KINGU_BITBUCKET_API_BASE_URL = 'https://env.example.com/2.0'
     const { resolveBitbucketAuthConfig } = await import('./resolve-auth')
     expect(resolveBitbucketAuthConfig().baseUrl).toBe('https://env.example.com/2.0')
   })

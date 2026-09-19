@@ -33,7 +33,7 @@ import {
 
 export { RELAY_REGIONS, type RelayRegion } from './relay-region-probe'
 
-const RELAY_REGION_CACHE_FILENAME = 'orca-relay-region-preference.json'
+const RELAY_REGION_CACHE_FILENAME = 'kingu-relay-region-preference.json'
 const CACHE_MAX_BYTES = 8 * 1024
 const CACHE_TTL_MS = 24 * 60 * 60_000
 // A withheld hint is cheap to revisit but expensive to re-measure on every
@@ -256,7 +256,7 @@ export class RelayRegionPreferenceResolver {
 
   private overrideRegion(): RelayRegion | undefined {
     const override = RelayRegionSchema.safeParse(
-      this.options.diagnosticOverride ?? process.env.ORCA_RELAY_REGION_OVERRIDE
+      this.options.diagnosticOverride ?? process.env.KINGU_RELAY_REGION_OVERRIDE
     )
     return override.success ? override.data : undefined
   }

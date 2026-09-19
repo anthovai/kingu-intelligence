@@ -28,20 +28,20 @@ export function getManagedScript(
       'setlocal',
       // Why: Claude-compatible permission hooks fail closed on empty stdout (#14818).
       'echo {}',
-      // Why: refresh endpoint coordinates for PTYs surviving an Orca restart.
-      'if defined ORCA_AGENT_HOOK_ENDPOINT if exist "%ORCA_AGENT_HOOK_ENDPOINT%" call "%ORCA_AGENT_HOOK_ENDPOINT%" 2>nul',
+      // Why: refresh endpoint coordinates for PTYs surviving an Kingu restart.
+      'if defined KINGU_AGENT_HOOK_ENDPOINT if exist "%KINGU_AGENT_HOOK_ENDPOINT%" call "%KINGU_AGENT_HOOK_ENDPOINT%" 2>nul',
       // Why (#11549): the env guards must outrank the Devin skip — the Devin skip parks in more.com,
-      // and outside an Orca pane the caller can abandon stdin, so more.com never returns.
+      // and outside an Kingu pane the caller can abandon stdin, so more.com never returns.
       ...buildWindowsHookEnvironmentGuardLines(),
       // Why: a backgrounded session runs in a daemon worker that inherited the dispatching
-      // pane's env, so ORCA_PANE_KEY names a pane this session does not run in (#9236).
+      // pane's env, so KINGU_PANE_KEY names a pane this session does not run in (#9236).
       // Why exit, not the drain label: the drain parks in more.com and a worker is outside
-      // an Orca pane — the abandoned-stdin hang #11549 guards against.
+      // an Kingu pane — the abandoned-stdin hang #11549 guards against.
       'if not "%CLAUDE_JOB_DIR%"=="" exit /b 0',
       ...(options.skipWhenGrokImportsClaude ? buildWindowsGrokReplayGuardLines() : []),
       ...(options.skipWhenDevinImportsClaude
         ? [
-            // Why: Devin imports .claude hooks by default; skip Orca's managed hook there so status posts stay attributed to Devin.
+            // Why: Devin imports .claude hooks by default; skip Kingu's managed hook there so status posts stay attributed to Devin.
             `if not "%DEVIN_PROJECT_DIR%"=="" goto :${WINDOWS_HOOK_STDIN_DRAIN_LABEL}`
           ]
         : []),
@@ -62,24 +62,24 @@ export function getManagedScript(
     ...buildPosixHookSpoolLines('claude'),
     ...(options.skipWhenDevinImportsClaude
       ? [
-          // Why: Devin imports .claude hooks by default; skip Orca's managed hook there so status posts stay attributed to Devin.
+          // Why: Devin imports .claude hooks by default; skip Kingu's managed hook there so status posts stay attributed to Devin.
           'if [ -n "$DEVIN_PROJECT_DIR" ]; then',
           '  exit 0',
           'fi'
         ]
       : []),
     // Why: a backgrounded session runs in a daemon worker that inherited the dispatching
-    // pane's env, so ORCA_PANE_KEY names a pane this session does not run in (#9236).
+    // pane's env, so KINGU_PANE_KEY names a pane this session does not run in (#9236).
     'if [ -n "$CLAUDE_JOB_DIR" ]; then',
     '  exit 0',
     'fi',
-    // Why: refresh endpoint coordinates for PTYs surviving an Orca restart.
+    // Why: refresh endpoint coordinates for PTYs surviving an Kingu restart.
     // Why: suppress parse errors so they neither leak nor trip outer set -e.
-    'if [ -n "$ORCA_AGENT_HOOK_ENDPOINT" ] && [ -r "$ORCA_AGENT_HOOK_ENDPOINT" ]; then',
-    '  unset ORCA_AGENT_HOOK_TRANSPORT',
-    '  . "$ORCA_AGENT_HOOK_ENDPOINT" 2>/dev/null || :',
+    'if [ -n "$KINGU_AGENT_HOOK_ENDPOINT" ] && [ -r "$KINGU_AGENT_HOOK_ENDPOINT" ]; then',
+    '  unset KINGU_AGENT_HOOK_TRANSPORT',
+    '  . "$KINGU_AGENT_HOOK_ENDPOINT" 2>/dev/null || :',
     'fi',
-    'if [ -z "$ORCA_AGENT_HOOK_PORT" ] || [ -z "$ORCA_AGENT_HOOK_TOKEN" ] || [ -z "$ORCA_PANE_KEY" ]; then',
+    'if [ -z "$KINGU_AGENT_HOOK_PORT" ] || [ -z "$KINGU_AGENT_HOOK_TOKEN" ] || [ -z "$KINGU_PANE_KEY" ]; then',
     '  spool_hook_event',
     '  exit 0',
     'fi',

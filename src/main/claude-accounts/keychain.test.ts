@@ -20,7 +20,7 @@ const execFileMock = vi.mocked(execFile)
 const originalPlatform = Object.getOwnPropertyDescriptor(process, 'platform')
 const originalUser = process.env.USER
 const originalUsername = process.env.USERNAME
-const TEST_USER = 'orca-test-user'
+const TEST_USER = 'kingu-test-user'
 const SSO_USER = 'sso.user@example.com'
 let configDir: string
 
@@ -48,7 +48,7 @@ function invokeExecFileCallback(
 
 describe('Claude Keychain credentials', () => {
   beforeEach(() => {
-    configDir = realpathSync(mkdtempSync(join(tmpdir(), 'orca-claude-keychain-')))
+    configDir = realpathSync(mkdtempSync(join(tmpdir(), 'kingu-claude-keychain-')))
     setPlatform('darwin')
     execFileMock.mockReset()
     process.env.USER = TEST_USER

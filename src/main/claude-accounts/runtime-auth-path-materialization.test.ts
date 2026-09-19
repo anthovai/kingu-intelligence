@@ -20,7 +20,7 @@ vi.mock('node:os', async () => {
 const { ClaudeRuntimeAuthService } = await import('./runtime-auth-service')
 
 beforeEach(() => {
-  testState.fakeHomeDir = mkdtempSync(join(tmpdir(), 'orca-claude-rate-limit-path-'))
+  testState.fakeHomeDir = mkdtempSync(join(tmpdir(), 'kingu-claude-rate-limit-path-'))
   testState.previousConfigDir = process.env.CLAUDE_CONFIG_DIR
   delete process.env.CLAUDE_CONFIG_DIR
 })

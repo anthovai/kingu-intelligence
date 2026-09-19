@@ -21,7 +21,7 @@ describe('session scanner cutoff', () => {
       const count = 128
       const limit = count / 2
       const provider = new MemoryRemoteProvider()
-      const root = await mkdtemp(join(tmpdir(), 'orca-session-cutoff-'))
+      const root = await mkdtemp(join(tmpdir(), 'kingu-session-cutoff-'))
       tempRoots.push(root)
       const roots = isolatedScanRoots(root)
       await mkdir(roots.codexSessionsDir, { recursive: true })

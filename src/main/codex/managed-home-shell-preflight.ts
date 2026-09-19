@@ -6,7 +6,7 @@ import { codexHookService } from './hook-service'
 
 type ShellPreflightEnvironment = {
   CODEX_HOME?: string
-  ORCA_CODEX_HOME?: string
+  KINGU_CODEX_HOME?: string
 }
 
 function pathsEqual(left: string, right: string): boolean {
@@ -45,7 +45,7 @@ function resolveAccountManagedHome(candidate: string, userDataPath: string): str
     return null
   }
   try {
-    return readFileSync(join(candidate, '.orca-managed-home'), 'utf-8').trim() === accountId
+    return readFileSync(join(candidate, '.kingu-managed-home'), 'utf-8').trim() === accountId
       ? expectedHome
       : null
   } catch {
@@ -58,8 +58,8 @@ export function resolveManagedCodexShellPreflightHome(
   userDataPath: string
 ): string | null {
   const codexHome = env.CODEX_HOME?.trim()
-  const orcaCodexHome = env.ORCA_CODEX_HOME?.trim()
-  if (!codexHome || !orcaCodexHome || !pathsEqual(codexHome, orcaCodexHome)) {
+  const kinguCodexHome = env.KINGU_CODEX_HOME?.trim()
+  if (!codexHome || !kinguCodexHome || !pathsEqual(codexHome, kinguCodexHome)) {
     return null
   }
   const sharedHome = join(userDataPath, 'codex-runtime-home', 'home')
@@ -96,7 +96,7 @@ export async function prepareManagedCodexHomeBeforeShellLaunch(args: {
   }
   const env = args.env ?? {
     CODEX_HOME: process.env.CODEX_HOME,
-    ORCA_CODEX_HOME: process.env.ORCA_CODEX_HOME
+    KINGU_CODEX_HOME: process.env.KINGU_CODEX_HOME
   }
   const runtimeHomePath = resolveManagedCodexShellPreflightHome(env, args.userDataPath)
   if (!runtimeHomePath) {

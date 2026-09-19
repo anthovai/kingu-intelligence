@@ -46,13 +46,13 @@ function agentStatusOsc(state: string): string {
 async function createPane(
   options: TranscriptPaneOptions
 ): Promise<Awaited<ReturnType<typeof createTranscriptPane>>> {
-  // Compose the same central hook-store wiring as desktop and orcad so OSC rows exercise the
+  // Compose the same central hook-store wiring as desktop and kingud so OSC rows exercise the
   // production status path rather than silently disappearing in a bare runtime fixture.
   const statusWiring = makeAgentStatusStoreWiring()
   return createTranscriptPane(options, statusWiring.deps)
 }
 
-// cursor-agent renders a braille spinner in its OSC title while it works, and Orca reads
+// cursor-agent renders a braille spinner in its OSC title while it works, and Kingu reads
 // that as `working`; the title is identical whether it is running a command or waiting.
 const CURSOR_TITLE = '⠇ Cursor Agent'
 
@@ -237,7 +237,7 @@ describe('terminal interactive-wait visibility (STA-4513, STA-3714)', () => {
 
   describe('prompts the runtime already matched but never surfaced', () => {
     it('surfaces a startup trust screen on the pane, not only on terminal wait', async () => {
-      // A pane on its trust screen still wears Orca's tab title; the agent has set none.
+      // A pane on its trust screen still wears Kingu's tab title; the agent has set none.
       const { runtime, handle } = await createPane({
         paneTitle: 'sta4513-claude',
         foregroundProcess: 'claude',
@@ -315,7 +315,7 @@ describe('terminal interactive-wait visibility (STA-4513, STA-3714)', () => {
   })
 
   it('still reports a live dialog restored from terminal history', async () => {
-    // Why this case exists: a lane parked on a prompt emits no bytes, so an Orca restart is
+    // Why this case exists: a lane parked on a prompt emits no bytes, so an Kingu restart is
     // exactly when it would go quiet forever. A restored tail carries no waitBlockedAt, and
     // the approval menu does not need one — being at the bottom of the restored screen is
     // itself the proof that this is where the pane stopped.

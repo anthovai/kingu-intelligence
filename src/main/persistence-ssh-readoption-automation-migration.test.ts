@@ -137,7 +137,7 @@ function removedHostState(overrides: Record<string, unknown> = {}) {
 async function createStoreFromState(state: Record<string, unknown>) {
   mkdirSync(testState.dir, { recursive: true })
   writeFileSync(
-    join(testState.dir, 'orca-data.json'),
+    join(testState.dir, 'kingu-data.json'),
     JSON.stringify({ ...getDefaultPersistedState(testState.dir), ...state }),
     'utf-8'
   )
@@ -169,7 +169,7 @@ function readdDevBox(ssh: SshConnectionStore) {
 }
 
 beforeEach(() => {
-  testState.dir = mkdtempSync(join(tmpdir(), 'orca-readopt-'))
+  testState.dir = mkdtempSync(join(tmpdir(), 'kingu-readopt-'))
 })
 
 afterEach(() => {

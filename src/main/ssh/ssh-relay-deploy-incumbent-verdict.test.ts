@@ -11,9 +11,9 @@ vi.mock('fs', () => ({
 
 vi.mock('./relay-protocol', () => ({
   RELAY_VERSION: '0.1.0',
-  RELAY_REMOTE_DIR: '.orca-remote',
+  RELAY_REMOTE_DIR: '.kingu-remote',
   parseUnameToRelayPlatform: vi.fn(() => 'linux-x64'),
-  RELAY_SENTINEL: 'ORCA-RELAY v0.1.0 READY\n',
+  RELAY_SENTINEL: 'KINGU-RELAY v0.1.0 READY\n',
   RELAY_SENTINEL_TIMEOUT_MS: 10_000
 }))
 
@@ -32,7 +32,7 @@ vi.mock('./ssh-remote-node-resolution', () => ({
 
 vi.mock('./ssh-relay-versioned-install', () => ({
   readLocalFullVersion: vi.fn().mockReturnValue('0.1.0+abcdef012345'),
-  computeRemoteRelayDir: (home: string, v: string) => `${home}/.orca-remote/relay-${v}`,
+  computeRemoteRelayDir: (home: string, v: string) => `${home}/.kingu-remote/relay-${v}`,
   isRelayAlreadyInstalled: vi.fn().mockResolvedValue(true),
   finalizeInstall: vi.fn().mockResolvedValue(undefined),
   abandonInstall: vi.fn().mockResolvedValue(undefined),
@@ -86,18 +86,18 @@ function makeMockConnection(): SshConnection {
 // The daemon is present and its listener accepts (a SIGSTOPped relay still does — the kernel
 // backlog answers), but nothing on the host can enumerate who holds the socket.
 const LIVE_UNENUMERABLE_PROBE = [
-  'ORCA-INCUMBENT-BEGIN',
+  'KINGU-INCUMBENT-BEGIN',
   'PRESENT=yes',
   'LISTEN=accepted',
   'HOLDERS_SOURCE=unavailable',
-  'ORCA-INCUMBENT-END'
+  'KINGU-INCUMBENT-END'
 ].join('\n')
 
 function queueAliveSocketThenProbe(output = LIVE_UNENUMERABLE_PROBE): void {
   vi.mocked(execCommand)
-    .mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64')
+    .mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64')
     .mockResolvedValueOnce('/home/user')
-    .mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK')
+    .mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK')
     .mockResolvedValueOnce('') // launch namespace marker
     .mockResolvedValueOnce('ALIVE')
     .mockResolvedValueOnce(output)
@@ -116,7 +116,7 @@ describe('deployAndLaunchRelay honours the incumbent verdict', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.mocked(sweepSupersededRelayEndpoints).mockReset().mockResolvedValue([])
-    vi.mocked(execCommand).mockReset().mockResolvedValue('__ORCA_REMOTE_PLATFORM__ Linux x86_64')
+    vi.mocked(execCommand).mockReset().mockResolvedValue('__KINGU_REMOTE_PLATFORM__ Linux x86_64')
     vi.mocked(waitForSentinel).mockReset()
     vi.spyOn(console, 'warn').mockImplementation(() => {})
     vi.spyOn(console, 'log').mockImplementation(() => {})
@@ -158,9 +158,9 @@ describe('deployAndLaunchRelay honours the incumbent verdict', () => {
   it('still launches fresh when the socket probe itself fails', async () => {
     const conn = makeMockConnection()
     vi.mocked(execCommand)
-      .mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64')
+      .mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64')
       .mockResolvedValueOnce('/home/user')
-      .mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK')
+      .mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK')
       .mockResolvedValueOnce('') // launch namespace marker
       .mockRejectedValueOnce(new Error('test -S: transport hiccup'))
       .mockResolvedValueOnce('READY')
@@ -180,9 +180,9 @@ describe('deployAndLaunchRelay honours the incumbent verdict', () => {
     'runs background GC only after probe cleanup is settled: $error.name',
     async ({ error, expectedGcCalls }) => {
       vi.mocked(execCommand)
-        .mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64')
+        .mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64')
         .mockResolvedValueOnce('/home/user')
-        .mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK')
+        .mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK')
         .mockResolvedValueOnce('')
         .mockResolvedValueOnce('DEAD')
         .mockResolvedValueOnce('READY')

@@ -38,7 +38,7 @@ const makeRepo = (overrides: Partial<Repo> = {}): Repo => ({
 
 describe('AutomationService zero-grace tick latency', () => {
   beforeEach(() => {
-    testState.dir = mkdtempSync(join(tmpdir(), 'orca-automations-test-'))
+    testState.dir = mkdtempSync(join(tmpdir(), 'kingu-automations-test-'))
     vi.useFakeTimers()
   })
 

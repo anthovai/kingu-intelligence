@@ -21,7 +21,7 @@ const { stagedRuntimeUploadByteLength, stageOneSourceForRuntimeUpload } =
 let workDir: string
 
 beforeEach(async () => {
-  workDir = await mkdtemp(join(tmpdir(), 'orca-upload-staging-'))
+  workDir = await mkdtemp(join(tmpdir(), 'kingu-upload-staging-'))
 })
 
 afterEach(async () => {

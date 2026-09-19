@@ -9,7 +9,7 @@ const { getSshFilesystemProviderMock, getEffectiveHooksMock } = vi.hoisted(() =>
 vi.mock('../../../providers/ssh-filesystem-dispatch', () => ({
   getSshFilesystemProvider: getSshFilesystemProviderMock
 }))
-// Only `getEffectiveHooks` is stubbed: the module under test also imports `parseOrcaYaml` from
+// Only `getEffectiveHooks` is stubbed: the module under test also imports `parseKinguYaml` from
 // here, and replacing it wholesale made the parse throw into the fail-open catch — which answers
 // "no hook", so the test saw an empty result rather than an error.
 vi.mock('../../../hooks', async () => ({
@@ -21,7 +21,7 @@ import { getArchiveHooksForRemoval } from './worktree-archive-hook'
 
 const REMOTE_REPO: Repo = {
   id: 'r',
-  path: '/home/orca/repo',
+  path: '/home/kingu/repo',
   displayName: 'r',
   badgeColor: '#000',
   addedAt: 0
@@ -41,9 +41,9 @@ describe('getArchiveHooksForRemoval owner resolution', () => {
   // Why this reads a file rather than just checking the lookup key: SSH owner resolution has been
   // wrong twice on this path, and both times the fix looked right. Asserting only that
   // `'ssh-target'` was passed stops short of the thing that broke — whether the hook actually comes
-  // from the REMOTE orca.yaml. This drives a stubbed provider holding real content and asserts the
+  // from the REMOTE kingu.yaml. This drives a stubbed provider holding real content and asserts the
   // returned script is the remote one.
-  it('returns the hook from the execution host\u2019s orca.yaml, not the local disk', async () => {
+  it('returns the hook from the execution host\u2019s kingu.yaml, not the local disk', async () => {
     const readFile = vi.fn().mockResolvedValue({
       isBinary: false,
       content: 'scripts:\n  archive: remote-archive.sh\n'
@@ -56,7 +56,7 @@ describe('getArchiveHooksForRemoval owner resolution', () => {
     const hooks = await getArchiveHooksForRemoval(REMOTE_REPO, 'ssh-target')
 
     expect(getSshFilesystemProviderMock).toHaveBeenCalledWith('ssh-target')
-    expect(readFile).toHaveBeenCalledWith('/home/orca/repo/orca.yaml')
+    expect(readFile).toHaveBeenCalledWith('/home/kingu/repo/kingu.yaml')
     expect(hooks?.scripts.archive).toBe('remote-archive.sh')
     expect(getEffectiveHooksMock).not.toHaveBeenCalled()
   })
@@ -76,7 +76,7 @@ describe('getArchiveHooksForRemoval owner resolution', () => {
   })
 
   // Known limitation, pinned so it is a decision rather than a surprise: the relay rewrites a
-  // non-numeric error code to -32000, so a missing orca.yaml and an unreachable host arrive
+  // non-numeric error code to -32000, so a missing kingu.yaml and an unreachable host arrive
   // identically. Both answer "no hook", which lets the removal proceed. Reporting them apart needs
   // a provider contract that returns absence as a successful outcome — tracked in #20196.
   it('answers "no hook" when the host cannot be read, missing or unreachable alike', async () => {

@@ -15,7 +15,7 @@ vi.mock('fs', () => ({
 
 vi.mock('./relay-protocol', () => ({
   RELAY_VERSION: '0.1.0',
-  RELAY_REMOTE_DIR: '.orca-remote',
+  RELAY_REMOTE_DIR: '.kingu-remote',
   parseUnameToRelayPlatform: vi.fn((os: string, arch: string) => {
     const normalizedOs = os.toLowerCase()
     const normalizedArch = arch.toLowerCase()
@@ -31,7 +31,7 @@ vi.mock('./relay-protocol', () => ({
     }
     return null
   }),
-  RELAY_SENTINEL: 'ORCA-RELAY v0.1.0 READY\n',
+  RELAY_SENTINEL: 'KINGU-RELAY v0.1.0 READY\n',
   RELAY_SENTINEL_TIMEOUT_MS: 10_000
 }))
 
@@ -45,7 +45,7 @@ vi.mock('./ssh-relay-deploy-helpers', () => ({
   isUnconfirmedSshCommandTermination: (error: unknown) =>
     error instanceof Error &&
     (error as Error & { sshChannelCloseConfirmed?: boolean }).sshChannelCloseConfirmed === false,
-  execCommand: vi.fn().mockResolvedValue('__ORCA_REMOTE_PLATFORM__ Linux x86_64')
+  execCommand: vi.fn().mockResolvedValue('__KINGU_REMOTE_PLATFORM__ Linux x86_64')
 }))
 
 vi.mock('./ssh-remote-node-resolution', () => ({
@@ -56,7 +56,7 @@ vi.mock('./ssh-remote-node-resolution', () => ({
 // and GC. Stub them so deploy tests need no real SSH connection.
 vi.mock('./ssh-relay-versioned-install', () => ({
   readLocalFullVersion: vi.fn().mockReturnValue('0.1.0+abcdef012345'),
-  computeRemoteRelayDir: (home: string, v: string) => `${home}/.orca-remote/relay-${v}`,
+  computeRemoteRelayDir: (home: string, v: string) => `${home}/.kingu-remote/relay-${v}`,
   isRelayAlreadyInstalled: vi.fn().mockResolvedValue(true),
   finalizeInstall: vi.fn().mockResolvedValue(undefined),
   abandonInstall: vi.fn().mockResolvedValue(undefined),
@@ -137,7 +137,7 @@ function queueLaunchNamespaceAndDeadSocketProbe(): void {
 describe('deployAndLaunchRelay', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(execCommand).mockReset().mockResolvedValue('__ORCA_REMOTE_PLATFORM__ Linux x86_64')
+    vi.mocked(execCommand).mockReset().mockResolvedValue('__KINGU_REMOTE_PLATFORM__ Linux x86_64')
     vi.mocked(waitForSentinel).mockReset().mockResolvedValue({
       write: vi.fn(),
       onData: vi.fn(),
@@ -151,9 +151,9 @@ describe('deployAndLaunchRelay', () => {
   it('calls exec to detect remote platform', async () => {
     const conn = makeMockConnection()
     const mockExecCommand = vi.mocked(execCommand)
-    mockExecCommand.mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64') // tagged POSIX platform probe
+    mockExecCommand.mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64') // tagged POSIX platform probe
     mockExecCommand.mockResolvedValueOnce('/home/user') // echo $HOME
-    mockExecCommand.mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK') // native deps probe
+    mockExecCommand.mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK') // native deps probe
     queueLaunchNamespaceAndDeadSocketProbe()
     mockExecCommand.mockResolvedValueOnce('READY') // socket poll
 
@@ -161,7 +161,7 @@ describe('deployAndLaunchRelay', () => {
 
     expect(mockExecCommand).toHaveBeenCalledWith(
       conn,
-      "printf '\\n%s ' '__ORCA_REMOTE_PLATFORM__'; uname -sm",
+      "printf '\\n%s ' '__KINGU_REMOTE_PLATFORM__'; uname -sm",
       expect.objectContaining({ signal: expect.any(AbortSignal) })
     )
   })
@@ -169,9 +169,9 @@ describe('deployAndLaunchRelay', () => {
   it('reports progress via callback', async () => {
     const conn = makeMockConnection()
     const mockExecCommand = vi.mocked(execCommand)
-    mockExecCommand.mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64')
+    mockExecCommand.mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64')
     mockExecCommand.mockResolvedValueOnce('/home/user')
-    mockExecCommand.mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK') // native deps probe
+    mockExecCommand.mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK') // native deps probe
     queueLaunchNamespaceAndDeadSocketProbe()
     mockExecCommand.mockResolvedValueOnce('READY') // socket poll
 
@@ -189,9 +189,9 @@ describe('deployAndLaunchRelay', () => {
     })
     vi.mocked(waitForSentinel).mockRejectedValueOnce(new Error('stale relay reconnect failed'))
     vi.mocked(execCommand)
-      .mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64')
+      .mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64')
       .mockResolvedValueOnce('/home/user')
-      .mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK')
+      .mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK')
       .mockResolvedValueOnce('') // launch namespace marker
       .mockResolvedValueOnce('ALIVE')
       .mockRejectedValueOnce(unconfirmedCleanup)
@@ -208,9 +208,9 @@ describe('deployAndLaunchRelay', () => {
   it('resolves the remote node path once per deploy', async () => {
     const conn = makeMockConnection()
     const mockExecCommand = vi.mocked(execCommand)
-    mockExecCommand.mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64')
+    mockExecCommand.mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64')
     mockExecCommand.mockResolvedValueOnce('/home/user')
-    mockExecCommand.mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK')
+    mockExecCommand.mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK')
     queueLaunchNamespaceAndDeadSocketProbe()
     mockExecCommand.mockResolvedValueOnce('READY')
 
@@ -222,7 +222,7 @@ describe('deployAndLaunchRelay', () => {
   it('resolves node concurrently with remote home, not after the install-state chain', async () => {
     const conn = makeMockConnection()
     const mockExecCommand = vi.mocked(execCommand)
-    mockExecCommand.mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64') // tagged POSIX platform probe
+    mockExecCommand.mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64') // tagged POSIX platform probe
 
     let markNodeResolutionStarted: () => void = () => {}
     const nodeResolutionStarted = new Promise<void>((resolve) => {
@@ -255,7 +255,7 @@ describe('deployAndLaunchRelay', () => {
     } finally {
       // Drain the rest of the happy path so a failed assertion does not leave
       // the deploy promise pending until the overall deploy timeout.
-      mockExecCommand.mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK') // native deps probe
+      mockExecCommand.mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK') // native deps probe
       queueLaunchNamespaceAndDeadSocketProbe()
       mockExecCommand.mockResolvedValueOnce('READY') // socket poll
       releaseRemoteHome('/home/user')
@@ -276,7 +276,7 @@ describe('deployAndLaunchRelay', () => {
     const conn = makeMockConnection()
     vi.mocked(conn.canRunConcurrentExecCommands).mockReturnValue(false)
     const mockExecCommand = vi.mocked(execCommand)
-    mockExecCommand.mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64') // tagged POSIX platform probe
+    mockExecCommand.mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64') // tagged POSIX platform probe
     let releaseRemoteHome: (home: string) => void = () => {}
     let remoteHomeProbeStarted: () => void = () => {}
     const remoteHomeProbeStartedPromise = new Promise<void>((resolve) => {
@@ -293,7 +293,7 @@ describe('deployAndLaunchRelay', () => {
     await remoteHomeProbeStartedPromise
     expect(resolveRemoteNodePath).not.toHaveBeenCalled()
 
-    mockExecCommand.mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK') // native deps probe
+    mockExecCommand.mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK') // native deps probe
     queueLaunchNamespaceAndDeadSocketProbe()
     mockExecCommand.mockResolvedValueOnce('READY') // socket poll
     releaseRemoteHome('/home/user')
@@ -329,11 +329,11 @@ describe('deployAndLaunchRelay', () => {
         fallbackInstallStateCompleted = true
         return true
       })
-    mockExecCommand.mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64') // tagged POSIX platform probe
+    mockExecCommand.mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64') // tagged POSIX platform probe
     mockExecCommand.mockResolvedValueOnce('/home/user') // concurrent install-state $HOME
     mockExecCommand.mockRejectedValueOnce(sessionLimitError) // concurrent node path probe
     mockExecCommand.mockResolvedValueOnce('/home/user') // sequential fallback $HOME
-    mockExecCommand.mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK') // native deps probe
+    mockExecCommand.mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK') // native deps probe
     queueLaunchNamespaceAndDeadSocketProbe()
     mockExecCommand.mockResolvedValueOnce('READY') // socket poll
 
@@ -360,10 +360,10 @@ describe('deployAndLaunchRelay', () => {
         throw sessionLimitError
       })
       .mockResolvedValueOnce(true)
-    mockExecCommand.mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64') // tagged POSIX platform probe
+    mockExecCommand.mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64') // tagged POSIX platform probe
     mockExecCommand.mockResolvedValueOnce('/home/user') // concurrent install-state $HOME
     mockExecCommand.mockResolvedValueOnce('/home/user') // sequential fallback $HOME
-    mockExecCommand.mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK') // native deps probe
+    mockExecCommand.mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK') // native deps probe
     queueLaunchNamespaceAndDeadSocketProbe()
     mockExecCommand.mockResolvedValueOnce('READY') // socket poll
 
@@ -388,7 +388,7 @@ describe('deployAndLaunchRelay', () => {
     const mockExecCommand = vi.mocked(execCommand)
     const nodeError = new Error('Node.js not found on remote host')
     vi.mocked(resolveRemoteNodePath).mockRejectedValueOnce(nodeError)
-    mockExecCommand.mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64') // tagged POSIX platform probe
+    mockExecCommand.mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64') // tagged POSIX platform probe
     mockExecCommand.mockResolvedValueOnce('/home/user') // concurrent install-state $HOME
 
     await expect(deployAndLaunchRelay(conn)).rejects.toBe(nodeError)
@@ -410,7 +410,7 @@ describe('deployAndLaunchRelay', () => {
         })
       })
     })
-    mockExecCommand.mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64') // tagged POSIX platform probe
+    mockExecCommand.mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64') // tagged POSIX platform probe
     mockExecCommand.mockResolvedValueOnce('relative-home') // invalid install-state $HOME
 
     const timedDeploy = Promise.race([
@@ -434,7 +434,7 @@ describe('deployAndLaunchRelay', () => {
     const installError = new Error('permission denied while checking relay install')
     vi.mocked(resolveRemoteNodePath).mockRejectedValueOnce(sessionLimitError)
     vi.mocked(isRelayAlreadyInstalled).mockRejectedValueOnce(installError)
-    mockExecCommand.mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64') // tagged POSIX platform probe
+    mockExecCommand.mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64') // tagged POSIX platform probe
     mockExecCommand.mockResolvedValueOnce('/home/user') // concurrent install-state $HOME
 
     await expect(deployAndLaunchRelay(conn)).rejects.toBe(installError)
@@ -448,7 +448,7 @@ describe('deployAndLaunchRelay', () => {
     const sessionLimitError = Object.assign(new Error('(SSH) Channel open failure: open failed'), {
       reason: 4
     })
-    mockExecCommand.mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64') // tagged POSIX platform probe
+    mockExecCommand.mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64') // tagged POSIX platform probe
     let releaseRemoteHome: (home: string) => void = () => {}
     let remoteHomeSettled = false
     mockExecCommand.mockReturnValueOnce(
@@ -473,7 +473,7 @@ describe('deployAndLaunchRelay', () => {
     expect(resolveRemoteNodePath).toHaveBeenCalledTimes(1)
 
     mockExecCommand.mockResolvedValueOnce('/home/user') // sequential fallback $HOME
-    mockExecCommand.mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK') // native deps probe
+    mockExecCommand.mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK') // native deps probe
     queueLaunchNamespaceAndDeadSocketProbe()
     mockExecCommand.mockResolvedValueOnce('READY') // socket poll
     releaseRemoteHome('/home/user')
@@ -484,9 +484,9 @@ describe('deployAndLaunchRelay', () => {
   it('defaults fresh relays to keep-alive-until-reset without rollout artifacts', async () => {
     const conn = makeMockConnection()
     const mockExecCommand = vi.mocked(execCommand)
-    mockExecCommand.mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64')
+    mockExecCommand.mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64')
     mockExecCommand.mockResolvedValueOnce('/home/user')
-    mockExecCommand.mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK')
+    mockExecCommand.mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK')
     queueLaunchNamespaceAndDeadSocketProbe()
     mockExecCommand.mockResolvedValueOnce('READY')
 
@@ -505,9 +505,9 @@ describe('deployAndLaunchRelay', () => {
   it('allows an unlimited SSH disconnect grace window', async () => {
     const conn = makeMockConnection()
     const mockExecCommand = vi.mocked(execCommand)
-    mockExecCommand.mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64')
+    mockExecCommand.mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64')
     mockExecCommand.mockResolvedValueOnce('/home/user')
-    mockExecCommand.mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK')
+    mockExecCommand.mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK')
     queueLaunchNamespaceAndDeadSocketProbe()
     mockExecCommand.mockResolvedValueOnce('READY')
 
@@ -526,9 +526,9 @@ describe('deployAndLaunchRelay', () => {
   it('clamps configured SSH disconnect grace to the seven-day maximum', async () => {
     const conn = makeMockConnection()
     const mockExecCommand = vi.mocked(execCommand)
-    mockExecCommand.mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64')
+    mockExecCommand.mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64')
     mockExecCommand.mockResolvedValueOnce('/home/user')
-    mockExecCommand.mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK')
+    mockExecCommand.mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK')
     queueLaunchNamespaceAndDeadSocketProbe()
     mockExecCommand.mockResolvedValueOnce('READY')
 
@@ -545,9 +545,9 @@ describe('deployAndLaunchRelay', () => {
   it('uses a content-hashed versioned remote install directory', async () => {
     const conn = makeMockConnection()
     const mockExecCommand = vi.mocked(execCommand)
-    mockExecCommand.mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64')
+    mockExecCommand.mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64')
     mockExecCommand.mockResolvedValueOnce('/home/user')
-    mockExecCommand.mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK')
+    mockExecCommand.mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK')
     queueLaunchNamespaceAndDeadSocketProbe()
     mockExecCommand.mockResolvedValueOnce('READY')
 
@@ -557,7 +557,7 @@ describe('deployAndLaunchRelay', () => {
     const execArgs = vi.mocked(conn.exec).mock.calls.map(([cmd]) => cmd as string)
     const allCmds = [...execArgs, ...mockExecCommand.mock.calls.map(([, cmd]) => cmd)]
     const sawVersionedDir = allCmds.some((cmd) =>
-      cmd.includes('/.orca-remote/relay-0.1.0+abcdef012345')
+      cmd.includes('/.kingu-remote/relay-0.1.0+abcdef012345')
     )
     expect(sawVersionedDir).toBe(true)
     const sawLegacyDir = allCmds.some((cmd) => cmd.includes('relay-v0.1.0'))
@@ -604,14 +604,14 @@ describe('deployAndLaunchRelay', () => {
       conn.writeFile = vi.fn().mockResolvedValue(undefined)
       vi.mocked(execCommand).mockImplementation((_conn, command) => {
         if (command.includes('uname')) {
-          return Promise.resolve('__ORCA_REMOTE_PLATFORM__ Linux x86_64')
+          return Promise.resolve('__KINGU_REMOTE_PLATFORM__ Linux x86_64')
         }
         if (command === 'echo $HOME') {
           return Promise.resolve('/home/user')
         }
         const marker = command.match(/\.sftp-namespace-[0-9a-f]{32}/u)?.[0]
-        if (command.includes('__ORCA_UPLOAD_STAGE_SLOT__') && marker) {
-          return Promise.resolve(`__ORCA_UPLOAD_STAGE_SLOT__${marker}:slot-0`)
+        if (command.includes('__KINGU_UPLOAD_STAGE_SLOT__') && marker) {
+          return Promise.resolve(`__KINGU_UPLOAD_STAGE_SLOT__${marker}:slot-0`)
         }
         return Promise.resolve('')
       })
@@ -654,12 +654,12 @@ describe('deployAndLaunchRelay', () => {
       vi.mocked(conn.exec).mockResolvedValue(launchChannel as never)
       const mockExecCommand = vi.mocked(execCommand)
       mockExecCommand
-        .mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Linux x86_64')
+        .mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Linux x86_64')
         .mockResolvedValueOnce('/home/user')
         .mockImplementationOnce(
           () =>
             new Promise<string>((resolve) =>
-              setTimeout(() => resolve('ORCA-NATIVE-DEPS-OK'), 899_900)
+              setTimeout(() => resolve('KINGU-NATIVE-DEPS-OK'), 899_900)
             )
         )
         .mockResolvedValueOnce('') // launch namespace marker
@@ -702,14 +702,14 @@ describe('deployAndLaunchRelay', () => {
     const connB = makeMockConnection()
     const mockExecCommand = vi.mocked(execCommand)
     mockExecCommand.mockImplementation((_conn, command) => {
-      if (command.includes('__ORCA_REMOTE_PLATFORM__')) {
-        return Promise.resolve('__ORCA_REMOTE_PLATFORM__ Linux x86_64')
+      if (command.includes('__KINGU_REMOTE_PLATFORM__')) {
+        return Promise.resolve('__KINGU_REMOTE_PLATFORM__ Linux x86_64')
       }
       if (command === 'echo $HOME') {
         return Promise.resolve('/home/user')
       }
-      if (command.includes('ORCA-NATIVE')) {
-        return Promise.resolve('ORCA-NATIVE-DEPS-OK')
+      if (command.includes('KINGU-NATIVE')) {
+        return Promise.resolve('KINGU-NATIVE-DEPS-OK')
       }
       if (command.includes('process.stdout.write("READY")')) {
         return Promise.resolve('READY')
@@ -749,9 +749,9 @@ describe('deployAndLaunchRelay', () => {
     vi.mocked(resolveRemoteNodePath).mockResolvedValue('C:/Program Files/nodejs/node.exe')
     mockExecCommand
       .mockRejectedValueOnce(new Error('uname not found')) // tagged POSIX platform probe
-      .mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Windows X64') // tagged PowerShell platform probe
+      .mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Windows X64') // tagged PowerShell platform probe
       .mockResolvedValueOnce('C:\\Users\\me user') // remote home
-      .mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK') // native deps probe
+      .mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK') // native deps probe
       .mockResolvedValueOnce('') // no persisted active pipe
       .mockResolvedValueOnce('WAITING') // named pipe probe
       .mockResolvedValueOnce('') // WMI relay launch
@@ -762,7 +762,7 @@ describe('deployAndLaunchRelay', () => {
 
     expect(result.platform).toBe('win32-x64')
     expect(result.remoteHome).toBe('C:/Users/me user')
-    expect(result.sockPath).toMatch(/^\\\\\.\\pipe\\orca-relay-[0-9a-f]{20}$/)
+    expect(result.sockPath).toMatch(/^\\\\\.\\pipe\\kingu-relay-[0-9a-f]{20}$/)
     const execCommands = vi.mocked(conn.exec).mock.calls.map(([cmd]) => cmd as string)
     expect(execCommands).toHaveLength(1)
     expect(execCommands[0]).toContain('powershell.exe')
@@ -771,10 +771,10 @@ describe('deployAndLaunchRelay', () => {
       .filter((script): script is string => script !== null)
     const launchScript = decodedScripts.find((script) => script.includes('Invoke-CimMethod')) ?? ''
     expect(launchScript).toContain(
-      '"C:/Users/me user/.orca-remote/relay-0.1.0+abcdef012345/relay.js"'
+      '"C:/Users/me user/.kingu-remote/relay-0.1.0+abcdef012345/relay.js"'
     )
     expect(launchScript).toContain(
-      '"C:/Users/me user/.orca-remote/relay-0.1.0+abcdef012345/agent-hooks/orca-relay-'
+      '"C:/Users/me user/.kingu-remote/relay-0.1.0+abcdef012345/agent-hooks/kingu-relay-'
     )
     expect(launchScript).toContain('--endpoint-dir')
     expect(launchScript).not.toContain('--pty-source-credit-v1')
@@ -811,9 +811,9 @@ describe('deployAndLaunchRelay', () => {
       })
     mockExecCommand
       .mockRejectedValueOnce(new Error('uname not found')) // tagged POSIX platform probe
-      .mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Windows X64') // tagged PowerShell platform probe
+      .mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Windows X64') // tagged PowerShell platform probe
       .mockResolvedValueOnce('C:\\Users\\me user') // remote home
-      .mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK') // native deps probe
+      .mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK') // native deps probe
       .mockResolvedValueOnce('') // no persisted active pipe yet
       .mockResolvedValueOnce('READY') // existing named pipe probe
       .mockResolvedValueOnce('WAITING') // deterministic fallback pipe is not already running
@@ -829,8 +829,8 @@ describe('deployAndLaunchRelay', () => {
     const secondConnectScript = decodePowerShellCommand(execCommands[1]) ?? ''
     const primaryPipe = extractWindowsSockPath(firstConnectScript)
     const fallbackPipe = extractWindowsSockPath(secondConnectScript)
-    expect(primaryPipe).toMatch(/^\\\\\.\\pipe\\orca-relay-[0-9a-f]{20}$/)
-    expect(fallbackPipe).toMatch(/^\\\\\.\\pipe\\orca-relay-[0-9a-f]{20}$/)
+    expect(primaryPipe).toMatch(/^\\\\\.\\pipe\\kingu-relay-[0-9a-f]{20}$/)
+    expect(fallbackPipe).toMatch(/^\\\\\.\\pipe\\kingu-relay-[0-9a-f]{20}$/)
     expect(fallbackPipe).not.toBe(primaryPipe)
     expect(result.sockPath).toBe(fallbackPipe)
 
@@ -854,13 +854,13 @@ describe('deployAndLaunchRelay', () => {
   it('prefers a persisted Windows fallback pipe on later reconnects', async () => {
     const conn = makeMockConnection()
     const mockExecCommand = vi.mocked(execCommand)
-    const persistedPipe = '\\\\.\\pipe\\orca-relay-1234567890abcdef1234'
+    const persistedPipe = '\\\\.\\pipe\\kingu-relay-1234567890abcdef1234'
     vi.mocked(resolveRemoteNodePath).mockResolvedValue('C:/Program Files/nodejs/node.exe')
     mockExecCommand
       .mockRejectedValueOnce(new Error('uname not found')) // tagged POSIX platform probe
-      .mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Windows X64') // tagged PowerShell platform probe
+      .mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Windows X64') // tagged PowerShell platform probe
       .mockResolvedValueOnce('C:\\Users\\me user') // remote home
-      .mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK') // native deps probe
+      .mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK') // native deps probe
       .mockResolvedValueOnce(`${persistedPipe}\n`) // persisted active pipe marker
       .mockResolvedValueOnce('READY') // persisted named pipe probe
       .mockResolvedValueOnce('') // refresh active pipe marker
@@ -886,18 +886,18 @@ describe('deployAndLaunchRelay', () => {
     vi.mocked(resolveRemoteNodePath).mockResolvedValue('C:/Program Files/nodejs/node.exe')
     mockExecCommand
       .mockRejectedValueOnce(new Error('uname not found')) // tagged POSIX platform probe A
-      .mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Windows X64')
+      .mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Windows X64')
       .mockResolvedValueOnce('C:\\Users\\me user')
-      .mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK')
+      .mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK')
       .mockResolvedValueOnce('') // no persisted active pipe A
       .mockResolvedValueOnce('WAITING')
       .mockResolvedValueOnce('')
       .mockResolvedValueOnce('READY')
       .mockResolvedValueOnce('') // persist active pipe A
       .mockRejectedValueOnce(new Error('uname not found')) // tagged POSIX platform probe B
-      .mockResolvedValueOnce('__ORCA_REMOTE_PLATFORM__ Windows X64')
+      .mockResolvedValueOnce('__KINGU_REMOTE_PLATFORM__ Windows X64')
       .mockResolvedValueOnce('C:\\Users\\me user')
-      .mockResolvedValueOnce('ORCA-NATIVE-DEPS-OK')
+      .mockResolvedValueOnce('KINGU-NATIVE-DEPS-OK')
       .mockResolvedValueOnce('') // no persisted active pipe B
       .mockResolvedValueOnce('WAITING')
       .mockResolvedValueOnce('')

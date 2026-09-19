@@ -1,5 +1,5 @@
 import type { RuntimeTerminalInteractiveWait } from '../../../../../../shared/runtime-types'
-import type { OrcaRuntimeService } from '../../../../orca-runtime'
+import type { KinguRuntimeService } from '../../../../kingu-runtime'
 import type { OrchestrationDb } from '../../../../orchestration/db'
 import { OrchestrationError } from '../../../../orchestration/orchestration-error'
 import { parseWorkerTerminalHostScope } from '../../../../orchestration/worker-terminal-process-liveness'
@@ -16,11 +16,11 @@ import type {
 } from '../../../../orchestration/types'
 
 export async function inspectWorkerTerminal(
-  runtime: OrcaRuntimeService,
+  runtime: KinguRuntimeService,
   db: OrchestrationDb,
   dispatchId: string
 ): Promise<{
-  terminal: Awaited<ReturnType<OrcaRuntimeService['showTerminal']>> | null
+  terminal: Awaited<ReturnType<KinguRuntimeService['showTerminal']>> | null
   exact: boolean
   status: 'unattached' | 'missing' | 'identity_changed' | 'live' | 'exited' | 'unverifiable'
   /** Set with `unverifiable`; names what we lost contact with. */
@@ -39,7 +39,7 @@ export async function inspectWorkerTerminal(
     // Exactness is the recorded pane and lineage, which the runtime getters answer from the
     // structured registry; there is no terminal to show.
     //
-    // `agentWait` is deliberately ABSENT rather than null. Null is the contract's "Orca looked and
+    // `agentWait` is deliberately ABSENT rather than null. Null is the contract's "Kingu looked and
     // found no wait", and nothing here looks: a structured worker parks on a journal question item,
     // which no terminal prompt scan can see. Reporting null would tell a coordinator the worker is
     // not waiting, which is the one thing the field's own documentation forbids inferring.
@@ -173,7 +173,7 @@ export function exposeDispatchContext(dispatch: DispatchContextRow) {
 }
 
 export async function showContextOnlyWorker(
-  runtime: OrcaRuntimeService,
+  runtime: KinguRuntimeService,
   db: OrchestrationDb,
   dispatch: DispatchContextRow
 ) {
@@ -217,7 +217,7 @@ export function exposeWorker(worker: WorkerDispatchRow) {
  * `worker-list` — and `worker-list`'s own `nextAction` pointed back at this command.
  */
 export function projectFleetWorkerPage(
-  runtime: OrcaRuntimeService,
+  runtime: KinguRuntimeService,
   db: OrchestrationDb,
   dispatchId: string
 ): ReturnType<typeof projectWorkerFleet> | null {
@@ -236,7 +236,7 @@ export function projectFleetWorkerPage(
 }
 
 export function projectFleetWorker(
-  runtime: OrcaRuntimeService,
+  runtime: KinguRuntimeService,
   db: OrchestrationDb,
   dispatchId: string
 ): OrchestrationFleetWorker | null {
@@ -258,21 +258,21 @@ export function exposeFederatedWorkerObservation(
 }
 
 export function resolvePinnedFederatedServer(
-  runtime: OrcaRuntimeService,
+  runtime: KinguRuntimeService,
   federated: FederatedDispatchRow
 ) {
   const server = runtime.resolveOrchestrationWorkerServer(federated.environment_id)
   if (server.peerFingerprint !== federated.peer_fingerprint) {
     throw new OrchestrationError(
       'peer_changed',
-      `Saved environment ${federated.environment_name} now identifies a different Orca server.`
+      `Saved environment ${federated.environment_name} now identifies a different Kingu server.`
     )
   }
   return server
 }
 
 export async function callFederatedWorkerShow(
-  runtime: OrcaRuntimeService,
+  runtime: KinguRuntimeService,
   federated: FederatedDispatchRow
 ): Promise<{
   runtimeEpoch: string

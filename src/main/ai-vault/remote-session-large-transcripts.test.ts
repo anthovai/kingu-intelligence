@@ -18,7 +18,7 @@ const filler = jsonl([{ type: 'irrelevant_event', payload: 'x'.repeat(1024) }]).
 
 describe('large remote history through real relay filesystem', () => {
   it('reports an oversized record without losing healthy sessions or publishing a partial session', async () => {
-    const home = await mkdtemp(join(tmpdir(), 'orca-history-record-limit-'))
+    const home = await mkdtemp(join(tmpdir(), 'kingu-history-record-limit-'))
     try {
       const directory = join(home, '.codex', 'sessions')
       await mkdir(directory, { recursive: true })
@@ -47,7 +47,7 @@ describe('large remote history through real relay filesystem', () => {
   })
 
   it('lists a large Codex rollout with middle messages and usage intact', async () => {
-    const home = await mkdtemp(join(tmpdir(), 'orca-history-17744-'))
+    const home = await mkdtemp(join(tmpdir(), 'kingu-history-17744-'))
     try {
       const path = join(home, '.codex', 'sessions', 'large.jsonl')
       await mkdir(dirname(path), { recursive: true })
@@ -116,7 +116,7 @@ describe('large remote history through real relay filesystem', () => {
   it.each(['hermes', 'devin', 'gemini', 'cline'] as const)(
     'lists large %s documents with every message counted',
     async (agent) => {
-      const home = await mkdtemp(join(tmpdir(), 'orca-history-17744-document-'))
+      const home = await mkdtemp(join(tmpdir(), 'kingu-history-17744-document-'))
       try {
         const messages = Array.from({ length: 11000 }, () => ({
           role: 'assistant',
@@ -176,7 +176,7 @@ describe('large remote history through real relay filesystem', () => {
     }
   )
   it('keeps normal-size reads on their existing path and supports providers without streaming', async () => {
-    const home = await mkdtemp(join(tmpdir(), 'orca-history-legacy-'))
+    const home = await mkdtemp(join(tmpdir(), 'kingu-history-legacy-'))
     try {
       const directory = join(home, '.codex', 'sessions')
       await mkdir(directory, { recursive: true })

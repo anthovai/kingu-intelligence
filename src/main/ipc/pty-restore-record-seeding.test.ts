@@ -11,7 +11,7 @@ import {
 import { setupPtyIpcSuite } from './pty-ipc-test-harness'
 import { getDefaultWorkspaceSession } from '../../shared/constants'
 import { makePaneKey } from '../../shared/stable-pane-id'
-import { OrcaRuntimeService } from '../runtime/orca-runtime'
+import { KinguRuntimeService } from '../runtime/kingu-runtime'
 import type { RuntimeResolvedWorktreeCache } from '../runtime/runtime-resolved-worktree-cache'
 import type { ResolvedWorktree } from '../runtime/runtime-worktree-path-identity'
 import { getWorktreeScanMutationRevision } from '../local-worktree-scan-generation'
@@ -50,7 +50,7 @@ vi.mock('../telemetry/client', () =>
 vi.mock('../telemetry/classify-error', () =>
   import('./pty-ipc-mock-registry').then((m) => m.classifyErrorModuleMock())
 )
-vi.mock('../cli/linux-terminal-orca-cli-shim', () =>
+vi.mock('../cli/linux-terminal-kingu-cli-shim', () =>
   import('./pty-ipc-mock-registry').then((m) => m.linuxCliShimModuleMock())
 )
 vi.mock('../memory/pty-registry', () =>
@@ -178,7 +178,7 @@ describe('registerPtyHandlers', () => {
     const leafId = '55555555-5555-4555-8555-555555555555'
     const ptyId = `${worktreeId}@@session-restore-1`
     const session = getDefaultWorkspaceSession()
-    const runtime = new OrcaRuntimeService({
+    const runtime = new KinguRuntimeService({
       getWorkspaceSession: () => session,
       setWorkspaceSession: () => {},
       getRepos: () => [
@@ -280,7 +280,7 @@ describe('registerPtyHandlers', () => {
       worktreeId: 'wt-gated',
       tabId,
       leafId,
-      env: { ORCA_PANE_KEY: paneKey }
+      env: { KINGU_PANE_KEY: paneKey }
     })
 
     // The renderer owns the emulator snapshot here — but the list/read records
@@ -334,7 +334,7 @@ describe('registerPtyHandlers', () => {
       lastTitle: 'checkpoint-title'
     })
   })
-  // Why windowless: `orca serve`/CLI runtime creation is the topology that most
+  // Why windowless: `kingu serve`/CLI runtime creation is the topology that most
   // needs informative records — its controller.spawn path must seed them too.
   it('seeds restore records for a runtime-controller created terminal (headless reattach)', async () => {
     const worktreeId = 'repo-restore::/tmp/restore-records'
@@ -347,7 +347,7 @@ describe('registerPtyHandlers', () => {
       badgeColor: '#000000',
       addedAt: 0
     }
-    const runtime = new OrcaRuntimeService({
+    const runtime = new KinguRuntimeService({
       getWorkspaceSession: () => session,
       setWorkspaceSession: () => {},
       getRepo: (repoId: string) => (repoId === repo.id ? repo : undefined),
@@ -424,7 +424,7 @@ describe('registerPtyHandlers', () => {
       worktreeId: 'wt-1',
       tabId: 'tab-1',
       leafId,
-      env: { ORCA_PANE_KEY: 'tab-1:0' }
+      env: { KINGU_PANE_KEY: 'tab-1:0' }
     })
 
     expect(registerPtyMock).toHaveBeenLastCalledWith(
@@ -448,7 +448,7 @@ describe('registerPtyHandlers', () => {
       worktreeId: 'wt-1',
       tabId: 'tab-1',
       leafId,
-      env: { ORCA_PANE_KEY: stablePaneKey }
+      env: { KINGU_PANE_KEY: stablePaneKey }
     })
 
     expect(registerPtyMock).toHaveBeenLastCalledWith(
@@ -464,7 +464,7 @@ describe('registerPtyHandlers', () => {
       worktreeId: 'wt-1',
       tabId: 'tab-1',
       leafId,
-      env: { ORCA_PANE_KEY: makePaneKey('tab-2', leafId) }
+      env: { KINGU_PANE_KEY: makePaneKey('tab-2', leafId) }
     })
 
     expect(registerPtyMock).toHaveBeenLastCalledWith(
@@ -485,16 +485,16 @@ describe('registerPtyHandlers', () => {
       tabId: 'tab-1',
       leafId,
       env: {
-        ORCA_PANE_KEY: remintedPaneKey,
-        ORCA_AGENT_LAUNCH_TOKEN: 'launch-remint'
+        KINGU_PANE_KEY: remintedPaneKey,
+        KINGU_AGENT_LAUNCH_TOKEN: 'launch-remint'
       }
     })
 
     expect(spawnMock.mock.calls.at(-1)?.[2]).toEqual(
       expect.objectContaining({
         env: expect.objectContaining({
-          ORCA_PANE_KEY: stablePaneKey,
-          ORCA_AGENT_LAUNCH_TOKEN: 'launch-remint'
+          KINGU_PANE_KEY: stablePaneKey,
+          KINGU_AGENT_LAUNCH_TOKEN: 'launch-remint'
         })
       })
     )
@@ -523,16 +523,16 @@ describe('registerPtyHandlers', () => {
       tabId: 'tab-2',
       leafId,
       env: {
-        ORCA_PANE_KEY: remintedPaneKey,
-        ORCA_AGENT_LAUNCH_TOKEN: 'launch-remint'
+        KINGU_PANE_KEY: remintedPaneKey,
+        KINGU_AGENT_LAUNCH_TOKEN: 'launch-remint'
       }
     })
 
     expect(spawnMock.mock.calls.at(-1)?.[2]).toEqual(
       expect.objectContaining({
         env: expect.objectContaining({
-          ORCA_PANE_KEY: claimedPaneKey,
-          ORCA_AGENT_LAUNCH_TOKEN: 'launch-remint'
+          KINGU_PANE_KEY: claimedPaneKey,
+          KINGU_AGENT_LAUNCH_TOKEN: 'launch-remint'
         })
       })
     )
@@ -562,7 +562,7 @@ describe('registerPtyHandlers', () => {
       worktreeId: 'wt-1',
       tabId: 'tab-1',
       leafId,
-      env: { ORCA_PANE_KEY: stablePaneKey }
+      env: { KINGU_PANE_KEY: stablePaneKey }
     })) as { id: string }
     const second = (await handlers.get('pty:spawn')!(null, {
       cols: 80,
@@ -570,7 +570,7 @@ describe('registerPtyHandlers', () => {
       worktreeId: 'wt-1',
       tabId: 'tab-1',
       leafId,
-      env: { ORCA_PANE_KEY: stablePaneKey }
+      env: { KINGU_PANE_KEY: stablePaneKey }
     })) as { id: string }
 
     expect(getPtyIdForPaneKey(stablePaneKey)).toBe(second.id)
@@ -595,7 +595,7 @@ describe('registerPtyHandlers', () => {
       worktreeId: 'wt-1',
       tabId: 'tab-1',
       leafId,
-      env: { ORCA_PANE_KEY: stablePaneKey }
+      env: { KINGU_PANE_KEY: stablePaneKey }
     })) as { id: string }
 
     expect(getPtyIdForPaneKey(stablePaneKey)).toBe(current.id)

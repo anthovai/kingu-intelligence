@@ -11,7 +11,7 @@ import type {
   NotificationDispatchResult,
   NotificationSettings
 } from '../../shared/notification-settings-types'
-import type { OrcaRuntimeService } from '../runtime/orca-runtime'
+import type { KinguRuntimeService } from '../runtime/kingu-runtime'
 import { buildNotificationOptions } from '../ipc/notification-options'
 import { reserveNotificationCooldown } from '../ipc/notification-burst-cooldown'
 
@@ -23,7 +23,7 @@ export type NotificationDeliveryDependencies = {
   setTrayAttention: (attention: boolean) => void
   isNotificationSupported: () => boolean
   /** Null when no runtime is paired, so mobile fan-out is skipped entirely. */
-  dispatchMobileNotification: OrcaRuntimeService['dispatchMobileNotification'] | null
+  dispatchMobileNotification: KinguRuntimeService['dispatchMobileNotification'] | null
   readAuthorizationStatus: () => Promise<
     'authorized' | 'denied' | 'not-determined' | 'unknown' | null
   >

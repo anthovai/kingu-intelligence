@@ -27,7 +27,7 @@ vi.mock('electron', () => ({
       return defaultSession
     },
     fromPartition: (partition: string) => {
-      if (partition !== 'orca-doc-preview') {
+      if (partition !== 'kingu-doc-preview') {
         throw new Error(`unexpected partition ${partition}`)
       }
       return previewSession
@@ -97,7 +97,7 @@ describe('handleDocPreviewRequest', () => {
   it('falls back to the granted entry document for a root request', async () => {
     const grant = mintGrant()
 
-    await handleDocPreviewRequest(new Request(`orca-preview://${grant.id}/`))
+    await handleDocPreviewRequest(new Request(`kingu-preview://${grant.id}/`))
 
     expect(mocks.readDocPreviewFile).toHaveBeenCalledWith(grant, 'index.html')
   })
@@ -112,7 +112,7 @@ describe('handleDocPreviewRequest', () => {
 
   it('404s an unknown grant without reading anything', async () => {
     const response = await handleDocPreviewRequest(
-      new Request(`orca-preview://${'0'.repeat(32)}/index.html`)
+      new Request(`kingu-preview://${'0'.repeat(32)}/index.html`)
     )
 
     expect(response.status).toBe(404)
@@ -132,7 +132,9 @@ describe('handleDocPreviewRequest', () => {
   })
 
   it('404s a malformed grant id', async () => {
-    const response = await handleDocPreviewRequest(new Request('orca-preview://not-a-grant/x.html'))
+    const response = await handleDocPreviewRequest(
+      new Request('kingu-preview://not-a-grant/x.html')
+    )
 
     expect(response.status).toBe(404)
     expect(mocks.readDocPreviewFile).not.toHaveBeenCalled()
@@ -234,7 +236,7 @@ describe('installDocPreviewProtocolHandler', () => {
     installDocPreviewProtocolHandler()
 
     expect(previewSession.protocol.handle).toHaveBeenCalledWith(
-      'orca-preview',
+      'kingu-preview',
       handleDocPreviewRequest
     )
     expect(previewSession.webRequest.onBeforeRequest).toHaveBeenCalled()
@@ -258,7 +260,7 @@ describe('installDocPreviewProtocolHandler', () => {
     }
 
     expect(cancelled('https://cdn.example.com/tracker.js')).toBe(true)
-    expect(cancelled(`orca-preview://${'a'.repeat(32)}/index.html`)).toBe(false)
+    expect(cancelled(`kingu-preview://${'a'.repeat(32)}/index.html`)).toBe(false)
   })
 
   // Why: preview guests still use the shared installer for certificate, UA, permission and
@@ -267,7 +269,7 @@ describe('installDocPreviewProtocolHandler', () => {
     installDocPreviewProtocolHandler()
 
     expect(mocks.installBrowserSessionPartitionPolicies).toHaveBeenCalledWith(
-      expect.objectContaining({ partition: 'orca-doc-preview' }),
+      expect.objectContaining({ partition: 'kingu-doc-preview' }),
       expect.anything()
     )
   })
@@ -291,7 +293,7 @@ describe('registerDocPreviewSchemePrivileges', () => {
 
     expect(protocol.registerSchemesAsPrivileged).toHaveBeenCalledWith([
       {
-        scheme: 'orca-preview',
+        scheme: 'kingu-preview',
         privileges: {
           standard: true,
           secure: true,
@@ -308,10 +310,10 @@ describe('isAllowedDocPreviewRequestUrl', () => {
   // Why: the session refuses to carry the request at all, so a CSP bypass in one element type
   // still reaches nothing off-machine.
   it('admits in-document schemes and refuses everything that leaves the machine', () => {
-    expect(isAllowedDocPreviewRequestUrl(`orca-preview://${'a'.repeat(32)}/index.html`)).toBe(true)
+    expect(isAllowedDocPreviewRequestUrl(`kingu-preview://${'a'.repeat(32)}/index.html`)).toBe(true)
     expect(isAllowedDocPreviewRequestUrl('devtools://devtools/bundled/inspector.html')).toBe(true)
     expect(isAllowedDocPreviewRequestUrl('data:image/png;base64,AAA')).toBe(true)
-    expect(isAllowedDocPreviewRequestUrl('blob:orca-preview://abc/123')).toBe(true)
+    expect(isAllowedDocPreviewRequestUrl('blob:kingu-preview://abc/123')).toBe(true)
     expect(isAllowedDocPreviewRequestUrl('https://cdn.example.com/app.css')).toBe(false)
     expect(isAllowedDocPreviewRequestUrl('http://127.0.0.1:9999/exfil')).toBe(false)
     expect(isAllowedDocPreviewRequestUrl('ws://evil.example.com/socket')).toBe(false)

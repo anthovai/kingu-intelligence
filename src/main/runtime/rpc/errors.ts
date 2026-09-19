@@ -50,7 +50,7 @@ export function errorResponse(
   }
 }
 
-// Why: the OrcaRuntimeService throws plain Error objects whose `message` is
+// Why: the KinguRuntimeService throws plain Error objects whose `message` is
 // actually a stable error code. This allowlist is the contract the CLI relies
 // on — expanding or renaming entries without updating the CLI would silently
 // change user-visible error codes.

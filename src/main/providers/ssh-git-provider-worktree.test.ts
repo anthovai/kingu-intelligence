@@ -383,7 +383,7 @@ describe('SshGitProvider', () => {
     await expect(
       provider.forceDeletePreservedBranch('/home/user/repo', 'you/fix-auth', 'abc123')
     ).rejects.toThrow(
-      'This SSH host is running an older Orca relay that cannot delete preserved branches. Reconnect to deploy the latest relay, then try again.'
+      'This SSH host is running an older Kingu relay that cannot delete preserved branches. Reconnect to deploy the latest relay, then try again.'
     )
   })
 
@@ -396,24 +396,24 @@ describe('SshGitProvider', () => {
     ).rejects.toBe(error)
   })
 
-  it('markRemoteOrcaCreated sends the narrow provenance-marker request', async () => {
-    await provider.markRemoteOrcaCreated('/home/user/repo', 'pr-contributor-orca')
-    expect(mux.request).toHaveBeenCalledWith('git.markRemoteOrcaCreated', {
+  it('markRemoteKinguCreated sends the narrow provenance-marker request', async () => {
+    await provider.markRemoteKinguCreated('/home/user/repo', 'pr-contributor-kingu')
+    expect(mux.request).toHaveBeenCalledWith('git.markRemoteKinguCreated', {
       repoPath: '/home/user/repo',
-      remoteName: 'pr-contributor-orca'
+      remoteName: 'pr-contributor-kingu'
     })
   })
 
-  it('markRemoteOrcaCreated degrades to a one-time warning for an older relay', async () => {
-    mux.request.mockRejectedValue(methodNotFound('git.markRemoteOrcaCreated'))
+  it('markRemoteKinguCreated degrades to a one-time warning for an older relay', async () => {
+    mux.request.mockRejectedValue(methodNotFound('git.markRemoteKinguCreated'))
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
     try {
       await expect(
-        provider.markRemoteOrcaCreated('/home/user/repo', 'pr-contributor-orca')
+        provider.markRemoteKinguCreated('/home/user/repo', 'pr-contributor-kingu')
       ).resolves.toBeUndefined()
       await expect(
-        provider.markRemoteOrcaCreated('/home/user/repo', 'pr-contributor-orca')
+        provider.markRemoteKinguCreated('/home/user/repo', 'pr-contributor-kingu')
       ).resolves.toBeUndefined()
       expect(warnSpy).toHaveBeenCalledTimes(1)
     } finally {
@@ -421,12 +421,12 @@ describe('SshGitProvider', () => {
     }
   })
 
-  it('markRemoteOrcaCreated rethrows non-method-not-found errors', async () => {
+  it('markRemoteKinguCreated rethrows non-method-not-found errors', async () => {
     const error = new Error('remote config write failed')
     mux.request.mockRejectedValueOnce(error)
 
     await expect(
-      provider.markRemoteOrcaCreated('/home/user/repo', 'pr-contributor-orca')
+      provider.markRemoteKinguCreated('/home/user/repo', 'pr-contributor-kingu')
     ).rejects.toBe(error)
   })
 })

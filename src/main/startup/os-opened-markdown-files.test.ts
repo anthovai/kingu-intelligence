@@ -48,9 +48,9 @@ describe('markdownPathsFromArguments', () => {
 
   it('drops the executable and dev entries because none of them end in a markdown extension', () => {
     const nonDocumentEntries = [
-      '/Applications/Orca.app/Contents/MacOS/Orca',
-      '/Users/dev/orca/out/main/index.js',
-      '/Applications/Orca.app/Contents/Resources/app.asar'
+      '/Applications/Kingu.app/Contents/MacOS/Kingu',
+      '/Users/dev/kingu/out/main/index.js',
+      '/Applications/Kingu.app/Contents/Resources/app.asar'
     ]
     // The module documents that the extension check alone excludes these; hold it to that.
     for (const entry of nonDocumentEntries) {
@@ -159,9 +159,9 @@ describe('OsOpenedMarkdownFileState', () => {
     const state = new OsOpenedMarkdownFileState()
     const publish = vi.fn()
 
-    expect(state.capture(['/Applications/Orca.app/Contents/MacOS/Orca', '--serve'], publish)).toBe(
-      false
-    )
+    expect(
+      state.capture(['/Applications/Kingu.app/Contents/MacOS/Kingu', '--serve'], publish)
+    ).toBe(false)
     expect(publish).not.toHaveBeenCalled()
     expect(state.consume()).toEqual([])
   })
@@ -171,7 +171,7 @@ describe('OsOpenedMarkdownFileState', () => {
     const publish = vi.fn()
     const filePath = hostPath('a.md')
 
-    expect(state.capture(['/Applications/Orca.app/Contents/MacOS/Orca', filePath], publish)).toBe(
+    expect(state.capture(['/Applications/Kingu.app/Contents/MacOS/Kingu', filePath], publish)).toBe(
       true
     )
     expect(publish).toHaveBeenCalledTimes(1)
@@ -195,7 +195,7 @@ describe('OsOpenedMarkdownFileState', () => {
 
     state.captureFilePaths([filePath])
     state.captureFilePaths([filePath])
-    state.capture(['orca', filePath])
+    state.capture(['kingu', filePath])
 
     expect(state.consume()).toEqual([filePath])
   })
@@ -250,8 +250,8 @@ describe('resolveOpenedMarkdownDocuments', () => {
   beforeEach(async () => {
     vi.mocked(authorizeExternalPath).mockClear()
     vi.mocked(ensureDefaultFloatingWorkspacePath).mockClear()
-    floatingRoot = await mkdtemp(join(tmpdir(), 'orca-os-open-root-'))
-    fileRoot = await mkdtemp(join(tmpdir(), 'orca-os-open-files-'))
+    floatingRoot = await mkdtemp(join(tmpdir(), 'kingu-os-open-root-'))
+    fileRoot = await mkdtemp(join(tmpdir(), 'kingu-os-open-files-'))
     vi.mocked(ensureDefaultFloatingWorkspacePath).mockResolvedValue(floatingRoot)
   })
 

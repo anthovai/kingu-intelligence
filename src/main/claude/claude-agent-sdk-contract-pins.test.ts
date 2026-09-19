@@ -21,7 +21,7 @@ import { createClaudeStructuredLaunchResolver } from './claude-structured-launch
 
 // Contract pins for @anthropic-ai/claude-agent-sdk, run against the real SDK
 // driving a scripted fake CLI (never the real Claude binary). These tests exist
-// to catch a future SDK version drifting under Orca: unknown-frame pass-through,
+// to catch a future SDK version drifting under Kingu: unknown-frame pass-through,
 // spawner env fidelity, argument parity with the pre-SDK argv,
 // permission-callback semantics, and executable-path override.
 
@@ -121,8 +121,8 @@ function scriptScenario(
 function scenarioEnv(scenario: { scenarioPath: string; reportPath: string }) {
   return {
     PATH: process.env.PATH,
-    ORCA_SDK_CONTRACT_SCENARIO_PATH: scenario.scenarioPath,
-    ORCA_SDK_CONTRACT_REPORT_PATH: scenario.reportPath
+    KINGU_SDK_CONTRACT_SCENARIO_PATH: scenario.scenarioPath,
+    KINGU_SDK_CONTRACT_REPORT_PATH: scenario.reportPath
   }
 }
 
@@ -277,7 +277,7 @@ describe('Claude Agent SDK contract pins', () => {
       env: {
         ...scenarioEnv(scenario),
         CLAUDE_CONFIG_DIR: '/pinned/claude-config',
-        ORCA_AGENT_SESSION_SPAWN_TOKEN: 'spawn-token-1',
+        KINGU_AGENT_SESSION_SPAWN_TOKEN: 'spawn-token-1',
         NODE_OPTIONS: '--max-old-space-size=64'
       },
       spawnClaudeCodeProcess: recordingSpawner(spawns)
@@ -285,9 +285,9 @@ describe('Claude Agent SDK contract pins', () => {
 
     const env = spawns[0]!.env
     // Supplied values arrive verbatim: the config-dir pin and spawn token are
-    // observable at this boundary, so Orca's auth scrubbing stays assertable.
+    // observable at this boundary, so Kingu's auth scrubbing stays assertable.
     expect(env.CLAUDE_CONFIG_DIR).toBe('/pinned/claude-config')
-    expect(env.ORCA_AGENT_SESSION_SPAWN_TOKEN).toBe('spawn-token-1')
+    expect(env.KINGU_AGENT_SESSION_SPAWN_TOKEN).toBe('spawn-token-1')
     // Ambient process.env is NOT merged in when env is supplied.
     expect(env.ANTHROPIC_API_KEY).toBeUndefined()
     // The SDK's two documented mutations, pinned so a change is noticed.
@@ -297,9 +297,9 @@ describe('Claude Agent SDK contract pins', () => {
 
   it('inherits process.env into the child when env is omitted — the ambient-auth sharp edge', async () => {
     const scenario = scriptScenario([{ awaitUserMessage: true }, { emit: RESULT_FRAME }])
-    vi.stubEnv('ORCA_SDK_CONTRACT_SCENARIO_PATH', scenario.scenarioPath)
-    vi.stubEnv('ORCA_SDK_CONTRACT_REPORT_PATH', scenario.reportPath)
-    vi.stubEnv('ORCA_SDK_CONTRACT_AMBIENT_CANARY', 'inherited-from-process-env')
+    vi.stubEnv('KINGU_SDK_CONTRACT_SCENARIO_PATH', scenario.scenarioPath)
+    vi.stubEnv('KINGU_SDK_CONTRACT_REPORT_PATH', scenario.reportPath)
+    vi.stubEnv('KINGU_SDK_CONTRACT_AMBIENT_CANARY', 'inherited-from-process-env')
     const spawns: SpawnSeen[] = []
     await drainQuery({
       pathToClaudeCodeExecutable: FAKE_CLI,
@@ -308,9 +308,9 @@ describe('Claude Agent SDK contract pins', () => {
     })
 
     // Omitting env reproduces the ambient-auth-leak failure mode: the child
-    // sees everything in process.env. Orca must therefore always pass an
+    // sees everything in process.env. Kingu must therefore always pass an
     // explicit, fully-constructed env.
-    expect(spawns[0]!.env.ORCA_SDK_CONTRACT_AMBIENT_CANARY).toBe('inherited-from-process-env')
+    expect(spawns[0]!.env.KINGU_SDK_CONTRACT_AMBIENT_CANARY).toBe('inherited-from-process-env')
   })
 
   it('emits --replay-user-messages only through extraArgs, never on its own', async () => {
@@ -355,7 +355,7 @@ describe('Claude Agent SDK contract pins', () => {
     expect(spawns).toHaveLength(1)
     const argv = normalizeArgv(spawns[0]!.args)
     // The SDK's typed bypass option emits a newer allow flag that older user-installed Claude
-    // binaries reject. Keep the older owned flag until Orca establishes a minimum CLI version.
+    // binaries reject. Keep the older owned flag until Kingu establishes a minimum CLI version.
     expect(argv.filter((arg) => arg === '--dangerously-skip-permissions')).toHaveLength(1)
     expect(argv).not.toContain('--allow-dangerously-skip-permissions')
     expect(argv[argv.indexOf('--permission-mode') + 1]).toBe('default')

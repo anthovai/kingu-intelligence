@@ -38,7 +38,7 @@ afterEach(async () => {
 
 describe('stopNativeHandoffTurn', () => {
   it('judges its Stop against the turn the journal published', async () => {
-    root = await mkdtemp(join(tmpdir(), 'orca-handoff-stop-'))
+    root = await mkdtemp(join(tmpdir(), 'kingu-handoff-stop-'))
     const journal = await journals.open({ identity: IDENTITY, journalDir: root })
     await journal.appendItem(
       LIFECYCLE_IDENTITY,

@@ -20,7 +20,7 @@ describePosix('failed-I/O teardown with a real native PTY', () => {
           '/bin/sh',
           [
             '-c',
-            'printf "orca-cleanup-ready\\n"; while IFS= read -r line; do printf "reply:%s\\n" "$line"; done'
+            'printf "kingu-cleanup-ready\\n"; while IFS= read -r line; do printf "reply:%s\\n" "$line"; done'
           ],
           {
             cwd: process.cwd(),
@@ -59,7 +59,7 @@ describePosix('failed-I/O teardown with a real native PTY', () => {
               onExit
             }
           })
-          await vi.waitFor(() => expect(output).toContain('orca-cleanup-ready'), { timeout: 3000 })
+          await vi.waitFor(() => expect(output).toContain('kingu-cleanup-ready'), { timeout: 3000 })
           handle.resize(100, 30)
           handle.write('roundtrip\n')
           await vi.waitFor(() => expect(output).toContain('reply:roundtrip'), { timeout: 3000 })

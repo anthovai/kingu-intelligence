@@ -39,7 +39,7 @@ const EVIDENCE_DOC = join(
 // hold for one poll. Keeping the refusal short keeps seven transcripts off the suite's clock.
 const READY_TIMEOUT_MS = 2_000
 const REFUSAL_TIMEOUT_MS = 600
-/** Antigravity's binary, as Orca launches and probes it (`tui-agent-config.ts` detectCmd). */
+/** Antigravity's binary, as Kingu launches and probes it (`tui-agent-config.ts` detectCmd). */
 const ANTIGRAVITY_COMMAND = 'agy'
 // String.fromCharCode, not a literal: the formatter rewrites an escape sequence into a raw
 // control byte in source, which is unreadable and survives badly in diffs.
@@ -213,7 +213,7 @@ describe('Antigravity readiness, decided by captured transcripts', () => {
           readFileSync(path, 'utf8'),
           transcript.expectReady ? READY_TIMEOUT_MS : REFUSAL_TIMEOUT_MS
         )
-        // A silent dialog carries no blocked-signal wording, so the assertion is only that Orca
+        // A silent dialog carries no blocked-signal wording, so the assertion is only that Kingu
         // does not call the pane ready and type a prompt into a dialog that owns the screen.
         expect({ ready: verdict.ready, outcome: verdict.outcome }).toMatchObject({
           ready: shipped
@@ -263,7 +263,7 @@ describe('scaffold self-check', () => {
         'Antigravity CLI 1.0.3',
         'user@example.com (Antigravity Business)',
         'Gemini 3.5 Flash (High)',
-        '~/orca/workspaces/orca/agy-dispatch-issue',
+        '~/kingu/workspaces/kingu/agy-dispatch-issue',
         '>'
       ].join('\n'),
       READY_TIMEOUT_MS

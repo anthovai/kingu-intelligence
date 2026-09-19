@@ -47,7 +47,7 @@ function put(row: JournalRow): void {
 }
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'orca-stream-replay-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-stream-replay-'))
   opened = openJournalDatabase(journalDatabaseFile(root))
   upsertJournalSessionRow(opened.db, sessionId, epoch, 1)
 })

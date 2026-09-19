@@ -1,4 +1,4 @@
-import type { OrcaRuntimeService } from '../../../../orca-runtime'
+import type { KinguRuntimeService } from '../../../../kingu-runtime'
 import type { OrchestrationDb } from '../../../../orchestration/db'
 import type { RunRow, TaskRow } from '../../../../orchestration/types'
 import type { WorkerStartModeReceipt } from '../../orchestration-worker-start-mode'
@@ -22,7 +22,7 @@ import {
  * prove one), `start_unknown` when observation is supported and nothing started.
  */
 export async function deliverAndSettleWorkerStartReadiness(args: {
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   db: OrchestrationDb
   run: RunRow
   task: TaskRow
@@ -121,9 +121,9 @@ export async function deliverAndSettleWorkerStartReadiness(args: {
       ...(deliveredPrompt ? { prompt: deliveredPrompt } : {}),
       residualResources: JSON.parse(worker.residual_resources) as unknown[],
       nextCommands: [
-        `orca orchestration worker-show --dispatch ${args.dispatchId} --json`,
-        `orca terminal read --terminal ${terminalHandle} --screen`,
-        `orca orchestration worker-abandon --dispatch ${args.dispatchId} --json`
+        `kingu orchestration worker-show --dispatch ${args.dispatchId} --json`,
+        `kingu terminal read --terminal ${terminalHandle} --screen`,
+        `kingu orchestration worker-abandon --dispatch ${args.dispatchId} --json`
       ],
       ...(args.terminalRevealWarning ? { warning: args.terminalRevealWarning } : {})
     }

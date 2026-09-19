@@ -1,6 +1,6 @@
 import type { BrowserWindow } from 'electron'
 import { getAppEnvironment } from '../../../shared/app-environment'
-import type { OrcaRuntimeService } from '../../runtime/orca-runtime'
+import type { KinguRuntimeService } from '../../runtime/kingu-runtime'
 import type { Store } from '../../persistence'
 import type { GlobalSettings } from '../../../shared/global-settings-types'
 import { LocalPtyProvider } from '../../providers/local-pty-provider'
@@ -59,11 +59,11 @@ import {
   resolveCodexResumeLaunch,
   stripSequencedStartupResumeArgv
 } from './host-env/codex-resume'
-import { ensureLinuxTerminalOrcaCliShimDir } from '../../cli/linux-terminal-orca-cli-shim'
+import { ensureLinuxTerminalKinguCliShimDir } from '../../cli/linux-terminal-kingu-cli-shim'
 
 export function registerPtyHandlers(
   mainWindow: BrowserWindow,
-  runtime?: OrcaRuntimeService,
+  runtime?: KinguRuntimeService,
   getSelectedCodexHomePath?: GetSelectedCodexHomePath,
   getSettings?: () => GlobalSettings,
   prepareClaudeAuth?: PrepareClaudeAuth,
@@ -73,7 +73,7 @@ export function registerPtyHandlers(
   if (process.platform === 'linux') {
     const appEnvironment = getAppEnvironment()
     if (appEnvironment.isPackaged()) {
-      ensureLinuxTerminalOrcaCliShimDir({ userDataPath: appEnvironment.getPath('userData') })
+      ensureLinuxTerminalKinguCliShimDir({ userDataPath: appEnvironment.getPath('userData') })
     }
   }
   const ipcMain = getPtyIpc()

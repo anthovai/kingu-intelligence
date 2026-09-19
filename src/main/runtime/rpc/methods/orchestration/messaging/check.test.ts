@@ -3,14 +3,14 @@ import type { RpcContext } from '../../../core'
 import { createOrchestrationRpcHarness } from '../rpc-test-harness'
 import type { OrchestrationDb } from '../../../../orchestration/db'
 import { reconcileLifecycleMessage } from '../../../../orchestration/lifecycle-reconciliation'
-import type { OrcaRuntimeService } from '../../../../orca-runtime'
+import type { KinguRuntimeService } from '../../../../kingu-runtime'
 import { createRootDispatch } from '../../../../orchestration/db/root-dispatch-test-fixture'
 
 describe('orchestration RPC methods', () => {
   const h = createOrchestrationRpcHarness()
   const { coordinatorPaneKey, findMethod } = h
   let db: OrchestrationDb
-  let runtime: OrcaRuntimeService
+  let runtime: KinguRuntimeService
   let ctx: RpcContext
   let activeRunId: string | undefined
 

@@ -5,7 +5,7 @@ import {
   screencastSubscriberDrivesAsMobile,
   type BrowserScreencastSubscriber
 } from './browser-screencast-driver-scope'
-import type { RuntimeBrowserCommands } from './orca-runtime-browser'
+import type { RuntimeBrowserCommands } from './kingu-runtime-browser'
 
 type RuntimeBrowserScreencastControllerDeps = {
   getCommands: () => RuntimeBrowserCommands

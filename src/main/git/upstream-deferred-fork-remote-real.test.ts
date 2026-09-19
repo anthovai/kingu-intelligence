@@ -22,14 +22,14 @@ describe('getUpstreamStatus with a deferred (not-yet-materialized) fork remote',
   })
 
   it('reports the graceful "publish" state instead of 0 ahead/0 behind', async () => {
-    const repoPath = mkdtempSync(join(tmpdir(), 'orca-deferred-fork-remote-'))
+    const repoPath = mkdtempSync(join(tmpdir(), 'kingu-deferred-fork-remote-'))
     tempPaths.push(repoPath)
     const git = (...args: string[]): string =>
       execFileSync('git', args, { cwd: repoPath, encoding: 'utf8' })
 
     git('init', '--quiet')
-    git('config', 'user.name', 'Orca Test')
-    git('config', 'user.email', 'orca@example.test')
+    git('config', 'user.name', 'Kingu Test')
+    git('config', 'user.email', 'kingu@example.test')
     git('config', 'commit.gpgSign', 'false')
     git('config', 'core.hooksPath', '.git/no-hooks')
     writeFileSync(join(repoPath, 'fixture.txt'), 'base\n')
@@ -38,19 +38,19 @@ describe('getUpstreamStatus with a deferred (not-yet-materialized) fork remote',
     git('branch', '-M', 'contributor/fix')
 
     // Simulates a fork-PR review worktree right after create: pushTarget
-    // metadata is persisted, but `pr-contributor-orca` was never added as a
+    // metadata is persisted, but `pr-contributor-kingu` was never added as a
     // remote because materialization is deferred to first use.
     const pushTarget: GitPushTarget = {
-      remoteName: 'pr-contributor-orca',
+      remoteName: 'pr-contributor-kingu',
       branchName: 'contributor/fix',
-      remoteUrl: 'git@github.com:contributor/orca.git'
+      remoteUrl: 'git@github.com:contributor/kingu.git'
     }
 
     const status = await getUpstreamStatus(repoPath, pushTarget)
 
     expect(status).toEqual({
       hasUpstream: false,
-      upstreamName: 'pr-contributor-orca/contributor/fix',
+      upstreamName: 'pr-contributor-kingu/contributor/fix',
       ahead: 0,
       behind: 0,
       hasConfiguredPushTarget: true

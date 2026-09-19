@@ -57,7 +57,7 @@ export function releaseAutomationVisibilityToken(
   renderer
     .executeJavaScript(
       `(function() {
-        var bridge = window.__orcaBrowserAutomationVisibility;
+        var bridge = window.__kinguBrowserAutomationVisibility;
         if (!bridge || typeof bridge.release !== 'function') return false;
         return bridge.release(${JSON.stringify(token)});
       })()`

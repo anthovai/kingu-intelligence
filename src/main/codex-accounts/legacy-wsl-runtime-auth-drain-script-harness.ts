@@ -31,7 +31,7 @@ import type {
 import { _internals } from './legacy-wsl-runtime-auth-drain'
 
 export function runApplyScript(options: DrainApplyInterference = {}): DrainApplyOutcome {
-  const root = mkdtempSync(join(tmpdir(), 'orca-drain-apply-'))
+  const root = mkdtempSync(join(tmpdir(), 'kingu-drain-apply-'))
   const legacyHome = join(root, 'legacy')
   const targetHome = join(root, 'account')
   const binDir = join(root, 'bin')
@@ -76,7 +76,7 @@ if (
   result.status === 0 &&
   fs.existsSync(process.env.SESSION_COMMIT_MARKER) &&
   target.includes('/account/sessions/') &&
-  target.includes('.orca-bridge-')
+  target.includes('.kingu-bridge-')
 ) {
   const parent = spawnSync('/bin/ps', ['-o', 'ppid=', '-p', String(process.ppid)], {
     encoding: 'utf8'
@@ -106,15 +106,15 @@ const fs = require('node:fs')
 const args = process.argv.slice(2)
 if (
   process.env.KILL_DESTINATION_RECOVERY === '1' &&
-  args.at(-1)?.endsWith('.orca-drain-destination')
+  args.at(-1)?.endsWith('.kingu-drain-destination')
 ) {
   process.kill(process.ppid, 'SIGKILL')
   process.exit(1)
 }
 if (
   process.env.CROSS_FILESYSTEM_BRIDGE === '1' &&
-  args.at(-2)?.includes('.orca-drain-session-stage') &&
-  args.at(-1)?.includes('.orca-bridge-')
+  args.at(-2)?.includes('.kingu-drain-session-stage') &&
+  args.at(-1)?.includes('.kingu-bridge-')
 ) {
   process.exit(1)
 }
@@ -182,7 +182,7 @@ process.exit(result.status ?? 1)
           KILL_SESSION_LINK: options.killAfterSessionLink ? '1' : '0',
           KILL_SOURCE: options.killAfterSourceRemoval ? '1' : '0',
           PATH: `${binDir}:${process.env.PATH ?? ''}`,
-          SESSION_COMMIT_MARKER: `${markerPath}.orca-drain-session-commit`,
+          SESSION_COMMIT_MARKER: `${markerPath}.kingu-drain-session-commit`,
           REWRITE_AFTER: options.rewriteAfterHashCall ? String(options.rewriteAfterHashCall) : '',
           REWRITE_AFTER_SESSION_LINK:
             options.replaceTargetAfterSessionLink ||
@@ -198,7 +198,7 @@ process.exit(result.status ?? 1)
             options.rewriteTargetAfterSessionLink || options.replaceTargetAfterSessionLink
               ? targetAuthPath
               : options.rewriteQuarantineAfterSessionLink
-                ? `${markerPath}.orca-drain-live-source`
+                ? `${markerPath}.kingu-drain-live-source`
                 : legacyAuthPath,
           REWRITE_TARGET:
             options.rewriteTarget === 'source-credentials'
@@ -222,7 +222,7 @@ process.exit(result.status ?? 1)
     options.killDuringSessionCommit
   ) {
     if (options.rewriteQuarantineBeforeRecovery) {
-      const quarantinePath = `${markerPath}.orca-drain-live-source`
+      const quarantinePath = `${markerPath}.kingu-drain-live-source`
       chmodSync(quarantinePath, 0o600)
       writeFileSync(quarantinePath, NEWER_AUTH)
     }
@@ -260,16 +260,16 @@ process.exit(result.status ?? 1)
     targetSession: existsSync(join(targetHome, ...RETIRED_SESSION_SEGMENTS))
       ? readFileSync(join(targetHome, ...RETIRED_SESSION_SEGMENTS), 'utf8')
       : null,
-    sourceQuarantineAuth: existsSync(`${markerPath}.orca-drain-live-source`)
-      ? readFileSync(`${markerPath}.orca-drain-live-source`, 'utf8')
+    sourceQuarantineAuth: existsSync(`${markerPath}.kingu-drain-live-source`)
+      ? readFileSync(`${markerPath}.kingu-drain-live-source`, 'utf8')
       : null,
-    sourceRecoveryAuth: existsSync(`${markerPath}.orca-drain-source`)
-      ? readFileSync(`${markerPath}.orca-drain-source`, 'utf8')
+    sourceRecoveryAuth: existsSync(`${markerPath}.kingu-drain-source`)
+      ? readFileSync(`${markerPath}.kingu-drain-source`, 'utf8')
       : null,
-    destinationRecoveryAuth: existsSync(`${markerPath}.orca-drain-destination`)
-      ? readFileSync(`${markerPath}.orca-drain-destination`, 'utf8')
+    destinationRecoveryAuth: existsSync(`${markerPath}.kingu-drain-destination`)
+      ? readFileSync(`${markerPath}.kingu-drain-destination`, 'utf8')
       : null,
-    destinationRecoveryPathExists: existsSync(`${markerPath}.orca-drain-destination-path`),
-    sessionCommitMarkerExists: existsSync(`${markerPath}.orca-drain-session-commit`)
+    destinationRecoveryPathExists: existsSync(`${markerPath}.kingu-drain-destination-path`),
+    sessionCommitMarkerExists: existsSync(`${markerPath}.kingu-drain-session-commit`)
   }
 }

@@ -77,10 +77,10 @@ function grantUnavailable(): void {
 
 beforeEach(() => {
   grantMock.mockReset()
-  fakeHomeDir = mkdtempSync(join(tmpdir(), 'orca-real-home-hooks-home-'))
-  userDataDir = mkdtempSync(join(tmpdir(), 'orca-real-home-hooks-user-data-'))
-  previousUserDataPath = process.env.ORCA_USER_DATA_PATH
-  process.env.ORCA_USER_DATA_PATH = userDataDir
+  fakeHomeDir = mkdtempSync(join(tmpdir(), 'kingu-real-home-hooks-home-'))
+  userDataDir = mkdtempSync(join(tmpdir(), 'kingu-real-home-hooks-user-data-'))
+  previousUserDataPath = process.env.KINGU_USER_DATA_PATH
+  process.env.KINGU_USER_DATA_PATH = userDataDir
   homedirMock.mockReturnValue(fakeHomeDir)
   mkdirSync(join(fakeHomeDir, '.codex'), { recursive: true })
   _internals.setLaneForTesting('pending')
@@ -92,9 +92,9 @@ afterEach(() => {
   rmSync(fakeHomeDir, { recursive: true, force: true })
   rmSync(userDataDir, { recursive: true, force: true })
   if (previousUserDataPath === undefined) {
-    delete process.env.ORCA_USER_DATA_PATH
+    delete process.env.KINGU_USER_DATA_PATH
   } else {
-    process.env.ORCA_USER_DATA_PATH = previousUserDataPath
+    process.env.KINGU_USER_DATA_PATH = previousUserDataPath
   }
   vi.clearAllMocks()
 })
@@ -117,7 +117,7 @@ describe('ensureRealHomeCodexHookState (install)', () => {
     ).resolves.toBe('removed')
   })
 
-  it('creates hooks.json with the Orca entry in every managed event for a fresh home', async () => {
+  it('creates hooks.json with the Kingu entry in every managed event for a fresh home', async () => {
     grantSucceeds()
 
     const lane = await ensureRealHomeCodexHookState({
@@ -179,7 +179,7 @@ describe('ensureRealHomeCodexHookState (install)', () => {
     expect(lane).toBe('unavailable')
     expect(readFileSync(getRealHooksJsonPath(), 'utf-8')).toBe(original)
     expect(grantMock).not.toHaveBeenCalled()
-    expect(existsSync(join(userDataDir, 'codex-real-home-hooks', 'hooks.json.pre-orca'))).toBe(
+    expect(existsSync(join(userDataDir, 'codex-real-home-hooks', 'hooks.json.pre-kingu'))).toBe(
       false
     )
   })
@@ -206,7 +206,7 @@ describe('ensureRealHomeCodexHookState (install)', () => {
     const plan = grantMock.mock.calls[0]![0] as CodexManagedTrustGrantPlan
     expect(plan.managedEntries.find((entry) => entry.eventLabel === 'stop')?.groupIndex).toBe(1)
     expect(
-      readFileSync(join(userDataDir, 'codex-real-home-hooks', 'hooks.json.pre-orca'), 'utf-8')
+      readFileSync(join(userDataDir, 'codex-real-home-hooks', 'hooks.json.pre-kingu'), 'utf-8')
     ).toBe(original)
   })
 
@@ -390,7 +390,7 @@ describe('ensureRealHomeCodexHookState (install)', () => {
     expect(plan.managedEntries.find((entry) => entry.eventLabel === 'stop')?.groupIndex).toBe(1)
   })
 
-  it("keeps later user handler trust positions stable inside Orca's hook group", async () => {
+  it("keeps later user handler trust positions stable inside Kingu's hook group", async () => {
     grantSucceeds()
     await ensureRealHomeCodexHookState({ hooksEnabled: true, userDataPath: userDataDir })
     const installed = readRealHooksJson()
@@ -427,7 +427,7 @@ describe('ensureRealHomeCodexHookState (opt-out sweep)', () => {
     expect(readFileSync(getRealHooksJsonPath(), 'utf-8')).toBe('{ not json')
   })
 
-  it('rebases trust when a user appended hooks after Orca installed', async () => {
+  it('rebases trust when a user appended hooks after Kingu installed', async () => {
     grantSucceeds()
     const before = { type: 'command', command: 'before.sh' }
     writeFileSync(
@@ -483,7 +483,7 @@ describe('ensureRealHomeCodexHookState (opt-out sweep)', () => {
     const operations: string[] = []
     rebaseInternals.setSessionRunner(async (request) => {
       operations.push(request.operation)
-      // A user save (or a second Orca instance) lands while the RPC runs.
+      // A user save (or a second Kingu instance) lands while the RPC runs.
       writeFileSync(getRealHooksJsonPath(), concurrentSave, 'utf-8')
       return {
         outcome: 'inspected',
@@ -505,7 +505,7 @@ describe('ensureRealHomeCodexHookState (opt-out sweep)', () => {
     expect(readFileSync(getRealConfigTomlPath(), 'utf-8')).toBe(userTrustToml)
   })
 
-  it('removes only Orca entries and reports the removed lane', async () => {
+  it('removes only Kingu entries and reports the removed lane', async () => {
     grantSucceeds()
     const userStop = {
       matcher: 'deploy-*',
@@ -546,7 +546,7 @@ describe('ensureRealHomeCodexHookState (opt-out sweep)', () => {
     expect(existsSync(getRealHooksJsonPath())).toBe(false)
   })
 
-  it('removes only hash-proven Orca trust from a mixed hook group', async () => {
+  it('removes only hash-proven Kingu trust from a mixed hook group', async () => {
     const material = getCodexManagedHookInstallMaterial()
     const userCommand = 'my-user-hook.sh'
     writeFileSync(

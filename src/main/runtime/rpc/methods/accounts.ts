@@ -22,7 +22,7 @@ let accountsSubscriptionSeq = 0
 // / `codex login` PTYs that need a desktop browser, so they intentionally
 // remain desktop-only. `accounts.addClaudeFromConfigDir` is the exception: it
 // captures an already-authenticated CLAUDE_CONFIG_DIR (no PTY) so the local
-// `orca account add` CLI can register accounts on a headless host; it is gated
+// `kingu account add` CLI can register accounts on a headless host; it is gated
 // to the local runtime connection, never a mobile device token. See #1438.
 export const ACCOUNT_METHODS = [
   defineMethod({
@@ -80,7 +80,7 @@ export const ACCOUNT_METHODS = [
       // Why: capturing a host filesystem path is local-socket-only; paired
       // mobile and remote-runtime tokens must never read host credential paths.
       if (clientKind !== undefined) {
-        throw new Error('Adding Claude accounts is only available on the Orca host runtime.')
+        throw new Error('Adding Claude accounts is only available on the Kingu host runtime.')
       }
       return runtime.addClaudeAccountFromConfigDir(params.configDir, {
         runtime: params.runtime,
@@ -94,7 +94,7 @@ export const ACCOUNT_METHODS = [
     params: AddCodexFromHomeParams,
     handler: async (params, { runtime, clientKind }) => {
       if (clientKind !== undefined) {
-        throw new Error('Adding Codex accounts is only available on the Orca host runtime.')
+        throw new Error('Adding Codex accounts is only available on the Kingu host runtime.')
       }
       return runtime.addCodexAccountFromHome(params.sourceHome, {
         runtime: params.runtime,

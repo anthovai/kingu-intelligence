@@ -26,11 +26,11 @@ function surface(input: {
   record?: AgentSessionRecord
   holdFails?: boolean
   clearFails?: boolean
-  /** Orca refused to take the message at all. */
+  /** Kingu refused to take the message at all. */
   sendRefusal?: AgentSessionWireRefusal
   /**
    * The dispatch state SETTLEMENT reports. The send itself always answers `pending`, because that
-   * is what the real host does: it resolves as soon as Orca owns the message, before the provider
+   * is what the real host does: it resolves as soon as Kingu owns the message, before the provider
    * has answered. Defaults to the delivered case.
    */
   settledDispatch?: 'pending' | 'accepted' | 'rejected' | 'unknown'
@@ -113,7 +113,7 @@ function surface(input: {
           if (input.sendRefusal) {
             return { ok: false, refusal: input.sendRefusal }
           }
-          // What the real send answers: Orca owns the message, the provider has not replied yet.
+          // What the real send answers: Kingu owns the message, the provider has not replied yet.
           return {
             ok: true,
             replayed: false,
@@ -373,7 +373,7 @@ describe('the restart-resume surface', () => {
 })
 
 describe('reporting what the continuation actually did', () => {
-  // THE REGRESSION. A send resolves as soon as Orca owns the message, while its dispatch is still
+  // THE REGRESSION. A send resolves as soon as Kingu owns the message, while its dispatch is still
   // `pending` — the ordinary successful path, not an edge case. Judging the dispatch on the send
   // result therefore calls every delivered continuation `pending` and never writes the note. This
   // fixture answers `pending` from send and `accepted` from settlement, exactly as the host does,
@@ -405,7 +405,7 @@ describe('reporting what the continuation actually did', () => {
     expect(noted).toEqual([])
   })
 
-  it('reports a send Orca could not hand off as refused and writes no note', async () => {
+  it('reports a send Kingu could not hand off as refused and writes no note', async () => {
     const { restartResume, noted } = surface({
       sendRefusal: { code: 'agent_session_conflict', message: 'the runtime moved on' }
     })

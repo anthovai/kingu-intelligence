@@ -19,7 +19,7 @@ afterEach(async () => {
 })
 
 async function openStore(): Promise<AgentSessionRecordStore> {
-  const root = await mkdtemp(join(tmpdir(), 'orca-recovery-resolution-'))
+  const root = await mkdtemp(join(tmpdir(), 'kingu-recovery-resolution-'))
   roots.push(root)
   return AgentSessionRecordStore.open({ directory: root, hostId: 'local' })
 }
@@ -289,7 +289,7 @@ describe('structured session recovery resolution', () => {
     )
 
     // Ownership was never settled, so the process on the other side of the conflict is not
-    // Orca's to kill; only the user can decide which claimant wins.
+    // Kingu's to kill; only the user can decide which claimant wins.
     expect(stopOwnerProcess).not.toHaveBeenCalled()
     expect(result).toBe('unresolved')
     expect(store.getRecord(SESSION)?.lease).toMatchObject({

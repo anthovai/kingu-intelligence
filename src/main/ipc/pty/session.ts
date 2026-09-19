@@ -1,5 +1,5 @@
 import type { BrowserWindow } from 'electron'
-import type { OrcaRuntimeService } from '../../runtime/orca-runtime'
+import type { KinguRuntimeService } from '../../runtime/kingu-runtime'
 import type { Store } from '../../persistence'
 import type { GlobalSettings } from '../../../shared/global-settings-types'
 import type { IPtyProvider } from '../../providers/types'
@@ -59,7 +59,7 @@ export type PtyIpcSessionOptions = {
 
 export type PtyIpcSession = {
   mainWindow: BrowserWindow
-  runtime?: OrcaRuntimeService
+  runtime?: KinguRuntimeService
   store?: Store
   getSettings?: () => GlobalSettings
   options?: PtyIpcSessionOptions
@@ -183,7 +183,7 @@ const unsetSessionFn = (): never => {
 
 export function createPtyIpcSession(args: {
   mainWindow: BrowserWindow
-  runtime?: OrcaRuntimeService
+  runtime?: KinguRuntimeService
   store?: Store
   getSettings?: () => GlobalSettings
   options?: PtyIpcSessionOptions

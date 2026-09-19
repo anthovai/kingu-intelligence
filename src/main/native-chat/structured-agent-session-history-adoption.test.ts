@@ -195,7 +195,7 @@ describe('resolveStructuredAgentSessionAdoption', () => {
       resolveStructuredAgentSessionAdoption({
         agent: 'codex',
         providerSessionId: 'thread-1',
-        candidateAccountHomes: ['/home/dev/.orca-codex', '/home/dev/.codex', '/never/probed'],
+        candidateAccountHomes: ['/home/dev/.kingu-codex', '/home/dev/.codex', '/never/probed'],
         resolveTranscript
       })
     ).resolves.toEqual({

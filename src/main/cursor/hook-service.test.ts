@@ -78,10 +78,10 @@ function runRegisteredCursorHook(
     timeout: HOOK_RUN_TIMEOUT_MS,
     env: {
       ...process.env,
-      ORCA_AGENT_HOOK_ENDPOINT: '',
-      ORCA_AGENT_HOOK_PORT: '',
-      ORCA_AGENT_HOOK_TOKEN: '',
-      ORCA_PANE_KEY: '',
+      KINGU_AGENT_HOOK_ENDPOINT: '',
+      KINGU_AGENT_HOOK_PORT: '',
+      KINGU_AGENT_HOOK_TOKEN: '',
+      KINGU_PANE_KEY: '',
       ...extraEnv
     }
   })
@@ -93,7 +93,7 @@ describe('CursorHookService', () => {
   let homeDir: string
 
   beforeEach(() => {
-    homeDir = mkdtempSync(join(tmpdir(), 'orca-cursor-home-'))
+    homeDir = mkdtempSync(join(tmpdir(), 'kingu-cursor-home-'))
     homedirMock.mockReturnValue(homeDir)
   })
 
@@ -121,13 +121,13 @@ describe('CursorHookService', () => {
         process.platform === 'win32' ? WINDOWS_POWERSHELL_LAUNCHER : /cursor-hook/
       )
       if (process.platform !== 'win32') {
-        expect(definition?.command).toContain(join(homeDir, '.orca'))
+        expect(definition?.command).toContain(join(homeDir, '.kingu'))
       }
       expect(definition?.hooks).toBeUndefined()
     }
 
     const script = readFileSync(
-      join(homeDir, '.orca', 'agent-hooks', CURSOR_SCRIPT_FILE_NAME),
+      join(homeDir, '.kingu', 'agent-hooks', CURSOR_SCRIPT_FILE_NAME),
       'utf8'
     )
     expect(script).toContain('/hook/cursor')
@@ -151,7 +151,7 @@ describe('CursorHookService', () => {
   it.skipIf(process.platform !== 'win32')(
     'wraps the managed hook command to survive spaces in the profile path (#6078)',
     () => {
-      const spaceHome = join(tmpdir(), 'orca cursor home with spaces')
+      const spaceHome = join(tmpdir(), 'kingu cursor home with spaces')
       mkdirSync(spaceHome, { recursive: true })
       homedirMock.mockReturnValue(spaceHome)
       try {
@@ -182,10 +182,10 @@ describe('CursorHookService', () => {
           hooks: {
             beforeSubmitPrompt: [
               { command: '/usr/local/bin/user-hook' },
-              { command: '/old/path/.orca/agent-hooks/cursor-hook.sh' }
+              { command: '/old/path/.kingu/agent-hooks/cursor-hook.sh' }
             ],
             retiredEvent: [
-              { command: '/old/path/.orca/agent-hooks/cursor-hook.sh' },
+              { command: '/old/path/.kingu/agent-hooks/cursor-hook.sh' },
               { command: '/usr/local/bin/retired-user-hook' }
             ]
           }
@@ -246,7 +246,7 @@ describe('CursorHookService', () => {
     () => {
       expect(new CursorHookService().install().state).toBe('installed')
       const config = readInstalledCursorHooks(homeDir)
-      unlinkSync(join(homeDir, '.orca', 'agent-hooks', CURSOR_SCRIPT_FILE_NAME))
+      unlinkSync(join(homeDir, '.kingu', 'agent-hooks', CURSOR_SCRIPT_FILE_NAME))
 
       for (const eventName of CURSOR_EVENTS) {
         const command = requireRegisteredCommand(config, eventName)
@@ -273,9 +273,9 @@ describe('CursorHookService', () => {
           command,
           JSON.stringify({ hook_event_name: eventName, tool_name: 'Write' }),
           {
-            ORCA_AGENT_HOOK_PORT: '59999',
-            ORCA_AGENT_HOOK_TOKEN: 'token',
-            ORCA_PANE_KEY: 'tab:leaf'
+            KINGU_AGENT_HOOK_PORT: '59999',
+            KINGU_AGENT_HOOK_TOKEN: 'token',
+            KINGU_PANE_KEY: 'tab:leaf'
           }
         )
         expect(result.status, `${eventName} dead-listener exit`).toBe(0)
@@ -306,10 +306,10 @@ describe('CursorHookService', () => {
             timeout: HOOK_RUN_TIMEOUT_MS,
             env: {
               ...process.env,
-              ORCA_AGENT_HOOK_ENDPOINT: '',
-              ORCA_AGENT_HOOK_PORT: '',
-              ORCA_AGENT_HOOK_TOKEN: '',
-              ORCA_PANE_KEY: '',
+              KINGU_AGENT_HOOK_ENDPOINT: '',
+              KINGU_AGENT_HOOK_PORT: '',
+              KINGU_AGENT_HOOK_TOKEN: '',
+              KINGU_PANE_KEY: '',
               USERPROFILE: homeDir
             }
           })

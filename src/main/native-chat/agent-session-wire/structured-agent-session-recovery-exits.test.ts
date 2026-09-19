@@ -97,7 +97,7 @@ async function reopenStore(): Promise<void> {
 }
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'orca-recovery-exits-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-recovery-exits-'))
   resetHostTestOperationIds()
   acquire = vi.fn(async ({ fence }) => ({
     process: {

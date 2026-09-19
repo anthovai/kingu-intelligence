@@ -86,7 +86,7 @@ describe('buildDispatchPreamble', () => {
     const result = buildDispatchPreamble(baseParams({ dispatchCapability: 'dcap_secret' }))
     const commandLines = result
       .split('\n')
-      .filter((line) => line.trimStart().startsWith('orca orchestration'))
+      .filter((line) => line.trimStart().startsWith('kingu orchestration'))
 
     expect(commandLines).toHaveLength(5)
     expect(result).not.toContain('\\\n')
@@ -244,37 +244,37 @@ describe('buildDispatchPreamble', () => {
     expect(result).toContain('refactor the auth module')
   })
 
-  it('uses orca CLI by default when devMode is not set', () => {
+  it('uses kingu CLI by default when devMode is not set', () => {
     const result = buildDispatchPreamble(baseParams())
-    expect(result).toContain('orca orchestration send')
-    expect(result).toContain('orca orchestration check')
-    expect(result).toContain('orca orchestration ask')
+    expect(result).toContain('kingu orchestration send')
+    expect(result).toContain('kingu orchestration check')
+    expect(result).toContain('kingu orchestration ask')
   })
 
-  it('uses orca-dev CLI when devMode is true', () => {
-    const result = buildDispatchPreamble(baseParams({ devMode: true, cliCommand: 'orca-ide' }))
-    expect(result).toContain('orca-dev orchestration send')
-    expect(result).toContain('orca-dev orchestration check')
-    expect(result).toContain('orca-dev orchestration ask')
-    const fragments = result.split('orca-dev')
+  it('uses kingu-dev CLI when devMode is true', () => {
+    const result = buildDispatchPreamble(baseParams({ devMode: true, cliCommand: 'kingu-ide' }))
+    expect(result).toContain('kingu-dev orchestration send')
+    expect(result).toContain('kingu-dev orchestration check')
+    expect(result).toContain('kingu-dev orchestration ask')
+    const fragments = result.split('kingu-dev')
     for (const fragment of fragments) {
-      expect(fragment).not.toMatch(/orca orchestration/)
+      expect(fragment).not.toMatch(/kingu orchestration/)
     }
   })
 
-  it('uses orca CLI when devMode is false', () => {
+  it('uses kingu CLI when devMode is false', () => {
     const result = buildDispatchPreamble(baseParams({ devMode: false }))
-    expect(result).toContain('orca orchestration send')
-    expect(result).toContain('orca orchestration check')
+    expect(result).toContain('kingu orchestration send')
+    expect(result).toContain('kingu orchestration check')
   })
 
-  it('uses the exact orca-ide command for packaged WSL workers', () => {
-    const result = buildDispatchPreamble(baseParams({ cliCommand: 'orca-ide' }))
+  it('uses the exact kingu-ide command for packaged WSL workers', () => {
+    const result = buildDispatchPreamble(baseParams({ cliCommand: 'kingu-ide' }))
 
-    expect(result).toContain('orca-ide orchestration send')
-    expect(result).toContain('orca-ide orchestration check')
-    expect(result).toContain('orca-ide orchestration ask')
-    expect(result).not.toMatch(/(^|\s)orca orchestration/m)
+    expect(result).toContain('kingu-ide orchestration send')
+    expect(result).toContain('kingu-ide orchestration check')
+    expect(result).toContain('kingu-ide orchestration ask')
+    expect(result).not.toMatch(/(^|\s)kingu orchestration/m)
   })
 
   it('appends a BASE DRIFT section when baseDrift.behind > 0', () => {

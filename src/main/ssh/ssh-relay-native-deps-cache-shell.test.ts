@@ -51,7 +51,7 @@ describe.runIf(process.platform !== 'win32').each(SHELLS)(
   (shell) => {
     let home: string
 
-    const relayDir = (version: string): string => join(home, '.orca-remote', `relay-${version}`)
+    const relayDir = (version: string): string => join(home, '.kingu-remote', `relay-${version}`)
 
     function sh(command: string): string {
       return execFileSync(shell, ['-c', command], { encoding: 'utf-8' })
@@ -88,8 +88,8 @@ describe.runIf(process.platform !== 'win32').each(SHELLS)(
     }
 
     beforeEach(() => {
-      home = mkdtempSync(join(tmpdir(), 'orca-relay-cache-'))
-      mkdirSync(join(home, '.orca-remote'), { recursive: true })
+      home = mkdtempSync(join(tmpdir(), 'kingu-relay-cache-'))
+      mkdirSync(join(home, '.kingu-remote'), { recursive: true })
     })
 
     afterEach(() => {
@@ -220,7 +220,7 @@ describe.runIf(process.platform !== 'win32').each(SHELLS)(
       ])
     })
 
-    it('reports a symlink no Orca version wrote, so GC can refuse the pass', () => {
+    it('reports a symlink no Kingu version wrote, so GC can refuse the pass', () => {
       makePrivateInstall('0.1.0+aaa')
       promote('0.1.0+aaa')
       mkdirSync(relayDir('0.1.0+bbb'), { recursive: true })

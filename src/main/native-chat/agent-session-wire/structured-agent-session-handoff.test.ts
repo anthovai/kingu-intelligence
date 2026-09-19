@@ -205,7 +205,7 @@ function request(operation: string): AgentSessionHandoffRequest {
 }
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'orca-handoff-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-handoff-'))
   operations = 0
   statuses = []
   acquireNativeCalls = 0

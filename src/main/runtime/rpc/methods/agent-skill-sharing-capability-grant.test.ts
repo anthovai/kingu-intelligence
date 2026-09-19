@@ -1,14 +1,14 @@
 import { describe, expect, it, vi } from 'vitest'
 import { getDefaultSettings } from '../../../../shared/constants'
-import { OrcaRuntimeService } from '../../orca-runtime'
+import { KinguRuntimeService } from '../../kingu-runtime'
 import { SettingsUpdate } from './client-settings-schemas'
 
 vi.mock('electron', () => ({
-  app: { getPath: () => '/orca-state', isPackaged: true }
+  app: { getPath: () => '/kingu-state', isPackaged: true }
 }))
 
-function runtimeWithSharing(agentSkillSharingEnabled: unknown): OrcaRuntimeService {
-  return new OrcaRuntimeService({
+function runtimeWithSharing(agentSkillSharingEnabled: unknown): KinguRuntimeService {
+  return new KinguRuntimeService({
     getSettings: () => ({ ...getDefaultSettings('/tmp'), agentSkillSharingEnabled })
   } as never)
 }

@@ -278,7 +278,7 @@ describe('registerWorktreeHandlers', () => {
 
   it('recovers forced Windows long-path worktree removal through local deletion and prune', async () => {
     setPlatform('win32')
-    const parentDir = await mkdtemp(join(tmpdir(), 'orca-ipc-long-path-'))
+    const parentDir = await mkdtemp(join(tmpdir(), 'kingu-ipc-long-path-'))
     const repoPath = join(parentDir, 'repo')
     const worktreePath = join(parentDir, 'feature-wt')
     await mkdir(worktreePath, { recursive: true })
@@ -437,7 +437,7 @@ describe('registerWorktreeHandlers', () => {
   )
 
   it('cleans a prunable Git-file row before archive or checkout teardown', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'orca-prunable-ipc-'))
+    const root = await mkdtemp(join(tmpdir(), 'kingu-prunable-ipc-'))
     const markerPath = join(root, '.git')
     await writeFile(markerPath, 'gitdir: /preserved/admin\n')
     const worktreeId = `repo-1::${markerPath}`

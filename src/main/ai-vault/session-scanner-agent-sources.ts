@@ -103,10 +103,10 @@ export const AI_VAULT_AGENT_SOURCES: AiVaultAgentSourceTable = {
       uniqueCodexSessionsDirs([
         options.codexSessionsDir ?? CODEX_SESSIONS_DIR,
         ...wslHomeDirs.map((homeDir) => join(homeDir, '.codex', 'sessions')),
-        // Why: Orca-launched WSL Codex sessions use an Orca-owned CODEX_HOME,
+        // Why: Kingu-launched WSL Codex sessions use an Kingu-owned CODEX_HOME,
         // not the user's default ~/.codex history root.
         ...wslHomeDirs.map((homeDir) =>
-          join(homeDir, '.local', 'share', 'orca', 'codex-runtime-home', 'home', 'sessions')
+          join(homeDir, '.local', 'share', 'kingu', 'codex-runtime-home', 'home', 'sessions')
         ),
         ...(options.additionalCodexSessionsDirs ?? [])
       ]),

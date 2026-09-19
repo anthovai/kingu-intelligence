@@ -12,9 +12,9 @@ vi.mock('fs', () => ({
 
 vi.mock('./relay-protocol', () => ({
   RELAY_VERSION: '0.1.0',
-  RELAY_REMOTE_DIR: '.orca-remote',
+  RELAY_REMOTE_DIR: '.kingu-remote',
   parseUnameToRelayPlatform: vi.fn().mockReturnValue('linux-x64'),
-  RELAY_SENTINEL: 'ORCA-RELAY v0.1.0 READY\n',
+  RELAY_SENTINEL: 'KINGU-RELAY v0.1.0 READY\n',
   RELAY_SENTINEL_TIMEOUT_MS: 10_000
 }))
 
@@ -42,7 +42,7 @@ vi.mock('./ssh-relay-install-marker', async (importOriginal) => ({
 
 vi.mock('./ssh-relay-versioned-install', () => ({
   readLocalFullVersion: vi.fn().mockReturnValue('0.1.0+testhash'),
-  computeRemoteRelayDir: (home: string, v: string) => `${home}/.orca-remote/relay-${v}`,
+  computeRemoteRelayDir: (home: string, v: string) => `${home}/.kingu-remote/relay-${v}`,
   isRelayAlreadyInstalled: vi.fn().mockResolvedValue(false),
   finalizeInstall: vi.fn().mockResolvedValue(undefined),
   abandonInstall: vi.fn().mockResolvedValue(undefined),
@@ -149,9 +149,9 @@ describe('relay pty fd-leak patch on the install path', () => {
       ...makeStagedFirstInstallExecPrefix(),
       '', // npm install native deps
       '', // chmod prebuilds
-      'ORCA-NPTY-PROBE-OK\n',
+      'KINGU-NPTY-PROBE-OK\n',
       '', // rm probe stderr
-      `ORCA-NPTY-CLOEXEC:${status}\n`,
+      `KINGU-NPTY-CLOEXEC:${status}\n`,
       '', // promote into the shared native-deps cache, if this deploy still gets that far
       '', // clean stage root
       'DEAD',
@@ -170,7 +170,7 @@ describe('relay pty fd-leak patch on the install path', () => {
   })
 
   it('patches the private tree before it is published to the shared native-deps cache', async () => {
-    // Promotion moves `node_modules` into `~/.orca-remote/native/<key>` and leaves a symlink
+    // Promotion moves `node_modules` into `~/.kingu-remote/native/<key>` and leaves a symlink
     // behind, and a published entry is immutable by contract. Patching afterwards would rename,
     // rebuild and roll back inside a tree every other relay on the host links -- and the
     // `.deps-complete` written by promotion would have published an unpatched tree that every
@@ -250,7 +250,7 @@ describe('relay pty fd-leak patch on the install path', () => {
     feed(
       firstInstall(RELAY_NATIVE_CACHE_LINKED, [
         '', // chmod prebuilds, through the symlink
-        'ORCA-NPTY-PROBE-OK\n',
+        'KINGU-NPTY-PROBE-OK\n',
         '', // rm probe stderr
         '', // clean stage root
         'DEAD',
@@ -319,7 +319,7 @@ describe('relay pty fd-leak patch on the install path', () => {
     const conn = makeMockConnection(sftpCapture)
     const responses = makeExecResponses({ npmInstall: 'ok', probe: 'ok' })
     const patchSlot = responses.findIndex(
-      (response) => typeof response === 'string' && response.includes('ORCA-NPTY-CLOEXEC:')
+      (response) => typeof response === 'string' && response.includes('KINGU-NPTY-CLOEXEC:')
     )
     expect(patchSlot).toBeGreaterThan(-1)
     responses[patchSlot] = { reject: 'no such file or directory' }

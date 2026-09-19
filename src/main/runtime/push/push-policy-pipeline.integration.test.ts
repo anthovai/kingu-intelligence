@@ -25,7 +25,7 @@ afterEach(() => {
 })
 
 async function pipeline() {
-  const path = mkdtempSync(join(tmpdir(), 'orca-push-policy-'))
+  const path = mkdtempSync(join(tmpdir(), 'kingu-push-policy-'))
   paths.push(path)
   const registry = new DeviceRegistry(path)
   const device = registry.addDevice('policy-phone', 'mobile')
@@ -46,7 +46,7 @@ async function pipeline() {
       getPushUnregisterOutbox: () => new PushUnregisterOutbox(path),
       setOnPushUnregisterQueued: () => {}
     } as never,
-    gatewayUrl: 'https://push.onorca.dev',
+    gatewayUrl: 'https://push.onkingu.dev',
     client: client as never
   })!
   services.push(service)

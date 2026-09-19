@@ -49,7 +49,7 @@ function makeRpcChild() {
 
 /** A CLI installed under one version manager entry, with its sibling node. */
 function makeVersionManagerCli(cliName = 'codex'): { bin: string; cli: string } {
-  const root = mkdtempSync(join(tmpdir(), 'orca-fetch-pair-'))
+  const root = mkdtempSync(join(tmpdir(), 'kingu-fetch-pair-'))
   const bin = join(root, '.nvm', 'versions', 'node', 'v20.11.0', 'bin')
   mkdirSync(bin, { recursive: true })
   for (const name of ['node', 'node.exe', cliName]) {
@@ -80,7 +80,7 @@ describe('codex rate-limit spawn runtime pairing', () => {
 
     const spawnEnv = childSpawnMock.mock.calls[0]?.[2]?.env as NodeJS.ProcessEnv
     // Guards the argument choice: pairing spawnCmd (cmd.exe on win32) rather than
-    // the resolved CLI silently reverts the ABI fix (stablyai/orca#10932).
+    // the resolved CLI silently reverts the ABI fix (anthovai/kingu-intelligence#10932).
     expect(spawnEnv.PATH?.split(delimiter)[0]).toBe(bin)
 
     rpcChild.emit('close')

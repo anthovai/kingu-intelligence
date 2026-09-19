@@ -5,7 +5,7 @@ import { userInfo } from 'node:os'
 import { basename, dirname, join } from 'node:path'
 
 const ACTIVE_CLAUDE_SERVICE = 'Claude Code-credentials'
-const ORCA_CLAUDE_SERVICE = 'Orca Claude Code Managed Credentials'
+const KINGU_CLAUDE_SERVICE = 'Kingu Claude Code Managed Credentials'
 const KEYCHAIN_COMMAND_TIMEOUT_MS = 3_000
 
 type SecurityCommandResult = {
@@ -85,18 +85,18 @@ export async function deleteActiveClaudeKeychainCredentialsStrict(
 export async function readManagedClaudeKeychainCredentials(
   accountId: string
 ): Promise<string | null> {
-  return readKeychainPassword(ORCA_CLAUDE_SERVICE, accountId)
+  return readKeychainPassword(KINGU_CLAUDE_SERVICE, accountId)
 }
 
 export async function writeManagedClaudeKeychainCredentials(
   accountId: string,
   contents: string
 ): Promise<void> {
-  await writeKeychainPassword(ORCA_CLAUDE_SERVICE, accountId, contents)
+  await writeKeychainPassword(KINGU_CLAUDE_SERVICE, accountId, contents)
 }
 
 export async function deleteManagedClaudeKeychainCredentials(accountId: string): Promise<void> {
-  await deleteKeychainPassword(ORCA_CLAUDE_SERVICE, accountId)
+  await deleteKeychainPassword(KINGU_CLAUDE_SERVICE, accountId)
 }
 
 const KEYCHAIN_ACCOUNT_PATTERN = /^[a-zA-Z0-9._-]+$/

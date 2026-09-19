@@ -73,7 +73,7 @@ afterEach(async () => {
 
 describe('structured session provider restore', () => {
   it('restores a durable Claude session tab with its recorded provider', async () => {
-    root = await mkdtemp(join(tmpdir(), 'orca-provider-restore-'))
+    root = await mkdtemp(join(tmpdir(), 'kingu-provider-restore-'))
     resetHostTestOperationIds()
     const storeDirectory = join(root, 'store')
     const store = await AgentSessionRecordStore.open({ directory: storeDirectory, hostId: 'local' })

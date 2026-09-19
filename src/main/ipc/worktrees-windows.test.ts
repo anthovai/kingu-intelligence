@@ -383,7 +383,7 @@ describe('registerWorktreeHandlers – Windows path handling', () => {
   })
 
   it('leaves a user-typed name reusable even when the same name is retired', async () => {
-    // Why: the creature pool contains ordinary words ("orca", "runner", "molly"). Silently
+    // Why: the creature pool contains ordinary words ("kingu", "runner", "molly"). Silently
     // renaming a deliberate `nautilus` to `nautilus-2` — and burning it — is the wrong trade.
     store.getRetiredWorktreeNameRegistry.mockReturnValue({ exhaustedTiers: 0, names: ['nautilus'] })
     computeWorktreePathMock.mockReturnValue('C:\\workspaces\\nautilus')
@@ -470,11 +470,11 @@ describe('registerWorktreeHandlers – Windows path handling', () => {
     getEffectiveHooksFromConfigMock.mockReturnValue({ scripts: { setup: 'pnpm install' } })
     shouldRunSetupForCreateMock.mockReturnValue(true)
     createSetupRunnerScriptMock.mockReturnValue({
-      runnerScriptPath: 'C:\\repo\\.git\\orca\\setup-runner.sh',
+      runnerScriptPath: 'C:\\repo\\.git\\kingu\\setup-runner.sh',
       shell: setupShell,
       envVars: {
-        ORCA_ROOT_PATH: 'C:\\repo',
-        ORCA_WORKTREE_PATH: 'C:\\workspaces\\improve-dashboard'
+        KINGU_ROOT_PATH: 'C:\\repo',
+        KINGU_WORKTREE_PATH: 'C:\\workspaces\\improve-dashboard'
       }
     })
 
@@ -497,7 +497,7 @@ describe('registerWorktreeHandlers – Windows path handling', () => {
     )
     expect(result).toMatchObject({
       setup: {
-        runnerScriptPath: 'C:\\repo\\.git\\orca\\setup-runner.sh',
+        runnerScriptPath: 'C:\\repo\\.git\\kingu\\setup-runner.sh',
         shell: setupShell
       }
     })
@@ -610,7 +610,7 @@ describe('registerWorktreeHandlers – Windows path handling', () => {
     // resolved to Git Bash, so same-session bash issue templates broke.
     resolveSetupRunnerShellMock.mockReturnValue({ family: 'posix' })
     createIssueCommandRunnerScriptMock.mockReturnValue({
-      runnerScriptPath: 'C:\\repo\\.git\\orca\\issue-command-runner.sh',
+      runnerScriptPath: 'C:\\repo\\.git\\kingu\\issue-command-runner.sh',
       envVars: {},
       shell: { family: 'posix' }
     })

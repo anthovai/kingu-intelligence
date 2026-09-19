@@ -453,7 +453,7 @@ describe.skipIf(isWindows)('legacy WSL auth drain apply script', () => {
     // still matches after another writer renames a different file over the destination path.
     // Only the `-ef` inode-identity assertions can see that; hash checks cannot. Without them
     // the script proceeds and retires the source, leaving the user with bytes nobody validated.
-    const outcome = runApplyScript({ replaceTargetOnHashOf: '.orca-drain-destination-' })
+    const outcome = runApplyScript({ replaceTargetOnHashOf: '.kingu-drain-destination-' })
 
     expect(outcome.status).not.toBe(0)
     // The source is the only thing that must survive an unproven destination.

@@ -226,7 +226,7 @@ async function withTemporaryLocalFile<T>(
   contents: Buffer,
   send: (localPath: string) => Promise<T>
 ): Promise<T> {
-  const directory = await mkdtemp(join(tmpdir(), 'orca-win-upload-'))
+  const directory = await mkdtemp(join(tmpdir(), 'kingu-win-upload-'))
   const localPath = join(directory, 'payload.bin')
   try {
     // 0600: the payload can be repository content, and tmpdir is shared on every platform.

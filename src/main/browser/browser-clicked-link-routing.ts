@@ -14,7 +14,7 @@ type BrowserClickedLinkRoutingState = {
 }
 
 type BrowserClickedLinkRoutingGlobal = typeof globalThis & {
-  __orcaBrowserClickedLinkRouting?: BrowserClickedLinkRoutingState
+  __kinguBrowserClickedLinkRouting?: BrowserClickedLinkRoutingState
 }
 
 /**
@@ -28,7 +28,7 @@ export function installBrowserClickedLinkRouting(
   allowUntrustedEvents = false
 ): void {
   const routingGlobal = globalThis as BrowserClickedLinkRoutingGlobal
-  const existing = routingGlobal.__orcaBrowserClickedLinkRouting
+  const existing = routingGlobal.__kinguBrowserClickedLinkRouting
   if (existing) {
     existing.foregroundFrameName = foregroundFrameName
     existing.backgroundFrameName = backgroundFrameName
@@ -76,7 +76,7 @@ export function installBrowserClickedLinkRouting(
       return
     }
     // Shift alone is browser-native new-window intent; keep OAuth and other
-    // opener-dependent window flows in Orca's guarded popup window.
+    // opener-dependent window flows in Kingu's guarded popup window.
     if (event.shiftKey && !modifierClick && !middleClick) {
       return
     }
@@ -116,7 +116,7 @@ export function installBrowserClickedLinkRouting(
       openInBackground ? state.backgroundFrameName : state.foregroundFrameName
     )
   }
-  routingGlobal.__orcaBrowserClickedLinkRouting = state
+  routingGlobal.__kinguBrowserClickedLinkRouting = state
 
   // Why: page click handlers must get the first chance to cancel or rewrite a
   // link; capture-phase interception breaks SPA routing and analytics handlers.

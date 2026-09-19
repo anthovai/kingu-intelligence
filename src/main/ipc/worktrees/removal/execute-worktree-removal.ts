@@ -188,7 +188,7 @@ export async function executeWorktreeRemoval(
   // No connectionId override here, deliberately: this path derives its host from the repo row
   // (`getRepoExecutionHostId` in register-worktree-removal-handlers) and resolves its provider, git
   // options, listing and dispatch from `repo.connectionId` alone. Passing a different owner to the
-  // hook reader would read one host's orca.yaml while running the other host's git. The runtime's
+  // hook reader would read one host's kingu.yaml while running the other host's git. The runtime's
   // SSH path is the one that carries a route owner separate from the row, and it passes it.
   const hooks = await getArchiveHooksForRemoval(repo)
 

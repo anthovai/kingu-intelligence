@@ -9,13 +9,13 @@ import { mimoCodeHookService } from '../../../mimo/hook-service'
 import { agentHookServer } from '../../../agent-hooks/server'
 import { wslHookRelayManager } from '../../../agent-hooks/wsl-hook-relay-manager'
 import { piTitlebarExtensionService } from '../../../pi/titlebar-extension-service'
-import { prependOrcaCliDirToChildPath } from '../../../cli/orca-cli-child-path'
+import { prependKinguCliDirToChildPath } from '../../../cli/kingu-cli-child-path'
 import { stripLegacyTerminalShimEnv } from '../../../pty/legacy-terminal-shim-dir'
 import { mergePersistedWindowsPath } from '../../../pty/windows-environment-path'
 import { resolveCodexShellLaunchPreflightCommand } from '../../../pty/codex-shell-launch-preflight'
 import { buildConfiguredProxyEnv } from '../../../../shared/network-proxy'
 import type { BuildPtyHostEnvOptions } from './types'
-import { stripInheritedOrcaCodexHomeOverride } from './codex-home'
+import { stripInheritedKinguCodexHomeOverride } from './codex-home'
 import {
   clearPiAgentShadowEnv,
   exposePiManagedExtensionEnv,
@@ -74,40 +74,40 @@ export function buildPtyHostEnv(
       : resolveScopedPiAgentSourceDir(baseEnv, 'prime-agent')
 
   if (opts.agentStatusHooksEnabled) {
-    // Why: OPENCODE_CONFIG_DIR is a single path, not a colon-list; mirror the user's value into an overlay so their plugins and Orca's status plugin coexist. See docs/opencode-config-dir-collision.md.
+    // Why: OPENCODE_CONFIG_DIR is a single path, not a colon-list; mirror the user's value into an overlay so their plugins and Kingu's status plugin coexist. See docs/opencode-config-dir-collision.md.
     Object.assign(baseEnv, openCodeHookService.buildPtyEnv(id, preexistingOpenCodeConfigDir))
     if (baseEnv.OPENCODE_CONFIG_DIR) {
       // Why: ~/.zshrc can re-export the user's default after spawn; shell-ready wrappers restore this PTY-scoped value.
-      baseEnv.ORCA_OPENCODE_CONFIG_DIR = baseEnv.OPENCODE_CONFIG_DIR
+      baseEnv.KINGU_OPENCODE_CONFIG_DIR = baseEnv.OPENCODE_CONFIG_DIR
       if (preexistingOpenCodeConfigDir) {
-        // Why: nested Orca terminals inherit the overlay as OPENCODE_CONFIG_DIR; keep the real source so overlays don't mirror overlays.
-        baseEnv.ORCA_OPENCODE_SOURCE_CONFIG_DIR = preexistingOpenCodeConfigDir
+        // Why: nested Kingu terminals inherit the overlay as OPENCODE_CONFIG_DIR; keep the real source so overlays don't mirror overlays.
+        baseEnv.KINGU_OPENCODE_SOURCE_CONFIG_DIR = preexistingOpenCodeConfigDir
       } else {
-        delete baseEnv.ORCA_OPENCODE_SOURCE_CONFIG_DIR
+        delete baseEnv.KINGU_OPENCODE_SOURCE_CONFIG_DIR
       }
     }
     if (isMimoLaunchCommand(launchCommandHint)) {
       const preexistingMimocodeHome = resolveMimocodeSourceHome(baseEnv)
       Object.assign(baseEnv, mimoCodeHookService.buildPtyEnv(id, preexistingMimocodeHome))
       if (baseEnv.MIMOCODE_HOME) {
-        baseEnv.ORCA_MIMOCODE_HOME = baseEnv.MIMOCODE_HOME
+        baseEnv.KINGU_MIMOCODE_HOME = baseEnv.MIMOCODE_HOME
         if (preexistingMimocodeHome) {
-          baseEnv.ORCA_MIMOCODE_SOURCE_HOME = preexistingMimocodeHome
+          baseEnv.KINGU_MIMOCODE_SOURCE_HOME = preexistingMimocodeHome
         } else {
-          delete baseEnv.ORCA_MIMOCODE_SOURCE_HOME
+          delete baseEnv.KINGU_MIMOCODE_SOURCE_HOME
         }
       }
     }
   } else {
     restoreOrStripOverlayEnv(baseEnv, {
       primary: 'OPENCODE_CONFIG_DIR',
-      overlay: 'ORCA_OPENCODE_CONFIG_DIR',
-      source: 'ORCA_OPENCODE_SOURCE_CONFIG_DIR'
+      overlay: 'KINGU_OPENCODE_CONFIG_DIR',
+      source: 'KINGU_OPENCODE_SOURCE_CONFIG_DIR'
     })
     restoreOrStripOverlayEnv(baseEnv, {
       primary: 'MIMOCODE_HOME',
-      overlay: 'ORCA_MIMOCODE_HOME',
-      source: 'ORCA_MIMOCODE_SOURCE_HOME'
+      overlay: 'KINGU_MIMOCODE_HOME',
+      source: 'KINGU_MIMOCODE_SOURCE_HOME'
     })
   }
 
@@ -123,24 +123,24 @@ export function buildPtyHostEnv(
       wslHookRelayManager.ensureForDistro(distro, opts.selectedCodexHomePath)
       const guestEndpoint = wslHookRelayManager.getGuestEndpointFilePath(distro)
       if (guestEndpoint) {
-        baseEnv.ORCA_AGENT_HOOK_ENDPOINT = guestEndpoint
+        baseEnv.KINGU_AGENT_HOOK_ENDPOINT = guestEndpoint
       }
       // Why: OpenCode loads its status plugin from a guest config overlay, so point OPENCODE_CONFIG_DIR at the guest dir the relay materialized.
       const opencodeOverlayDir = wslHookRelayManager.getOpenCodeOverlayDir(distro)
       if (opencodeOverlayDir) {
         baseEnv.OPENCODE_CONFIG_DIR = opencodeOverlayDir
-        baseEnv.ORCA_OPENCODE_CONFIG_DIR = opencodeOverlayDir
-        delete baseEnv.ORCA_OPENCODE_SOURCE_CONFIG_DIR
+        baseEnv.KINGU_OPENCODE_CONFIG_DIR = opencodeOverlayDir
+        delete baseEnv.KINGU_OPENCODE_SOURCE_CONFIG_DIR
       } else {
         // Why: relay not connected yet (or older guest bundle) — never cross the Windows overlay path into WSL; drop it so in-guest OpenCode uses its own config (pre-fix behavior, no status but no regression).
         delete baseEnv.OPENCODE_CONFIG_DIR
-        delete baseEnv.ORCA_OPENCODE_CONFIG_DIR
-        delete baseEnv.ORCA_OPENCODE_SOURCE_CONFIG_DIR
+        delete baseEnv.KINGU_OPENCODE_CONFIG_DIR
+        delete baseEnv.KINGU_OPENCODE_SOURCE_CONFIG_DIR
       }
     }
   }
 
-  // Why: PI_CODING_AGENT_DIR is the user's config/session root; install only Orca-owned extension files, don't override it.
+  // Why: PI_CODING_AGENT_DIR is the user's config/session root; install only Kingu-owned extension files, don't override it.
   if (opts.agentStatusHooksEnabled) {
     clearPiAgentShadowEnv(baseEnv, 'pi')
     clearPiAgentShadowEnv(baseEnv, 'omp')
@@ -180,28 +180,28 @@ export function buildPtyHostEnv(
     // Why: nested PTYs must not inherit stale source or overlay state from another agent.
     restoreOrStripOverlayEnv(baseEnv, {
       primary: 'PI_CODING_AGENT_DIR',
-      overlay: 'ORCA_PI_CODING_AGENT_DIR',
-      source: 'ORCA_PI_SOURCE_AGENT_DIR'
+      overlay: 'KINGU_PI_CODING_AGENT_DIR',
+      source: 'KINGU_PI_SOURCE_AGENT_DIR'
     })
     restoreOrStripOverlayEnv(baseEnv, {
       primary: 'PI_CODING_AGENT_DIR',
-      overlay: 'ORCA_OMP_CODING_AGENT_DIR',
-      source: 'ORCA_OMP_SOURCE_AGENT_DIR'
+      overlay: 'KINGU_OMP_CODING_AGENT_DIR',
+      source: 'KINGU_OMP_SOURCE_AGENT_DIR'
     })
-    delete baseEnv.ORCA_OMP_STATUS_EXTENSION
-    delete baseEnv.ORCA_PRIME_AGENT_SOURCE_AGENT_DIR
-    delete baseEnv.ORCA_PRIME_AGENT_STATUS_EXTENSION
+    delete baseEnv.KINGU_OMP_STATUS_EXTENSION
+    delete baseEnv.KINGU_PRIME_AGENT_SOURCE_AGENT_DIR
+    delete baseEnv.KINGU_PRIME_AGENT_STATUS_EXTENSION
   }
 
-  // Why: keep the Codex home override PTY-scoped so dev/prod Orcas don't share hooks through ~/.codex.
+  // Why: keep the Codex home override PTY-scoped so dev/prod Kingus don't share hooks through ~/.codex.
   if (opts.skipCodexHomeEnv) {
     delete baseEnv.CODEX_HOME
-    delete baseEnv.ORCA_CODEX_HOME
-    delete baseEnv.ORCA_CODEX_LAUNCH_PREFLIGHT
+    delete baseEnv.KINGU_CODEX_HOME
+    delete baseEnv.KINGU_CODEX_LAUNCH_PREFLIGHT
   } else if (opts.selectedCodexHomePath) {
     baseEnv.CODEX_HOME = opts.selectedCodexHomePath
     // Why: user startup files may re-export CODEX_HOME; shell-ready wrappers restore this runtime home before Codex launches.
-    baseEnv.ORCA_CODEX_HOME = opts.selectedCodexHomePath
+    baseEnv.KINGU_CODEX_HOME = opts.selectedCodexHomePath
     const preflightCommand = resolveCodexShellLaunchPreflightCommand({
       hooksEnabled: opts.codexStatusHooksEnabled ?? opts.agentStatusHooksEnabled,
       isPackaged: opts.isPackaged,
@@ -211,29 +211,29 @@ export function buildPtyHostEnv(
       resourcesPath: opts.resourcesPath
     })
     if (preflightCommand) {
-      baseEnv.ORCA_CODEX_LAUNCH_PREFLIGHT = preflightCommand
+      baseEnv.KINGU_CODEX_LAUNCH_PREFLIGHT = preflightCommand
     } else {
-      delete baseEnv.ORCA_CODEX_LAUNCH_PREFLIGHT
+      delete baseEnv.KINGU_CODEX_LAUNCH_PREFLIGHT
     }
-  } else if (opts.stripInheritedOrcaCodexHome) {
-    stripInheritedOrcaCodexHomeOverride(baseEnv)
-    delete baseEnv.ORCA_CODEX_LAUNCH_PREFLIGHT
+  } else if (opts.stripInheritedKinguCodexHome) {
+    stripInheritedKinguCodexHomeOverride(baseEnv)
+    delete baseEnv.KINGU_CODEX_LAUNCH_PREFLIGHT
   } else {
-    delete baseEnv.ORCA_CODEX_LAUNCH_PREFLIGHT
+    delete baseEnv.KINGU_CODEX_LAUNCH_PREFLIGHT
   }
 
-  // Why: WSL shells need the managed userData root for shell-ready wrappers; dev-mode terminals need the same export so `orca` targets the live dev instance.
+  // Why: WSL shells need the managed userData root for shell-ready wrappers; dev-mode terminals need the same export so `kingu` targets the live dev instance.
   if (opts.isWsl) {
-    baseEnv.ORCA_USER_DATA_PATH = opts.userDataPath
-    // Why: managed WSL registration uses `orca-ide`; exposing that literal scopes agent guidance to WSL without a bare-orca shim.
-    baseEnv.ORCA_CLI_COMMAND = opts.isPackaged ? 'orca-ide' : 'orca-dev'
+    baseEnv.KINGU_USER_DATA_PATH = opts.userDataPath
+    // Why: managed WSL registration uses `kingu-ide`; exposing that literal scopes agent guidance to WSL without a bare-kingu shim.
+    baseEnv.KINGU_CLI_COMMAND = opts.isPackaged ? 'kingu-ide' : 'kingu-dev'
   } else {
     if (!opts.isPackaged) {
-      baseEnv.ORCA_USER_DATA_PATH ??= opts.userDataPath
+      baseEnv.KINGU_USER_DATA_PATH ??= opts.userDataPath
     }
-    delete baseEnv.ORCA_CLI_COMMAND
+    delete baseEnv.KINGU_CLI_COMMAND
   }
-  prependOrcaCliDirToChildPath(baseEnv, {
+  prependKinguCliDirToChildPath(baseEnv, {
     isPackaged: opts.isPackaged,
     userDataPath: opts.userDataPath,
     resourcesPath: opts.resourcesPath
@@ -244,7 +244,7 @@ export function buildPtyHostEnv(
     baseEnv.BROWSER === undefined &&
     process.env.BROWSER === undefined
   ) {
-    const cliCommand = opts.isWsl ? (opts.isPackaged ? 'orca-ide' : 'orca-dev') : 'orca'
+    const cliCommand = opts.isWsl ? (opts.isPackaged ? 'kingu-ide' : 'kingu-dev') : 'kingu'
     baseEnv.BROWSER = `${cliCommand} open-url --url %s`
   }
 

@@ -122,7 +122,7 @@ async function deleteRow(seq: number): Promise<void> {
 }
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'orca-wire-recovery-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-wire-recovery-'))
   journalDir = join(root, 'journal')
   historyFilePath = join(root, 'rollout.jsonl')
   await writeFile(
@@ -138,7 +138,7 @@ afterEach(async () => {
 })
 
 describe('providerHistoryId', () => {
-  it('uses the provider handle, never the Orca session id', () => {
+  it('uses the provider handle, never the Kingu session id', () => {
     expect(providerHistoryId({ kind: 'codex', threadId: 'thread-9' })).toBe('thread-9')
     expect(providerHistoryId({ kind: 'claude', sessionId: 'sess-9', leafUuid: null })).toBe(
       'sess-9'
@@ -246,7 +246,7 @@ describe('openAgentSessionJournalWithRecovery', () => {
 
   // The rehydrate deletes every live row to publish its replacement epoch, so
   // everything replay rejected is gone for good by the time the import runs.
-  // Orca minted the submission, receipt and lifecycle identities; no provider
+  // Kingu minted the submission, receipt and lifecycle identities; no provider
   // transcript can hand them back.
   it('rebuilds from provider history when the epoch row itself is gone', async () => {
     const journal = await journals.open({ identity: IDENTITY, journalDir })
@@ -268,7 +268,7 @@ describe('openAgentSessionJournalWithRecovery', () => {
       mutations: [
         {
           kind: 'item',
-          identity: { provider: 'orca', clientMessageId: 'approval-1' },
+          identity: { provider: 'kingu', clientMessageId: 'approval-1' },
           body: { kind: 'status', text: 'approved' }
         }
       ]

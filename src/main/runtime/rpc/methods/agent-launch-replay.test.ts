@@ -29,7 +29,7 @@ import { agentSessionStorePath } from '../../agent-session-record-store-file'
 import { setStructuredAgentSessionHost } from '../../../native-chat/agent-session-wire/structured-agent-session-registry'
 import type { StructuredAgentSessionHost } from '../../../native-chat/agent-session-wire/structured-agent-session-host'
 import type { RpcContext } from '../core'
-import type { OrcaRuntimeService } from '../../orca-runtime'
+import type { KinguRuntimeService } from '../../kingu-runtime'
 import { RpcDispatcher } from '../dispatcher'
 import {
   methodNamed,
@@ -119,7 +119,7 @@ beforeEach(async () => {
   attachOperationIds.length = 0
   attachCallerKeys.length = 0
   createStructuredSession.mockClear()
-  directory = await mkdtemp(join(tmpdir(), 'orca-agent-launch-replay-'))
+  directory = await mkdtemp(join(tmpdir(), 'kingu-agent-launch-replay-'))
   store = await AgentSessionRecordStore.open({ directory, hostId: 'local' })
   // The launch reaches the ledger through the installed host; nothing else on the host is used,
   // because the structured create below it is mocked out.
@@ -316,7 +316,7 @@ describe('an uncertain launch stays uncertain', () => {
     const runtime = { ...runtimeStub(), getRuntimeId: () => 'runtime-1' }
     const dispatcher = new RpcDispatcher({
       // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the fixture implements every runtime method reached by agent.launch and dispatcher metadata.
-      runtime: runtime as unknown as OrcaRuntimeService,
+      runtime: runtime as unknown as KinguRuntimeService,
       methods: AGENT_LAUNCH_METHODS
     })
 

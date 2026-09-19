@@ -34,7 +34,7 @@ afterEach(async () => {
 })
 
 async function pendingPrompt(): Promise<{ journal: AgentSessionJournal; itemId: string }> {
-  root = await mkdtemp(join(tmpdir(), 'orca-prompt-cancel-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-prompt-cancel-'))
   const journal = await journals.open({ identity: IDENTITY, journalDir: root })
   const item = await journal.appendItem(
     PROMPT_IDENTITY,

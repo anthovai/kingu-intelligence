@@ -29,7 +29,7 @@ function requestDesktopActivation(argv: readonly string[] = []): void {
     state.mainWindow?.webContents.send('ui:openSkillShare', shareId)
   })
   state.osOpenedMarkdownFiles.capture(argv, publishOsOpenedMarkdownFiles)
-  // Why: a duplicate `orca serve` must not drag a headless server into opening a desktop window (#11935).
+  // Why: a duplicate `kingu serve` must not drag a headless server into opening a desktop window (#11935).
   if (!shouldActivateDesktopForSecondInstance(argv)) {
     return
   }

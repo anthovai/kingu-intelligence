@@ -196,7 +196,7 @@ describe('registerWorktreeHandlers', () => {
     store.getProjectHostSetups.mockReturnValue([
       {
         id: 'repo-1',
-        projectId: 'github:stablyai/orca',
+        projectId: 'github:anthovai/kingu-intelligence',
         hostId: 'local',
         repoId: 'repo-1',
         path: '/workspace/repo',
@@ -224,7 +224,7 @@ describe('registerWorktreeHandlers', () => {
     })
     store.setWorktreeMeta.mockReturnValue({
       instanceId: 'existing-instance',
-      projectId: 'github:stablyai/orca',
+      projectId: 'github:anthovai/kingu-intelligence',
       hostId: 'local',
       projectHostSetupId: 'repo-1',
       lastActivityAt: 42
@@ -239,11 +239,11 @@ describe('registerWorktreeHandlers', () => {
     }[]
 
     expect(store.setWorktreeMeta).toHaveBeenCalledWith('repo-1::/workspace/existing-wt', {
-      projectId: 'github:stablyai/orca'
+      projectId: 'github:anthovai/kingu-intelligence'
     })
     expect(listed[0]).toMatchObject({
       id: 'repo-1::/workspace/existing-wt',
-      projectId: 'github:stablyai/orca',
+      projectId: 'github:anthovai/kingu-intelligence',
       hostId: 'local',
       projectHostSetupId: 'repo-1',
       lastActivityAt: 42
@@ -263,7 +263,7 @@ describe('registerWorktreeHandlers', () => {
     store.getProjectHostSetups.mockReturnValue([
       {
         id: 'repo-1',
-        projectId: 'github:stablyai/orca',
+        projectId: 'github:anthovai/kingu-intelligence',
         hostId: 'local',
         repoId: 'repo-1',
         path: '/workspace/repo',
@@ -298,15 +298,15 @@ describe('registerWorktreeHandlers', () => {
   it('repairs legacy project ids when SSH worktree listing falls back to persisted metadata', async () => {
     const repo = {
       id: 'repo-ssh',
-      path: '/remote/orca',
-      displayName: 'orca',
+      path: '/remote/kingu',
+      displayName: 'kingu',
       badgeColor: '#000',
       addedAt: 0,
       connectionId: 'ssh-target-1'
     }
     store.getRepo.mockReturnValue(repo)
     store.getAllWorktreeMeta.mockReturnValue({
-      'repo-ssh::/remote/orca': makeWorktreeMeta({
+      'repo-ssh::/remote/kingu': makeWorktreeMeta({
         instanceId: 'existing-instance',
         projectId: 'repo:repo-ssh',
         hostId: 'ssh:ssh-target-1',
@@ -317,11 +317,11 @@ describe('registerWorktreeHandlers', () => {
     store.getProjectHostSetups.mockReturnValue([
       {
         id: 'repo-ssh',
-        projectId: 'github:stablyai/orca',
+        projectId: 'github:anthovai/kingu-intelligence',
         hostId: 'ssh:ssh-target-1',
         repoId: 'repo-ssh',
-        path: '/remote/orca',
-        displayName: 'orca',
+        path: '/remote/kingu',
+        displayName: 'kingu',
         setupState: 'ready',
         setupMethod: 'imported-existing-folder',
         createdAt: 0,
@@ -331,7 +331,7 @@ describe('registerWorktreeHandlers', () => {
     store.setWorktreeMeta.mockReturnValue(
       makeWorktreeMeta({
         instanceId: 'existing-instance',
-        projectId: 'github:stablyai/orca',
+        projectId: 'github:anthovai/kingu-intelligence',
         hostId: 'ssh:ssh-target-1',
         projectHostSetupId: 'repo-ssh',
         lastActivityAt: 42
@@ -347,13 +347,13 @@ describe('registerWorktreeHandlers', () => {
     }[]
 
     expect(getSshGitProviderMock).toHaveBeenCalledWith('ssh-target-1')
-    expect(store.setWorktreeMeta).toHaveBeenCalledWith('repo-ssh::/remote/orca', {
-      projectId: 'github:stablyai/orca'
+    expect(store.setWorktreeMeta).toHaveBeenCalledWith('repo-ssh::/remote/kingu', {
+      projectId: 'github:anthovai/kingu-intelligence'
     })
     expect(listed).toEqual([
       expect.objectContaining({
-        id: 'repo-ssh::/remote/orca',
-        projectId: 'github:stablyai/orca',
+        id: 'repo-ssh::/remote/kingu',
+        projectId: 'github:anthovai/kingu-intelligence',
         hostId: 'ssh:ssh-target-1',
         projectHostSetupId: 'repo-ssh',
         lastActivityAt: 42

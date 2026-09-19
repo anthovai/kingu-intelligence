@@ -14,7 +14,7 @@ import {
   type waitForWslRelaySentinel,
   type WslRelayStartupFailure
 } from './wsl-hook-relay-sentinel'
-import { addOrcaWslInteropEnv } from '../pty/wsl-orca-env'
+import { addKinguWslInteropEnv } from '../pty/wsl-kingu-env'
 import { runWslProcess } from '../wsl/wsl-runner'
 import { resolveWslInteropSpawnCwd } from '../wsl-interop-spawn-directory'
 import { listRunningWslDistrosAsync } from '../wsl'
@@ -36,8 +36,8 @@ export function resolveWslHookRelayBundle(): WslHookRelayBundle | null {
   // Mirrors getLocalRelayCandidates in ssh-relay-deploy: env override for
   // tests/dev, then packaged extraResources, then dev out/ paths.
   const candidates: string[] = []
-  if (process.env.ORCA_RELAY_PATH) {
-    candidates.push(join(process.env.ORCA_RELAY_PATH, 'wsl'))
+  if (process.env.KINGU_RELAY_PATH) {
+    candidates.push(join(process.env.KINGU_RELAY_PATH, 'wsl'))
   }
   if (process.resourcesPath) {
     candidates.push(join(process.resourcesPath, 'relay', 'wsl'))
@@ -65,7 +65,7 @@ export function resolveWslHookRelayBundle(): WslHookRelayBundle | null {
   return null
 }
 
-// Why: the install dir is namespaced by bundle version so concurrent Orca
+// Why: the install dir is namespaced by bundle version so concurrent Kingu
 // instances with different bundles (dev + prod) never reinstall over each
 // other; each instance launches exactly the version it shipped.
 function guestRelayDirExpr(version: string): string {
@@ -109,13 +109,13 @@ export function buildGuestInstallScript(bundleJs: Buffer, version: string): stri
     'umask 077',
     `d="${guestRelayDirExpr(version)}"`,
     'mkdir -p "$d"',
-    `base64 -d > "$d/bundle.$$.tmp" << 'ORCA_EOF_BUNDLE'`,
+    `base64 -d > "$d/bundle.$$.tmp" << 'KINGU_EOF_BUNDLE'`,
     b64.trimEnd(),
-    'ORCA_EOF_BUNDLE',
+    'KINGU_EOF_BUNDLE',
     `mv "$d/bundle.$$.tmp" "$d/${WSL_HOOK_RELAY_BUNDLE_NAME}"`,
-    `cat > "$d/launch.$$.tmp" << 'ORCA_EOF_LAUNCH'`,
+    `cat > "$d/launch.$$.tmp" << 'KINGU_EOF_LAUNCH'`,
     buildGuestLaunchScript(version).trimEnd(),
-    'ORCA_EOF_LAUNCH',
+    'KINGU_EOF_LAUNCH',
     'mv "$d/launch.$$.tmp" "$d/launch.sh"',
     'chmod 700 "$d/launch.sh"',
     // Version marker last: a partial install stays "stale" and reinstalls.
@@ -282,16 +282,16 @@ export function buildWslRelaySpawnEnv(
   const env: NodeJS.ProcessEnv = {
     ...process.env,
     WSL_UTF8: '1',
-    ORCA_AGENT_HOOK_PORT: coords.ORCA_AGENT_HOOK_PORT,
-    ORCA_AGENT_HOOK_TOKEN: coords.ORCA_AGENT_HOOK_TOKEN,
-    ORCA_AGENT_HOOK_ENV: coords.ORCA_AGENT_HOOK_ENV,
-    ORCA_AGENT_HOOK_VERSION: coords.ORCA_AGENT_HOOK_VERSION,
+    KINGU_AGENT_HOOK_PORT: coords.KINGU_AGENT_HOOK_PORT,
+    KINGU_AGENT_HOOK_TOKEN: coords.KINGU_AGENT_HOOK_TOKEN,
+    KINGU_AGENT_HOOK_ENV: coords.KINGU_AGENT_HOOK_ENV,
+    KINGU_AGENT_HOOK_VERSION: coords.KINGU_AGENT_HOOK_VERSION,
     [WSL_HOOK_RELAY_VERSION_ENV]: bundleVersion,
     [WSL_HOOK_RELAY_INSTANCE_ENV]: instanceKey
   }
   // Why: the relay derives its own guest endpoint path; a /p-translated
   // Windows endpoint here would only add WSLENV noise.
-  delete env.ORCA_AGENT_HOOK_ENDPOINT
-  addOrcaWslInteropEnv(env as Record<string, string>)
+  delete env.KINGU_AGENT_HOOK_ENDPOINT
+  addKinguWslInteropEnv(env as Record<string, string>)
   return env
 }

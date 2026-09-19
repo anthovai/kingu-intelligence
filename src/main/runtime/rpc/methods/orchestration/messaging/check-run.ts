@@ -1,5 +1,5 @@
 import type { MessageRow, MessageType, OrchestrationDb } from '../../../../orchestration/db'
-import type { OrcaRuntimeService } from '../../../../orca-runtime'
+import type { KinguRuntimeService } from '../../../../kingu-runtime'
 import type { RpcContext } from '../../../core'
 import { OrchestrationError } from '../../../../orchestration/orchestration-error'
 import { formatMessageBanner } from '../../../../orchestration/formatter'
@@ -14,7 +14,7 @@ type CheckParamsInput = z.infer<typeof CheckParams>
 
 export async function checkRunMailbox(args: {
   params: CheckParamsInput
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   db: OrchestrationDb
   handle: string
   paneKey: string | undefined

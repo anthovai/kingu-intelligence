@@ -226,7 +226,7 @@ async function sendPending(text: string): Promise<void> {
 }
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'orca-surface-lifetime-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-surface-lifetime-'))
   handoffRequests.reset()
   tuiRecoverable = true
   resetHostTestOperationIds()

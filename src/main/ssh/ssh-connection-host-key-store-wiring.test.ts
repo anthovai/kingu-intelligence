@@ -101,8 +101,8 @@ beforeEach(() => {
   eventHandlers = new Map()
   presentedHostKey = VALID_ED25519_HOST_KEY
   hostKeyAccepted = undefined
-  profileDir = mkdtempSync(join(tmpdir(), 'orca-ssh-store-'))
-  initSshHostKeyStoreFile(join(profileDir, 'orca.json'))
+  profileDir = mkdtempSync(join(tmpdir(), 'kingu-ssh-store-'))
+  initSshHostKeyStoreFile(join(profileDir, 'kingu.json'))
 })
 
 afterEach(() => {
@@ -180,7 +180,7 @@ describe('recording a first-contact host key', () => {
   it.skipIf(process.platform === 'win32' || process.getuid?.() === 0)(
     'records nothing when a known_hosts file exists but cannot be read',
     async () => {
-      const home = mkdtempSync(join(tmpdir(), 'orca-ssh-home-'))
+      const home = mkdtempSync(join(tmpdir(), 'kingu-ssh-home-'))
       mkdirSync(join(home, '.ssh'))
       const knownHosts = join(home, '.ssh', 'known_hosts')
       writeFileSync(knownHosts, '')

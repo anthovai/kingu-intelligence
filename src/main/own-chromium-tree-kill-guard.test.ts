@@ -10,7 +10,7 @@ import {
   setAppEnvironment,
   type AppEnvironment
 } from '../shared/app-environment'
-import { readOrcaChromiumProcessPids } from './orca-chromium-process-pids'
+import { readKinguChromiumProcessPids } from './kingu-chromium-process-pids'
 import { classifyWindowsTreeKillTarget } from './windows-pty-root-identity'
 import { terminateWindowsProcessTree } from './windows-process-tree-kill'
 import {
@@ -26,15 +26,15 @@ import {
 } from './crash-reporting/crash-breadcrumb-store'
 import { _resetTracerForTests, setActiveSink } from './observability/tracer'
 
-const ORCA_MAIN_PID = 1000
+const KINGU_MAIN_PID = 1000
 const RENDERER_PID = 1001
 /** The standalone daemon is a sibling of the renderers, spawned by main. */
 const DAEMON_PID = 1500
 
-/** Orca's renderer is a direct child of the main process, so the ppid walk says `own`. */
+/** Kingu's renderer is a direct child of the main process, so the ppid walk says `own`. */
 const PROCESS_ROWS = [
-  { pid: RENDERER_PID, ppid: ORCA_MAIN_PID },
-  { pid: ORCA_MAIN_PID, ppid: 900 }
+  { pid: RENDERER_PID, ppid: KINGU_MAIN_PID },
+  { pid: KINGU_MAIN_PID, ppid: 900 }
 ]
 
 function appEnvironment(): AppEnvironment {
@@ -55,7 +55,7 @@ beforeEach(() => {
   previousEnvironment = hasAppEnvironment() ? getAppEnvironment() : null
   setAppEnvironment(appEnvironment())
   appMetricsMock.mockReturnValue([
-    { pid: ORCA_MAIN_PID, type: 'Browser' },
+    { pid: KINGU_MAIN_PID, type: 'Browser' },
     { pid: RENDERER_PID, type: 'Tab' },
     { pid: 1002, type: 'GPU' }
   ])
@@ -77,23 +77,25 @@ afterEach(() => {
 
 describe('refusing to tree-kill our own Chromium processes', () => {
   it('reads the live Chromium pid set from the app environment', () => {
-    expect([...readOrcaChromiumProcessPids()]).toEqual([ORCA_MAIN_PID, RENDERER_PID, 1002])
+    expect([...readKinguChromiumProcessPids()]).toEqual([KINGU_MAIN_PID, RENDERER_PID, 1002])
   })
 
   it('classifies a live renderer as foreign even though its ancestry reaches us', () => {
-    expect(classifyWindowsTreeKillTarget(RENDERER_PID, PROCESS_ROWS, ORCA_MAIN_PID)).toBe('foreign')
+    expect(classifyWindowsTreeKillTarget(RENDERER_PID, PROCESS_ROWS, KINGU_MAIN_PID)).toBe(
+      'foreign'
+    )
   })
 
   it.each([
     ['an empty pid set', new Set<number>()],
     ['the live pid set', undefined]
   ])(
-    'refuses an Orca renderer from a daemon host with %s, because no Chromium descends from it',
+    'refuses an Kingu renderer from a daemon host with %s, because no Chromium descends from it',
     (_case, ownChromiumPids) => {
-      // The standalone daemon and orcad install no Chromium-backed AppEnvironment,
+      // The standalone daemon and kingud install no Chromium-backed AppEnvironment,
       // so this set is empty there. The ancestry walk is what refuses instead: it
       // ends at the *killing* process's pid, and the renderer's chain reaches main.
-      const rows = [...PROCESS_ROWS, { pid: DAEMON_PID, ppid: ORCA_MAIN_PID }]
+      const rows = [...PROCESS_ROWS, { pid: DAEMON_PID, ppid: KINGU_MAIN_PID }]
 
       expect(classifyWindowsTreeKillTarget(RENDERER_PID, rows, DAEMON_PID, ownChromiumPids)).toBe(
         'foreign'
@@ -105,14 +107,14 @@ describe('refusing to tree-kill our own Chromium processes', () => {
     // Falsifiable counterpart to the daemon case above: in main the ancestry walk
     // says `own`, so the pid set is load-bearing here and nowhere else.
     expect(
-      classifyWindowsTreeKillTarget(RENDERER_PID, PROCESS_ROWS, ORCA_MAIN_PID, new Set())
+      classifyWindowsTreeKillTarget(RENDERER_PID, PROCESS_ROWS, KINGU_MAIN_PID, new Set())
     ).toBe('own')
   })
 
   it('still classifies a real PTY child of ours as own', () => {
-    const rows = [...PROCESS_ROWS, { pid: 7777, ppid: ORCA_MAIN_PID }]
+    const rows = [...PROCESS_ROWS, { pid: 7777, ppid: KINGU_MAIN_PID }]
 
-    expect(classifyWindowsTreeKillTarget(7777, rows, ORCA_MAIN_PID)).toBe('own')
+    expect(classifyWindowsTreeKillTarget(7777, rows, KINGU_MAIN_PID)).toBe('own')
   })
 
   it('never spawns taskkill against one of our own Chromium pids', async () => {
@@ -183,7 +185,7 @@ describe('refusing to tree-kill our own Chromium processes', () => {
   })
 
   /**
-   * Fail-open is the deliberate choice — see `orca-chromium-process-pids.ts` for
+   * Fail-open is the deliberate choice — see `kingu-chromium-process-pids.ts` for
    * why refusing everything is worse — so the crumb is the only thing that keeps
    * an unreadable metrics table distinguishable from a host that has no Chromium.
    */
@@ -192,10 +194,10 @@ describe('refusing to tree-kill our own Chromium processes', () => {
       throw new Error('getAppMetrics unavailable')
     })
 
-    expect([...readOrcaChromiumProcessPids()]).toEqual([])
+    expect([...readKinguChromiumProcessPids()]).toEqual([])
     // Coalesced: the gate reads this set on every kill, so a broken table must
     // not evict the ring it shares with the refusal crumb.
-    expect([...readOrcaChromiumProcessPids()]).toEqual([])
+    expect([...readKinguChromiumProcessPids()]).toEqual([])
     expect(
       admitSelfInitiatedTreeKill({
         pid: RENDERER_PID,

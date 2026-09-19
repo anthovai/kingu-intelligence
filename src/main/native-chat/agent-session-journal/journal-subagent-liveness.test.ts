@@ -76,7 +76,7 @@ function backgroundTaskBlock(
 function backgroundTaskRow(block = backgroundTaskBlock()) {
   return {
     identity: {
-      provider: 'orca' as const,
+      provider: 'kingu' as const,
       clientMessageId: `claude-background-task:${block.taskId}`
     },
     body: {
@@ -113,7 +113,7 @@ function twinOf(body: AgentJournalRenderItem['body']): string | undefined {
 }
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'orca-journal-subagents-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-journal-subagents-'))
   clock = 1_000
 })
 
@@ -194,7 +194,7 @@ describe('staleSubagentRosterRevisions', () => {
     expect(
       staleSubagentRosterRevisions([
         {
-          itemId: 'orca:plain',
+          itemId: 'kingu:plain',
           revision: 1,
           body: { kind: 'message', role: 'assistant', blocks: [{ type: 'text', text: 'hi' }] },
           sequence: 2,

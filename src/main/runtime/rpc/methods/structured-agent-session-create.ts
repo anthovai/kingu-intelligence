@@ -25,7 +25,7 @@ import {
 import type { StructuredAgentSessionHost } from '../../../native-chat/agent-session-wire/structured-agent-session-host'
 import type { StructuredAgentSessionCaller } from '../../../native-chat/agent-session-wire/structured-agent-session-host-types'
 import type { StructuredAgentSessionResumeSource } from '../../../../shared/structured-agent-session-create'
-import type { OrcaRuntimeService } from '../../orca-runtime'
+import type { KinguRuntimeService } from '../../kingu-runtime'
 import {
   resolveUncommittedStructuredCreate,
   type StructuredCreateRefused
@@ -41,7 +41,7 @@ export type PreparedStructuredAgentSessionCreate = {
 /** The pre-commit half. Throws; the caller is expected to run it inside
  *  `resolveUncommittedStructuredCreate` so a failure reaches the client as a refusal. */
 export async function prepareStructuredAgentSessionCreateForWorktree(args: {
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   /** Installs the host lazily; called at the same point the RPC handler always installed it. */
   ensureHost: () => Promise<StructuredAgentSessionHost>
   envelope: AgentSessionMutationEnvelope
@@ -91,7 +91,7 @@ export async function prepareStructuredAgentSessionCreateForWorktree(args: {
 
 /** The commit half. Past `attach`, a failure no longer proves the session does not exist. */
 export async function commitStructuredAgentSessionCreate(args: {
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   caller: StructuredAgentSessionCaller
   prepared: PreparedStructuredAgentSessionCreate
   activate: boolean
@@ -122,7 +122,7 @@ export async function commitStructuredAgentSessionCreate(args: {
 }
 
 export async function createStructuredAgentSessionForWorktree(args: {
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   ensureHost: () => Promise<StructuredAgentSessionHost>
   caller: StructuredAgentSessionCaller
   envelope: AgentSessionMutationEnvelope

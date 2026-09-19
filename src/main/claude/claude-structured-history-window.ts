@@ -2,10 +2,10 @@
 //
 // Why this file is the source of truth for "did Claude take it": a resume replays
 // this transcript by session id, so a message absent from it is absent from the
-// conversation Orca is about to resume. Absence here is not an inference about a
+// conversation Kingu is about to resume. Absence here is not an inference about a
 // dead child — it is the content of the next turn's context.
 //
-// The window is anchored on the leaf uuid Orca durably recorded for the session.
+// The window is anchored on the leaf uuid Kingu durably recorded for the session.
 // Without that anchor the read has no proven start, and the branch proof is what
 // decides whether the file we just read still descends from it: a fork, a
 // compaction, a sibling branch, or a torn tail all fail the proof, and every one
@@ -81,7 +81,7 @@ function rawTextParts(content: unknown): string[] | null {
 }
 
 /**
- * A user record Orca could itself have submitted. Everything the harness injects
+ * A user record Kingu could itself have submitted. Everything the harness injects
  * is excluded, because a fingerprint computed over machinery would claim a
  * history slot the user's message should have had.
  *
@@ -197,7 +197,7 @@ export function claudeProviderHistoryWindowFromJsonl(input: {
   contents: string
   providerSessionId: string
   previousLeafUuid: string | null
-  /** Orca session id: the fingerprint a submission carries is scoped to it. */
+  /** Kingu session id: the fingerprint a submission carries is scoped to it. */
   sessionId: string
   /** The caller must PROVE no provider child can be appending; absence proves
    *  nothing while a turn is running. */

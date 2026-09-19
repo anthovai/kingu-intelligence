@@ -168,7 +168,7 @@ function adapter(): StructuredAgentSessionAdapter {
 }
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'orca-handoff-options-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-handoff-options-'))
   resetHostTestOperationIds()
   activeModel = DEFAULT_MODEL
   activeEffort = null

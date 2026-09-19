@@ -5,20 +5,20 @@
  * for delete, as a row the user can delete again).
  *
  * The four conventions in the tree today:
- *   `.<name>.orca-skill-delete-<uuid>`      (service)
- *   `.<name>.orca-remove-backup-<uuid>`     (skill-remove-transaction)
- *   `.<name>.orca-placement-backup-<id>`    (skill-placement-transaction-controller)
- *   `.<name>.orca-placement-staging-<id>`   (skill-placement-transaction-controller)
+ *   `.<name>.kingu-skill-delete-<uuid>`      (service)
+ *   `.<name>.kingu-remove-backup-<uuid>`     (skill-remove-transaction)
+ *   `.<name>.kingu-placement-backup-<id>`    (skill-placement-transaction-controller)
+ *   `.<name>.kingu-placement-staging-<id>`   (skill-placement-transaction-controller)
  *
  * Matched by shape rather than by an enumerated list so the native walker and
  * WSL's `find -prune` (which can only express a glob) cannot drift apart.
  */
-export const SKILL_DELETE_STAGING_MARKER = '.orca-skill-delete-'
+export const SKILL_DELETE_STAGING_MARKER = '.kingu-skill-delete-'
 
 /** The `find -name` glob the WSL guest script prunes on. */
-export const SKILL_STAGING_GLOB = '.*.orca-*'
+export const SKILL_STAGING_GLOB = '.*.kingu-*'
 
-const SKILL_STAGING_NAME = /^\..+\.orca-/u
+const SKILL_STAGING_NAME = /^\..+\.kingu-/u
 
 export function isSkillStagingEntryName(name: string): boolean {
   return SKILL_STAGING_NAME.test(name)

@@ -199,7 +199,7 @@ describe('importCookiesFromFile', () => {
   let cookieWriteMock: ReturnType<typeof vi.fn>
 
   beforeEach(() => {
-    tmpDir = mkdtempSync(join(tmpdir(), 'orca-cookie-test-'))
+    tmpDir = mkdtempSync(join(tmpdir(), 'kingu-cookie-test-'))
     cookiesGetMock = vi.fn().mockResolvedValue([])
     cookiesRemoveMock = vi.fn().mockResolvedValue(undefined)
     cookieWriteMock = writeCookieIdentityMock
@@ -429,7 +429,7 @@ describe('importCookiesFromBrowser Safari', () => {
   let cookieWriteMock: ReturnType<typeof vi.fn>
 
   beforeEach(() => {
-    tmpDir = mkdtempSync(join(tmpdir(), 'orca-safari-cookie-test-'))
+    tmpDir = mkdtempSync(join(tmpdir(), 'kingu-safari-cookie-test-'))
     cookieWriteMock = writeCookieIdentityMock
     cookieWriteMock.mockReset()
     cookieWriteMock.mockResolvedValue(undefined)
@@ -470,7 +470,7 @@ describe('importCookiesFromBrowser Chromium', () => {
   let setUserAgentMock: ReturnType<typeof vi.fn>
 
   beforeEach(() => {
-    tmpDir = mkdtempSync(join(tmpdir(), 'orca-chromium-cookie-test-'))
+    tmpDir = mkdtempSync(join(tmpdir(), 'kingu-chromium-cookie-test-'))
     cookieWriteMock = writeCookieIdentityMock
     cookieWriteMock.mockReset()
     cookieWriteMock.mockResolvedValue(undefined)

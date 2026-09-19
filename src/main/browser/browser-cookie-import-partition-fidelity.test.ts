@@ -107,7 +107,7 @@ describe('validated import partition fidelity', () => {
   let cookieWriteMock: ReturnType<typeof vi.fn>
 
   beforeEach(() => {
-    tmpDir = mkdtempSync(join(tmpdir(), 'orca-partition-fidelity-file-'))
+    tmpDir = mkdtempSync(join(tmpdir(), 'kingu-partition-fidelity-file-'))
     cookieWriteMock = writeCookieIdentityMock
     cookieWriteMock.mockReset()
     cookieWriteMock.mockResolvedValue(undefined)
@@ -362,7 +362,7 @@ describe('native Chromium import partition fidelity', () => {
   let platformSpy: ReturnType<typeof vi.spyOn>
 
   beforeEach(() => {
-    tmpDir = mkdtempSync(join(tmpdir(), 'orca-partition-fidelity-native-'))
+    tmpDir = mkdtempSync(join(tmpdir(), 'kingu-partition-fidelity-native-'))
     cookieWriteMock = writeCookieIdentityMock
     cookieWriteMock.mockReset()
     cookieWriteMock.mockResolvedValue(undefined)
@@ -608,7 +608,7 @@ describe('Firefox import partition fidelity', () => {
   let tmpDir: string
 
   beforeEach(() => {
-    tmpDir = mkdtempSync(join(tmpdir(), 'orca-partition-fidelity-firefox-'))
+    tmpDir = mkdtempSync(join(tmpdir(), 'kingu-partition-fidelity-firefox-'))
     writeCookieIdentityMock.mockReset().mockResolvedValue(undefined)
     sessionFromPartitionMock.mockReset()
   })

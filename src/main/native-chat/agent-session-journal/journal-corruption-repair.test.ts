@@ -90,7 +90,7 @@ function liveSequences(): Promise<number[]> {
 }
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'orca-journal-repair-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-journal-repair-'))
   clock = 1_000
 })
 

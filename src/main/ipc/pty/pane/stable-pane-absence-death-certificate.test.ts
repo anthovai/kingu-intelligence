@@ -1,5 +1,5 @@
 // `attachStablePaneOwner` is the last reader that synthesised a runtime exit from a reattach
-// refusal, and it published code 0 — which `orca-runtime-on-pty-exit` records as a death
+// refusal, and it published code 0 — which `kingu-runtime-on-pty-exit` records as a death
 // certificate. The refusal it acts on is a union: `pty.attach` answers absent both for a pid the
 // relay probed and found gone, and for an id its session map never had, which is every id minted
 // before a relay restart. Certifying the union orphans a live remote shell and cold-starts a second
@@ -21,7 +21,7 @@ import {
   SshPtyProvenExitedOnRelayError
 } from '../../../providers/ssh-pty-errors'
 import type { IPtyProvider } from '../../../providers/types'
-import { OrcaRuntimeService } from '../../../runtime/orca-runtime'
+import { KinguRuntimeService } from '../../../runtime/kingu-runtime'
 import { resolvePersistedStablePaneOwner, spawnForStablePane } from './stable-owner'
 
 const CONNECTION = 'conn-1'
@@ -79,8 +79,8 @@ function paneStore(): { store: Store; read: () => WorkspaceSessionState } {
   }
 }
 
-function runtimeOwning(store: Store): OrcaRuntimeService {
-  const runtime = new OrcaRuntimeService(store as never)
+function runtimeOwning(store: Store): KinguRuntimeService {
+  const runtime = new KinguRuntimeService(store as never)
   runtime.setPtyController({
     write: () => true,
     kill: () => true,
@@ -95,7 +95,7 @@ function runtimeOwning(store: Store): OrcaRuntimeService {
 }
 
 async function adoptAfterAttachRefusal(error: unknown): Promise<{
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   store: Store
   read: () => WorkspaceSessionState
   spawn: ReturnType<typeof vi.fn>

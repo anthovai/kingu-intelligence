@@ -11,8 +11,8 @@ function createAdapter(
   request: ReturnType<typeof vi.fn>
 ): DaemonPtyAdapter {
   const adapter = new DaemonPtyAdapter({
-    socketPath: '/tmp/orca-steady-state-compat.sock',
-    tokenPath: '/tmp/orca-steady-state-compat.token',
+    socketPath: '/tmp/kingu-steady-state-compat.sock',
+    tokenPath: '/tmp/kingu-steady-state-compat.token',
     protocolVersion
   })
   ;(adapter as unknown as ClientInternals).client = { request, disconnect: vi.fn() }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { HEADLESS_LEAF_ID, TEST_WORKTREE_ID, store } from './orca-runtime-test-fixtures.spec'
-import { OrcaRuntimeService } from './orca-runtime'
+import { HEADLESS_LEAF_ID, TEST_WORKTREE_ID, store } from './kingu-runtime-test-fixtures.spec'
+import { KinguRuntimeService } from './kingu-runtime'
 import type { SshRemotePtyLease } from '../../shared/ssh-types'
 
 // Which `expired` SSH leases may answer "this pane is still recoverable". A pane accumulates leases
@@ -46,7 +46,7 @@ function leaseFor(ptyId: string, marks: Partial<SshRemotePtyLease> = {}): SshRem
 }
 
 function readerWithLeases(leases: SshRemotePtyLease[]): LeaseReader {
-  return new OrcaRuntimeService({
+  return new KinguRuntimeService({
     ...store,
     getSshRemotePtyLeases: () => leases
   }) as unknown as LeaseReader
@@ -97,7 +97,7 @@ describe('recent expired SSH lease candidacy', () => {
   it('collects the same tabs the per-tab reader reports, in one sweep of the leases', () => {
     const leases = [leaseFor('pty-1', { supersededBy: 'pty-2' }), leaseFor('pty-2')]
     let sweeps = 0
-    const reader = new OrcaRuntimeService({
+    const reader = new KinguRuntimeService({
       ...store,
       getSshRemotePtyLeases: () => {
         sweeps += 1

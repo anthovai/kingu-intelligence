@@ -7,11 +7,11 @@ import { WindowsShellPathOwnership, createWindowsPathKey } from './windows-shell
 // Why: GUI-launched Electron can miss PATH entries added by shell profiles.
 // Tools installed into ~/.opencode/bin, ~/.cargo/bin, pyenv/volta/fnm
 // shims, and countless other user-local locations end up invisible to our
-// `which` probe even though they work fine from Terminal (see stablyai/orca#829).
+// `which` probe even though they work fine from Terminal (see anthovai/kingu-intelligence#829).
 //
 // Probe the profile-loading shell once instead of hard-coding every tool's install path.
 
-const DELIMITER = '__ORCA_SHELL_PATH__'
+const DELIMITER = '__KINGU_SHELL_PATH__'
 // Why 10s: 5s was chosen without measurement and a real profile overruns it —
 // a bash -ilc loading nvm, rvm, conda and gcloud measures ~1s idle but 6-7s on a
 // loaded machine, so a cold start under load silently fell back to the seeded
@@ -60,7 +60,7 @@ const LAUNCH_PATH_KEY =
 const LAUNCH_PATH = process.env[LAUNCH_PATH_KEY] ?? null
 // Why: rc files that exec into a multiplexer or start a heavy prompt can outrun the
 // probe budget. This lets them detect the probe and take a fast path.
-const PROBE_MARKER_ENV_VAR = 'ORCA_SHELL_PATH_PROBE'
+const PROBE_MARKER_ENV_VAR = 'KINGU_SHELL_PATH_PROBE'
 let launchPathOverride: { key: string; value: string } | null = null
 let configuredWindowsShell = 'powershell.exe'
 let configuredWindowsGitBashPath: string | null = null
@@ -156,7 +156,7 @@ function shellProbeEnv(): NodeJS.ProcessEnv {
   return env
 }
 
-/** Run a synchronous launcher without passing Orca's seeded PATH to its child. */
+/** Run a synchronous launcher without passing Kingu's seeded PATH to its child. */
 export function runWithLaunchPath<T>(action: () => T): T {
   const key = launchPathOverride?.key ?? LAUNCH_PATH_KEY
   const value = launchPathOverride?.value ?? LAUNCH_PATH
@@ -209,7 +209,7 @@ function spawnShellAndReadPath(shell: string): Promise<HydrationResult> {
       // Why: inherit current env so the shell sees the same baseline, then let
       // it layer its own rc files on top. Do NOT forward stdio — some shells
       // (oh-my-zsh setups, powerlevel10k) print a lot to stderr on startup,
-      // and we don't want that in Orca's console.
+      // and we don't want that in Kingu's console.
       env: shellProbeEnv(),
       stdio: ['ignore', 'pipe', 'ignore'],
       detached: false,

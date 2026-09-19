@@ -61,7 +61,7 @@ async function expectNothingHoldsTheDirectory(): Promise<void> {
 }
 
 beforeEach(async () => {
-  base = await mkdtemp(join(tmpdir(), 'orca-journal-handles-'))
+  base = await mkdtemp(join(tmpdir(), 'kingu-journal-handles-'))
   root = join(base, 'journal')
 })
 

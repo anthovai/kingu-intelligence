@@ -1,5 +1,5 @@
 import type { MessageType, OrchestrationDb } from '../../../../orchestration/db'
-import type { OrcaRuntimeService } from '../../../../orca-runtime'
+import type { KinguRuntimeService } from '../../../../kingu-runtime'
 import { OrchestrationError } from '../../../../orchestration/orchestration-error'
 import { formatMessageBanner } from '../../../../orchestration/formatter'
 import { exposeMessages } from './mailbox-message-receipt'
@@ -16,7 +16,7 @@ type RemoteAttachment = NonNullable<
 
 export async function checkWorkerMailbox(args: {
   params: CheckParamsInput
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   db: OrchestrationDb
   handle: string
   paneKey: string | undefined

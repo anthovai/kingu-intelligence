@@ -10,7 +10,7 @@ import { wslHookRelayManager } from '../agent-hooks/wsl-hook-relay-manager'
 import { removeManagedAgentHooksAsync } from '../agent-hooks/managed-agent-hook-controls'
 import { stopStructuredAgentSessionRuntime } from '../runtime/structured-agent-session-runtime'
 import { setStructuredAgentSessionTeardownTrigger } from '../runtime/structured-agent-session-runtime-teardown'
-import { awaitRuntimeFileWatcherUnsubscribes } from '../runtime/orca-runtime-files'
+import { awaitRuntimeFileWatcherUnsubscribes } from '../runtime/kingu-runtime-files'
 import { clearRuntimeMetadataIfOwned } from '../runtime/runtime-metadata'
 import { shutdownPairedRuntimeBrowserClientHosts } from '../browser/paired-runtime-browser-client-host-runtime'
 import { browserManager } from '../browser/browser-manager'
@@ -18,6 +18,7 @@ import { stopCodexStateDbBackfillRecoveries } from '../codex/codex-state-db-back
 import { awaitPackedRefsLockRelease } from '../git/local-repo-ref-maintenance'
 import { settleTeardownWithinDeadline, settleWithinMs } from '../quit-teardown-deadline'
 import { quitTeardownStartGate } from '../quit-teardown-start-gate'
+import { closeIdeSession } from '../ide/ide-session-service'
 import { setUnreadDockBadgeCount } from '../dock/unread-badge'
 import { destroySystemTray } from '../tray/system-tray'
 import { shutdownTelemetry } from '../telemetry/client'
@@ -125,6 +126,10 @@ function installWillQuitHandler(): void {
     // Why: an agent still working at quit gets no terminating hook, so stats.flushAsync() closes those sessions out synchronously (only the write is deferred) — otherwise their duration is lost.
     state.starNag?.stop()
     state.automations?.stop()
+    // Why here and not on view change: the IDE server is a detached child, so a
+    // quit that skipped it would leave a loopback server listening with a live
+    // token after the app that minted it is gone.
+    void closeIdeSession()
     // Why: plugin hosts are forked children; dispose sends shutdown and
     // escalates to SIGKILL so they cannot outlive the app. The promise joins
     // the teardown barrier below — quitting before it resolves would let
@@ -151,7 +156,7 @@ function installWillQuitHandler(): void {
     ).then(() => {})
     state.uninstallRepoMaintenanceIdleGate = null
     agentHookServer.stop()
-    // Why Windows only: POSIX hooks short-circuit on ORCA_PANE_KEY, while Windows must register a
+    // Why Windows only: POSIX hooks short-circuit on KINGU_PANE_KEY, while Windows must register a
     // bare script path that cannot express the guard and would otherwise keep spawning after quit.
     // Why bounded here: every other teardown member carries its own ceiling, and this one reaches
     // $GROK_HOME -- which can be a stalled network mount, where the fs calls never settle and the

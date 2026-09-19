@@ -5,7 +5,7 @@ import type {
   RuntimeMobileSessionTabsSnapshot
 } from '../../shared/runtime-types'
 import type { WorkspaceSessionState } from '../../shared/workspace-session-state-types'
-import { OrcaRuntimeService } from './orca-runtime'
+import { KinguRuntimeService } from './kingu-runtime'
 
 /**
  * A paired client may only drop a mirrored terminal on host evidence: a `retiredTerminalSurfaces`
@@ -82,13 +82,13 @@ function makePersistedSession(): WorkspaceSessionState {
 }
 
 function createHost(): {
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   handle: string
   retirePersistedSurface: () => void
 } {
   let session = makePersistedSession()
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the store stub carries the four members this publication-order suite drives; the rest of Store is unreached.
-  const runtime = new OrcaRuntimeService({
+  const runtime = new KinguRuntimeService({
     getRepos: () => [LIVE_REPO],
     getWorkspaceSession: () => session,
     setWorkspaceSession: (next: WorkspaceSessionState) => {
@@ -137,7 +137,7 @@ function createHost(): {
 }
 
 /** What the host renderer publishes once it has retired the tab it was told to close. */
-function republishWithoutTheSurface(runtime: OrcaRuntimeService): void {
+function republishWithoutTheSurface(runtime: KinguRuntimeService): void {
   runtime.syncWindowGraph(1, {
     tabs: [],
     leaves: [],

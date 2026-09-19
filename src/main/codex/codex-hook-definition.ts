@@ -8,12 +8,12 @@ import {
   type HookDefinition
 } from '../agent-hooks/installer-utils'
 import { POSIX_HOOK_STDIN_DRAIN_COMMAND } from '../agent-hooks/hook-stdin-contract'
-import { getOrcaManagedCodexHomePath, getSystemCodexHomePath } from './codex-home-paths'
+import { getKinguManagedCodexHomePath, getSystemCodexHomePath } from './codex-home-paths'
 import { CODEX_HOOK_EVENT_LABEL, getCodexManagedScriptFileName } from './codex-hook-identity'
 import { getManagedScript } from './codex-hook-script'
 import type { CodexEventLabel } from './config-toml-trust'
 
-// Why: Pre/PostToolUse feed the live in-flight-tool readout; PermissionRequest exits with no decision so Codex still shows its approval UI while Orca flips the pane to waiting.
+// Why: Pre/PostToolUse feed the live in-flight-tool readout; PermissionRequest exits with no decision so Codex still shows its approval UI while Kingu flips the pane to waiting.
 export const CODEX_EVENTS = [
   'SessionStart',
   'UserPromptSubmit',
@@ -25,7 +25,7 @@ export const CODEX_EVENTS = [
   'Stop'
 ] as const
 
-export function getConfigPath(runtimeHomePath: string = getOrcaManagedCodexHomePath()): string {
+export function getConfigPath(runtimeHomePath: string = getKinguManagedCodexHomePath()): string {
   return join(runtimeHomePath, 'hooks.json')
 }
 
@@ -33,12 +33,12 @@ export function writeCodexHooksJson(
   configPath: string,
   hooks: Record<string, HookDefinition[]>
 ): void {
-  // Why: Codex rejects unknown top-level hooks.json fields, so plugin bookkeeping like `_managed` must not survive Orca's rewrite.
+  // Why: Codex rejects unknown top-level hooks.json fields, so plugin bookkeeping like `_managed` must not survive Kingu's rewrite.
   writeHooksJson(configPath, { hooks })
 }
 
 export function getCodexConfigTomlPath(
-  runtimeHomePath: string = getOrcaManagedCodexHomePath()
+  runtimeHomePath: string = getKinguManagedCodexHomePath()
 ): string {
   return join(runtimeHomePath, 'config.toml')
 }

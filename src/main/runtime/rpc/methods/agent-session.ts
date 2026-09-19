@@ -9,7 +9,7 @@ import {
   AGENT_SESSION_OPERATION_FUTURE_SKEW_MS,
   parseAgentSessionOperationTimestamp
 } from '../../../../shared/agent-session-host-authority'
-import type { OrcaRuntimeService } from '../../orca-runtime'
+import type { KinguRuntimeService } from '../../kingu-runtime'
 import { defineMethod } from '../core'
 import {
   CreateAgentSessionParams,
@@ -17,7 +17,7 @@ import {
 } from '../../../../shared/rpc-contract/agent-session-params'
 export { CreateAgentSessionParams, EnsureAgentSessionParams }
 
-type AgentSessionRuntime = OrcaRuntimeService & {
+type AgentSessionRuntime = KinguRuntimeService & {
   ensureAgentSession(
     request: RuntimeEnsureAgentSessionRequest,
     caller?: RuntimeAgentSessionRpcCaller

@@ -133,9 +133,9 @@ describe('worktree ps reports structured sessions', () => {
 describe('terminal listing is deliberately left alone', () => {
   it('never reads the agent-status store that now carries structured rows', async () => {
     const { readFile } = await import('node:fs/promises')
-    // orca-runtime-subscribe-to-terminal-resize.ts owns listTerminals.
+    // kingu-runtime-subscribe-to-terminal-resize.ts owns listTerminals.
     const listing = await readFile(
-      new URL('./orca-runtime-subscribe-to-terminal-resize.ts', import.meta.url),
+      new URL('./kingu-runtime-subscribe-to-terminal-resize.ts', import.meta.url),
       'utf8'
     )
     // Guard the guard: an empty read would make every assertion below vacuously true.

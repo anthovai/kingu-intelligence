@@ -11,7 +11,7 @@ type WiredRuntime = {
 /**
  * The agent-status wiring every real host performs, in one place for the runtime specs.
  *
- * `main-process-runtime-service.ts` and `orcad-entry.ts` both hand the runtime's OSC parse to
+ * `main-process-runtime-service.ts` and `kingud-entry.ts` both hand the runtime's OSC parse to
  * the store, read the listing back out of it, and install the republish signal. A runtime
  * constructed without these observes agent status and publishes it nowhere, so a spec that
  * exercises OSC 9999 has to compose the same three parts.

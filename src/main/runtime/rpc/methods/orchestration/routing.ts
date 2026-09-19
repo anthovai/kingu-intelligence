@@ -1,6 +1,6 @@
 import type { MessageType } from '../../../orchestration/db'
 import type { RunRow } from '../../../orchestration/types'
-import type { OrcaRuntimeService } from '../../../orca-runtime'
+import type { KinguRuntimeService } from '../../../kingu-runtime'
 import { MESSAGE_TYPES } from '../../../orchestration/types'
 import { OrchestrationError } from '../../../orchestration/orchestration-error'
 import { LEGACY_CONTRACT_VERSION } from '../../../orchestration/db'
@@ -18,7 +18,7 @@ export function parseMessageTypes(rawTypes: string | undefined): MessageType[] |
 }
 
 export function resolveMessageRun(
-  runtime: OrcaRuntimeService,
+  runtime: KinguRuntimeService,
   params: {
     from?: string
     senderPaneKey?: string
@@ -83,7 +83,7 @@ export function resolveMessageRun(
 }
 
 export function legacyWorkerDeliveryContract(
-  runtime: OrcaRuntimeService,
+  runtime: KinguRuntimeService,
   runId: string | undefined,
   recipient: string
 ): 'legacy_direct' | undefined {

@@ -36,7 +36,7 @@ vi.mock('./repo-worktree-admin-fingerprint', () => ({
   readRepoWorktreeAdminFingerprint: vi.fn(async () => null)
 }))
 
-import { OrcaRuntimeService } from './orca-runtime'
+import { KinguRuntimeService } from './kingu-runtime'
 
 const TARGET_ID = 'remote-1'
 const REPO_ID = 'repo-remote'
@@ -118,10 +118,10 @@ type RuntimeInternals = {
 }
 
 function makeRuntime(repoOverrides: Record<string, unknown>): {
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   list: () => Promise<{ id: string; path: string; hostId?: string }[]>
 } {
-  const runtime = new OrcaRuntimeService(makeStore(repoOverrides) as never)
+  const runtime = new KinguRuntimeService(makeStore(repoOverrides) as never)
   return {
     runtime,
     list: () => (runtime as unknown as RuntimeInternals).listResolvedWorktrees()

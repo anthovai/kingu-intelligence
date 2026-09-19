@@ -269,7 +269,7 @@ export function createStructuredAgentSessionRestartResume(
               }
               await session.journal.appendItem(
                 {
-                  provider: 'orca',
+                  provider: 'kingu',
                   clientMessageId: `restart-continuation:${sessionId}:${surfaces.now()}`
                 },
                 { kind: 'status', text },

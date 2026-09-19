@@ -101,7 +101,7 @@ export function hasSustainedTitleIdle(
 }
 
 /**
- * Tier 3, cold start: Orca launched a known agent on this PTY, so a quiet non-shell
+ * Tier 3, cold start: Kingu launched a known agent on this PTY, so a quiet non-shell
  * foreground process is an agent still booting, not one sitting at its prompt. Resolving
  * on it is what let `dispatch --inject` write into a TUI that had not yet attached its
  * reader and silently lose the prompt (#9976).

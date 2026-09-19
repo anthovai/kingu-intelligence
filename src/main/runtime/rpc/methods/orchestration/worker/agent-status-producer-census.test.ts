@@ -43,7 +43,7 @@ import { installMainWindowAgentStatusListeners } from '../../../../../startup/ma
 import { mainProcessState } from '../../../../../startup/main-process-state'
 import { agentHookServer } from '../../../../../agent-hooks/server'
 import { OrchestrationDb } from '../../../../orchestration/db'
-import { OrcaRuntimeService } from '../../../../orca-runtime'
+import { KinguRuntimeService } from '../../../../kingu-runtime'
 import { ORCHESTRATION_WORKER_LIST_METHOD } from './worker-list-method'
 import { projectFleetWorkerPage } from './worker-observation'
 
@@ -95,27 +95,27 @@ const CENSUS: readonly CensusRow[] = [
     role: 'binds the hook server snapshot into the runtime deps'
   },
   {
-    path: 'main/orcad/orcad-entry.ts',
+    path: 'main/kingud/kingud-entry.ts',
     kind: 'wiring',
-    role: 'binds the same snapshot, OSC producer and structured sink into the headless orcad runtime deps'
+    role: 'binds the same snapshot, OSC producer and structured sink into the headless kingud runtime deps'
   },
   {
-    path: 'main/runtime/orca-runtime-state-fields.ts',
+    path: 'main/runtime/kingu-runtime-state-fields.ts',
     kind: 'wiring',
     role: 'stores the snapshot deps on the runtime'
   },
   {
-    path: 'main/runtime/orca-runtime-preserved-branch-cleanup.ts',
+    path: 'main/runtime/kingu-runtime-preserved-branch-cleanup.ts',
     kind: 'wiring',
     role: 'declares the snapshot dep fields'
   },
   {
-    path: 'main/runtime/orca-runtime-get-orchestration-dispatch-authority.ts',
+    path: 'main/runtime/kingu-runtime-get-orchestration-dispatch-authority.ts',
     kind: 'produces',
     role: 'getOrchestrationFleetAgentStatusSnapshot — delegates to the checked snapshot module'
   },
   {
-    path: 'main/runtime/orca-runtime-stop-requested-pty-ids.ts',
+    path: 'main/runtime/kingu-runtime-stop-requested-pty-ids.ts',
     kind: 'wiring',
     role: 'feeds the enriched fleet rows to the orchestration projection'
   },
@@ -135,27 +135,27 @@ const CENSUS: readonly CensusRow[] = [
     role: 'worker-show fleet verdict (driven below)'
   },
   {
-    path: 'main/runtime/orca-runtime-get-worktree-ps.ts',
+    path: 'main/runtime/kingu-runtime-get-worktree-ps.ts',
     kind: 'consumes',
     role: 'worktree.ps inline agent rows (driven below)'
   },
   {
-    path: 'main/runtime/orca-runtime-get-terminal-interactive-wait.ts',
+    path: 'main/runtime/kingu-runtime-get-terminal-interactive-wait.ts',
     kind: 'consumes',
     role: 'exact-worker provider session selection, matched on pane key'
   },
   {
-    path: 'main/runtime/orca-runtime-serialize-agent-prompt-submission.ts',
+    path: 'main/runtime/kingu-runtime-serialize-agent-prompt-submission.ts',
     kind: 'consumes',
     role: 'prompt-submission serialization, matched on pane key'
   },
   {
-    path: 'main/runtime/orca-runtime-resolve-recovered-structured-tui-transcript.ts',
+    path: 'main/runtime/kingu-runtime-resolve-recovered-structured-tui-transcript.ts',
     kind: 'consumes',
     role: 'recovered transcript resolution from provider-session rows, matched on pane key'
   },
   {
-    path: 'main/runtime/orca-runtime-prune-mobile-session-tab-group-layout.ts',
+    path: 'main/runtime/kingu-runtime-prune-mobile-session-tab-group-layout.ts',
     kind: 'consumes',
     role: 'mobile tab-group pruning and its live agent row, plus the pane identity accessors'
   }
@@ -190,8 +190,8 @@ function publishedHookRow(): AgentStatusIpcPayload {
 }
 
 /** A runtime whose only stubs are the pane-to-terminal lookups the real terminal registry owns. */
-function censusRuntime(): OrcaRuntimeService {
-  const runtime = new OrcaRuntimeService(null, undefined, {
+function censusRuntime(): KinguRuntimeService {
+  const runtime = new KinguRuntimeService(null, undefined, {
     getAgentStatusSnapshot: () => [publishedHookRow()]
   })
   vi.spyOn(runtime, 'getAgentStatusTerminalHandleForPaneKey').mockImplementation((paneKey) =>
@@ -332,7 +332,7 @@ describe('agent status producer census', () => {
     ])
     // The hook row names its worktree by id, so learn the id the runtime minted before publishing.
     let rows: AgentStatusIpcPayload[] = []
-    const runtime = new OrcaRuntimeService(censusStore() as never, undefined, {
+    const runtime = new KinguRuntimeService(censusStore() as never, undefined, {
       getAgentStatusSnapshot: () => rows
     })
 

@@ -178,7 +178,7 @@ describe('browser session wire identity under Electron', () => {
 })
 
 async function runProbe(arm: ProbeArm): Promise<ProbeResult> {
-  const root = mkdtempSync(join(tmpdir(), `orca-wire-identity-${arm}-`))
+  const root = mkdtempSync(join(tmpdir(), `kingu-wire-identity-${arm}-`))
   fixtureRoots.push(root)
   const processIdentityModulePath = join(root, 'browser-process-user-agent.cjs')
   const exceptionModulePath = join(root, 'browser-session-ua.cjs')
@@ -282,7 +282,7 @@ function launchFixture(fixturePath: string, root: string, cdpPort: number): Chil
           `--remote-debugging-port=${cdpPort}`
         ],
     {
-      env: { ...env, ORCA_BACKGROUND_LAUNCH: '1' },
+      env: { ...env, KINGU_BACKGROUND_LAUNCH: '1' },
       stdio: ['ignore', 'pipe', 'pipe']
     }
   )
@@ -303,7 +303,7 @@ const processIdentity = require(${JSON.stringify(options.processIdentityModulePa
 const { cleanElectronUserAgent } = require(${JSON.stringify(options.exceptionModulePath)})
 const arm = ${JSON.stringify(options.arm)}
 const startupMarks = []
-app.setName('OrcaWireIdentityFixture')
+app.setName('KinguWireIdentityFixture')
 const preReadyNativeUserAgent = app.userAgentFallback
 let identity
 if (arm !== 'late-session-setter') {
@@ -327,7 +327,7 @@ async function run() {
   const timeout = setTimeout(() => { writeFileSync(${JSON.stringify(options.resultPath)}, JSON.stringify({ error: 'timeout', startupMarks })); app.exit(2) }, 10000)
   await app.whenReady()
   startupMarks.push('ready')
-  app.setName('OrcaWireIdentityFixtureAfterReady')
+  app.setName('KinguWireIdentityFixtureAfterReady')
   const fallbackAfterReadyNameChange = app.userAgentFallback
   await waitForBarrier()
   const sess = session.fromPartition('persist:wire-identity-test')

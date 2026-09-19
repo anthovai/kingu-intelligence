@@ -18,7 +18,7 @@ import {
 
 const windows = getRemoteHostPlatform('win32-x64')
 const owner = '.sftp-namespace-123e4567e89b12d3a456426614174000'
-const pool = 'C:\\Users\\orca\\.orca-remote\\.upload-stages'
+const pool = 'C:\\Users\\kingu\\.kingu-remote\\.upload-stages'
 const stage: RelayUploadStageSlot = {
   poolDir: pool,
   slotName: 'slot-0',
@@ -36,21 +36,21 @@ describe('Windows remote command line limit', () => {
     ['reserve upload stage', reserveRelayUploadStageCommand(windows, pool, owner)],
     [
       'promote upload stage',
-      promoteOwnedRelayUploadStageCommand(windows, stage, owner, 'C:\\Users\\orca\\.orca-remote')
+      promoteOwnedRelayUploadStageCommand(windows, stage, owner, 'C:\\Users\\kingu\\.kingu-remote')
     ],
     ['cleanup upload stage', cleanupOwnedRelayUploadStageCommand(windows, stage, owner)],
     [
       'steal stale install lock',
-      tryStealInstallLockCommand(windows, 'C:\\Users\\orca\\.orca-remote\\relay', 1_200)
+      tryStealInstallLockCommand(windows, 'C:\\Users\\kingu\\.kingu-remote\\relay', 1_200)
     ],
     // F11 flagged these two as uncovered. They carry one path literal each, so they are the file
     // commands whose length a caller can actually move.
-    ['write file', makeWindowsWriteFileCommand('C:\\Users\\orca\\.orca-remote\\relay.js')],
+    ['write file', makeWindowsWriteFileCommand('C:\\Users\\kingu\\.kingu-remote\\relay.js')],
     [
       'publish staged file',
       makeWindowsPublishStagedFileCommand(
-        'C:\\Users\\orca\\.orca-remote\\relay.js.orca-partial-0123456789ab',
-        'C:\\Users\\orca\\.orca-remote\\relay.js',
+        'C:\\Users\\kingu\\.kingu-remote\\relay.js.kingu-partial-0123456789ab',
+        'C:\\Users\\kingu\\.kingu-remote\\relay.js',
         'create'
       )
     ]
@@ -66,7 +66,7 @@ describe('Windows remote command line limit', () => {
   it('carries an oversized script through gzip without altering it', () => {
     const script = Array.from(
       { length: 200 },
-      (_unused, index) => `Write-Output ${index}; $slot = 'C:\\Users\\orca\\stage-${index}'`
+      (_unused, index) => `Write-Output ${index}; $slot = 'C:\\Users\\kingu\\stage-${index}'`
     ).join('\n')
     const command = powerShellCommand(script)
     expect(command.length).toBeLessThanOrEqual(CMD_EXE_COMMAND_LINE_MAX_CHARS)
@@ -77,7 +77,7 @@ describe('Windows remote command line limit', () => {
     ).toString('utf16le')
     const payload = bootstrap.match(/FromBase64String\('([A-Za-z0-9+/=]+)'\)/u)?.[1] ?? ''
     expect(gunzipSync(Buffer.from(payload, 'base64')).toString('utf-8')).toBe(script)
-    expect(bootstrap).toContain('Invoke-Expression $OrcaScriptText')
+    expect(bootstrap).toContain('Invoke-Expression $KinguScriptText')
   })
 
   it('refuses a script no encoding can fit instead of letting cmd.exe reject it', () => {
@@ -87,7 +87,7 @@ describe('Windows remote command line limit', () => {
       return String.fromCharCode(97 + (seed % 26))
     }).join('')
     expect(() => powerShellCommand(`Write-Output '${incompressible}'`)).toThrow(
-      /Orca budgets 8000 for a line sshd hands to cmd\.exe/u
+      /Kingu budgets 8000 for a line sshd hands to cmd\.exe/u
     )
   })
 })
@@ -100,7 +100,7 @@ describe('Windows remote command line limit', () => {
  */
 describe('Windows file command budget headroom', () => {
   it('absorbs a path far longer than Windows will accept', () => {
-    const deep = `C:\\Users\\orca\\${'segment\\'.repeat(30)}relay.js`
+    const deep = `C:\\Users\\kingu\\${'segment\\'.repeat(30)}relay.js`
 
     expect(deep.length).toBeGreaterThan(260)
     expect(makeWindowsWriteFileCommand(deep).length).toBeLessThanOrEqual(
@@ -116,7 +116,7 @@ describe('Windows file command budget headroom', () => {
     ).join('\\')
 
     expect(() => makeWindowsWriteFileCommand(`C:\\${incompressible}\\f.bin`)).toThrow(
-      /Orca budgets 8000/
+      /Kingu budgets 8000/
     )
   })
 })

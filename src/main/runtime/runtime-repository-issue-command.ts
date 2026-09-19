@@ -1,6 +1,6 @@
 import type { GitRuntimeOptions } from '../git/git-runtime-options'
 import type { Repo } from '../../shared/repo-types'
-import { parseOrcaYaml } from '../hooks'
+import { parseKinguYaml } from '../hooks'
 import {
   isIssueCommandIgnoredByGit,
   readIssueCommand,
@@ -34,7 +34,7 @@ export class RuntimeRepositoryIssueCommand {
     if (!repo.connectionId) {
       return readIssueCommand(repo.path)
     }
-    const issueCommandPath = joinWorktreeRelativePath(repo.path, '.orca/issue-command')
+    const issueCommandPath = joinWorktreeRelativePath(repo.path, '.kingu/issue-command')
     const fsProvider = getSshFilesystemProvider(repo.connectionId)
     if (!fsProvider) {
       return {
@@ -70,7 +70,7 @@ export class RuntimeRepositoryIssueCommand {
       await writeIssueCommand(repo.path, content, () => this.deps.getLocalGitArgs(repo)[0] ?? {})
       return { ok: true }
     }
-    const issueCommandPath = joinWorktreeRelativePath(repo.path, '.orca/issue-command')
+    const issueCommandPath = joinWorktreeRelativePath(repo.path, '.kingu/issue-command')
     const fsProvider = getSshFilesystemProvider(repo.connectionId)
     if (!fsProvider) {
       return { ok: true }
@@ -84,9 +84,9 @@ export class RuntimeRepositoryIssueCommand {
       })
       return { ok: true }
     }
-    await fsProvider.createDir(joinWorktreeRelativePath(repo.path, '.orca'))
+    await fsProvider.createDir(joinWorktreeRelativePath(repo.path, '.kingu'))
     if (!(await isIssueCommandIgnoredByGit(repo.path, repo.connectionId))) {
-      await ensureRemoteOrcaDirIgnored(fsProvider, repo.path)
+      await ensureRemoteKinguDirIgnored(fsProvider, repo.path)
     }
     await fsProvider.writeFile(issueCommandPath, `${trimmed}\n`)
     return { ok: true }
@@ -110,14 +110,14 @@ async function readRemoteShared(
   repoPath: string
 ): Promise<string | null> {
   try {
-    const result = await fsProvider.readFile(joinWorktreeRelativePath(repoPath, 'orca.yaml'))
-    return result.isBinary ? null : parseOrcaYaml(result.content)?.issueCommand?.trim() || null
+    const result = await fsProvider.readFile(joinWorktreeRelativePath(repoPath, 'kingu.yaml'))
+    return result.isBinary ? null : parseKinguYaml(result.content)?.issueCommand?.trim() || null
   } catch {
     return null
   }
 }
 
-async function ensureRemoteOrcaDirIgnored(
+async function ensureRemoteKinguDirIgnored(
   fsProvider: IFilesystemProvider,
   repoPath: string
 ): Promise<void> {
@@ -127,23 +127,23 @@ async function ensureRemoteOrcaDirIgnored(
     result = await fsProvider.readFile(gitignorePath)
   } catch (error) {
     if (!isENOENT(error)) {
-      console.warn('[runtime] Could not inspect remote .gitignore for .orca', error)
+      console.warn('[runtime] Could not inspect remote .gitignore for .kingu', error)
       return
     }
     try {
-      await fsProvider.writeFile(gitignorePath, '.orca\n')
+      await fsProvider.writeFile(gitignorePath, '.kingu\n')
     } catch (writeError) {
-      console.warn('[runtime] Could not update remote .gitignore to exclude .orca', writeError)
+      console.warn('[runtime] Could not update remote .gitignore to exclude .kingu', writeError)
     }
     return
   }
-  if (result.isBinary || /^\.orca\/?$/m.test(result.content)) {
+  if (result.isBinary || /^\.kingu\/?$/m.test(result.content)) {
     return
   }
   const separator = result.content.endsWith('\n') ? '' : '\n'
   try {
-    await fsProvider.writeFile(gitignorePath, `${result.content}${separator}.orca\n`)
+    await fsProvider.writeFile(gitignorePath, `${result.content}${separator}.kingu\n`)
   } catch (writeError) {
-    console.warn('[runtime] Could not update remote .gitignore to exclude .orca', writeError)
+    console.warn('[runtime] Could not update remote .gitignore to exclude .kingu', writeError)
   }
 }

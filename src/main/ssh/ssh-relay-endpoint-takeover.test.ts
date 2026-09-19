@@ -22,12 +22,12 @@ import { RELAY_DAEMON_SERVICE_ENTRY_FILENAMES } from '../../shared/relay-artifac
 import type { SshConnection } from './ssh-connection'
 import { getRemoteHostPlatform } from './ssh-remote-platform'
 
-const SOCK = '/home/u/.orca-remote/relay-0.1.0+aaaa/relay-deadbeef.sock'
+const SOCK = '/home/u/.kingu-remote/relay-0.1.0+aaaa/relay-deadbeef.sock'
 const HOST = getRemoteHostPlatform('linux-x64')
 const CONN = {} as SshConnection
 
 function probe(lines: string[]): string {
-  return ['ORCA-INCUMBENT-BEGIN', ...lines, 'ORCA-INCUMBENT-END'].join('\n')
+  return ['KINGU-INCUMBENT-BEGIN', ...lines, 'KINGU-INCUMBENT-END'].join('\n')
 }
 
 function issuedCommands(): string[] {

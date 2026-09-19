@@ -12,7 +12,7 @@ import type {
   ClaudeStreamJsonLaunch,
   openClaudeStreamJsonConnection
 } from '../claude/claude-stream-json-connection'
-import { claudeSessionIdForOrcaSession } from '../claude/claude-structured-launch-resolution'
+import { claudeSessionIdForKinguSession } from '../claude/claude-structured-launch-resolution'
 import {
   CLAUDE_SPAWN_TOKEN_ENV,
   claudeProviderHandleLink
@@ -23,7 +23,7 @@ import type {
   StructuredAgentSessionHandoffTransport,
   StructuredTuiOwner
 } from '../native-chat/agent-session-wire/structured-agent-session-handoff-types'
-import type { OrcaRuntimeService } from './orca-runtime'
+import type { KinguRuntimeService } from './kingu-runtime'
 import type { RpcRequest, RpcResponse } from './rpc/core'
 import type { ClaudeStructuredAuthPolicy } from '../claude-accounts/claude-structured-auth-policy'
 import { RpcDispatcher } from './rpc/dispatcher'
@@ -35,7 +35,7 @@ import {
 } from './structured-agent-session-runtime'
 
 const SESSION = 'claude-integration-1'
-const PROVIDER_SESSION = claudeSessionIdForOrcaSession(SESSION)
+const PROVIDER_SESSION = claudeSessionIdForKinguSession(SESSION)
 const WORKSPACE = 'workspace-claude'
 // Why 'runtime': this file exercises the Claude structured integration over agentSession.*, not the
 // mobile surface — nothing here asserts anything mobile-specific, and its sibling integration
@@ -320,7 +320,7 @@ beforeEach(async () => {
     ANTHROPIC_AUTH_TOKEN: 'configured-token',
     ANTHROPIC_BASE_URL: 'https://gateway.example.test'
   }
-  root = await mkdtemp(join(tmpdir(), 'orca-claude-structured-integration-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-claude-structured-integration-'))
   transcriptPath = join(root, 'claude-home', 'projects', 'workspace', `${PROVIDER_SESSION}.jsonl`)
   await mkdir(join(root, 'claude-home', 'projects', 'workspace'), { recursive: true })
   resolveSessionFilePath.mockResolvedValue(transcriptPath)
@@ -418,7 +418,7 @@ beforeEach(async () => {
     cleanupSubscriptionsByPrefix: () => {}
   }
   dispatcher = new RpcDispatcher({
-    runtime: runtime as unknown as OrcaRuntimeService,
+    runtime: runtime as unknown as KinguRuntimeService,
     methods: STRUCTURED_AGENT_SESSION_METHODS
   })
 })
@@ -601,7 +601,7 @@ describe('a structured Claude session over agentSession.*', () => {
     )
 
     // A background task can wake Claude after the preceding dispatch settled.
-    // This assistant frame opens the provider-owned turn without an Orca send
+    // This assistant frame opens the provider-owned turn without an Kingu send
     // echo; Stop must target that frame's id rather than the settled user row.
     claude.live().handlers.onMessage?.({
       type: 'assistant',

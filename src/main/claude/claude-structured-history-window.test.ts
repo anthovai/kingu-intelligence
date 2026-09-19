@@ -14,7 +14,7 @@ import {
 } from './claude-structured-history-window'
 
 const PROVIDER_SESSION = 'provider-1'
-const ORCA_SESSION = 'session-1'
+const KINGU_SESSION = 'session-1'
 
 let accountHome: string
 
@@ -41,7 +41,7 @@ function read(contents: string, previousLeafUuid: string | null, turnInFlight = 
     contents,
     providerSessionId: PROVIDER_SESSION,
     previousLeafUuid,
-    sessionId: ORCA_SESSION,
+    sessionId: KINGU_SESSION,
     turnInFlight
   })
 }
@@ -50,7 +50,7 @@ function read(contents: string, previousLeafUuid: string | null, turnInFlight = 
 function sendFingerprint(text: string): string {
   return structuredAgentSessionPayloadFingerprint({
     method: 'agentSession.send',
-    sessionId: ORCA_SESSION,
+    sessionId: KINGU_SESSION,
     fields: { body: structuredAgentSessionSendBody(text, []) }
   })
 }
@@ -58,7 +58,7 @@ function sendFingerprint(text: string): string {
 const ANCHOR = prompt('anchor', null, 'earlier turn')
 
 beforeEach(async () => {
-  accountHome = await mkdtemp(join(tmpdir(), 'orca-claude-history-window-'))
+  accountHome = await mkdtemp(join(tmpdir(), 'kingu-claude-history-window-'))
 })
 
 afterEach(async () => {
@@ -77,7 +77,7 @@ describe('claudeProviderHistoryWindowFromJsonl', () => {
 
     const window = await resolveClaudeProviderHistoryWindow({
       identity: {
-        sessionId: ORCA_SESSION,
+        sessionId: KINGU_SESSION,
         workspaceId: 'workspace-1',
         hostId: 'host-1',
         agent: 'claude',
@@ -97,7 +97,7 @@ describe('claudeProviderHistoryWindowFromJsonl', () => {
     // would also silently turn every reconciliation into `not_delivered`.
     const input = {
       method: 'agentSession.send',
-      sessionId: ORCA_SESSION,
+      sessionId: KINGU_SESSION,
       fields: { body: structuredAgentSessionSendBody('ship it', []) }
     }
 

@@ -4,7 +4,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { OrcaRuntimeService } from '../../orca-runtime'
+import { KinguRuntimeService } from '../../kingu-runtime'
 import { OrchestrationDb } from '../../orchestration/db'
 import { ORCHESTRATION_METHODS } from './orchestration'
 
@@ -47,14 +47,14 @@ const STRUCTURED_DEFAULT = {
 describe('worker-start honours the settings default', () => {
   const coordinatorPaneKey = 'tab_coord:aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
   let db: OrchestrationDb
-  let runtime: OrcaRuntimeService
+  let runtime: KinguRuntimeService
   let runId: string
 
   beforeEach(() => {
     createStructuredWorkerSessionForWorktree.mockClear()
     createExistingWorktreeWorkerTerminal.mockClear()
     db = new OrchestrationDb(':memory:')
-    runtime = new OrcaRuntimeService()
+    runtime = new KinguRuntimeService()
     runtime.setOrchestrationDb(db)
     runId = db.createRun({
       objective: 'Settings-driven worker mode',
@@ -85,7 +85,7 @@ describe('worker-start honours the settings default', () => {
       status: 'running',
       exitCode: null
     })
-    vi.spyOn(runtime, 'getTerminalOrchestrationCliCommand').mockReturnValue('orca')
+    vi.spyOn(runtime, 'getTerminalOrchestrationCliCommand').mockReturnValue('kingu')
     vi.spyOn(runtime, 'sendTerminalAgentPrompt').mockResolvedValue({
       handle: TERMINAL_HANDLE,
       accepted: true,

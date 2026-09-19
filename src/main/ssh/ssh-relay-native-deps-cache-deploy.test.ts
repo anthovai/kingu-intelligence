@@ -16,9 +16,9 @@ vi.mock('fs', () => ({
 
 vi.mock('./relay-protocol', () => ({
   RELAY_VERSION: '0.1.0',
-  RELAY_REMOTE_DIR: '.orca-remote',
+  RELAY_REMOTE_DIR: '.kingu-remote',
   parseUnameToRelayPlatform: vi.fn().mockReturnValue('linux-x64'),
-  RELAY_SENTINEL: 'ORCA-RELAY v0.1.0 READY\n',
+  RELAY_SENTINEL: 'KINGU-RELAY v0.1.0 READY\n',
   RELAY_SENTINEL_TIMEOUT_MS: 10_000
 }))
 
@@ -46,7 +46,7 @@ vi.mock('./ssh-relay-install-marker', async (importOriginal) => ({
 
 vi.mock('./ssh-relay-versioned-install', () => ({
   readLocalFullVersion: vi.fn().mockReturnValue('0.1.0+testhash'),
-  computeRemoteRelayDir: (home: string, v: string) => `${home}/.orca-remote/relay-${v}`,
+  computeRemoteRelayDir: (home: string, v: string) => `${home}/.kingu-remote/relay-${v}`,
   isRelayAlreadyInstalled: vi.fn().mockResolvedValue(false),
   finalizeInstall: vi.fn().mockResolvedValue(undefined),
   abandonInstall: vi.fn().mockResolvedValue(undefined),
@@ -87,7 +87,7 @@ import {
 // Everything after the probe on a healthy install: stderr cleanup, stage cleanup, launch.
 // Stdout of the relay-side pty-master cloexec patch, which runs on Linux hosts once a
 // freshly installed node-pty loads (#17915).
-const NPTY_CLOEXEC_PATCHED = 'ORCA-NPTY-CLOEXEC:patched\n'
+const NPTY_CLOEXEC_PATCHED = 'KINGU-NPTY-CLOEXEC:patched\n'
 const LAUNCH_TAIL: ExecResponse[] = ['', 'DEAD', '', 'READY']
 
 describe('relay native-deps cache on the deploy path', () => {
@@ -144,7 +144,7 @@ describe('relay native-deps cache on the deploy path', () => {
     feed(
       firstInstall(RELAY_NATIVE_CACHE_LINKED, [
         '', // chmod prebuilds, through the symlink
-        'ORCA-NPTY-PROBE-OK\n',
+        'KINGU-NPTY-PROBE-OK\n',
         '', // rm probe stderr
         ...LAUNCH_TAIL
       ])
@@ -156,8 +156,10 @@ describe('relay native-deps cache on the deploy path', () => {
     expect(commands.some((c) => c.includes('npm install'))).toBe(false)
     expect(commands.some((c) => c.includes('npm rebuild'))).toBe(false)
     // The bundle still gets its own directory; only the native tree is shared.
-    expect(commands.some((c) => c.includes('.orca-remote/relay-0.1.0+testhash'))).toBe(true)
-    expect(commands.some((c) => /\.orca-remote\/native\/linux-x64-[0-9a-f]{16}/.test(c))).toBe(true)
+    expect(commands.some((c) => c.includes('.kingu-remote/relay-0.1.0+testhash'))).toBe(true)
+    expect(commands.some((c) => /\.kingu-remote\/native\/linux-x64-[0-9a-f]{16}/.test(c))).toBe(
+      true
+    )
   })
 
   it('still installs on the first deploy, then publishes the tree the probe loaded', async () => {
@@ -166,7 +168,7 @@ describe('relay native-deps cache on the deploy path', () => {
       firstInstall(RELAY_NATIVE_CACHE_MISS, [
         '', // npm install
         '', // chmod prebuilds
-        'ORCA-NPTY-PROBE-OK\n',
+        'KINGU-NPTY-PROBE-OK\n',
         '', // rm probe stderr
         NPTY_CLOEXEC_PATCHED,
         RELAY_NATIVE_CACHE_PROMOTED,
@@ -180,7 +182,7 @@ describe('relay native-deps cache on the deploy path', () => {
     const install = commands.find((c) => c.includes('npm install')) ?? ''
     expect(install).toContain('node-pty@1.1.0')
     // The install runs in the relay directory; publication moves the finished tree afterwards.
-    expect(install).toContain('.orca-remote/relay-0.1.0+testhash')
+    expect(install).toContain('.kingu-remote/relay-0.1.0+testhash')
     const promote = commands.findLast((c) => c.includes('mkdir "$cache"')) ?? ''
     expect(promote).toContain(': > "$cache/.deps-complete"')
   })
@@ -216,7 +218,7 @@ describe('relay native-deps cache on the deploy path', () => {
       ...prefix,
       '', // npm install still runs
       '', // chmod prebuilds
-      'ORCA-NPTY-PROBE-OK\n',
+      'KINGU-NPTY-PROBE-OK\n',
       '', // rm probe stderr
       NPTY_CLOEXEC_PATCHED,
       '', // publication is attempted and answers nothing
@@ -238,7 +240,7 @@ describe('relay native-deps cache on the deploy path', () => {
         '', // rm probe stderr
         '', // npm install, privately, after the prefix detaches the symlink
         '', // chmod prebuilds
-        'ORCA-NPTY-PROBE-OK\n',
+        'KINGU-NPTY-PROBE-OK\n',
         '', // rm probe stderr
         NPTY_CLOEXEC_PATCHED,
         '', // promotion attempt (the entry already exists, so it is declined)
@@ -259,16 +261,16 @@ describe('relay native-deps cache on the deploy path', () => {
   it('detaches rather than resetting through the link when repairing an installed relay', async () => {
     vi.mocked(isRelayAlreadyInstalled).mockResolvedValue(true)
     const conn = makeMockConnection(sftpCapture)
-    const bothMissing = 'ORCA-NATIVE-DEPS-MISSING:node-pty,@parcel/watcher\nMISSING'
+    const bothMissing = 'KINGU-NATIVE-DEPS-MISSING:node-pty,@parcel/watcher\nMISSING'
     feed([
-      '__ORCA_REMOTE_PLATFORM__ Linux x86_64',
+      '__KINGU_REMOTE_PLATFORM__ Linux x86_64',
       '/home/u',
       bothMissing, // health probe before the repair lock
       bothMissing, // re-probe under the lock
       '', // install-owner marker
       '', // npm install
       '', // chmod prebuilds
-      'ORCA-NPTY-PROBE-OK\n',
+      'KINGU-NPTY-PROBE-OK\n',
       '', // rm probe stderr
       NPTY_CLOEXEC_PATCHED,
       'DEAD',
@@ -279,7 +281,7 @@ describe('relay native-deps cache on the deploy path', () => {
 
     const commands = execCommands()
     // A repair never consults the shared entry: its reset would rewrite a tree it does not own.
-    expect(commands.some((c) => c.includes('.orca-remote/native/'))).toBe(false)
+    expect(commands.some((c) => c.includes('.kingu-remote/native/'))).toBe(false)
     const install = commands.find((c) => c.includes('npm install')) ?? ''
     expect(install).toContain('if [ -L node_modules ]; then rm -f node_modules; fi;')
     expect(install).toContain("rm -rf 'node_modules/node-pty'")
@@ -290,7 +292,7 @@ describe('relay native-deps cache on the deploy path', () => {
     feed(
       firstInstall(RELAY_NATIVE_CACHE_LINKED, [
         '', // chmod prebuilds
-        'ORCA-NPTY-PROBE-OK\n',
+        'KINGU-NPTY-PROBE-OK\n',
         '', // rm probe stderr
         ...LAUNCH_TAIL
       ])

@@ -3,7 +3,7 @@ import { registerAppHandlers } from '../app'
 import { registerCliHandlers } from '../cli'
 import { registerPreflightHandlers } from '../preflight'
 import type { Store } from '../../persistence'
-import type { OrcaRuntimeService } from '../../runtime/orca-runtime'
+import type { KinguRuntimeService } from '../../runtime/kingu-runtime'
 import type { StatsCollector } from '../../stats/collector'
 import { registerFilesystemHandlers } from '../filesystem'
 import type { CommitMessageAgentEnvironmentResolvers } from '../../text-generation/commit-message-agent-environment'
@@ -55,9 +55,10 @@ import { registerEmulatorFrameStreamHandlers } from '../emulator-frame-stream'
 import { registerEmulatorVideoStreamHandlers } from '../emulator-video-stream'
 import { registerSpeechHandlers } from '../speech'
 import { registerTerminalRenderDesyncEvidenceHandler } from '../terminal-render-desync-evidence'
-import { registerOrcaProfileHandlers } from '../orca-profiles'
+import { registerKinguProfileHandlers } from '../kingu-profiles'
 import { registerCodexAccountHandlers } from '../codex-accounts'
 import { registerAgentHookHandlers } from '../agent-hooks'
+import { registerIdeHandlers } from '../ide'
 import { registerCodexConfigSyncHandlers } from '../codex-config-sync'
 import { getPtyIdForPaneKey } from '../pty'
 import { registerAgentTrustHandlers } from '../agent-trust'
@@ -98,8 +99,8 @@ let registered = false
 
 type CoreHandlerLifecycleOptions = {
   onBeforeRelaunch?: () => void | Promise<void>
-  onOrcaProfileAuthMutation?: () => void
-  onBeforeOrcaProfileSignOut?: () => void
+  onKinguProfileAuthMutation?: () => void
+  onBeforeKinguProfileSignOut?: () => void
   getAdditionalAiVaultCodexHomePaths?: () => readonly string[]
   prepareAiVaultSessionResume?: (
     args: AiVaultPrepareSessionResumeArgs
@@ -108,7 +109,7 @@ type CoreHandlerLifecycleOptions = {
 
 export function registerCoreHandlers(
   store: Store,
-  runtime: OrcaRuntimeService,
+  runtime: KinguRuntimeService,
   stats: StatsCollector,
   claudeUsage: ClaudeUsageStore,
   codexUsage: CodexUsageStore,
@@ -145,6 +146,7 @@ export function registerCoreHandlers(
   registerUsageProviderHandlers({ claudeUsage, codexUsage, openCodeUsage })
   registerCodexAccountHandlers(codexAccounts, () => store.getSettings())
   registerAgentHookHandlers(runtime, { getPtyIdForPaneKey })
+  registerIdeHandlers()
   registerCodexConfigSyncHandlers(codexAccounts.runtimeHomeService)
   registerAgentTrustHandlers()
   registerClaudeAccountHandlers(claudeAccounts)
@@ -192,10 +194,10 @@ export function registerCoreHandlers(
     registerPluginHandlers(store, pluginService, runtime, marketplaceServices)
   }
   registerTelemetryHandlers(store)
-  registerOrcaProfileHandlers(store, {
+  registerKinguProfileHandlers(store, {
     onBeforeRelaunch: lifecycleOptions.onBeforeRelaunch,
-    onAuthMutation: lifecycleOptions.onOrcaProfileAuthMutation,
-    onBeforeSignOut: lifecycleOptions.onBeforeOrcaProfileSignOut
+    onAuthMutation: lifecycleOptions.onKinguProfileAuthMutation,
+    onBeforeSignOut: lifecycleOptions.onBeforeKinguProfileSignOut
   })
   registerBrowserHandlers()
   registerShellHandlers(store)

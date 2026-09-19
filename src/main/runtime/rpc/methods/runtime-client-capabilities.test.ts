@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY } from '../../../../shared/protocol-version'
-import type { OrcaRuntimeService } from '../../orca-runtime'
+import type { KinguRuntimeService } from '../../kingu-runtime'
 import type { RpcRequest } from '../core'
 import { RpcDispatcher } from '../dispatcher'
 import { RUNTIME_CLIENT_CAPABILITY_METHODS } from './runtime-client-capabilities'
@@ -16,7 +16,7 @@ function makeRequest(params: unknown): RpcRequest {
 
 function dispatcher(): RpcDispatcher {
   return new RpcDispatcher({
-    runtime: { getRuntimeId: () => 'runtime-1' } as unknown as OrcaRuntimeService,
+    runtime: { getRuntimeId: () => 'runtime-1' } as unknown as KinguRuntimeService,
     methods: RUNTIME_CLIENT_CAPABILITY_METHODS
   })
 }

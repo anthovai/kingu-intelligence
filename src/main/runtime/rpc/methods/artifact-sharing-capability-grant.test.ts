@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { getDefaultSettings } from '../../../../shared/constants'
-import { OrcaRuntimeService } from '../../orca-runtime'
+import { KinguRuntimeService } from '../../kingu-runtime'
 import { SettingsUpdate } from './client-settings-schemas'
 
-function runtimeWithSharing(artifactSharingEnabled: unknown): OrcaRuntimeService {
-  return new OrcaRuntimeService({
+function runtimeWithSharing(artifactSharingEnabled: unknown): KinguRuntimeService {
+  return new KinguRuntimeService({
     getSettings: () => ({ ...getDefaultSettings('/tmp'), artifactSharingEnabled })
   } as never)
 }

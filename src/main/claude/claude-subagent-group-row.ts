@@ -11,7 +11,7 @@ import type { NativeChatSubagentEntry } from '../../shared/native-chat-types'
 /** Durable journal identity for the group's row — stable across revisions and
  *  across a restart, so replay finds the same row instead of appending a new one. */
 export function claudeSubagentGroupIdentity(groupId: string): AgentJournalItemIdentity {
-  return { provider: 'orca', clientMessageId: `claude-subagents:${groupId}` }
+  return { provider: 'kingu', clientMessageId: `claude-subagents:${groupId}` }
 }
 
 /** The roster row: the structured block plus the plain sentence an older client

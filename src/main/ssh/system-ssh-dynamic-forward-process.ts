@@ -30,7 +30,7 @@ export async function startSystemSshDynamicForwardProcess(
   }
   const args = buildSshArgs(target, {
     ...options,
-    suppressOrcaControlMaster: true,
+    suppressKinguControlMaster: true,
     disableControlMaster: true,
     nonInteractive: true
   })

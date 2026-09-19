@@ -12,7 +12,7 @@ it('limits failure logs while retaining category counts', () => {
     now += 60_000
     counters.record('rate_limited')
     expect(JSON.parse(String(log.mock.calls[1]![0]))).toEqual({
-      event: 'orca_desktop_push_failures',
+      event: 'kingu_desktop_push_failures',
       error: 2,
       rate_limited: 1
     })

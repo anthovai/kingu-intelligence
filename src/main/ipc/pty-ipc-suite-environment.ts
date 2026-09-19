@@ -143,7 +143,7 @@ export function createPtyIpcSuiteEnvironment(): PtyIpcSuiteEnvironment {
     chmodSyncMock.mockReset()
     linuxCliShimMock.mockReset()
     linuxCliShimMock.mockImplementation((options: { userDataPath: string }) =>
-      join(options.userDataPath, 'linux-orca-cli-shim')
+      join(options.userDataPath, 'linux-kingu-cli-shim')
     )
     getPathMock.mockReset()
     loginPreflightExecFileMock.mockReset()
@@ -203,27 +203,27 @@ export function createPtyIpcSuiteEnvironment(): PtyIpcSuiteEnvironment {
         }
       }
     })
-    getPathMock.mockReturnValue('/tmp/orca-user-data')
-    // Why: wrapper roots resolve from ORCA_USER_DATA_PATH; mirror the mocked userData so ZDOTDIR/wrapper assertions match.
-    process.env.ORCA_USER_DATA_PATH = '/tmp/orca-user-data'
+    getPathMock.mockReturnValue('/tmp/kingu-user-data')
+    // Why: wrapper roots resolve from KINGU_USER_DATA_PATH; mirror the mocked userData so ZDOTDIR/wrapper assertions match.
+    process.env.KINGU_USER_DATA_PATH = '/tmp/kingu-user-data'
     existsSyncMock.mockReturnValue(true)
     // size: the shell wrapper writer verifies each generated file is non-empty.
     statSyncMock.mockReturnValue({ isDirectory: () => true, mode: 0o755, size: 1 })
     readFileSyncMock.mockReturnValue('')
     openCodeBuildPtyEnvMock.mockImplementation((_ptyId: string, existingConfigDir?: string) => ({
-      ORCA_OPENCODE_HOOK_PORT: '4567',
-      ORCA_OPENCODE_HOOK_TOKEN: 'opencode-token',
-      ORCA_OPENCODE_PTY_ID: 'test-pty',
+      KINGU_OPENCODE_HOOK_PORT: '4567',
+      KINGU_OPENCODE_HOOK_TOKEN: 'opencode-token',
+      KINGU_OPENCODE_PTY_ID: 'test-pty',
       OPENCODE_CONFIG_DIR: existingConfigDir
-        ? '/tmp/orca-opencode-overlay'
-        : '/tmp/orca-opencode-config'
+        ? '/tmp/kingu-opencode-overlay'
+        : '/tmp/kingu-opencode-config'
     }))
     mimoCodeBuildPtyEnvMock.mockImplementation((_ptyId: string, existingHome?: string) => ({
-      MIMOCODE_HOME: existingHome ? '/tmp/orca-mimocode-overlay' : '/tmp/orca-mimocode-shared'
+      MIMOCODE_HOME: existingHome ? '/tmp/kingu-mimocode-overlay' : '/tmp/kingu-mimocode-shared'
     }))
     buildAgentHookEnvMock.mockReturnValue({
-      ORCA_AGENT_HOOK_PORT: '5678',
-      ORCA_AGENT_HOOK_TOKEN: 'agent-token'
+      KINGU_AGENT_HOOK_PORT: '5678',
+      KINGU_AGENT_HOOK_TOKEN: 'agent-token'
     })
     piBuildPtyEnvMock.mockImplementation(
       (
@@ -237,13 +237,13 @@ export function createPtyIpcSuiteEnvironment(): PtyIpcSuiteEnvironment {
           // Why: bare shells no longer create ~/.omp; only a userData status path is set (#10196).
           if (!existingAgentDir && !materializeDefaultHome) {
             return {
-              ORCA_OMP_STATUS_EXTENSION:
-                '/tmp/orca-user-data/omp-managed-status-extension/orca-agent-status.ts'
+              KINGU_OMP_STATUS_EXTENSION:
+                '/tmp/kingu-user-data/omp-managed-status-extension/kingu-agent-status.ts'
             }
           }
           return {
-            ORCA_OMP_SOURCE_AGENT_DIR: existingAgentDir ?? '/tmp/default-omp-agent',
-            ORCA_OMP_STATUS_EXTENSION: `${existingAgentDir ?? '/tmp/default-omp-agent'}/extensions/orca-agent-status.ts`
+            KINGU_OMP_SOURCE_AGENT_DIR: existingAgentDir ?? '/tmp/default-omp-agent',
+            KINGU_OMP_STATUS_EXTENSION: `${existingAgentDir ?? '/tmp/default-omp-agent'}/extensions/kingu-agent-status.ts`
           }
         }
         if (kind === 'prime-agent') {
@@ -251,14 +251,14 @@ export function createPtyIpcSuiteEnvironment(): PtyIpcSuiteEnvironment {
             return {}
           }
           return {
-            ORCA_PRIME_AGENT_SOURCE_AGENT_DIR: existingAgentDir ?? '/tmp/default-prime-agent'
+            KINGU_PRIME_AGENT_SOURCE_AGENT_DIR: existingAgentDir ?? '/tmp/default-prime-agent'
           }
         }
         if (!existingAgentDir && !materializeDefaultHome) {
           return {}
         }
         return {
-          ORCA_PI_SOURCE_AGENT_DIR: existingAgentDir ?? '/tmp/default-pi-agent'
+          KINGU_PI_SOURCE_AGENT_DIR: existingAgentDir ?? '/tmp/default-pi-agent'
         }
       }
     )

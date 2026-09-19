@@ -51,7 +51,7 @@ function removalArgs(worktreePath: string, fsProvider: ReturnType<typeof provenO
     target: { id: 'wt-1', path: worktreePath } as never,
     registeredWorktrees: [],
     // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the removed-meta fields below are the two the SSH route inspects.
-    removedMeta: { orcaCreatedAt: 1, orcaCreationSource: 'ssh' } as never,
+    removedMeta: { kinguCreatedAt: 1, kinguCreationSource: 'ssh' } as never,
     removedPushTarget: undefined,
     force: true,
     allowUnverifiedPtyStop: true,

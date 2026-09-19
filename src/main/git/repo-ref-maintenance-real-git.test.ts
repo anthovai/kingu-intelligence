@@ -29,7 +29,7 @@ function git(cwd: string, args: string[]): string {
 
 /** A repo whose only loose-ref backlog is the one the test asks for. */
 async function createRepo(looseRefs: number): Promise<{ repoPath: string; refsDir: string }> {
-  const root = await mkdtemp(join(tmpdir(), 'orca-ref-maintenance-git-'))
+  const root = await mkdtemp(join(tmpdir(), 'kingu-ref-maintenance-git-'))
   roots.push(root)
   const repoPath = join(root, 'repo')
   execFileSync('git', ['init', '--quiet', repoPath])

@@ -2,13 +2,13 @@ import { describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => {
   const events: string[] = []
-  // Why a two-word app token: this file sets the dev app name to "Orca Development", and Electron
+  // Why a two-word app token: this file sets the dev app name to "Kingu Development", and Electron
   // builds the app token from that name. A single-token fixture could not exhibit the multi-word
   // leak the cleaner exists to handle, so it disagreed with the scenario it set up.
   // Why the engine comment: a real app.userAgentFallback always carries it, and the cleaner only
   // touches identities that do — a fixture without it models a string Electron cannot produce.
   let userAgent =
-    'Mozilla/5.0 (Test) AppleWebKit/537.36 (KHTML, like Gecko) Orca Development/0.0.0 Chrome/150.0.0.0 Electron/43.0.0 Safari/537.36'
+    'Mozilla/5.0 (Test) AppleWebKit/537.36 (KHTML, like Gecko) Kingu Development/0.0.0 Chrome/150.0.0.0 Electron/43.0.0 Safari/537.36'
   const app = {
     isPackaged: false,
     exit: vi.fn(),
@@ -50,7 +50,7 @@ vi.mock('./serve-mode-argv', () => ({
 vi.mock('./configure-process', () => ({
   configureDevUserDataPath: vi.fn(),
   configureElectronNetworkCompatibility: vi.fn(),
-  configureOrcaUserDataPathEnv: vi.fn(),
+  configureKinguUserDataPathEnv: vi.fn(),
   disableUnsupportedChromiumFeatures: vi.fn(),
   enableMainProcessGpuFeatures: vi.fn(),
   installDevParentDisconnectQuit: vi.fn(),
@@ -76,8 +76,8 @@ vi.mock('../updater', () => ({
 vi.mock('./dev-instance-identity', () => ({
   getDevInstanceIdentity: () => ({
     isDev: true,
-    appName: 'Orca Development',
-    appUserModelId: 'com.orca.development'
+    appName: 'Kingu Development',
+    appUserModelId: 'com.kingu.development'
   }),
   shouldApplyPreReadyAppName: () => true
 }))
@@ -129,7 +129,7 @@ vi.mock('../persistence', () => ({
 }))
 vi.mock('../macos-press-and-hold-default')
 vi.mock('../ai-vault/session-parse-cache-persistence')
-vi.mock('../orca-profiles/profile-index-store')
+vi.mock('../kingu-profiles/profile-index-store')
 vi.mock('../stats/collector')
 vi.mock('../claude-usage/store')
 vi.mock('../codex-usage/store')
@@ -175,7 +175,7 @@ describe('browser process user-agent startup ordering', () => {
       })
     ).toThrow('preflight-test-stop')
 
-    const nameIndex = mocks.events.indexOf('set-name:Orca Development')
+    const nameIndex = mocks.events.indexOf('set-name:Kingu Development')
     const modeIndex = mocks.events.indexOf('read-mode:/canonical-user-data')
     const writeIndex = mocks.events.indexOf('write-user-agent')
     const continuationIndex = mocks.events.indexOf('continued-after-browser-identity')
@@ -187,8 +187,8 @@ describe('browser process user-agent startup ordering', () => {
       mode: 'clean',
       userAgent: mocks.userAgent()
     })
-    // Both app-name words must be gone, not just the last: a single \S+ would have left "Orca".
+    // Both app-name words must be gone, not just the last: a single \S+ would have left "Kingu".
     expect(mocks.userAgent()).not.toMatch(/Electron/)
-    expect(mocks.userAgent()).not.toMatch(/Orca|Development/)
+    expect(mocks.userAgent()).not.toMatch(/Kingu|Development/)
   })
 })

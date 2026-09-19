@@ -33,7 +33,7 @@ function createService(
   dispatch: (event: MobileNotificationEvent) => void
   retries: { run: () => void; delayMs: number }[]
 } {
-  const userDataPath = mkdtempSync(join(tmpdir(), 'orca-push-service-'))
+  const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-push-service-'))
   const registry = new DeviceRegistry(userDataPath)
   const outbox = new PushUnregisterOutbox(userDataPath)
   const device = registry.addDevice('phone', 'mobile')
@@ -73,7 +73,7 @@ function createService(
   const service = DesktopPushService.create({
     runtime: runtime as never,
     runtimeRpc: runtimeRpc as never,
-    gatewayUrl: 'https://push.onorca.dev',
+    gatewayUrl: 'https://push.onkingu.dev',
     client: client as never,
     scheduleRetry: (run, delayMs) => {
       retries.push({ run, delayMs })

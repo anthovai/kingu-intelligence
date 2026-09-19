@@ -24,7 +24,7 @@ import type { BrowserRouteSessionRegistry } from './browser-route-session-regist
 import type { BrowserRouteSessionHandle } from './browser-route-session-state'
 
 type BrowserClientPageCreationDependencies = {
-  orcaProfileId: string
+  kinguProfileId: string
   authorityConnectionIdentity: string
   legacyAuthorityConnectionIdentity: string
   storageScope: string
@@ -68,13 +68,13 @@ export async function createReservedBrowserClientPage(
     assertCurrentBrowserClientPageRenderer(renderer)
     routeSession = await dependencies.routeSessions.preparePage({
       identity: {
-        orcaProfileId: dependencies.orcaProfileId,
+        kinguProfileId: dependencies.kinguProfileId,
         browserProfileId: event.command.browserProfileId,
         authorityConnectionIdentity: dependencies.authorityConnectionIdentity,
         executionHostIdentity: route.executionHostIdentity
       },
       legacyIdentity: {
-        orcaProfileId: dependencies.orcaProfileId,
+        kinguProfileId: dependencies.kinguProfileId,
         browserProfileId: event.command.browserProfileId,
         authorityConnectionIdentity: dependencies.legacyAuthorityConnectionIdentity,
         executionHostIdentity: route.legacyExecutionHostIdentity

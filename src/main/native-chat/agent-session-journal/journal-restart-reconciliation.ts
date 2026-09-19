@@ -7,7 +7,7 @@
 // is left exactly as the crash boundary wrote it.
 //
 // Nothing here dispatches. A `rejected` submission becomes re-sendable only
-// through the user's Retry, which rotates the client message id; Orca still
+// through the user's Retry, which rotates the client message id; Kingu still
 // never puts a message back on the wire on the user's behalf.
 
 import type {
@@ -58,7 +58,7 @@ function unseenHistory(
 ): ProviderHistoryWindow {
   const snapshot = journal.snapshot()
   const committed = new Set(snapshot.items.map((item) => item.itemId))
-  // Accepted submissions alias their provider item to the optimistic `orca:*`
+  // Accepted submissions alias their provider item to the optimistic `kingu:*`
   // row, so the rendered item id alone does not identify the provider history
   // already consumed by the journal.
   for (const submission of snapshot.submissions) {

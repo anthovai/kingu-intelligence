@@ -133,7 +133,7 @@ describe('preflight', () => {
         return {
           environmentResolved: true,
           code: 0,
-          stdout: '__ORCA_AGENT_PATH__claude\t/home/test/.local/bin/claude\n',
+          stdout: '__KINGU_AGENT_PATH__claude\t/home/test/.local/bin/claude\n',
           stderr: '',
           timedOut: false
         }

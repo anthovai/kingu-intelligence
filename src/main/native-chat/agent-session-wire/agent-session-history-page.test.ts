@@ -66,7 +66,7 @@ async function appendItems(count: number): Promise<void> {
 }
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'orca-wire-history-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-wire-history-'))
   clock = 1_000
   epochs = 0
   journal = await journals.open({
@@ -308,7 +308,7 @@ describe('history page byte ceiling', () => {
     expect(tail.items).toHaveLength(1)
     const bodyOnPage = tail.items[0]?.body
     expect(bodyOnPage?.kind).toBe('status')
-    expect(bodyOnPage?.kind === 'status' ? bodyOnPage.text : '').toContain('[Orca: item truncated')
+    expect(bodyOnPage?.kind === 'status' ? bodyOnPage.text : '').toContain('[Kingu: item truncated')
   })
 })
 
@@ -638,7 +638,7 @@ describe('identity bounding at admission', () => {
     const start = { epoch: journal.epoch, sequence: journal.cursor().sequence }
     const appended = await journal.appendItem(oversized, body('bounded'), { fence: 1 })
     expect(appended.itemId.length).toBeLessThan(2048)
-    expect(appended.itemId).toContain('~orca-oversized~')
+    expect(appended.itemId).toContain('~kingu-oversized~')
 
     const beforeTombstone = journal.cursor()
     await journal.appendTombstone(oversized, { fence: 1 })

@@ -137,7 +137,7 @@ export abstract class RateLimitServiceFetchTargets extends RateLimitServiceResul
     if (process.platform === 'win32') {
       return false
     }
-    // Why: system-default Claude isn't Orca-managed; refresh may read existing OAuth but must not launch Claude and trigger auth/browser flows.
+    // Why: system-default Claude isn't Kingu-managed; refresh may read existing OAuth but must not launch Claude and trigger auth/browser flows.
     return !isSystemDefaultClaudeAuth(authPreparation)
   }
 

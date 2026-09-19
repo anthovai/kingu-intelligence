@@ -88,7 +88,7 @@ function sendEnvelope(
 
 /** Persists one turn, then hands back a restarted host over the same directories. */
 async function restartWithPersistedTurn(): Promise<StructuredAgentSessionHost> {
-  root = await mkdtemp(join(tmpdir(), 'orca-restart-status-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-restart-status-'))
   resetHostTestOperationIds()
   const directory = join(root, 'store')
   const store = await AgentSessionRecordStore.open({ directory, hostId: 'local' })

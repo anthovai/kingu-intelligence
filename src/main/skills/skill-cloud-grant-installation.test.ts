@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { SkillCloudDownloadGrant } from '../../shared/skill-cloud-contract'
-import type { OrcaRuntimeService } from '../runtime/orca-runtime'
+import type { KinguRuntimeService } from '../runtime/kingu-runtime'
 
 const mocks = vi.hoisted(() => ({
   getRuntimeEnvironmentStatus: vi.fn(),
@@ -63,7 +63,7 @@ describe('installSkillCloudGrant', () => {
 
     await expect(
       installSkillCloudGrant(
-        {} as OrcaRuntimeService,
+        {} as KinguRuntimeService,
         grant,
         {
           operationId: 'operation-1',
@@ -119,7 +119,7 @@ describe('installSkillCloudGrant', () => {
     mocks.installSkillBundleOnRemoteRuntime.mockResolvedValue(result)
 
     await expect(
-      installSkillBundleCloudGrant({} as OrcaRuntimeService, bundleGrant, {
+      installSkillBundleCloudGrant({} as KinguRuntimeService, bundleGrant, {
         operationId: 'operation-1',
         environmentId: 'environment-1',
         selectedSkillIds: ['skill-1'],
@@ -152,7 +152,7 @@ it('reports selected manifest entries in manifest order, duplicates and all', as
     installSharedSkillBundleRequest: vi
       .fn()
       .mockRejectedValue(new Error('skill-install-filesystem-failed'))
-  } as unknown as OrcaRuntimeService
+  } as unknown as KinguRuntimeService
   const result = await installSkillBundleCloudGrant(runtime, bundleGrant, {
     operationId: 'op',
     // Repeated and unknown selections must be inert, exactly as with `includes`.
@@ -173,7 +173,7 @@ it('reports no skills when nothing was selected', async () => {
   } as unknown as SkillCloudDownloadGrant
   const runtime = {
     installSharedSkillBundleRequest: vi.fn().mockRejectedValue(new Error('skill-install-cancelled'))
-  } as unknown as OrcaRuntimeService
+  } as unknown as KinguRuntimeService
   const result = await installSkillBundleCloudGrant(runtime, bundleGrant, {
     operationId: 'op',
     selectedSkillIds: [],
@@ -206,7 +206,7 @@ it.each(['skill-install-cancelled', 'skill-install-filesystem-failed'])(
     } as unknown as SkillCloudDownloadGrant
     const runtime = {
       installSharedSkillBundleRequest: vi.fn().mockRejectedValue(new Error(code))
-    } as unknown as OrcaRuntimeService
+    } as unknown as KinguRuntimeService
     const result = await installSkillBundleCloudGrant(runtime, bundleGrant, {
       operationId: 'op',
       selectedSkillIds,

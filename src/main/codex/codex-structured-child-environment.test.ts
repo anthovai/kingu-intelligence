@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { CODEX_SPAWN_TOKEN_ENV } from './codex-structured-owner-identity'
 import { buildCodexStructuredChildEnvironment } from './codex-structured-child-environment'
-import { ORCA_STRUCTURED_SESSION_ENV } from '../../shared/structured-session-marker'
+import { KINGU_STRUCTURED_SESSION_ENV } from '../../shared/structured-session-marker'
 import {
   mintStructuredWorkerHandle,
   mintStructuredWorkerPaneKey,
@@ -28,7 +28,7 @@ describe('buildCodexStructuredChildEnvironment', () => {
       EXAMPLE_GATEWAY_TOKEN: 'shell-exported',
       CODEX_HOME: '/pinned/home',
       [CODEX_SPAWN_TOKEN_ENV]: 'spawn-token',
-      [ORCA_STRUCTURED_SESSION_ENV]: '1'
+      [KINGU_STRUCTURED_SESSION_ENV]: '1'
     })
   })
 
@@ -45,7 +45,7 @@ describe('buildCodexStructuredChildEnvironment', () => {
     expect(buildCodexStructuredChildEnvironment(launch, 'spawn-token', sessionId)).toEqual({
       [CODEX_SPAWN_TOKEN_ENV]: 'spawn-token',
       // No identity yet, so the child carries only the refuse-rather-than-guess marker.
-      [ORCA_STRUCTURED_SESSION_ENV]: '1'
+      [KINGU_STRUCTURED_SESSION_ENV]: '1'
     })
 
     const handle = mintStructuredWorkerHandle()
@@ -60,10 +60,10 @@ describe('buildCodexStructuredChildEnvironment', () => {
     })
     try {
       const env = buildCodexStructuredChildEnvironment(launch, 'spawn-token', sessionId)
-      expect(env.ORCA_TERMINAL_HANDLE).toBe(handle)
-      expect(env.ORCA_CLI_COMMAND).toBe('orca')
+      expect(env.KINGU_TERMINAL_HANDLE).toBe(handle)
+      expect(env.KINGU_CLI_COMMAND).toBe('kingu')
       // A pane key here would leak into hook-emitted agent statuses, which assume a PTY leaf.
-      expect(env.ORCA_PANE_KEY).toBeUndefined()
+      expect(env.KINGU_PANE_KEY).toBeUndefined()
     } finally {
       structuredWorkerIdentities.forget(handle)
     }

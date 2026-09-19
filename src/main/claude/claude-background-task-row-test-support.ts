@@ -89,7 +89,7 @@ export function harness(
   })
   const keys = (): string[] =>
     items.map((item) =>
-      item.identity.provider === 'orca' ? item.identity.clientMessageId : item.identity.provider
+      item.identity.provider === 'kingu' ? item.identity.clientMessageId : item.identity.provider
     )
   return {
     rows,

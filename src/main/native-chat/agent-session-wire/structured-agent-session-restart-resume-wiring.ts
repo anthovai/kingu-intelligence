@@ -13,7 +13,7 @@ import type {
 } from '../../../shared/agent-session-wire'
 import type { StructuredAgentSessionRestartResumeSurfaces } from './structured-agent-session-restart-resume-host'
 
-/** The caller key the continuation sends under, so its writes are attributable to Orca itself. */
+/** The caller key the continuation sends under, so its writes are attributable to Kingu itself. */
 export const STRUCTURED_AGENT_SESSION_RESTART_CONTINUATION_CALLER =
   'trusted-local:restart-continuation'
 

@@ -9,7 +9,7 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 function fixture() {
-  const path = mkdtempSync(join(tmpdir(), 'orca-dismissals-'))
+  const path = mkdtempSync(join(tmpdir(), 'kingu-dismissals-'))
   paths.push(path)
   return { path, store: new MobileNotificationDismissalStore(path) }
 }

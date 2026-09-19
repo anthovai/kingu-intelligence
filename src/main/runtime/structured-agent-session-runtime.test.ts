@@ -216,7 +216,7 @@ describe('structured agent-session runtime install', () => {
   })
 
   it('starts orphan reaping and reports failures without failing installation', async () => {
-    stateDirectory = await mkdtemp(join(tmpdir(), 'orca-structured-runtime-'))
+    stateDirectory = await mkdtemp(join(tmpdir(), 'kingu-structured-runtime-'))
     const failure = new Error('scan failed')
     const reapOrphanChildren = vi.fn(async () => {
       throw failure
@@ -246,7 +246,7 @@ describe('structured agent-session runtime install', () => {
   })
 
   it('logs an orphan-reaper failure when no reporter is configured', async () => {
-    stateDirectory = await mkdtemp(join(tmpdir(), 'orca-structured-runtime-'))
+    stateDirectory = await mkdtemp(join(tmpdir(), 'kingu-structured-runtime-'))
     const failure = new Error('scan failed')
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
 
@@ -273,7 +273,7 @@ describe('structured agent-session runtime install', () => {
   })
 
   it('does not infer Windows process identity support from an injected reader', async () => {
-    stateDirectory = await mkdtemp(join(tmpdir(), 'orca-structured-runtime-'))
+    stateDirectory = await mkdtemp(join(tmpdir(), 'kingu-structured-runtime-'))
     const originalPlatform = process.platform
     const location: AgentSessionExecutionLocation = {
       executionHostId: 'local',
@@ -328,7 +328,7 @@ describe('a teardown that fails is retried by the next stop', () => {
   })
 
   it('reports the failure, then releases the handle on the following stop', async () => {
-    directory = await mkdtemp(join(tmpdir(), 'orca-structured-runtime-'))
+    directory = await mkdtemp(join(tmpdir(), 'kingu-structured-runtime-'))
     await ensureStructuredAgentSessionHost({
       stateDirectory: directory,
       hostId: HOST_ID,

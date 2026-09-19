@@ -1,4 +1,4 @@
-import { getOrcaProfileBrowserSessionPartition } from '../../shared/orca-profiles'
+import { getKinguProfileBrowserSessionPartition } from '../../shared/kingu-profiles'
 import type { BrowserSessionProfile } from '../../shared/browser-workspace-types'
 
 const BROWSER_SESSION_PROFILE_ID_RE =
@@ -11,7 +11,7 @@ type PersistedProfileWithUserAgentMode = Record<string, unknown> & {
 // Why: validate on-disk profile shape so a tampered JSON file can't inject an arbitrary partition into the will-attach-webview allowlist.
 export function isValidPersistedBrowserSessionProfile(
   profile: unknown,
-  activeOrcaProfileId: string
+  activeKinguProfileId: string
 ): profile is BrowserSessionProfile {
   if (!profile || typeof profile !== 'object') {
     return false
@@ -23,13 +23,13 @@ export function isValidPersistedBrowserSessionProfile(
     typeof candidate.id === 'string' &&
     typeof candidate.partition === 'string' &&
     typeof candidate.label === 'string' &&
-    isProfileOwnedSessionPartition(candidate.id, candidate.partition, activeOrcaProfileId)
+    isProfileOwnedSessionPartition(candidate.id, candidate.partition, activeKinguProfileId)
   )
 }
 
 export function inspectRetiredBrowserSessionProfileUserAgentModes(
   profiles: readonly unknown[],
-  activeOrcaProfileId: string
+  activeKinguProfileId: string
 ): { noticePending: boolean; degraded: boolean } {
   let noticePending = false
   let degraded = false
@@ -46,7 +46,7 @@ export function inspectRetiredBrowserSessionProfileUserAgentModes(
     // on an entry we refuse to hydrate, where we cannot say which profile it belonged to.
     if (
       (mode !== 'clean' && mode !== 'native') ||
-      !isValidPersistedBrowserSessionProfile(profile, activeOrcaProfileId)
+      !isValidPersistedBrowserSessionProfile(profile, activeKinguProfileId)
     ) {
       degraded = true
     }
@@ -67,10 +67,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function isProfileOwnedSessionPartition(
   profileId: string,
   partition: string,
-  activeOrcaProfileId: string
+  activeKinguProfileId: string
 ): boolean {
   return (
     BROWSER_SESSION_PROFILE_ID_RE.test(profileId) &&
-    partition === getOrcaProfileBrowserSessionPartition(activeOrcaProfileId, profileId)
+    partition === getKinguProfileBrowserSessionPartition(activeKinguProfileId, profileId)
   )
 }

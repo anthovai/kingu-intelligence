@@ -1,5 +1,5 @@
 import type { DispatchCreator } from '../../../../orchestration/db/dispatch-depth'
-import type { OrcaRuntimeService } from '../../../../orca-runtime'
+import type { KinguRuntimeService } from '../../../../kingu-runtime'
 
 /**
  * Identify a CLI caller for nesting-depth purposes.
@@ -9,7 +9,7 @@ import type { OrcaRuntimeService } from '../../../../orca-runtime'
  * incarnation, and a caller cannot be trusted to report its own.
  */
 export function resolveDispatchCreator(
-  runtime: OrcaRuntimeService,
+  runtime: KinguRuntimeService,
   callerHandle: string | undefined
 ): DispatchCreator {
   if (!callerHandle) {

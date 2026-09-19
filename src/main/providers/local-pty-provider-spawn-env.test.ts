@@ -47,7 +47,7 @@ vi.mock('fs', () => ({
 
 vi.mock('electron', () => ({
   app: {
-    getPath: vi.fn(() => '/tmp/orca-user-data')
+    getPath: vi.fn(() => '/tmp/kingu-user-data')
   }
 }))
 
@@ -168,14 +168,14 @@ describe('LocalPtyProvider', () => {
         rows: 24,
         cwd: 'C:\\repo',
         env: {
-          ORCA_AGENT_TEAMS_TEAM_ID: 'team-test',
-          ORCA_PATH_ROOT: 'C:\\Users\\orca\\AppData\\Local',
-          PATH: '%orca_path_root%\\agy\\bin;C:\\Windows'
+          KINGU_AGENT_TEAMS_TEAM_ID: 'team-test',
+          KINGU_PATH_ROOT: 'C:\\Users\\kingu\\AppData\\Local',
+          PATH: '%kingu_path_root%\\agy\\bin;C:\\Windows'
         }
       })
 
       expect(spawnMock.mock.calls.at(-1)?.[2].env.PATH).toBe(
-        'C:\\Users\\orca\\AppData\\Local\\agy\\bin;C:\\Windows'
+        'C:\\Users\\kingu\\AppData\\Local\\agy\\bin;C:\\Windows'
       )
     })
 
@@ -208,9 +208,9 @@ describe('LocalPtyProvider', () => {
     })
 
     it.each([
-      // fish EXPORTS fish_history, so an Orca launched from a fish pane hands every
+      // fish EXPORTS fish_history, so an Kingu launched from a fish pane hands every
       // pane the LAUNCHING worktree's session — even with isolation off (STA-4682).
-      ['an inherited Orca session', 'orca_abc123', undefined],
+      ['an inherited Kingu session', 'kingu_abc123', undefined],
       ['a user value', 'mine', 'mine']
     ])('history isolation off: %s', async (_kind, inherited, expected) => {
       const previous = process.env.fish_history
@@ -230,10 +230,10 @@ describe('LocalPtyProvider', () => {
     })
 
     it.each([
-      // HISTFILE is exported, so an Orca launched from a pane in another worktree
+      // HISTFILE is exported, so an Kingu launched from a pane in another worktree
       // hands every pane that worktree's history file — isolation off included.
       [
-        'an inherited Orca path',
+        'an inherited Kingu path',
         '/fake/userData/terminal-history/aabbccddeeff0011/zsh_history',
         undefined
       ],
@@ -255,8 +255,8 @@ describe('LocalPtyProvider', () => {
       expect(spawnMock.mock.calls.at(-1)![2].env.HISTFILE).toBe(expected)
     })
 
-    it('does not inherit NODE_ENV from the Orca process env', async () => {
-      // Why: NODE_ENV in Orca's process is Orca's build mode (electron-vite sets
+    it('does not inherit NODE_ENV from the Kingu process env', async () => {
+      // Why: NODE_ENV in Kingu's process is Kingu's build mode (electron-vite sets
       // `development` in dev runs); leaking it breaks `next build` and Vitest.
       const previous = process.env.NODE_ENV
       process.env.NODE_ENV = 'development'
@@ -327,9 +327,9 @@ describe('LocalPtyProvider', () => {
     it('honors explicit terminal env overrides after deleting requested defaults', async () => {
       provider.configure({
         buildSpawnEnv: (_id, env) => {
-          env.TERM_PROGRAM = 'Orca'
-          env.ORCA_STALE_TEST_ENV = '/tmp/orca-stale'
-          env.PATH = `/tmp/orca-stale:${env.PATH ?? ''}`
+          env.TERM_PROGRAM = 'Kingu'
+          env.KINGU_STALE_TEST_ENV = '/tmp/kingu-stale'
+          env.PATH = `/tmp/kingu-stale:${env.PATH ?? ''}`
           return env
         }
       })
@@ -339,18 +339,18 @@ describe('LocalPtyProvider', () => {
         rows: 24,
         env: {
           TERM: 'screen-256color',
-          PATH: '/tmp/orca-agent-teams-bin:/usr/bin',
-          ORCA_AGENT_TEAMS_TEAM_ID: 'team-test'
+          PATH: '/tmp/kingu-agent-teams-bin:/usr/bin',
+          KINGU_AGENT_TEAMS_TEAM_ID: 'team-test'
         },
-        envToDelete: ['TERM_PROGRAM', 'ORCA_STALE_TEST_ENV']
+        envToDelete: ['TERM_PROGRAM', 'KINGU_STALE_TEST_ENV']
       })
 
       const spawnCall = spawnMock.mock.calls.at(-1)!
       expect(spawnCall[2].name).toBe('screen-256color')
       expect(spawnCall[2].env.TERM).toBe('screen-256color')
-      expect(spawnCall[2].env.PATH.split(':')[0]).toBe('/tmp/orca-agent-teams-bin')
+      expect(spawnCall[2].env.PATH.split(':')[0]).toBe('/tmp/kingu-agent-teams-bin')
       expect(spawnCall[2].env.TERM_PROGRAM).toBeUndefined()
-      expect(spawnCall[2].env.ORCA_STALE_TEST_ENV).toBeUndefined()
+      expect(spawnCall[2].env.KINGU_STALE_TEST_ENV).toBeUndefined()
     })
 
     it('does not re-promote a legacy attribution path for Agent Teams', async () => {
@@ -358,8 +358,8 @@ describe('LocalPtyProvider', () => {
         cols: 80,
         rows: 24,
         env: {
-          PATH: '/tmp/orca-terminal-attribution/posix:/usr/bin',
-          ORCA_AGENT_TEAMS_TEAM_ID: 'team-test'
+          PATH: '/tmp/kingu-terminal-attribution/posix:/usr/bin',
+          KINGU_AGENT_TEAMS_TEAM_ID: 'team-test'
         }
       })
 
@@ -418,15 +418,15 @@ describe('LocalPtyProvider', () => {
         PATH: process.env.PATH,
         LD_LIBRARY_PATH: process.env.LD_LIBRARY_PATH
       }
-      process.env.APPIMAGE = '/data/apps/orca.appimage'
-      process.env.APPDIR = '/tmp/.mount_orca123'
-      process.env.ARGV0 = '/data/apps/orca.appimage'
+      process.env.APPIMAGE = '/data/apps/kingu.appimage'
+      process.env.APPDIR = '/tmp/.mount_kingu123'
+      process.env.ARGV0 = '/data/apps/kingu.appimage'
       process.env.OWD = '/home/user/project'
-      process.env.APPIMAGE_LIBRARY_PATH = '/tmp/.mount_orca123/usr/lib'
-      process.env.PATH = ['/tmp/.mount_orca123', '/tmp/.mount_orca123/usr/sbin', '/usr/bin'].join(
+      process.env.APPIMAGE_LIBRARY_PATH = '/tmp/.mount_kingu123/usr/lib'
+      process.env.PATH = ['/tmp/.mount_kingu123', '/tmp/.mount_kingu123/usr/sbin', '/usr/bin'].join(
         delimiter
       )
-      process.env.LD_LIBRARY_PATH = ['/tmp/.mount_orca123/usr/lib', '/opt/audio/lib'].join(
+      process.env.LD_LIBRARY_PATH = ['/tmp/.mount_kingu123/usr/lib', '/opt/audio/lib'].join(
         delimiter
       )
 
@@ -520,8 +520,8 @@ describe('LocalPtyProvider', () => {
     it('uses shell wrapper when MiMo home must survive shell startup', async () => {
       provider.configure({
         buildSpawnEnv: (_id, env) => {
-          env.MIMOCODE_HOME = '/tmp/orca-mimocode-overlay'
-          env.ORCA_MIMOCODE_HOME = '/tmp/orca-mimocode-overlay'
+          env.MIMOCODE_HOME = '/tmp/kingu-mimocode-overlay'
+          env.KINGU_MIMOCODE_HOME = '/tmp/kingu-mimocode-overlay'
           return env
         }
       })
@@ -531,7 +531,7 @@ describe('LocalPtyProvider', () => {
       const spawnCall = spawnMock.mock.calls.at(-1)!
       expect(spawnCall[1]).toEqual(['-l'])
       expect(spawnCall[2].env.ZDOTDIR).toMatch(/shell-ready[\\/]zsh/)
-      expect(spawnCall[2].env.ORCA_SHELL_FEATURES).not.toContain('ready')
+      expect(spawnCall[2].env.KINGU_SHELL_FEATURES).not.toContain('ready')
     })
 
     it('promotes the agent-teams shim onto the Windows `Path` spelling', async () => {
@@ -540,7 +540,7 @@ describe('LocalPtyProvider', () => {
         buildSpawnEnv: (_id, env) => {
           // Why: host env collapses Windows PATH onto `Path` and prepends its own shim dir.
           delete env.PATH
-          env.Path = `/tmp/orca-stale:${env.Path ?? ''}`
+          env.Path = `/tmp/kingu-stale:${env.Path ?? ''}`
           return env
         }
       })
@@ -549,25 +549,25 @@ describe('LocalPtyProvider', () => {
         cols: 80,
         rows: 24,
         env: {
-          Path: '/tmp/orca-agent-teams-bin:/usr/bin',
-          ORCA_AGENT_TEAMS_TEAM_ID: 'team-test'
+          Path: '/tmp/kingu-agent-teams-bin:/usr/bin',
+          KINGU_AGENT_TEAMS_TEAM_ID: 'team-test'
         }
       })
 
       const spawnEnv = spawnMock.mock.calls.at(-1)![2].env
       expect(Object.keys(spawnEnv).filter((key) => /^path$/i.test(key))).toEqual(['Path'])
-      expect(spawnEnv.Path.split(':')[0]).toBe('/tmp/orca-agent-teams-bin')
+      expect(spawnEnv.Path.split(':')[0]).toBe('/tmp/kingu-agent-teams-bin')
     })
 
-    it('does not inherit parent Orca pane identity when caller omits pane env', async () => {
+    it('does not inherit parent Kingu pane identity when caller omits pane env', async () => {
       const saved = {
-        ORCA_PANE_KEY: process.env.ORCA_PANE_KEY,
-        ORCA_TAB_ID: process.env.ORCA_TAB_ID,
-        ORCA_WORKTREE_ID: process.env.ORCA_WORKTREE_ID
+        KINGU_PANE_KEY: process.env.KINGU_PANE_KEY,
+        KINGU_TAB_ID: process.env.KINGU_TAB_ID,
+        KINGU_WORKTREE_ID: process.env.KINGU_WORKTREE_ID
       }
-      process.env.ORCA_PANE_KEY = 'parent-tab:parent-leaf'
-      process.env.ORCA_TAB_ID = 'parent-tab'
-      process.env.ORCA_WORKTREE_ID = 'parent-worktree'
+      process.env.KINGU_PANE_KEY = 'parent-tab:parent-leaf'
+      process.env.KINGU_TAB_ID = 'parent-tab'
+      process.env.KINGU_WORKTREE_ID = 'parent-worktree'
 
       try {
         await provider.spawn({ cols: 80, rows: 24 })
@@ -582,29 +582,29 @@ describe('LocalPtyProvider', () => {
       }
 
       const spawnCall = spawnMock.mock.calls.at(-1)!
-      expect(spawnCall[2].env.ORCA_PANE_KEY).toBeUndefined()
-      expect(spawnCall[2].env.ORCA_TAB_ID).toBeUndefined()
-      expect(spawnCall[2].env.ORCA_WORKTREE_ID).toBeUndefined()
+      expect(spawnCall[2].env.KINGU_PANE_KEY).toBeUndefined()
+      expect(spawnCall[2].env.KINGU_TAB_ID).toBeUndefined()
+      expect(spawnCall[2].env.KINGU_WORKTREE_ID).toBeUndefined()
     })
 
-    it('preserves explicit child Orca pane identity over parent env', async () => {
+    it('preserves explicit child Kingu pane identity over parent env', async () => {
       const saved = {
-        ORCA_PANE_KEY: process.env.ORCA_PANE_KEY,
-        ORCA_TAB_ID: process.env.ORCA_TAB_ID,
-        ORCA_WORKTREE_ID: process.env.ORCA_WORKTREE_ID
+        KINGU_PANE_KEY: process.env.KINGU_PANE_KEY,
+        KINGU_TAB_ID: process.env.KINGU_TAB_ID,
+        KINGU_WORKTREE_ID: process.env.KINGU_WORKTREE_ID
       }
-      process.env.ORCA_PANE_KEY = 'parent-tab:parent-leaf'
-      process.env.ORCA_TAB_ID = 'parent-tab'
-      process.env.ORCA_WORKTREE_ID = 'parent-worktree'
+      process.env.KINGU_PANE_KEY = 'parent-tab:parent-leaf'
+      process.env.KINGU_TAB_ID = 'parent-tab'
+      process.env.KINGU_WORKTREE_ID = 'parent-worktree'
 
       try {
         await provider.spawn({
           cols: 80,
           rows: 24,
           env: {
-            ORCA_PANE_KEY: 'child-tab:child-leaf',
-            ORCA_TAB_ID: 'child-tab',
-            ORCA_WORKTREE_ID: 'child-worktree'
+            KINGU_PANE_KEY: 'child-tab:child-leaf',
+            KINGU_TAB_ID: 'child-tab',
+            KINGU_WORKTREE_ID: 'child-worktree'
           }
         })
       } finally {
@@ -618,9 +618,9 @@ describe('LocalPtyProvider', () => {
       }
 
       const spawnCall = spawnMock.mock.calls.at(-1)!
-      expect(spawnCall[2].env.ORCA_PANE_KEY).toBe('child-tab:child-leaf')
-      expect(spawnCall[2].env.ORCA_TAB_ID).toBe('child-tab')
-      expect(spawnCall[2].env.ORCA_WORKTREE_ID).toBe('child-worktree')
+      expect(spawnCall[2].env.KINGU_PANE_KEY).toBe('child-tab:child-leaf')
+      expect(spawnCall[2].env.KINGU_TAB_ID).toBe('child-tab')
+      expect(spawnCall[2].env.KINGU_WORKTREE_ID).toBe('child-worktree')
     })
   })
 })

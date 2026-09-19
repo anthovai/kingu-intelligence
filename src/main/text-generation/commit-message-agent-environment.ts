@@ -28,16 +28,16 @@ function cloneProcessEnv(): Record<string, string> {
 }
 
 // Why: with system-default real-home routing, the headless Codex commit run
-// must use the user's own ~/.codex. If Orca itself was launched from a nested
-// Orca terminal it can inherit an Orca-owned CODEX_HOME override; strip only
-// that (CODEX_HOME matching the private ORCA_CODEX_HOME marker), preserving a
+// must use the user's own ~/.codex. If Kingu itself was launched from a nested
+// Kingu terminal it can inherit an Kingu-owned CODEX_HOME override; strip only
+// that (CODEX_HOME matching the private KINGU_CODEX_HOME marker), preserving a
 // user-set CODEX_HOME.
-function cloneProcessEnvWithoutOrcaCodexHomeOverride(): Record<string, string> {
+function cloneProcessEnvWithoutKinguCodexHomeOverride(): Record<string, string> {
   const env = cloneProcessEnv()
-  if (env.ORCA_CODEX_HOME && env.CODEX_HOME === env.ORCA_CODEX_HOME) {
+  if (env.KINGU_CODEX_HOME && env.CODEX_HOME === env.KINGU_CODEX_HOME) {
     delete env.CODEX_HOME
   }
-  delete env.ORCA_CODEX_HOME
+  delete env.KINGU_CODEX_HOME
   return env
 }
 
@@ -61,17 +61,17 @@ function prepareShellConfigDirEnv(agentId: string): { ok: true; env?: NodeJS.Pro
   if (!configVar) {
     return null
   }
-  // Why: each kind owns a distinct ORCA_*_SOURCE_* shadow so a headless commit
+  // Why: each kind owns a distinct KINGU_*_SOURCE_* shadow so a headless commit
   // run from inside a legacy OMP overlay restores the OMP source dir, never
   // the Pi one (and vice versa). PI_CODING_AGENT_DIR is the binary-facing var
   // both kinds consume — see src/main/pi/titlebar-extension-service.ts.
   const sourceVar =
     agentId === 'opencode'
-      ? 'ORCA_OPENCODE_SOURCE_CONFIG_DIR'
+      ? 'KINGU_OPENCODE_SOURCE_CONFIG_DIR'
       : agentId === 'pi'
-        ? 'ORCA_PI_SOURCE_AGENT_DIR'
+        ? 'KINGU_PI_SOURCE_AGENT_DIR'
         : agentId === 'omp'
-          ? 'ORCA_OMP_SOURCE_AGENT_DIR'
+          ? 'KINGU_OMP_SOURCE_AGENT_DIR'
           : undefined
 
   const value = readInheritedOrShellEnvVar(configVar, sourceVar)
@@ -79,9 +79,9 @@ function prepareShellConfigDirEnv(agentId: string): { ok: true; env?: NodeJS.Pro
     return { ok: true }
   }
 
-  // Why: GUI-launched Orca may not inherit shell startup exports, but these
-  // vars point the headless CLI at the user's auth/config root. Nested Orca
-  // launches inherit PTY overlays, so prefer ORCA_*_SOURCE_* when present.
+  // Why: GUI-launched Kingu may not inherit shell startup exports, but these
+  // vars point the headless CLI at the user's auth/config root. Nested Kingu
+  // launches inherit PTY overlays, so prefer KINGU_*_SOURCE_* when present.
   return { ok: true, env: { ...cloneProcessEnv(), [configVar]: value } }
 }
 
@@ -106,13 +106,13 @@ export async function prepareLocalCommitMessageAgentEnv(
       const wslCodexHome = codexHomePath ? parseWslUncPath(codexHomePath) : null
       if (target?.runtime === 'wsl') {
         const codexHomeForTarget = wslCodexHome?.linuxPath ?? null
-        // Why: the fallback must still strip Orca-owned overrides, or a
+        // Why: the fallback must still strip Kingu-owned overrides, or a
         // system-default WSL run inherits the managed CODEX_HOME.
         return {
           ok: true,
           env: codexHomeForTarget
-            ? { ...cloneProcessEnvWithoutOrcaCodexHomeOverride(), CODEX_HOME: codexHomeForTarget }
-            : cloneProcessEnvWithoutOrcaCodexHomeOverride()
+            ? { ...cloneProcessEnvWithoutKinguCodexHomeOverride(), CODEX_HOME: codexHomeForTarget }
+            : cloneProcessEnvWithoutKinguCodexHomeOverride()
         }
       }
       if (codexHomePath && wslCodexHome) {
@@ -124,7 +124,7 @@ export async function prepareLocalCommitMessageAgentEnv(
         ok: true,
         env: codexHomePath
           ? { ...cloneProcessEnv(), CODEX_HOME: codexHomePath }
-          : cloneProcessEnvWithoutOrcaCodexHomeOverride()
+          : cloneProcessEnvWithoutKinguCodexHomeOverride()
       }
     }
 

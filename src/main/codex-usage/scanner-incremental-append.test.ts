@@ -180,10 +180,10 @@ function totalTokens(aggregates: { totalTokens: number }[]): number {
 
 beforeEach(() => {
   delete process.env.CODEX_HOME
-  fakeHomeDir = mkdtempSync(join(tmpdir(), 'orca-codex-incremental-home-'))
-  userDataDir = mkdtempSync(join(tmpdir(), 'orca-codex-incremental-user-data-'))
-  previousUserDataPath = process.env.ORCA_USER_DATA_PATH
-  process.env.ORCA_USER_DATA_PATH = userDataDir
+  fakeHomeDir = mkdtempSync(join(tmpdir(), 'kingu-codex-incremental-home-'))
+  userDataDir = mkdtempSync(join(tmpdir(), 'kingu-codex-incremental-user-data-'))
+  previousUserDataPath = process.env.KINGU_USER_DATA_PATH
+  process.env.KINGU_USER_DATA_PATH = userDataDir
   homedirMock.mockReturnValue(fakeHomeDir)
   getPathMock.mockImplementation((name: string) => {
     if (name === 'userData') {
@@ -206,9 +206,9 @@ afterEach(() => {
     process.env.CODEX_HOME = originalCodexHome
   }
   if (previousUserDataPath === undefined) {
-    delete process.env.ORCA_USER_DATA_PATH
+    delete process.env.KINGU_USER_DATA_PATH
   } else {
-    process.env.ORCA_USER_DATA_PATH = previousUserDataPath
+    process.env.KINGU_USER_DATA_PATH = previousUserDataPath
   }
   vi.clearAllMocks()
 })

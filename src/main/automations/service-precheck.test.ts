@@ -50,7 +50,7 @@ function mutateDataFile(
     automationRuns: Record<string, unknown>[]
   }) => void
 ): void {
-  const file = join(testState.dir, 'orca-data.json')
+  const file = join(testState.dir, 'kingu-data.json')
   const state = JSON.parse(readFileSync(file, 'utf-8'))
   mutate(state)
   writeFileSync(file, JSON.stringify(state, null, 2), 'utf-8')
@@ -58,7 +58,7 @@ function mutateDataFile(
 
 describe('AutomationService prechecks', () => {
   beforeEach(() => {
-    testState.dir = mkdtempSync(join(tmpdir(), 'orca-automations-test-'))
+    testState.dir = mkdtempSync(join(tmpdir(), 'kingu-automations-test-'))
     runAutomationPrecheckMock.mockReset()
     vi.useFakeTimers()
   })

@@ -42,7 +42,7 @@ export async function streamExternalFileToRuntime(
   // Why: parity with staging — an OS drop authorizes the paths it hands over.
   authorizeExternalPath(sourcePath)
 
-  // Why: relativePath is the hidden .orca-upload-<nonce> temp destination, so a
+  // Why: relativePath is the hidden .kingu-upload-<nonce> temp destination, so a
   // dropped file names its source instead of a path the user never chose.
   const displayPath = args.entryRelativePath || basename(args.sourceRootPath)
   const lstatResult = await lstat(sourcePath)

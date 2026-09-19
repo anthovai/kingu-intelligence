@@ -1,6 +1,6 @@
 import type { BrowserScreencastResult } from '../../shared/runtime-types'
-import type { RuntimeBrowserCommands, RuntimeBrowserCommandHost } from './orca-runtime-browser'
-import { RuntimeEmulatorCommands } from './orca-runtime-emulator'
+import type { RuntimeBrowserCommands, RuntimeBrowserCommandHost } from './kingu-runtime-browser'
+import { RuntimeEmulatorCommands } from './kingu-runtime-emulator'
 import { RuntimeBrowserScreencastController } from './runtime-browser-screencast-controller'
 import { createRuntimeBrowserCommands } from './runtime-browser-commands-factory'
 import { RuntimeJiraCommands } from './runtime-jira-commands'

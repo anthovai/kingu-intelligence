@@ -11,12 +11,12 @@ import type { ClaudeManagedAccountGateSettings } from '../native-chat/claude-str
 import {
   CLAUDE_DEFAULT_SETTING_SOURCES,
   CLAUDE_STRUCTURED_BASE_OPTIONS,
-  claudeSessionIdForOrcaSession,
+  claudeSessionIdForKinguSession,
   createClaudeStructuredLaunchResolver
 } from './claude-structured-launch-resolution'
 import { claudeStructuredPermissionModeForSettings } from './claude-structured-permission-mode'
 
-const SESSION_ID = 'orca-session-1'
+const SESSION_ID = 'kingu-session-1'
 const IDENTITY = { sessionId: SESSION_ID } as Parameters<
   ReturnType<typeof createClaudeStructuredLaunchResolver>
 >[0]['identity']
@@ -107,7 +107,7 @@ describe('claude structured launch resolution', () => {
     const first = await resolverFor(record())({ identity: IDENTITY })
     const second = await resolverFor(record())({ identity: IDENTITY })
 
-    expect(first.providerSessionId).toBe(claudeSessionIdForOrcaSession(SESSION_ID))
+    expect(first.providerSessionId).toBe(claudeSessionIdForKinguSession(SESSION_ID))
     expect(second.providerSessionId).toBe(first.providerSessionId)
     expect(first).toMatchObject({
       pathToClaudeCodeExecutable: '/usr/local/bin/claude',
@@ -271,12 +271,12 @@ describe('claude structured launch resolution', () => {
       ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
       ANTHROPIC_AUTH_TOKEN: process.env.ANTHROPIC_AUTH_TOKEN,
       CLAUDE_CODE_OAUTH_TOKEN: process.env.CLAUDE_CODE_OAUTH_TOKEN,
-      ORCA_LAUNCH_RESOLUTION_MARKER: process.env.ORCA_LAUNCH_RESOLUTION_MARKER
+      KINGU_LAUNCH_RESOLUTION_MARKER: process.env.KINGU_LAUNCH_RESOLUTION_MARKER
     }
     process.env.ANTHROPIC_API_KEY = 'sk-ant-SHELL-LEAK'
     process.env.ANTHROPIC_AUTH_TOKEN = 'tok-SHELL-LEAK'
     process.env.CLAUDE_CODE_OAUTH_TOKEN = 'oauth-SHELL-LEAK'
-    process.env.ORCA_LAUNCH_RESOLUTION_MARKER = 'inherited'
+    process.env.KINGU_LAUNCH_RESOLUTION_MARKER = 'inherited'
     try {
       const launch = await resolverFor(record(), undefined, true)({ identity: IDENTITY })
 
@@ -284,7 +284,7 @@ describe('claude structured launch resolution', () => {
       expect(launch.env?.ANTHROPIC_AUTH_TOKEN).toBeUndefined()
       expect(launch.env?.CLAUDE_CODE_OAUTH_TOKEN).toBeUndefined()
       // The inherited env is still the base — only auth is removed from it.
-      expect(launch.env?.ORCA_LAUNCH_RESOLUTION_MARKER).toBe('inherited')
+      expect(launch.env?.KINGU_LAUNCH_RESOLUTION_MARKER).toBe('inherited')
       expect(launch.env?.PATH ?? launch.env?.Path).toBeTruthy()
     } finally {
       for (const [key, value] of Object.entries(restore)) {
@@ -316,7 +316,7 @@ describe('claude structured launch resolution', () => {
   })
 
   it('pairs a resolved Claude CLI with its sibling Node runtime', async () => {
-    const root = mkdtempSync(join(tmpdir(), 'orca-claude-launch-'))
+    const root = mkdtempSync(join(tmpdir(), 'kingu-claude-launch-'))
     const binDir = join(root, 'bin')
     const claudeCommand = join(binDir, process.platform === 'win32' ? 'claude.cmd' : 'claude')
     const nodeCommand = join(binDir, process.platform === 'win32' ? 'node.cmd' : 'node')

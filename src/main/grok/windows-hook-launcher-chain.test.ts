@@ -56,7 +56,7 @@ function withWin32<T>(run: () => T): T {
 
 function readInstalledConfig(home: string): InstalledConfig {
   return JSON.parse(
-    readFileSync(join(home, '.grok', 'hooks', 'orca-status.json'), 'utf8')
+    readFileSync(join(home, '.grok', 'hooks', 'kingu-status.json'), 'utf8')
   ) as InstalledConfig
 }
 
@@ -74,7 +74,7 @@ describe('Windows Grok managed hook launch shape', () => {
   // #6078 fallback by design. These synthetic-path cases carry the invariant on every CI leg;
   // the install-based ones below re-check it against a real generated path on Windows.
   describe('registered command, from a synthetic Windows path', () => {
-    const scriptPath = 'C:\\Users\\dev\\.orca\\agent-hooks\\grok-hook.cmd'
+    const scriptPath = 'C:\\Users\\dev\\.kingu\\agent-hooks\\grok-hook.cmd'
 
     it('registers a cmd-safe script path as the command itself (#14828)', () => {
       const command = withWin32(() => getManagedCommandForTests(scriptPath))
@@ -89,7 +89,7 @@ describe('Windows Grok managed hook launch shape', () => {
     })
 
     it('still wraps a path cmd.exe would split or expand (#6078)', () => {
-      const spaced = 'C:\\Users\\Jane Doe\\.orca\\agent-hooks\\grok-hook.cmd'
+      const spaced = 'C:\\Users\\Jane Doe\\.kingu\\agent-hooks\\grok-hook.cmd'
       const command = withWin32(() => getManagedCommandForTests(spaced))
 
       expect(command).toMatch(/-EncodedCommand \S+$/)
@@ -102,7 +102,7 @@ describe('Windows Grok managed hook launch shape', () => {
     let home = ''
 
     beforeEach(() => {
-      home = mkdtempSync(join(tmpdir(), 'orca-grok-launcher-'))
+      home = mkdtempSync(join(tmpdir(), 'kingu-grok-launcher-'))
       homedirMock.mockReturnValue(home)
     })
 
@@ -116,7 +116,7 @@ describe('Windows Grok managed hook launch shape', () => {
     it.skipIf(process.platform !== 'win32')(
       'writes the generated script path itself to every managed event',
       () => {
-        const scriptPath = join(home, '.orca', 'agent-hooks', 'grok-hook.cmd')
+        const scriptPath = join(home, '.kingu', 'agent-hooks', 'grok-hook.cmd')
         const commands = withWin32(() => {
           expect(new GrokHookService().install().state).toBe('installed')
           return registeredCommands(readInstalledConfig(home))
@@ -133,9 +133,9 @@ describe('Windows Grok managed hook launch shape', () => {
     it.skipIf(process.platform !== 'win32')(
       'replaces a previously installed encoded-PowerShell entry on reinstall',
       () => {
-        const scriptPath = join(home, '.orca', 'agent-hooks', 'grok-hook.cmd')
+        const scriptPath = join(home, '.kingu', 'agent-hooks', 'grok-hook.cmd')
         const staleCommand = wrapWindowsHookCommand(scriptPath)
-        const configPath = join(home, '.grok', 'hooks', 'orca-status.json')
+        const configPath = join(home, '.grok', 'hooks', 'kingu-status.json')
         mkdirSync(dirname(configPath), { recursive: true })
         writeFileSync(
           configPath,
@@ -161,7 +161,7 @@ describe('Windows Grok managed hook launch shape', () => {
         expect(all).not.toContain(staleCommand)
         expect(all.filter((command) => /-EncodedCommand/i.test(command))).toEqual([])
         expect(config.hooks.SubagentStop).toBeUndefined()
-        // Why: sweeping stale Orca entries must not touch hooks the user wrote.
+        // Why: sweeping stale Kingu entries must not touch hooks the user wrote.
         expect(all).toContain('/usr/local/bin/user-hook')
         expect(all.filter((command) => command === scriptPath)).toHaveLength(
           GROK_EVENT_NAMES.length
@@ -170,7 +170,7 @@ describe('Windows Grok managed hook launch shape', () => {
     )
 
     it('falls back to the encoded launcher when the profile path is not cmd-safe (#6078)', () => {
-      const spaceHome = mkdtempSync(join(tmpdir(), 'orca grok spaced '))
+      const spaceHome = mkdtempSync(join(tmpdir(), 'kingu grok spaced '))
       homedirMock.mockReturnValue(spaceHome)
       try {
         const commands = withWin32(() => {

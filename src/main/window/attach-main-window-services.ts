@@ -23,7 +23,7 @@ import { registerSshHandlers } from '../ipc/ssh'
 import { registerRemoteWorkspaceHandlers } from '../ipc/remote-workspace'
 import { browserManager } from '../browser/browser-manager'
 import { hasSystemMediaAccess, requestSystemMediaAccess } from '../browser/browser-media-access'
-import type { OrcaRuntimeService, RuntimeWorktreeLifecycleEvent } from '../runtime/orca-runtime'
+import type { KinguRuntimeService, RuntimeWorktreeLifecycleEvent } from '../runtime/kingu-runtime'
 import type { UpdateInstallMode } from '../updater'
 import { scheduleHistoryGc } from '../terminal-history-gc'
 import { hydrateLocalPtyRegistryAtBoot } from '../memory/hydrate-local-pty-registry'
@@ -49,7 +49,7 @@ let activeTccPromptHandlerToken: number | null = null
 export function attachMainWindowServices(
   mainWindow: BrowserWindow,
   store: Store,
-  runtime: OrcaRuntimeService,
+  runtime: KinguRuntimeService,
   getSelectedCodexHomePath?: GetSelectedCodexHomePath,
   prepareClaudeAuth?: (
     target?: ClaudeAccountSelectionTarget

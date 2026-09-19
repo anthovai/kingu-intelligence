@@ -1,5 +1,5 @@
 import { expect, it, vi } from 'vitest'
-import { deferred, makeDeferred } from './orca-runtime-test-fixtures.spec'
+import { deferred, makeDeferred } from './kingu-runtime-test-fixtures.spec'
 import {
   createHydrationRuntime,
   EMPTY_RETAINED_STATE,

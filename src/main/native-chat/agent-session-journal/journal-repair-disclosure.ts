@@ -9,7 +9,7 @@ import type { AgentJournalItemIdentity } from '../../../shared/agent-session-jou
 
 /** One stable identity, so a reopen upserts the same row instead of adding one. */
 export const JOURNAL_REPAIR_DISCLOSURE_IDENTITY: AgentJournalItemIdentity = {
-  provider: 'orca',
+  provider: 'kingu',
   clientMessageId: 'journal-malformed-lines'
 }
 

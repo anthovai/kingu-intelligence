@@ -51,8 +51,8 @@ describeOnWindows('install-dir package ACL repair against the real icacls', () =
   let trapFile: string
 
   beforeAll(async () => {
-    installDir = mkdtempSync(join(tmpdir(), 'orca-acl-live-'))
-    userDataPath = mkdtempSync(join(tmpdir(), 'orca-acl-live-ud-'))
+    installDir = mkdtempSync(join(tmpdir(), 'kingu-acl-live-'))
+    userDataPath = mkdtempSync(join(tmpdir(), 'kingu-acl-live-ud-'))
     mkdirSync(join(installDir, 'resources'), { recursive: true })
     moduleFile = join(installDir, 'ffmpeg.dll')
     trapFile = join(installDir, 'resources', 'trap.dll')

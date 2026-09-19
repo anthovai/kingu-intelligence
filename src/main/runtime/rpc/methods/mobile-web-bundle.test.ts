@@ -83,7 +83,7 @@ async function download(buildId: string, path: string): Promise<{ bytes: Buffer;
 }
 
 beforeEach(() => {
-  scratch = mkdtempSync(join(tmpdir(), 'orca-mobile-web-bundle-'))
+  scratch = mkdtempSync(join(tmpdir(), 'kingu-mobile-web-bundle-'))
   installMobileWebBundleAppPath(scratch)
   resetBundledMobileWebBundleCacheForTests()
   resetMobileWebBundleAssetVerdictsForTests()

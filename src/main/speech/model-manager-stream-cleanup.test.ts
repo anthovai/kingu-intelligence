@@ -11,7 +11,7 @@ const { netRequestMock } = vi.hoisted(() => ({
 
 vi.mock('electron', () => ({
   app: {
-    getPath: () => '/tmp/orca-speech-models-test'
+    getPath: () => '/tmp/kingu-speech-models-test'
   },
   net: {
     request: netRequestMock
@@ -35,7 +35,7 @@ describe('ModelManager stream cleanup', () => {
   })
 
   it('reuses the idle timer and removes progress listeners after a fragmented download', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orca-model-manager-'))
+    const dir = mkdtempSync(join(tmpdir(), 'kingu-model-manager-'))
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
     const timeoutSpy = vi.spyOn(globalThis, 'setTimeout')
     try {

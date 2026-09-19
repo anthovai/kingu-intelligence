@@ -93,7 +93,7 @@ function createObserver(
 
 describe('authority-owned automation run completion', () => {
   beforeEach(() => {
-    testState.dir = mkdtempSync(join(tmpdir(), 'orca-automation-completion-'))
+    testState.dir = mkdtempSync(join(tmpdir(), 'kingu-automation-completion-'))
     ipcHandlers.clear()
   })
 
@@ -157,7 +157,7 @@ describe('authority-owned automation run completion', () => {
     })
 
     expect(readRun(store, automation.id, run.id).error).toBe(
-      'Orca stopped watching this run before it reported completion.'
+      'Kingu stopped watching this run before it reported completion.'
     )
     // The token is still recoverable where it is actually useful.
     expect(logged.mock.calls.flat().map(String).join(' ')).toContain('terminal_handle_stale')
@@ -318,7 +318,7 @@ describe('authority-owned automation run completion', () => {
 
 describe('automationsChanged publication', () => {
   beforeEach(() => {
-    testState.dir = mkdtempSync(join(tmpdir(), 'orca-automation-events-'))
+    testState.dir = mkdtempSync(join(tmpdir(), 'kingu-automation-events-'))
     ipcHandlers.clear()
   })
 

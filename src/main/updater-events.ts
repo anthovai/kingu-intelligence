@@ -164,7 +164,7 @@ export function registerAutoUpdaterHandlers({
     // momentarily resolves an older tag must not destroy a still-valid recovery path.
     linuxPackageRecovery.clearTrackedLinuxPackageArtifactForOtherVersion(info.version)
 
-    // Why: fetch the changelog in main to avoid renderer-side CORS on onorca.dev.
+    // Why: fetch the changelog in main to avoid renderer-side CORS on onkingu.dev.
     markUpdateAvailableEventPending(attemptId)
     void (async () => {
       try {
@@ -242,7 +242,7 @@ export function registerAutoUpdaterHandlers({
       }
     }
     // Why: a later check can report no newer release while a verified deb/rpm is still waiting for
-    // the user to install it outside Orca. Keep both the artifact and its recovery card reachable.
+    // the user to install it outside Kingu. Keep both the artifact and its recovery card reachable.
     sendStatus(
       retainedStatus ?? { state: 'not-available', userInitiated: wasUserInitiated || undefined }
     )

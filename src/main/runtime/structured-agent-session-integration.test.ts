@@ -34,7 +34,7 @@ import { journalDirectoryFor } from '../native-chat/agent-session-journal/journa
 import { appendLegacyTranscriptMessages } from '../native-chat/agent-session-journal/journal-legacy-import'
 import type { AgentSessionJournal } from '../native-chat/agent-session-journal/journal-store'
 import { createTrackedJournalOpener } from '../native-chat/agent-session-journal/journal-store-test-open'
-import type { OrcaRuntimeService } from './orca-runtime'
+import type { KinguRuntimeService } from './kingu-runtime'
 import type { RpcRequest, RpcResponse } from './rpc/core'
 import { RpcDispatcher } from './rpc/dispatcher'
 import { STRUCTURED_AGENT_SESSION_METHODS } from './rpc/methods/structured-agent-session'
@@ -302,7 +302,7 @@ async function historyPage(
 
 beforeEach(async () => {
   operations = 0
-  root = await mkdtemp(join(tmpdir(), 'orca-structured-integration-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-structured-integration-'))
   codex = fakeCodex()
   bootEnvironmentReads = 0
   codexOverrideReads = 0
@@ -350,7 +350,7 @@ beforeEach(async () => {
     })
   }
   dispatcher = new RpcDispatcher({
-    runtime: runtime as unknown as OrcaRuntimeService,
+    runtime: runtime as unknown as KinguRuntimeService,
     methods: STRUCTURED_AGENT_SESSION_METHODS
   })
 })

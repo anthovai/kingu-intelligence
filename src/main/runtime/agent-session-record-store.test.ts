@@ -124,7 +124,7 @@ async function establishOwner(
 }
 
 beforeEach(async () => {
-  directory = await mkdtemp(join(tmpdir(), 'orca-agent-session-store-'))
+  directory = await mkdtemp(join(tmpdir(), 'kingu-agent-session-store-'))
 })
 
 afterEach(async () => {

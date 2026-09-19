@@ -5,8 +5,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { parsePairingCode } from '../../shared/pairing'
 import type { RuntimeMobileSessionTabsResult } from '../../shared/runtime-types'
 import type { PersistedMobileClientTabSelections } from '../../shared/persisted-state-types'
-import { OrcaRuntimeService } from './orca-runtime'
-import { OrcaRuntimeRpcServer } from './runtime-rpc'
+import { KinguRuntimeService } from './kingu-runtime'
+import { KinguRuntimeRpcServer } from './runtime-rpc'
 import {
   activeTabId,
   authenticate,
@@ -43,7 +43,7 @@ vi.mock('../git/worktree', () => {
 })
 
 describe('paired runtime navigation isolation', () => {
-  const servers: OrcaRuntimeRpcServer[] = []
+  const servers: KinguRuntimeRpcServer[] = []
   const sessions: PairedSession[] = []
   const readers: ResponseReader[] = []
 
@@ -57,7 +57,7 @@ describe('paired runtime navigation isolation', () => {
     await Promise.all(servers.splice(0).map((server) => server.stop()))
   })
 
-  /** `headless: true` models `orca serve` — no renderer notifier and no attached window. */
+  /** `headless: true` models `kingu serve` — no renderer notifier and no attached window. */
   async function startHarness(options: { headless?: boolean } = {}) {
     const hostSelections = { worktreeId: HOST_WORKTREE_ID, tabId: 'host-tab' }
     const activateWorktree = vi.fn((_repoId: string, nextWorktreeId: string) => {
@@ -66,7 +66,7 @@ describe('paired runtime navigation isolation', () => {
     const focusTerminal = vi.fn((nextTabId: string) => {
       hostSelections.tabId = nextTabId
     })
-    const runtime = new OrcaRuntimeService(makeStore() as never)
+    const runtime = new KinguRuntimeService(makeStore() as never)
     if (!options.headless) {
       runtime.setNotifier({
         worktreesChanged: vi.fn(),
@@ -87,9 +87,9 @@ describe('paired runtime navigation isolation', () => {
       seedSessionTabs(runtime)
     }
 
-    const server = new OrcaRuntimeRpcServer({
+    const server = new KinguRuntimeRpcServer({
       runtime,
-      userDataPath: mkdtempSync(join(tmpdir(), 'orca-navigation-isolation-')),
+      userDataPath: mkdtempSync(join(tmpdir(), 'kingu-navigation-isolation-')),
       enableWebSocket: true,
       wsPort: 0
     })
@@ -399,7 +399,7 @@ describe('paired runtime navigation isolation', () => {
 
   it('still reveals to every client when a paired caller asks for all-surface navigation', async () => {
     // Why: the CLI pairs as a runtime device but has no viewer of its own, so
-    // `orca worktree create --activate` against a remote runtime sends navigation 'all'.
+    // `kingu worktree create --activate` against a remote runtime sends navigation 'all'.
     const harness = await startHarness()
     await subscribeBothClientEventStreams(harness)
 
@@ -426,7 +426,7 @@ describe('paired runtime navigation isolation', () => {
     expect(harness.activateWorktree).toHaveBeenCalled()
   })
 
-  it('keeps create activation caller-scoped on a headless orca serve host', async () => {
+  it('keeps create activation caller-scoped on a headless kingu serve host', async () => {
     const harness = await startHarness({ headless: true })
     await subscribeBothClientEventStreams(harness)
 
@@ -760,7 +760,7 @@ describe('paired runtime navigation isolation', () => {
       }
     })
 
-    const first = new OrcaRuntimeService(makeStoreWithSelections() as never)
+    const first = new KinguRuntimeService(makeStoreWithSelections() as never)
     first.attachWindow(1)
     first.markGraphReady(1)
     seedSessionTabs(first)
@@ -771,7 +771,7 @@ describe('paired runtime navigation isolation', () => {
     })
     expect(persisted.state['device-a']?.[SESSION_WORKTREE_ID]?.activeTabId).toBe('client-a-tab')
 
-    const restarted = new OrcaRuntimeService(makeStoreWithSelections() as never)
+    const restarted = new KinguRuntimeService(makeStoreWithSelections() as never)
     restarted.attachWindow(1)
     restarted.markGraphReady(1)
     seedSessionTabs(restarted)

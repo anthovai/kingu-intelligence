@@ -30,7 +30,7 @@ vi.mock('electron', () => ({
   webContents: { fromId: vi.fn(() => null) }
 }))
 
-const binary = process.env.ORCA_REPRO_CODEX_BINARY
+const binary = process.env.KINGU_REPRO_CODEX_BINARY
 const trials = (['before', 'after'] as const).flatMap((arrival) =>
   [1, 2, 3].map((trial) => ({ arrival, trial }))
 )
@@ -39,7 +39,7 @@ const delay = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve,
 it.skipIf(!binary || process.platform === 'win32').each(trials)(
   'submits mail arriving $arrival a real Codex completion (trial $trial)',
   async ({ arrival }) => {
-    const directory = realpathSync(mkdtempSync(join(tmpdir(), 'orca-codex-mailbox-')))
+    const directory = realpathSync(mkdtempSync(join(tmpdir(), 'kingu-codex-mailbox-')))
     const workspace = join(directory, 'work')
     mkdirSync(workspace)
     const trace: { ms: number; kind: string; value: unknown }[] = []
@@ -95,7 +95,7 @@ it.skipIf(!binary || process.platform === 'win32').each(trials)(
     }
     const hooks = new AgentHookServer()
     await hooks.start()
-    const db = createDatabase('orca-codex-mailbox-db-')
+    const db = createDatabase('kingu-codex-mailbox-db-')
     const { runtime } = createRuntime(db, {
       getAgentStatusSnapshot: () => hooks.getStatusSnapshot()
     })
@@ -117,7 +117,7 @@ it.skipIf(!binary || process.platform === 'win32').each(trials)(
         runtime.ingestSyntheticTitleFrame(PTY_ID, `\x1b]0;${title}\x07`)
       }
     })
-    const script = join(directory, 'orca-hook.sh')
+    const script = join(directory, 'kingu-hook.sh')
     writeFileSync(script, getManagedScript('posix'))
     const quote = (value: string) => `'${value.replaceAll("'", "'\\''")}'`
     writeFileSync(
@@ -161,7 +161,7 @@ it.skipIf(!binary || process.platform === 'win32').each(trials)(
     const env = Object.fromEntries(
       Object.entries(process.env).filter(
         ([key, value]) =>
-          value !== undefined && !key.startsWith('ORCA_') && !key.startsWith('CODEX_')
+          value !== undefined && !key.startsWith('KINGU_') && !key.startsWith('CODEX_')
       )
     ) as Record<string, string>
     const terminal = pty.spawn(
@@ -177,11 +177,11 @@ it.skipIf(!binary || process.platform === 'win32').each(trials)(
           ...hooks.buildPtyEnv(),
           CODEX_HOME: directory,
           TERM: 'xterm-256color',
-          ORCA_BACKGROUND_LAUNCH: '1',
-          ORCA_PANE_KEY: PANE_KEY,
-          ORCA_TAB_ID: TAB_ID,
-          ORCA_WORKTREE_ID: WORKTREE_ID,
-          ORCA_AGENT_LAUNCH_TOKEN: LAUNCH_TOKEN
+          KINGU_BACKGROUND_LAUNCH: '1',
+          KINGU_PANE_KEY: PANE_KEY,
+          KINGU_TAB_ID: TAB_ID,
+          KINGU_WORKTREE_ID: WORKTREE_ID,
+          KINGU_AGENT_LAUNCH_TOKEN: LAUNCH_TOKEN
         }
       }
     )

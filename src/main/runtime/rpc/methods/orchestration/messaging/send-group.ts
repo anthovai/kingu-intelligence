@@ -1,5 +1,5 @@
 import type { MessagePriority, MessageType, OrchestrationDb } from '../../../../orchestration/db'
-import type { OrcaRuntimeService } from '../../../../orca-runtime'
+import type { KinguRuntimeService } from '../../../../kingu-runtime'
 import { OrchestrationError } from '../../../../orchestration/orchestration-error'
 import { resolveGroupAddress } from '../../../../orchestration/groups'
 import { isEquivalentPaneKey } from '../../../../orchestration/db/pane-key-match'
@@ -25,7 +25,7 @@ type GroupCandidate = OrchestrationAddressableAgent & { mailbox?: { to: string; 
 
 function listRunGroupCandidates(args: {
   db: OrchestrationDb
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   senderRunId: string
   groupAddress: string
   agents: readonly GroupAgentSnapshot[]
@@ -48,7 +48,7 @@ function listRunGroupCandidates(args: {
         warnings.push({
           code: 'recipient_unreachable',
           recipient: to,
-          message: `${to} runs on a remote Orca server; group fan-out does not relay there. Send --to ${to} instead.`
+          message: `${to} runs on a remote Kingu server; group fan-out does not relay there. Send --to ${to} instead.`
         })
       }
       return []
@@ -90,7 +90,7 @@ function listRunGroupCandidates(args: {
 
 export async function sendGroupMessage(args: {
   params: SendParamsInput
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   db: OrchestrationDb
   from: string
   groupAddress: string

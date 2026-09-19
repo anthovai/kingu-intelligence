@@ -19,7 +19,7 @@ let root: string
 let journal: AgentSessionJournal
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'orca-dead-generation-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-dead-generation-'))
   journal = await openAgentSessionJournal({
     identity: {
       sessionId: SESSION,

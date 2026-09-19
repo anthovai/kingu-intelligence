@@ -1,8 +1,8 @@
 import { isWindowsAbsolutePathLike } from '../../../../shared/cross-platform-path'
-import type { OrcaHooks } from '../../../../shared/orca-yaml-hook-types'
+import type { KinguHooks } from '../../../../shared/kingu-yaml-hook-types'
 import type { Repo } from '../../../../shared/repo-types'
 import { getEffectiveHooksFromConfig } from '../../../effective-hook-config'
-import { getEffectiveHooks, parseOrcaYaml } from '../../../hooks'
+import { getEffectiveHooks, parseKinguYaml } from '../../../hooks'
 import { getSshFilesystemProvider } from '../../../providers/ssh-filesystem-dispatch'
 import { requireSshGitProvider } from '../../../providers/ssh-git-dispatch'
 import { joinWorktreeRelativePath } from '../../../runtime/runtime-relative-paths'
@@ -16,10 +16,10 @@ import {
  * Resolve the archive hook against the host that owns the worktree.
  *
  * A failed read is answered as "no hook", which is a known limitation rather than a judgement: a
- * missing `orca.yaml` is indistinguishable from an unreachable one here, because the relay rewrites
+ * missing `kingu.yaml` is indistinguishable from an unreachable one here, because the relay rewrites
  * a non-numeric error code to `-32000` (`src/relay/dispatcher-rpc-routing.ts`), so nothing survives
  * to tell ENOENT from a transport failure. Reporting it as unreadable fired on every SSH repo that
- * simply has no orca.yaml; blocking on it would refuse those deletes outright. Distinguishing the
+ * simply has no kingu.yaml; blocking on it would refuse those deletes outright. Distinguishing the
  * two needs a provider contract that reports absence as a successful outcome — tracked in #20196.
  *
  * @param connectionId Overrides `repo.connectionId`, which answers null for a row that names its
@@ -29,7 +29,7 @@ import {
 export async function getArchiveHooksForRemoval(
   repo: Repo,
   connectionId?: string
-): Promise<OrcaHooks | null> {
+): Promise<KinguHooks | null> {
   const owner = connectionId ?? repo.connectionId
   if (!owner) {
     return getEffectiveHooks(repo)
@@ -38,7 +38,7 @@ export async function getArchiveHooksForRemoval(
   const fsProvider = getSshFilesystemProvider(owner)
   if (!fsProvider) {
     // Fail-open, and the one case here we can name confidently: no provider means the host's
-    // orca.yaml was never even looked at, so "no archive hook" is an assumption. Logged rather
+    // kingu.yaml was never even looked at, so "no archive hook" is an assumption. Logged rather
     // than surfaced, because the removal that follows fails on its own missing provider anyway.
     console.warn(
       `[hooks] no SSH filesystem provider for ${owner}; treating ${repo.path} as having no archive hook`
@@ -47,17 +47,17 @@ export async function getArchiveHooksForRemoval(
   }
 
   try {
-    const result = await fsProvider.readFile(joinWorktreeRelativePath(repo.path, 'orca.yaml'))
-    const yamlHooks = result.isBinary ? null : parseOrcaYaml(result.content)
+    const result = await fsProvider.readFile(joinWorktreeRelativePath(repo.path, 'kingu.yaml'))
+    const yamlHooks = result.isBinary ? null : parseKinguYaml(result.content)
     return getEffectiveHooksFromConfig(repo, yamlHooks)
   } catch (error) {
-    // Indistinguishable from "there is no orca.yaml": the relay rewrites a non-numeric error code
+    // Indistinguishable from "there is no kingu.yaml": the relay rewrites a non-numeric error code
     // to -32000 (src/relay/dispatcher-rpc-routing.ts), so nothing survives to tell ENOENT from a
     // transport failure. Logged so an operator can see it; not surfaced, because reporting it as
     // unreadable fired on every SSH repo that simply has none. Distinguishing them needs a provider
     // contract that returns absence as a successful outcome — #20196.
     console.warn(
-      `[hooks] could not read orca.yaml for ${repo.path} on ${owner}; treating it as having no archive hook:`,
+      `[hooks] could not read kingu.yaml for ${repo.path} on ${owner}; treating it as having no archive hook:`,
       error instanceof Error ? error.message : String(error)
     )
     return getEffectiveHooksFromConfig(repo, null)

@@ -43,7 +43,7 @@ const reserveRequest = (): AgentSessionReserveRequest => ({
 let directory: string
 
 beforeEach(async () => {
-  directory = await mkdtemp(join(tmpdir(), 'orca-conversation-name-store-'))
+  directory = await mkdtemp(join(tmpdir(), 'kingu-conversation-name-store-'))
 })
 afterEach(async () => {
   await rm(directory, { recursive: true, force: true })

@@ -79,7 +79,7 @@ export type StructuredAgentSessionHostDeps = {
     options: { replay: boolean }
   ) => void
   /** The agent-status store every held session's projection is written to and, on close,
-   *  removed from. Both production hosts pass one — the desktop and headless `orcad`; absent,
+   *  removed from. Both production hosts pass one — the desktop and headless `kingud`; absent,
    *  every reader of that store simply lists no structured session. */
   statusSink?: StructuredAgentSessionStatusSink
   handoffTransport?: StructuredAgentSessionHandoffTransport

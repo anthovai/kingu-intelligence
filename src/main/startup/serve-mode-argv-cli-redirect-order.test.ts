@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { getCliLaunchArgs } from './cli-launch-redirect'
 import { argvRequestsServeMode, normalizeServeModeArgv } from './serve-mode-argv'
 
-const CLI_ENTRY_PATH = '/opt/orca/resources/app.asar.unpacked/out/cli/index.js'
+const CLI_ENTRY_PATH = '/opt/kingu/resources/app.asar.unpacked/out/cli/index.js'
 const REDIRECT_OPTIONS = {
   platform: 'linux' as const,
   isPackaged: true,
@@ -17,7 +17,7 @@ function rewriteAsIndexDoes(argv: string[]): string[] {
 
 describe('serve argv rewrite vs CLI launch redirect ordering', () => {
   const launchArgv = [
-    '/opt/orca/orca-ide',
+    '/opt/kingu/kingu-ide',
     '--disable-features=Vulkan',
     'serve',
     '--port',
@@ -38,13 +38,13 @@ describe('serve argv rewrite vs CLI launch redirect ordering', () => {
   })
 
   it('leaves non-serve CLI commands redirectable either way', () => {
-    const argv = ['/opt/orca/orca-ide', 'status']
+    const argv = ['/opt/kingu/kingu-ide', 'status']
     expect(rewriteAsIndexDoes(argv)).toEqual(argv)
     expect(getCliLaunchArgs(argv, CLI_ENTRY_PATH, REDIRECT_OPTIONS)).toEqual(['status'])
   })
 
   it('redirects serve help instead of binding a server', () => {
-    const argv = ['/opt/orca/orca-ide', 'serve', '--help']
+    const argv = ['/opt/kingu/kingu-ide', 'serve', '--help']
     expect(rewriteAsIndexDoes(argv)).toEqual(argv)
     expect(getCliLaunchArgs(argv, CLI_ENTRY_PATH, REDIRECT_OPTIONS)).toEqual(['serve', '--help'])
   })

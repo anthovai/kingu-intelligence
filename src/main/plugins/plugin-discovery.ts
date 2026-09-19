@@ -7,7 +7,7 @@ import {
   isQualifiedPluginKey,
   parsePluginManifest,
   qualifiedPluginKey,
-  satisfiesOrcaEngineRange,
+  satisfiesKinguEngineRange,
   type PluginManifest
 } from '../../shared/plugins/plugin-manifest'
 import {
@@ -107,11 +107,11 @@ async function readManifestDir(
   }
   const manifest = parsed.manifest
   const pluginKey = qualifiedPluginKey(manifest)
-  if (!satisfiesOrcaEngineRange(hostVersion, manifest.engines.orca)) {
+  if (!satisfiesKinguEngineRange(hostVersion, manifest.engines.kingu)) {
     return {
       pluginKey,
       rootDir,
-      error: `requires Orca ${manifest.engines.orca} (this is ${hostVersion})`,
+      error: `requires Kingu ${manifest.engines.kingu} (this is ${hostVersion})`,
       isDev
     }
   }

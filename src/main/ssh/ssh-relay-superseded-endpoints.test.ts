@@ -21,8 +21,8 @@ import { getRemoteHostPlatform } from './ssh-remote-platform'
 
 const HOME = '/home/u'
 const SOCK_NAME = 'relay-deadbeef.sock'
-const CURRENT_DIR = `${HOME}/.orca-remote/relay-0.1.0+bd3ec370d21d`
-const OLD_SOCK = `${HOME}/.orca-remote/relay-0.1.0+7175e0a40ea7/${SOCK_NAME}`
+const CURRENT_DIR = `${HOME}/.kingu-remote/relay-0.1.0+bd3ec370d21d`
+const OLD_SOCK = `${HOME}/.kingu-remote/relay-0.1.0+7175e0a40ea7/${SOCK_NAME}`
 const HOST = getRemoteHostPlatform('linux-x64')
 const WINDOWS_HOST = getRemoteHostPlatform('win32-x64')
 const CONN = {} as SshConnection
@@ -35,7 +35,7 @@ const SWEEP = {
 }
 
 function probe(lines: string[]): string {
-  return ['ORCA-INCUMBENT-BEGIN', ...lines, 'ORCA-INCUMBENT-END'].join('\n')
+  return ['KINGU-INCUMBENT-BEGIN', ...lines, 'KINGU-INCUMBENT-END'].join('\n')
 }
 
 function incumbent(lines: string[]): ReturnType<typeof parseRelayEndpointIncumbentProbe> {
@@ -197,7 +197,7 @@ describe('sweepSupersededRelayEndpoints', () => {
   // remotely. That rethrows by design — and it used to throw past the log, losing socket 1's
   // verdict and making a half-run pass read exactly like a host with nothing to sweep.
   it('keeps the endpoints it already classified when a later probe cannot confirm termination', async () => {
-    const SECOND_SOCK = `${HOME}/.orca-remote/relay-0.1.0+cafebabe1234/${SOCK_NAME}`
+    const SECOND_SOCK = `${HOME}/.kingu-remote/relay-0.1.0+cafebabe1234/${SOCK_NAME}`
     const unconfirmed = Object.assign(new Error('channel close unconfirmed'), {
       sshChannelCloseConfirmed: false
     })
@@ -221,7 +221,7 @@ describe('sweepSupersededRelayEndpoints', () => {
   // The loop must not stop on a probe that merely failed: that is an absence of evidence, and the
   // remaining endpoints still deserve a pass.
   it('carries on past an ordinary probe failure and classifies the rest', async () => {
-    const SECOND_SOCK = `${HOME}/.orca-remote/relay-0.1.0+cafebabe1234/${SOCK_NAME}`
+    const SECOND_SOCK = `${HOME}/.kingu-remote/relay-0.1.0+cafebabe1234/${SOCK_NAME}`
     execCommand
       .mockResolvedValueOnce(`${OLD_SOCK}\n${SECOND_SOCK}\n`)
       .mockRejectedValueOnce(new Error('probe blew up'))

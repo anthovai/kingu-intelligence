@@ -48,7 +48,7 @@ vi.mock('./startup/startup-diagnostics', async (importOriginal) => {
 
 describe('loading Store extraction seams', () => {
   beforeEach(() => {
-    testState.dir = mkdtempSync(join(tmpdir(), 'orca-loading-store-'))
+    testState.dir = mkdtempSync(join(tmpdir(), 'kingu-loading-store-'))
   })
 
   afterEach(() => {
@@ -59,7 +59,7 @@ describe('loading Store extraction seams', () => {
 
   it('does not serialize the workspace session when startup diagnostics are disabled', () => {
     const sentinel = 'startup-diagnostics-workspace-session-sentinel-disabled'
-    vi.stubEnv('ORCA_STARTUP_DIAGNOSTICS', '')
+    vi.stubEnv('KINGU_STARTUP_DIAGNOSTICS', '')
     const state = getDefaultPersistedState(testState.dir)
     state.workspaceSession = { ...state.workspaceSession, activeTabId: sentinel }
     writeDataFile(state)
@@ -85,7 +85,7 @@ describe('loading Store extraction seams', () => {
 
   it('reports the unchanged workspace-session byte count when startup diagnostics are enabled', () => {
     const sentinel = 'startup-diagnostics-workspace-session-sentinel-enabled'
-    vi.stubEnv('ORCA_STARTUP_DIAGNOSTICS', '1')
+    vi.stubEnv('KINGU_STARTUP_DIAGNOSTICS', '1')
     const state = getDefaultPersistedState(testState.dir)
     state.workspaceSession = { ...state.workspaceSession, activeTabId: sentinel }
     writeDataFile(state)
@@ -118,7 +118,7 @@ describe('loading Store extraction seams', () => {
 
   it('timestamps persistence-load-done before resolving its details closure', () => {
     const sentinel = 'startup-diagnostics-workspace-session-sentinel-ordering'
-    vi.stubEnv('ORCA_STARTUP_DIAGNOSTICS', '1')
+    vi.stubEnv('KINGU_STARTUP_DIAGNOSTICS', '1')
     const state = getDefaultPersistedState(testState.dir)
     state.workspaceSession = { ...state.workspaceSession, activeTabId: sentinel }
     writeDataFile(state)
@@ -215,7 +215,7 @@ describe('loading Store extraction seams', () => {
     const { Store } = await import('./persistence/loading-store/store')
     const { setMigrationUnsupportedPty } =
       await import('./agent-hooks/migration-unsupported-pty-state')
-    const secondDataFile = join(testState.dir, 'second-profile', 'orca-data.json')
+    const secondDataFile = join(testState.dir, 'second-profile', 'kingu-data.json')
     const second = new Store({ dataFile: secondDataFile })
 
     setMigrationUnsupportedPty({
@@ -301,7 +301,7 @@ describe('loading Store extraction seams', () => {
       }
     }
     const overridden = new StoreWithRepoCountOverride({
-      dataFile: join(testState.dir, 'override-profile', 'orca-data.json')
+      dataFile: join(testState.dir, 'override-profile', 'kingu-data.json')
     })
     expect(overridden.getRepoCount()).toBe(47)
     expectTypeOf<PersistenceStore>().not.toHaveProperty('scheduleSave')

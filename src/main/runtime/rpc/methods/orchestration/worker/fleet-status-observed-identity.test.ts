@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import type { AgentStatusOrchestrationContext } from '../../../../../../shared/agent-status-types'
 import { AgentHookServer } from '../../../../../agent-hooks/server'
-import type { OrcaRuntimeService } from '../../../../orca-runtime'
+import type { KinguRuntimeService } from '../../../../kingu-runtime'
 import type { OrchestrationDb } from '../../../../orchestration/db'
-import { OrcaRuntimeWithGetOrchestrationDispatchAuthority } from '../../../../orca-runtime-get-orchestration-dispatch-authority'
+import { KinguRuntimeWithGetOrchestrationDispatchAuthority } from '../../../../kingu-runtime-get-orchestration-dispatch-authority'
 import {
   AgentStatusObservedPaneIdentityCapture,
   AgentStatusObservedPaneIdentities,
@@ -34,7 +34,7 @@ type ObservedWorld = {
   runProcess: (handle: string, incarnation: string) => void
   dispatchPane: (paneKey: string, dispatchId: string | null) => void
   ingest: (paneKey: string, state: 'working' | 'waiting') => void
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
 }
 
 /** Real hook server, real ingest-time capture, real fleet snapshot accessor. */
@@ -78,10 +78,10 @@ function createWorld(): ObservedWorld {
       }),
     runtime: {
       getOrchestrationFleetAgentStatusSnapshot: () =>
-        OrcaRuntimeWithGetOrchestrationDispatchAuthority.prototype.getOrchestrationFleetAgentStatusSnapshot.call(
+        KinguRuntimeWithGetOrchestrationDispatchAuthority.prototype.getOrchestrationFleetAgentStatusSnapshot.call(
           host as never
         )
-    } as unknown as OrcaRuntimeService
+    } as unknown as KinguRuntimeService
   }
 }
 

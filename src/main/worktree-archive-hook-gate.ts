@@ -52,7 +52,7 @@ export function gateWorktreeRemovalOnArchiveHook(args: {
  *
  * Hooks are read through `getArchiveHooksForRemoval` rather than `getEffectiveHooks`: on an
  * SSH-hosted worktree `repo.path` names a path on the EXECUTION host, so a local read would miss
- * the committed `orca.yaml` this gate exists for, and could refuse on a coincidental local one.
+ * the committed `kingu.yaml` this gate exists for, and could refuse on a coincidental local one.
  */
 export async function gateRemovalWhereArchiveHookCannotRun(args: {
   repo: Repo
@@ -68,7 +68,7 @@ export async function gateRemovalWhereArchiveHookCannotRun(args: {
     return {}
   }
   if (!args.runHooks) {
-    const warning = `orca.yaml archive hook skipped for ${args.worktreePath}; pass --run-hooks to run it.`
+    const warning = `kingu.yaml archive hook skipped for ${args.worktreePath}; pass --run-hooks to run it.`
     console.warn(`[hooks] ${warning}`)
     return { warning }
   }

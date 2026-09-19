@@ -71,7 +71,7 @@ describeOnWindows('ConPTY job ownership', () => {
 
     let grandchildPid: number | null = null
     proc.onData((chunk) => {
-      const match = /ORCA_GC=(\d+)/.exec(chunk)
+      const match = /KINGU_GC=(\d+)/.exec(chunk)
       if (match && grandchildPid === null) {
         grandchildPid = Number(match[1])
       }
@@ -81,7 +81,7 @@ describeOnWindows('ConPTY job ownership', () => {
       "const{spawn}=require('child_process');",
       "const c=spawn(process.execPath,['-e','setInterval(()=>{},1000)'],",
       "{detached:true,windowsHide:true,stdio:'ignore'});",
-      "c.unref();console.log('ORCA_GC='+c.pid);"
+      "c.unref();console.log('KINGU_GC='+c.pid);"
     ].join('')
     proc.write(`node -e "${script}"\r`)
 
@@ -152,7 +152,7 @@ describeOnWindows('ConPTY job ownership', () => {
     // regardless of its other limits) and is not covered by a test here.
     // Covering it needs a helper that passes the flag to CreateProcess.
     const nodePty = await import('node-pty')
-    const marker = join(mkdtempSync(join(tmpdir(), 'orca-breakaway-')), 'marker.txt')
+    const marker = join(mkdtempSync(join(tmpdir(), 'kingu-breakaway-')), 'marker.txt')
     const proc = nodePty.spawn('cmd.exe', [], {
       name: 'xterm-256color',
       cols: 100,
@@ -166,7 +166,7 @@ describeOnWindows('ConPTY job ownership', () => {
     proc.onData((chunk) => {
       output += chunk
     })
-    proc.write(`start /b cmd /c "echo ORCA_BREAKAWAY> ${marker}"\r`)
+    proc.write(`start /b cmd /c "echo KINGU_BREAKAWAY> ${marker}"\r`)
 
     await vi.waitFor(() => expect(existsSync(marker)).toBe(true), { timeout: 15_000 })
     expect(output).not.toMatch(/Access is denied/i)

@@ -7,8 +7,8 @@ vi.mock('../native-chat/agent-session-wire/structured-agent-session-registry', (
   getStructuredAgentSessionHost: () => hostRef.current
 }))
 
-const { OrcaRuntimeWithGetPtyRecordForPaneKey } =
-  await import('./orca-runtime-get-pty-record-for-pane-key')
+const { KinguRuntimeWithGetPtyRecordForPaneKey } =
+  await import('./kingu-runtime-get-pty-record-for-pane-key')
 const {
   mintStructuredWorkerHandle,
   mintStructuredWorkerPaneKey,
@@ -49,7 +49,7 @@ function registerWorker(): string {
 }
 
 function runtime() {
-  return Object.assign(Object.create(OrcaRuntimeWithGetPtyRecordForPaneKey.prototype), {
+  return Object.assign(Object.create(KinguRuntimeWithGetPtyRecordForPaneKey.prototype), {
     _orchestrationDb: null
   }) as { getStructuredWorkerPaneKeyForSession: (sessionId: string) => string | null }
 }

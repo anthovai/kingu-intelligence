@@ -8,7 +8,7 @@ import type {
   NotificationDispatchResult,
   NotificationPermissionStatusResult
 } from '../../shared/notification-settings-types'
-import type { OrcaRuntimeService } from '../runtime/orca-runtime'
+import type { KinguRuntimeService } from '../runtime/kingu-runtime'
 import { readNotificationAuthorizationStatus } from './notification-authorization-status'
 import { setTrayAttention } from '../tray/system-tray'
 import { isMainWindowVisible } from '../window/main-window-visibility'
@@ -25,7 +25,7 @@ import {
   resetNotificationPermissionEvidence
 } from './notification-permission-probe'
 
-export function registerNotificationHandlers(store: Store, runtime?: OrcaRuntimeService): void {
+export function registerNotificationHandlers(store: Store, runtime?: KinguRuntimeService): void {
   ipcMain.removeHandler('notifications:getDesktopAwayState')
   ipcMain.handle('notifications:getDesktopAwayState', () => readDesktopAwayState(powerMonitor))
   resetNotificationPermissionEvidence()

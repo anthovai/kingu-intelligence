@@ -105,7 +105,7 @@ async function seedGroupedQuestion(): Promise<{ itemId: string; revision: number
 }
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'orca-wire-grouped-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-wire-grouped-'))
   resetHostTestOperationIds()
   ordinal = 0
   acquire = vi.fn(async ({ fence }) => ({

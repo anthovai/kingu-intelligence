@@ -5,7 +5,7 @@ import {
   ORCHESTRATION_FEDERATION_STRUCTURED_READ_RUNTIME_CAPABILITY,
   ORCHESTRATION_WORKER_STOP_VERDICT_RUNTIME_CAPABILITY
 } from '../../../../../../shared/protocol-version'
-import { OrcaRuntimeService } from '../../../../orca-runtime'
+import { KinguRuntimeService } from '../../../../kingu-runtime'
 import type { OrchestrationDb } from '../../../../orchestration/db'
 import type { FederatedDispatchRow } from '../../../../orchestration/types'
 import { readFederatedWorkerOutput } from './federated-worker-read'
@@ -37,7 +37,7 @@ describe('federated transport safety', () => {
             },
       _meta: { runtimeId: 'epoch-worker' }
     }))
-    const runtime = new OrcaRuntimeService(null, undefined, {
+    const runtime = new KinguRuntimeService(null, undefined, {
       orchestrationEnvironmentTransport: {
         resolve: () => server,
         call
@@ -94,7 +94,7 @@ describe('federated transport safety', () => {
     const runtime = {
       callOrchestrationWorkerServer,
       resolveOrchestrationWorkerServer: () => server
-    } as unknown as OrcaRuntimeService
+    } as unknown as KinguRuntimeService
     const federated = federatedDispatch()
 
     await readFederatedWorkerOutput({
@@ -133,7 +133,7 @@ describe('federated transport safety', () => {
               output: { dispatchId: 'dispatch-worker', source: 'terminal' }
             }
       )
-    } as unknown as OrcaRuntimeService
+    } as unknown as KinguRuntimeService
 
     await readFederatedWorkerOutput({
       runtime,
@@ -169,7 +169,7 @@ describe('federated transport safety', () => {
     const runtime = {
       callOrchestrationWorkerServer,
       getOrchestrationDb: () => db
-    } as unknown as OrcaRuntimeService
+    } as unknown as KinguRuntimeService
 
     const result = await releaseFederatedWorker({
       runtime,
@@ -251,7 +251,7 @@ describe('federated transport safety', () => {
       resolveOrchestrationWorkerServer: () => server,
       callOrchestrationWorkerServer,
       notifyMessageArrived: vi.fn()
-    } as unknown as OrcaRuntimeService
+    } as unknown as KinguRuntimeService
 
     await syncFederatedDispatch(runtime, federated.dispatch_id)
 
@@ -282,7 +282,7 @@ describe('federated transport safety', () => {
       getRuntimeId: () => 'runtime-home',
       resolveOrchestrationWorkerServer: () => server,
       callOrchestrationWorkerServer
-    } as unknown as OrcaRuntimeService
+    } as unknown as KinguRuntimeService
     const method = ORCHESTRATION_WORKER_STOP_METHODS.find(
       (candidate) => candidate.name === 'orchestration.workerStop'
     )!

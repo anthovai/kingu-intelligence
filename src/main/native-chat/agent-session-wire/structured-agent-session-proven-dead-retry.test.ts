@@ -25,7 +25,7 @@ afterEach(async () => {
 
 describe('structured session proven-dead TUI retry', () => {
   it('acquires native ownership without trying to close the dead TUI again', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'orca-handoff-dead-retry-'))
+    const root = await mkdtemp(join(tmpdir(), 'kingu-handoff-dead-retry-'))
     roots.push(root)
     const store = await AgentSessionRecordStore.open({
       directory: join(root, 'store'),
@@ -92,7 +92,7 @@ describe('structured session proven-dead TUI retry', () => {
       journalDir: join(root, 'journal')
     })
     await journal.appendItem(
-      { provider: 'orca', clientMessageId: 'running-turn' },
+      { provider: 'kingu', clientMessageId: 'running-turn' },
       {
         kind: 'status',
         text: 'Working',

@@ -1,6 +1,6 @@
 import { shell } from 'electron'
 import { randomUUID } from 'node:crypto'
-import { ORCA_BROWSER_BLANK_URL } from '../../shared/constants'
+import { KINGU_BROWSER_BLANK_URL } from '../../shared/constants'
 import {
   normalizeBrowserNavigationUrl,
   normalizeExternalBrowserUrl,
@@ -25,8 +25,8 @@ export abstract class BrowserManagerGuestPopupPolicy extends BrowserManagerNavig
     // OAuth child windows keep native link behavior.
     const clickedLinkFrameNames: BrowserClickedLinkFrameNames | null = routeClickedLinks
       ? {
-          foreground: `__orca_clicked_link_foreground_${randomUUID()}`,
-          background: `__orca_clicked_link_background_${randomUUID()}`
+          foreground: `__kingu_clicked_link_foreground_${randomUUID()}`,
+          background: `__kingu_clicked_link_background_${randomUUID()}`
         }
       : null
     let clickedLinkRoutingActive = routeClickedLinks
@@ -76,8 +76,8 @@ export abstract class BrowserManagerGuestPopupPolicy extends BrowserManagerNavig
       if (!clickedLinkRoutingActive || frame.isDestroyed()) {
         return
       }
-      const foregroundName = `__orca_clicked_link_iframe_foreground_${randomUUID()}`
-      const backgroundName = `__orca_clicked_link_iframe_background_${randomUUID()}`
+      const foregroundName = `__kingu_clicked_link_iframe_foreground_${randomUUID()}`
+      const backgroundName = `__kingu_clicked_link_iframe_background_${randomUUID()}`
       iframeFrameNamesByFrame.set(frame, {
         foreground: foregroundName,
         background: backgroundName
@@ -152,18 +152,18 @@ export abstract class BrowserManagerGuestPopupPolicy extends BrowserManagerNavig
         if (
           browserTabId &&
           browserUrl &&
-          this.openLinkInOrcaTab(browserTabId, browserUrl, clickedLinkActivate)
+          this.openLinkInKinguTab(browserTabId, browserUrl, clickedLinkActivate)
         ) {
           this.forwardOrQueuePopupEvent(guest.id, {
             origin: safeOrigin(browserUrl),
-            action: 'opened-in-orca'
+            action: 'opened-in-kingu'
           })
         }
         // Why: a recognized gesture must never fall through to a native popup if its renderer vanished mid-click.
         return { action: 'deny' }
       }
 
-      // Why: an unnamed, featureless window.open() is Chromium's own new-tab shape, so an Orca tab is
+      // Why: an unnamed, featureless window.open() is Chromium's own new-tab shape, so an Kingu tab is
       // the honest presentation; a floating origin-bar window is not. Opener-dependent shapes are
       // excluded by isNewBrowserTabPopupIntent and still get a real child window below.
       if (
@@ -181,7 +181,7 @@ export abstract class BrowserManagerGuestPopupPolicy extends BrowserManagerNavig
           return { action: 'deny' }
         }
         if (
-          this.openLinkInOrcaTab(
+          this.openLinkInKinguTab(
             ownerContext.browserTabId,
             externalUrl,
             disposition !== 'background-tab'
@@ -189,7 +189,7 @@ export abstract class BrowserManagerGuestPopupPolicy extends BrowserManagerNavig
         ) {
           this.forwardOrQueuePopupEvent(guest.id, {
             origin: safeOrigin(externalUrl),
-            action: 'opened-in-orca'
+            action: 'opened-in-kingu'
           })
         }
         // Why: a recognized new-tab intent must never fall through to a native popup if its renderer vanished mid-open.
@@ -197,13 +197,13 @@ export abstract class BrowserManagerGuestPopupPolicy extends BrowserManagerNavig
       }
 
       // Why: file URLs are fine for in-pane previews, but must not spawn native child windows targeting local paths.
-      const canOpenAsChild = Boolean(externalUrl || browserUrl === ORCA_BROWSER_BLANK_URL)
+      const canOpenAsChild = Boolean(externalUrl || browserUrl === KINGU_BROWSER_BLANK_URL)
       if (browserTabId && canOpenAsChild) {
         // Why: OAuth may request size/position, but content must not create deceptive or inescapable native chrome.
         return {
           action: 'allow',
           overrideBrowserWindowOptions: SAFE_POPUP_WINDOW_OPTIONS,
-          // Why: default child windows lack an address bar; host in an Orca origin-bar window so the destination is verifiable.
+          // Why: default child windows lack an address bar; host in an Kingu origin-bar window so the destination is verifiable.
           createWindow: (options: PopupChildWindowOptions) =>
             this.createPopupChildWindowWithOriginBar(guest, url, options)
         }

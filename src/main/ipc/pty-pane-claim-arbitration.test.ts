@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { spawnMock } from './pty-ipc-mock-registry'
 import { setupPtyIpcSuite } from './pty-ipc-test-harness'
 import { makePaneKey } from '../../shared/stable-pane-id'
-import { OrcaRuntimeService } from '../runtime/orca-runtime'
+import { KinguRuntimeService } from '../runtime/kingu-runtime'
 import {
   registerPtyHandlers,
   clearProviderPtyState,
@@ -38,7 +38,7 @@ vi.mock('../telemetry/client', () =>
 vi.mock('../telemetry/classify-error', () =>
   import('./pty-ipc-mock-registry').then((m) => m.classifyErrorModuleMock())
 )
-vi.mock('../cli/linux-terminal-orca-cli-shim', () =>
+vi.mock('../cli/linux-terminal-kingu-cli-shim', () =>
   import('./pty-ipc-mock-registry').then((m) => m.linuxCliShimModuleMock())
 )
 vi.mock('../memory/pty-registry', () =>
@@ -149,7 +149,7 @@ describe('registerPtyHandlers', () => {
       worktreeId: 'wt-1',
       tabId: 'tab-headless',
       leafId,
-      env: { ORCA_PANE_KEY: makePaneKey('tab-headless', leafId) },
+      env: { KINGU_PANE_KEY: makePaneKey('tab-headless', leafId) },
       persistHostSessionBinding: true
     })
 
@@ -252,7 +252,7 @@ describe('registerPtyHandlers', () => {
   it('reports lower-owner commit before rejecting an early-exited runtime incarnation', async () => {
     const persistPtyBinding = vi.fn()
     const onPtySpawnCommitted = vi.fn()
-    const runtime = new OrcaRuntimeService({
+    const runtime = new KinguRuntimeService({
       getRepo: () => undefined,
       getRepos: () => [],
       addRepo: () => {},
@@ -331,7 +331,7 @@ describe('registerPtyHandlers', () => {
     clearProviderPtyState('pty-early-exit')
   })
   it('does not retain a claimed owner when its PTY exits before controller admission', async () => {
-    const runtime = new OrcaRuntimeService({
+    const runtime = new KinguRuntimeService({
       getRepo: () => undefined,
       getRepos: () => [],
       addRepo: () => {},
@@ -488,12 +488,12 @@ describe('registerPtyHandlers', () => {
       worktreeId: 'repo-1::/tmp',
       tabId: 'tab-race',
       leafId,
-      env: { ORCA_PANE_KEY: paneKey },
+      env: { KINGU_PANE_KEY: paneKey },
       persistHostSessionBinding: true
     })
     await Promise.resolve()
 
-    // Why: SSH can strip ORCA_PANE_KEY before spawn; tab/leaf metadata must still dedupe against runtime materialization.
+    // Why: SSH can strip KINGU_PANE_KEY before spawn; tab/leaf metadata must still dedupe against runtime materialization.
     const rendererSpawn = handlers.get('pty:spawn')!(null, {
       cols: 80,
       rows: 24,
@@ -502,8 +502,8 @@ describe('registerPtyHandlers', () => {
       tabId: 'tab-race',
       leafId,
       env: {
-        ORCA_TAB_ID: 'tab-race',
-        ORCA_WORKTREE_ID: 'repo-1::/tmp'
+        KINGU_TAB_ID: 'tab-race',
+        KINGU_WORKTREE_ID: 'repo-1::/tmp'
       }
     }) as Promise<{ id: string }>
     await vi.waitFor(() => expect(providerSpawn).toHaveBeenCalledTimes(1))

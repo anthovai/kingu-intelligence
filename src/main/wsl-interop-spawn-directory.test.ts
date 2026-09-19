@@ -8,7 +8,7 @@ import {
   resolveWslInteropSpawnCwd
 } from './wsl-interop-spawn-directory'
 
-// Regression coverage for #16463 ("Removing the worktree Orca was launched from
+// Regression coverage for #16463 ("Removing the worktree Kingu was launched from
 // breaks every wsl.exe spawn for the rest of the session"). The WSL command
 // builders passed `cwd: undefined` meaning "the directory is inside the
 // command", but CreateProcessW reads NULL as "inherit the parent's" — and the
@@ -18,12 +18,12 @@ import {
 const createdRoots: string[] = []
 
 function makeExistingDirectory(): string {
-  const dir = mkdtempSync(join(tmpdir(), 'orca-wsl-spawn-cwd-'))
+  const dir = mkdtempSync(join(tmpdir(), 'kingu-wsl-spawn-cwd-'))
   createdRoots.push(dir)
   return dir
 }
 
-const ENV_KEYS = ['ORCA_USER_DATA_PATH', 'USERPROFILE', 'HOMEDRIVE', 'HOMEPATH'] as const
+const ENV_KEYS = ['KINGU_USER_DATA_PATH', 'USERPROFILE', 'HOMEDRIVE', 'HOMEPATH'] as const
 const savedEnv = new Map<string, string | undefined>()
 
 beforeEach(() => {
@@ -52,14 +52,14 @@ afterEach(() => {
 describe('resolveWslInteropSpawnCwd', () => {
   it('names the app-owned directory first, so no worktree can be the answer', () => {
     const userData = makeExistingDirectory()
-    process.env.ORCA_USER_DATA_PATH = userData
+    process.env.KINGU_USER_DATA_PATH = userData
     process.env.USERPROFILE = makeExistingDirectory()
 
     expect(resolveWslInteropSpawnCwd()).toBe(userData)
   })
 
   it('skips a candidate that does not resolve instead of naming it', () => {
-    process.env.ORCA_USER_DATA_PATH = join(tmpdir(), 'orca-wsl-spawn-cwd-never-created')
+    process.env.KINGU_USER_DATA_PATH = join(tmpdir(), 'kingu-wsl-spawn-cwd-never-created')
     const profile = makeExistingDirectory()
     process.env.USERPROFILE = profile
 
@@ -78,12 +78,12 @@ describe('resolveWslInteropSpawnCwd', () => {
     // started and was deleted underneath it hours later. A memo that is never
     // re-validated reproduces the original bug one layer up.
     const doomed = makeExistingDirectory()
-    process.env.ORCA_USER_DATA_PATH = doomed
+    process.env.KINGU_USER_DATA_PATH = doomed
     const survivor = makeExistingDirectory()
     expect(resolveWslInteropSpawnCwd()).toBe(doomed)
 
     rmSync(doomed, { recursive: true, force: true })
-    process.env.ORCA_USER_DATA_PATH = survivor
+    process.env.KINGU_USER_DATA_PATH = survivor
 
     expect(resolveWslInteropSpawnCwd()).toBe(survivor)
   })

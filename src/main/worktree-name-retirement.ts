@@ -33,7 +33,7 @@ import { hasCachedWslHome, parseWslPath } from './wsl'
 import { getWorktreeMirrorDistro } from './project-runtime-git-options'
 import type { ProjectRuntimeResolutionStore } from './local-project-runtime-resolution'
 
-const RETIREMENT_PROBE_NAME = 'orca-retirement-probe'
+const RETIREMENT_PROBE_NAME = 'kingu-retirement-probe'
 
 type RetirementRuntimeStore = {
   getProjects?: ProjectRuntimeResolutionStore['getProjects']
@@ -152,7 +152,7 @@ async function getRetirementCollisionKey(
   return key
 }
 
-/** True when the repo executes on an Orca-provisioned on-demand runtime, whose address and
+/** True when the repo executes on an Kingu-provisioned on-demand runtime, whose address and
  *  filesystem are both replaced on every provision. */
 function isRuntimeOwnedRetirementHost(repo: Repo): boolean {
   const parsed = parseExecutionHostId(getRepoExecutionHostId(repo))

@@ -3,7 +3,7 @@ import { makePaneKey, parsePaneKey } from '../../../../shared/stable-pane-id'
 import { UNVERIFIED_PROCESS_EXIT_CODE } from '../../../../shared/terminal-exit-cause'
 import type { Store } from '../../../persistence'
 import { retireTerminalSurfaceFromPersistence } from '../../../runtime/mobile-session-terminal-persistence-retirement'
-import type { OrcaRuntimeService } from '../../../runtime/orca-runtime'
+import type { KinguRuntimeService } from '../../../runtime/kingu-runtime'
 import type { IPtyProvider, PtySpawnOptions, PtySpawnResult } from '../../../providers/types'
 import { parseAppSshPtyId } from '../../../providers/ssh-pty-id'
 import {
@@ -66,7 +66,7 @@ export function resolvePersistedStablePaneOwner(
 }
 
 export function resolveStablePaneOwner(
-  runtime: OrcaRuntimeService | undefined,
+  runtime: KinguRuntimeService | undefined,
   store: Store | undefined,
   paneKey: string | null | undefined,
   worktreeId: string | undefined,
@@ -75,8 +75,8 @@ export function resolveStablePaneOwner(
   if (!paneKey || !worktreeId) {
     return null
   }
-  let resolved: ReturnType<OrcaRuntimeService['resolveTerminalPane']> | null = null
-  let resolvedHandleCandidate: ReturnType<OrcaRuntimeService['resolveTerminalPane']> | null = null
+  let resolved: ReturnType<KinguRuntimeService['resolveTerminalPane']> | null = null
+  let resolvedHandleCandidate: ReturnType<KinguRuntimeService['resolveTerminalPane']> | null = null
   if (runtime && typeof runtime.resolveTerminalPane === 'function') {
     try {
       const candidate = runtime.resolveTerminalPane(paneKey, worktreeId)
@@ -159,7 +159,7 @@ export function retirePersistedStablePaneOwner(
 }
 
 export type StablePaneSpawnContext = {
-  runtime: OrcaRuntimeService | undefined
+  runtime: KinguRuntimeService | undefined
   store?: Store
   provider: IPtyProvider
   spawnOptions: PtySpawnOptions

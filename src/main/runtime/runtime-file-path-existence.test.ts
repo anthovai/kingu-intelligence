@@ -2,7 +2,7 @@ import { afterEach, expect, it, vi } from 'vitest'
 import { mkdtemp, writeFile, rm } from 'node:fs/promises'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
-import { RuntimeFileCommands } from './orca-runtime-files'
+import { RuntimeFileCommands } from './kingu-runtime-files'
 import { RpcDispatcher } from './rpc/dispatcher'
 import { FILE_METHODS } from './rpc/methods/files'
 import {
@@ -21,7 +21,7 @@ afterEach(async () => {
   root = undefined
 })
 async function setup(legacy = false) {
-  root = await mkdtemp(join(tmpdir(), 'orca-runtime-batch-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-runtime-batch-'))
   const names = Array.from({ length: 8 }, (_, i) => `file-${i}.ts`)
   await Promise.all(names.map((name) => writeFile(join(root!, name), 'fixture')))
   const provider = {

@@ -103,10 +103,10 @@ describe('createPtySubprocess', () => {
           sessionId: 'test',
           cols: 80,
           rows: 24,
-          cwd: 'C:\\definitely-missing-orca-wsl-cwd',
+          cwd: 'C:\\definitely-missing-kingu-wsl-cwd',
           shellOverride: 'wsl.exe'
         })
-      ).rejects.toThrow(/Working directory "C:\\definitely-missing-orca-wsl-cwd" does not exist/)
+      ).rejects.toThrow(/Working directory "C:\\definitely-missing-kingu-wsl-cwd" does not exist/)
     } finally {
       if (platform) {
         Object.defineProperty(process, 'platform', platform)
@@ -224,7 +224,7 @@ describe('createPtySubprocess', () => {
         cols: 80,
         rows: 24,
         cwd: '\\\\wsl.localhost\\Ubuntu\\home\\jin\\repo',
-        env: { CODEX_HOME: 'C:\\Users\\jin\\.codex', ORCA_CODEX_HOME: 'C:\\Users\\jin\\.codex' }
+        env: { CODEX_HOME: 'C:\\Users\\jin\\.codex', KINGU_CODEX_HOME: 'C:\\Users\\jin\\.codex' }
       })
     } finally {
       if (platform) {
@@ -238,7 +238,7 @@ describe('createPtySubprocess', () => {
       expect.objectContaining({
         env: expect.not.objectContaining({
           CODEX_HOME: expect.anything(),
-          ORCA_CODEX_HOME: expect.anything()
+          KINGU_CODEX_HOME: expect.anything()
         })
       })
     )
@@ -259,9 +259,9 @@ describe('createPtySubprocess', () => {
         cwd: 'C:\\Users\\jin\\repo',
         env: {
           CODEX_HOME:
-            '\\\\wsl.localhost\\Ubuntu\\home\\jin\\.local\\share\\orca\\codex-accounts\\a\\home',
-          ORCA_CODEX_HOME:
-            '\\\\wsl.localhost\\Ubuntu\\home\\jin\\.local\\share\\orca\\codex-accounts\\a\\home'
+            '\\\\wsl.localhost\\Ubuntu\\home\\jin\\.local\\share\\kingu\\codex-accounts\\a\\home',
+          KINGU_CODEX_HOME:
+            '\\\\wsl.localhost\\Ubuntu\\home\\jin\\.local\\share\\kingu\\codex-accounts\\a\\home'
         }
       })
     } finally {
@@ -276,7 +276,7 @@ describe('createPtySubprocess', () => {
       expect.objectContaining({
         env: expect.not.objectContaining({
           CODEX_HOME: expect.anything(),
-          ORCA_CODEX_HOME: expect.anything()
+          KINGU_CODEX_HOME: expect.anything()
         })
       })
     )
@@ -299,9 +299,9 @@ describe('createPtySubprocess', () => {
         shellOverride: 'wsl.exe',
         env: {
           CODEX_HOME:
-            '\\\\wsl.localhost\\Ubuntu\\home\\jin\\.local\\share\\orca\\codex-accounts\\a\\home',
-          ORCA_CODEX_HOME:
-            '\\\\wsl.localhost\\Ubuntu\\home\\jin\\.local\\share\\orca\\codex-accounts\\a\\home'
+            '\\\\wsl.localhost\\Ubuntu\\home\\jin\\.local\\share\\kingu\\codex-accounts\\a\\home',
+          KINGU_CODEX_HOME:
+            '\\\\wsl.localhost\\Ubuntu\\home\\jin\\.local\\share\\kingu\\codex-accounts\\a\\home'
         }
       })
     } finally {
@@ -322,8 +322,8 @@ describe('createPtySubprocess', () => {
       ['-d', 'Ubuntu', '--exec', 'sh', '-c', expect.stringContaining(`cd '${expectedLinuxCwd}'`)],
       expect.objectContaining({
         env: expect.objectContaining({
-          CODEX_HOME: '/home/jin/.local/share/orca/codex-accounts/a/home',
-          ORCA_CODEX_HOME: '/home/jin/.local/share/orca/codex-accounts/a/home',
+          CODEX_HOME: '/home/jin/.local/share/kingu/codex-accounts/a/home',
+          KINGU_CODEX_HOME: '/home/jin/.local/share/kingu/codex-accounts/a/home',
           WSLENV: expect.stringContaining('CODEX_HOME')
         })
       })
@@ -360,16 +360,16 @@ describe('createPtySubprocess', () => {
     )
   })
 
-  it('marks Orca terminal handles for WSL env import in daemon WSL terminals', async () => {
+  it('marks Kingu terminal handles for WSL env import in daemon WSL terminals', async () => {
     const proc = mockPtyProcess()
     spawnMock.mockReturnValue(proc)
     const platform = Object.getOwnPropertyDescriptor(process, 'platform')
     const savedCodexHome = process.env.CODEX_HOME
-    const savedOrcaCodexHome = process.env.ORCA_CODEX_HOME
+    const savedKinguCodexHome = process.env.KINGU_CODEX_HOME
 
     Object.defineProperty(process, 'platform', { value: 'win32' })
     delete process.env.CODEX_HOME
-    delete process.env.ORCA_CODEX_HOME
+    delete process.env.KINGU_CODEX_HOME
 
     try {
       await createPtySubprocess({
@@ -378,8 +378,8 @@ describe('createPtySubprocess', () => {
         rows: 24,
         cwd: '\\\\wsl.localhost\\Ubuntu\\home\\jin\\repo',
         env: {
-          ORCA_TERMINAL_HANDLE: 'term_wsl',
-          ORCA_HERMES_STARTUP_QUERY: 'line one\nline two',
+          KINGU_TERMINAL_HANDLE: 'term_wsl',
+          KINGU_HERMES_STARTUP_QUERY: 'line one\nline two',
           WSLENV: 'FOO/u'
         }
       })
@@ -392,24 +392,24 @@ describe('createPtySubprocess', () => {
       } else {
         process.env.CODEX_HOME = savedCodexHome
       }
-      if (savedOrcaCodexHome === undefined) {
-        delete process.env.ORCA_CODEX_HOME
+      if (savedKinguCodexHome === undefined) {
+        delete process.env.KINGU_CODEX_HOME
       } else {
-        process.env.ORCA_CODEX_HOME = savedOrcaCodexHome
+        process.env.KINGU_CODEX_HOME = savedKinguCodexHome
       }
     }
 
     const spawnCall = spawnMock.mock.calls.at(-1)!
     expect(spawnCall[0]).toBe('wsl.exe')
     expect(spawnCall[1]).toEqual(expect.any(Array))
-    expect(spawnCall[2].env.ORCA_TERMINAL_HANDLE).toBe('term_wsl')
+    expect(spawnCall[2].env.KINGU_TERMINAL_HANDLE).toBe('term_wsl')
     // Why: the daemon inherits optional agent-hook env in development. This
     // test owns only the terminal handle and Powerlevel10k WSLENV contract.
     expect(spawnCall[2].env.WSLENV?.split(':')).toEqual(
       expect.arrayContaining([
         'FOO/u',
-        'ORCA_TERMINAL_HANDLE/u',
-        'ORCA_HERMES_STARTUP_QUERY',
+        'KINGU_TERMINAL_HANDLE/u',
+        'KINGU_HERMES_STARTUP_QUERY',
         POWERLEVEL10K_WIZARD_DISABLE_ENV
       ])
     )

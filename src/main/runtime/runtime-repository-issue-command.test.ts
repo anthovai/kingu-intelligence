@@ -48,26 +48,26 @@ describe('remote issue command ignore rules', () => {
   })
 
   it('uses the remote ignore rules and leaves .gitignore untouched', async () => {
-    mocks.remoteCheck.mockResolvedValue(['.orca/issue-command'])
+    mocks.remoteCheck.mockResolvedValue(['.kingu/issue-command'])
 
     await commands.write(repo.id, 'local command')
 
     expect(mocks.requireGit).toHaveBeenCalledWith('conn-1')
-    expect(mocks.remoteCheck).toHaveBeenCalledWith(repo.path, ['.orca/issue-command'])
+    expect(mocks.remoteCheck).toHaveBeenCalledWith(repo.path, ['.kingu/issue-command'])
     expect(mocks.localCheck).not.toHaveBeenCalled()
     expect(mocks.fs.readFile).not.toHaveBeenCalled()
     expect(mocks.fs.writeFile).toHaveBeenCalledExactlyOnceWith(
-      `${repo.path}/.orca/issue-command`,
+      `${repo.path}/.kingu/issue-command`,
       'local command\n'
     )
   })
 
-  it('adds the rule if the remote host does not ignore .orca', async () => {
+  it('adds the rule if the remote host does not ignore .kingu', async () => {
     await commands.write(repo.id, 'local command')
 
     expect(mocks.fs.writeFile).toHaveBeenCalledWith(
       `${repo.path}/.gitignore`,
-      'node_modules/\n.orca\n'
+      'node_modules/\n.kingu\n'
     )
     expect(mocks.localCheck).not.toHaveBeenCalled()
   })
@@ -88,7 +88,7 @@ describe('remote issue command ignore rules', () => {
       expect(mocks.localCheck).not.toHaveBeenCalled()
       expect(mocks.fs.writeFile).toHaveBeenCalledWith(
         `${repo.path}/.gitignore`,
-        'node_modules/\n.orca\n'
+        'node_modules/\n.kingu\n'
       )
     }
   )
@@ -98,7 +98,7 @@ describe('remote issue command ignore rules', () => {
 
     expect(mocks.requireGit).not.toHaveBeenCalled()
     expect(mocks.fs.writeFile).not.toHaveBeenCalled()
-    expect(mocks.fs.deletePath).toHaveBeenCalledWith(`${repo.path}/.orca/issue-command`, false)
+    expect(mocks.fs.deletePath).toHaveBeenCalledWith(`${repo.path}/.kingu/issue-command`, false)
   })
 })
 
@@ -106,7 +106,7 @@ describe('local issue command runtime routing', () => {
   it.each(['command', ' '])(
     'preserves local file writes with an unavailable runtime: %j',
     async (content) => {
-      const root = mkdtempSync(join(tmpdir(), 'orca-runtime-ignore-'))
+      const root = mkdtempSync(join(tmpdir(), 'kingu-runtime-ignore-'))
       const repo = {
         id: 'repo-1',
         path: root,
@@ -114,8 +114,8 @@ describe('local issue command runtime routing', () => {
         badgeColor: '#000',
         addedAt: 0
       }
-      mkdirSync(join(root, '.orca'))
-      writeFileSync(join(root, '.orca', 'issue-command'), 'old command\n')
+      mkdirSync(join(root, '.kingu'))
+      writeFileSync(join(root, '.kingu', 'issue-command'), 'old command\n')
       const getLocalGitArgs = vi.fn((): [] => {
         throw new Error('Project runtime requires repair')
       })
@@ -126,10 +126,10 @@ describe('local issue command runtime routing', () => {
       try {
         await commands.write(repo.id, content)
         if (content.trim()) {
-          expect(readFileSync(join(root, '.orca', 'issue-command'), 'utf8')).toBe('command\n')
-          expect(readFileSync(join(root, '.gitignore'), 'utf8')).toBe('.orca\n')
+          expect(readFileSync(join(root, '.kingu', 'issue-command'), 'utf8')).toBe('command\n')
+          expect(readFileSync(join(root, '.gitignore'), 'utf8')).toBe('.kingu\n')
         } else {
-          expect(existsSync(join(root, '.orca', 'issue-command'))).toBe(false)
+          expect(existsSync(join(root, '.kingu', 'issue-command'))).toBe(false)
           expect(existsSync(join(root, '.gitignore'))).toBe(false)
           expect(getLocalGitArgs).not.toHaveBeenCalled()
         }

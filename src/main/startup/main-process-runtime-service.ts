@@ -4,12 +4,12 @@ import {
 } from '../ai-vault-search/session-search-enablement'
 import { getCanonicalUserDataPath } from '../persistence/loading-store/user-data-path'
 import { app } from 'electron'
-import { OrcaRuntimeService } from '../runtime/orca-runtime'
+import { KinguRuntimeService } from '../runtime/kingu-runtime'
 import { getLocalPtyProvider, getSshPtyProvider, clearProviderPtyState } from '../ipc/pty'
 import { agentHookServer } from '../agent-hooks/server'
 import { browserManager } from '../browser/browser-manager'
 import { loadAgentSessionClaimSigner } from '../runtime/agent-session-claim-identity'
-import { getProfileUserDataPath } from '../orca-profiles/profile-storage-paths'
+import { getProfileUserDataPath } from '../kingu-profiles/profile-storage-paths'
 import { prepareCodexAiVaultSessionResume } from '../codex/codex-ai-vault-session-resume'
 import { resolveHostCodexSessionSourceHome } from '../codex/codex-session-source-home'
 import { isAgentStatusHooksEnabled } from '../agent-hooks/managed-agent-hook-controls'
@@ -40,7 +40,7 @@ export function getDesktopWindowStatus(): RuntimeDesktopWindowStatus {
   return value === 'ready' ? 'openable' : value
 }
 
-export function initializeMainProcessRuntime(): OrcaRuntimeService {
+export function initializeMainProcessRuntime(): KinguRuntimeService {
   const store = state.store
   const stats = state.stats
   if (!store || !stats) {
@@ -69,9 +69,9 @@ export function initializeMainProcessRuntime(): OrcaRuntimeService {
       )
   }
   // Why here and not in the window listener: `subscribeEnrichedStatus` also fires under headless
-  // `orca serve`, which never opens one, and the fleet path runs there too.
+  // `kingu serve`, which never opens one, and the fleet path runs there too.
   const observedPaneIdentities = new AgentStatusObservedPaneIdentities()
-  const runtime = new OrcaRuntimeService(store, stats, {
+  const runtime = new KinguRuntimeService(store, stats, {
     prepareClaudeAuth: (target) => state.claudeRuntimeAuth!.prepareForClaudeLaunch(target),
     agentSessionClaimSigner: loadAgentSessionClaimSigner(
       getProfileUserDataPath(),
@@ -159,7 +159,7 @@ export function initializeMainProcessRuntime(): OrcaRuntimeService {
   return runtime
 }
 
-export function configureRuntimeServices(runtime: OrcaRuntimeService): void {
+export function configureRuntimeServices(runtime: KinguRuntimeService): void {
   const store = state.store
   const claudeAccounts = state.claudeAccounts
   const codexAccounts = state.codexAccounts
@@ -175,7 +175,7 @@ export function configureRuntimeServices(runtime: OrcaRuntimeService): void {
   runtime.setSkillCloudService(new SkillCloudService(app.getPath('userData')))
   runtime.setAccountServices({ claudeAccounts, codexAccounts, rateLimits })
   runtime.setCommitMessageAgentEnvironmentResolvers({
-    // Why: Codex hooks/auth live in Orca's managed runtime home even for the default path, so every launch must resolve CODEX_HOME via runtime-home.
+    // Why: Codex hooks/auth live in Kingu's managed runtime home even for the default path, so every launch must resolve CODEX_HOME via runtime-home.
     prepareForCodexLaunch: prepareCodexRuntimeHomeForLaunch,
     prepareForClaudeLaunch: (target) => state.claudeRuntimeAuth!.prepareForClaudeLaunch(target)
   })

@@ -62,7 +62,7 @@ async function open(overrides: Partial<Parameters<typeof openAgentSessionJournal
 }
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'orca-journal-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-journal-'))
   clock = 1_000
 })
 
@@ -334,7 +334,7 @@ describe('lifecycle batches', () => {
         { kind: 'item', identity: item(1), body: body('tool settled') },
         {
           kind: 'item',
-          identity: { provider: 'orca', clientMessageId: 'exit-status' },
+          identity: { provider: 'kingu', clientMessageId: 'exit-status' },
           body: { kind: 'status', text: 'Provider exited' }
         },
         { kind: 'tombstone', identity: turn }

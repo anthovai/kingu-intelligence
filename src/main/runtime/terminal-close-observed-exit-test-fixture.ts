@@ -14,7 +14,7 @@ import {
   killPtyFromRuntimeController,
   stopAndWaitPtyFromRuntimeController
 } from '../ipc/pty/runtime/kill'
-import { OrcaRuntimeService } from './orca-runtime'
+import { KinguRuntimeService } from './kingu-runtime'
 
 export type ObservedExitSocketScenario =
   | 'healthy'
@@ -102,7 +102,7 @@ const BINDING = {
   leafId: '10000000-0000-4000-8000-000000000004'
 }
 
-class ObservedExitRuntime extends OrcaRuntimeService {
+class ObservedExitRuntime extends KinguRuntimeService {
   closeControl(): Promise<boolean> {
     return this.stopExplicitlyClosedTabPtys([CONTROL_PTY_ID], CONTROL_PTY_ID)
   }

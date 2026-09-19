@@ -90,11 +90,11 @@ export class CodexJournalGenericFrames {
     this.fallbackSequence += 1
     const admission = this.deps.sink.tryAppendItem
       ? this.deps.sink.tryAppendItem(
-          { provider: 'orca', clientMessageId: `provider-frame:codex:${this.fallbackSequence}` },
+          { provider: 'kingu', clientMessageId: `provider-frame:codex:${this.fallbackSequence}` },
           translated.body
         )
       : (this.deps.sink.appendItem(
-          { provider: 'orca', clientMessageId: `provider-frame:codex:${this.fallbackSequence}` },
+          { provider: 'kingu', clientMessageId: `provider-frame:codex:${this.fallbackSequence}` },
           translated.body
         ),
         CODEX_JOURNAL_ADMITTED)
@@ -129,7 +129,7 @@ export class CodexJournalGenericFrames {
           : `${summary.count} more provider notification${summary.count === 1 ? '' : 's'} not shown for this turn`
       const admission = this.deps.sink.tryAppendItem
         ? this.deps.sink.tryAppendItem(
-            { provider: 'orca', clientMessageId: `provider-frame-suppressed:codex:${bucket}` },
+            { provider: 'kingu', clientMessageId: `provider-frame-suppressed:codex:${bucket}` },
             {
               kind: 'status',
               text
@@ -137,7 +137,7 @@ export class CodexJournalGenericFrames {
             { coalescingKey: `provider-frame-suppressed:codex:${bucket}` }
           )
         : (this.deps.sink.appendItem(
-            { provider: 'orca', clientMessageId: `provider-frame-suppressed:codex:${bucket}` },
+            { provider: 'kingu', clientMessageId: `provider-frame-suppressed:codex:${bucket}` },
             { kind: 'status', text },
             { coalescingKey: `provider-frame-suppressed:codex:${bucket}` }
           ),

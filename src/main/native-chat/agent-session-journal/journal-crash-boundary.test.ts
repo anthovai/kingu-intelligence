@@ -90,7 +90,7 @@ function window(
 }
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'orca-journal-crash-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-journal-crash-'))
   clock = 1_000
 })
 
@@ -197,7 +197,7 @@ describe('crash between provider accept and journal commit', () => {
     expect(hasUnansweredStructuredAgentSessionDispatch(restarted.submissions())).toBe(false)
   })
 
-  // Only an older Orca minted this reason -- Codex now settles a send on the
+  // Only an older Kingu minted this reason -- Codex now settles a send on the
   // provider echo -- but rows written under it still come back from disk.
   it('keeps a codex turn it could not name in doubt, never rejected', async () => {
     const journal = await open()

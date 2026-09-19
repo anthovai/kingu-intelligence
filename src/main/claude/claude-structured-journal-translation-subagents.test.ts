@@ -13,8 +13,8 @@ import { createClaudeJournalTranslator } from './claude-structured-journal-trans
 const GROUP_ITEM_ID = 'claude-subagents:claude-session:user-1'
 
 /** The union's other arms carry no client message id, so reading one narrows. */
-function orcaClientMessageId(identity: AgentJournalItemIdentity): string | null {
-  return identity.provider === 'orca' ? identity.clientMessageId : null
+function kinguClientMessageId(identity: AgentJournalItemIdentity): string | null {
+  return identity.provider === 'kingu' ? identity.clientMessageId : null
 }
 
 function harness() {
@@ -26,7 +26,7 @@ function harness() {
   }
   const translator = createClaudeJournalTranslator({ sink, fallbackIdPrefix: 'test' })
   const groupRows = () =>
-    items.filter((item) => orcaClientMessageId(item.identity) === GROUP_ITEM_ID)
+    items.filter((item) => kinguClientMessageId(item.identity) === GROUP_ITEM_ID)
   const agentsOf = (body: AgentJournalItemBody | undefined): NativeChatSubagentEntry[] => {
     if (!body || body.kind !== 'message') {
       return []
@@ -40,15 +40,16 @@ function harness() {
    *  is no longer the live one. */
   const rosterIn = (groupId: string): NativeChatSubagentEntry[] =>
     agentsOf(
-      items.findLast((item) => orcaClientMessageId(item.identity) === `claude-subagents:${groupId}`)
-        ?.body
+      items.findLast(
+        (item) => kinguClientMessageId(item.identity) === `claude-subagents:${groupId}`
+      )?.body
     )
   const rosterOf = (turnUuid: string): NativeChatSubagentEntry[] =>
     rosterIn(`claude-session:${turnUuid}`)
   const roster = (): NativeChatSubagentEntry[] => agentsOf(groupRows().at(-1)?.body)
   const fallbackRows = (): AgentJournalItemBody[] =>
     items
-      .filter((item) => (orcaClientMessageId(item.identity) ?? '').startsWith('provider-frame:'))
+      .filter((item) => (kinguClientMessageId(item.identity) ?? '').startsWith('provider-frame:'))
       .map((item) => item.body)
   return { translator, groupRows, roster, rosterIn, rosterOf, fallbackRows }
 }
@@ -56,7 +57,7 @@ function harness() {
 function userTurn(uuid: string) {
   return {
     type: 'message' as const,
-    sessionId: 'orca-session',
+    sessionId: 'kingu-session',
     startsTurn: true as const,
     message: {
       type: 'user',
@@ -71,7 +72,7 @@ function userTurn(uuid: string) {
 function systemFrame(subtype: string, fields: Record<string, unknown>) {
   return {
     type: 'message' as const,
-    sessionId: 'orca-session',
+    sessionId: 'kingu-session',
     message: { type: 'system', subtype, session_id: 'claude-session', ...fields }
   }
 }
@@ -79,7 +80,7 @@ function systemFrame(subtype: string, fields: Record<string, unknown>) {
 function spawnResult(uuid: string, toolUseId: string) {
   return {
     type: 'message' as const,
-    sessionId: 'orca-session',
+    sessionId: 'kingu-session',
     message: {
       type: 'user',
       uuid,
@@ -96,7 +97,7 @@ function spawnResult(uuid: string, toolUseId: string) {
 function resultFrame() {
   return {
     type: 'message' as const,
-    sessionId: 'orca-session',
+    sessionId: 'kingu-session',
     message: {
       type: 'result',
       subtype: 'success',
@@ -159,7 +160,7 @@ describe('claude journal translation — subagents', () => {
     translator.handle(spawnResult('user-2', 'toolu_1'))
     translator.handle(resultFrame())
     expect(roster()).toEqual([expect.objectContaining({ state: 'working' })])
-    translator.handle({ type: 'ended', sessionId: 'orca-session', reason: 'closed' })
+    translator.handle({ type: 'ended', sessionId: 'kingu-session', reason: 'closed' })
     expect(roster()).toEqual([expect.objectContaining({ state: 'unverifiable' })])
   })
 
@@ -184,7 +185,7 @@ describe('claude journal translation — subagents', () => {
     translator.handle(userTurn('user-1'))
     translator.handle({
       type: 'message' as const,
-      sessionId: 'orca-session',
+      sessionId: 'kingu-session',
       message: {
         type: 'assistant',
         uuid: 'child-1',
@@ -253,7 +254,7 @@ describe('claude journal translation — subagents', () => {
     )
     translator.handle(userTurn('user-1'))
     translator.handle(resultFrame())
-    translator.handle({ type: 'ended', sessionId: 'orca-session', reason: 'closed' })
+    translator.handle({ type: 'ended', sessionId: 'kingu-session', reason: 'closed' })
     expect(rosterIn('outside-turn')).toEqual([expect.objectContaining({ state: 'unverifiable' })])
   })
 })

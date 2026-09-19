@@ -12,12 +12,12 @@ import { WINDOWS_CMD_SAFE_PATH } from './installer-utils'
 import { wrapWindowsDirectCmdHookCommand } from './windows-direct-cmd-hook-command'
 import { findGitBash } from './windows-git-bash-path.test-fixture'
 
-const SAFE_PATH = 'C:\\Users\\alice\\.orca\\agent-hooks\\claude-hook.cmd'
+const SAFE_PATH = 'C:\\Users\\alice\\.kingu\\agent-hooks\\claude-hook.cmd'
 
 describe('wrapWindowsDirectCmdHookCommand', () => {
   it('emits the script path with forward slashes and a neutral-JSON fallback', () => {
     expect(wrapWindowsDirectCmdHookCommand(SAFE_PATH)).toBe(
-      'C:/Users/alice/.orca/agent-hooks/claude-hook.cmd || echo {}'
+      'C:/Users/alice/.kingu/agent-hooks/claude-hook.cmd || echo {}'
     )
   })
 
@@ -37,16 +37,16 @@ describe('wrapWindowsDirectCmdHookCommand', () => {
 
   it('declines any path the shells cannot carry bare', () => {
     for (const path of [
-      'C:\\Users\\Bob Smith\\.orca\\agent-hooks\\claude-hook.cmd',
-      'C:\\Users\\%name%\\.orca\\agent-hooks\\claude-hook.cmd',
-      'C:\\Users\\a^b\\.orca\\agent-hooks\\claude-hook.cmd',
-      'C:\\Users\\a&b\\.orca\\agent-hooks\\claude-hook.cmd',
-      'C:\\Users\\a(b)\\.orca\\agent-hooks\\claude-hook.cmd',
-      'C:\\Users\\rené\\.orca\\agent-hooks\\claude-hook.cmd',
-      '/home/alice/.orca/agent-hooks/claude-hook.sh',
+      'C:\\Users\\Bob Smith\\.kingu\\agent-hooks\\claude-hook.cmd',
+      'C:\\Users\\%name%\\.kingu\\agent-hooks\\claude-hook.cmd',
+      'C:\\Users\\a^b\\.kingu\\agent-hooks\\claude-hook.cmd',
+      'C:\\Users\\a&b\\.kingu\\agent-hooks\\claude-hook.cmd',
+      'C:\\Users\\a(b)\\.kingu\\agent-hooks\\claude-hook.cmd',
+      'C:\\Users\\rené\\.kingu\\agent-hooks\\claude-hook.cmd',
+      '/home/alice/.kingu/agent-hooks/claude-hook.sh',
       // Why: WINDOWS_CMD_SAFE_PATH admits a UNC profile, but `//server/share/...` is not a
       // command cmd.exe reliably starts — keep those on the encoded launcher.
-      '\\\\server\\share\\alice\\.orca\\agent-hooks\\claude-hook.cmd'
+      '\\\\server\\share\\alice\\.kingu\\agent-hooks\\claude-hook.cmd'
     ]) {
       expect(wrapWindowsDirectCmdHookCommand(path), path).toBeNull()
     }
@@ -89,11 +89,11 @@ describe.skipIf(process.platform !== 'win32')('direct hook command, run by both 
 
   // Why: a runner whose TEMP sits under a profile with a space is the encoded-launcher case,
   // so these legs skip rather than assert a contract that shape never claimed.
-  const tempIsCmdSafe = WINDOWS_CMD_SAFE_PATH.test(join(tmpdir(), 'orca-direct-hook-x', 'x.cmd'))
+  const tempIsCmdSafe = WINDOWS_CMD_SAFE_PATH.test(join(tmpdir(), 'kingu-direct-hook-x', 'x.cmd'))
   const canRunLive = Boolean(gitBash) && tempIsCmdSafe
 
   function withTempDir(run: (dir: string, scriptPath: string, command: string) => void): void {
-    const dir = mkdtempSync(join(tmpdir(), 'orca-direct-hook-'))
+    const dir = mkdtempSync(join(tmpdir(), 'kingu-direct-hook-'))
     try {
       const scriptPath = join(dir, 'claude-hook.cmd')
       const command = wrapWindowsDirectCmdHookCommand(scriptPath)

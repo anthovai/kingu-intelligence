@@ -23,7 +23,7 @@ type BoundedCapture = {
 }
 
 function pythonCandidates(): { command: string; argsPrefix: string[] }[] {
-  const configured = process.env.ORCA_NOTEBOOK_PYTHON?.trim()
+  const configured = process.env.KINGU_NOTEBOOK_PYTHON?.trim()
   const candidates: { command: string; argsPrefix: string[] }[] = []
   if (configured) {
     candidates.push({ command: configured, argsPrefix: [] })

@@ -40,8 +40,8 @@ export async function ensureDevLauncher(args: {
     mode: args.platform === 'win32' ? undefined : 0o755
   })
   if (args.commandName === DEV_COMMAND_NAME && args.platform !== 'win32') {
-    // Why: dev PTYs prepend this dir to PATH, so keep a local `orca` alias without claiming the global command.
-    await writeFile(join(dirname(launcherPath), 'orca'), content, {
+    // Why: dev PTYs prepend this dir to PATH, so keep a local `kingu` alias without claiming the global command.
+    await writeFile(join(dirname(launcherPath), 'kingu'), content, {
       encoding: 'utf8',
       mode: 0o755
     })
@@ -58,13 +58,13 @@ export function buildUnixDevLauncher(
 set -euo pipefail
 ELECTRON=${quoteShell(execPathValue)}
 CLI=${quoteShell(cliEntryPath)}
-export ORCA_USER_DATA_PATH=${quoteShell(userDataPath)}
-if [ -z "\${ORCA_APP_EXECUTABLE:-}" ]; then
-  export ORCA_APP_EXECUTABLE="$ELECTRON"
-  export ORCA_APP_EXECUTABLE_NEEDS_APP_ROOT=1
+export KINGU_USER_DATA_PATH=${quoteShell(userDataPath)}
+if [ -z "\${KINGU_APP_EXECUTABLE:-}" ]; then
+  export KINGU_APP_EXECUTABLE="$ELECTRON"
+  export KINGU_APP_EXECUTABLE_NEEDS_APP_ROOT=1
 fi
-export ORCA_NODE_OPTIONS="\${NODE_OPTIONS-}"
-export ORCA_NODE_REPL_EXTERNAL_MODULE="\${NODE_REPL_EXTERNAL_MODULE-}"
+export KINGU_NODE_OPTIONS="\${NODE_OPTIONS-}"
+export KINGU_NODE_REPL_EXTERNAL_MODULE="\${NODE_REPL_EXTERNAL_MODULE-}"
 unset NODE_OPTIONS
 unset NODE_REPL_EXTERNAL_MODULE
 ELECTRON_RUN_AS_NODE=1 exec "$ELECTRON" "$CLI" "$@"
@@ -80,13 +80,13 @@ export function buildWindowsDevLauncher(
 setlocal
 set "ELECTRON=${escapeWindowsBatchValue(execPathValue)}"
 set "CLI=${escapeWindowsBatchValue(cliEntryPath)}"
-set "ORCA_USER_DATA_PATH=${escapeWindowsBatchValue(userDataPath)}"
-if not defined ORCA_APP_EXECUTABLE (
-  set "ORCA_APP_EXECUTABLE=%ELECTRON%"
-  set "ORCA_APP_EXECUTABLE_NEEDS_APP_ROOT=1"
+set "KINGU_USER_DATA_PATH=${escapeWindowsBatchValue(userDataPath)}"
+if not defined KINGU_APP_EXECUTABLE (
+  set "KINGU_APP_EXECUTABLE=%ELECTRON%"
+  set "KINGU_APP_EXECUTABLE_NEEDS_APP_ROOT=1"
 )
-set "ORCA_NODE_OPTIONS=%NODE_OPTIONS%"
-set "ORCA_NODE_REPL_EXTERNAL_MODULE=%NODE_REPL_EXTERNAL_MODULE%"
+set "KINGU_NODE_OPTIONS=%NODE_OPTIONS%"
+set "KINGU_NODE_REPL_EXTERNAL_MODULE=%NODE_REPL_EXTERNAL_MODULE%"
 set NODE_OPTIONS=
 set NODE_REPL_EXTERNAL_MODULE=
 set ELECTRON_RUN_AS_NODE=1
@@ -97,15 +97,15 @@ set ELECTRON_RUN_AS_NODE=1
 export function buildWindowsForwarder(launcherPath: string): string {
   return `@echo off
 setlocal
-set "ORCA_LAUNCHER=${escapeWindowsBatchValue(launcherPath)}"
-"%ORCA_LAUNCHER%" %*
+set "KINGU_LAUNCHER=${escapeWindowsBatchValue(launcherPath)}"
+"%KINGU_LAUNCHER%" %*
 `
 }
 
 export function extractManagedUnixLauncherTarget(content: string): string | null {
   if (
     !content.includes('ELECTRON_RUN_AS_NODE=1') ||
-    !content.includes('ORCA_NODE_OPTIONS') ||
+    !content.includes('KINGU_NODE_OPTIONS') ||
     !content.includes('NODE_REPL_EXTERNAL_MODULE')
   ) {
     return null
@@ -116,7 +116,7 @@ export function extractManagedUnixLauncherTarget(content: string): string | null
     return null
   }
 
-  // Why: only Orca's compiled CLI entrypoints count as managed; arbitrary Electron-launching scripts stay conflicts.
+  // Why: only Kingu's compiled CLI entrypoints count as managed; arbitrary Electron-launching scripts stay conflicts.
   return /(?:^|[/\\])(?:out|app\.asar\.unpacked[/\\]out)[/\\]cli[/\\]index\.js$/.test(cliPath)
     ? cliPath
     : null

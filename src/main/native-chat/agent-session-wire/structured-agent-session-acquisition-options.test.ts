@@ -113,7 +113,7 @@ function expectSettledAttachLease(record: AgentSessionRecord | null): void {
 
 describe('structured session acquisition options', () => {
   it('samples provider history before acquiring a replacement child', async () => {
-    root = await mkdtemp(join(tmpdir(), 'orca-history-before-acquire-'))
+    root = await mkdtemp(join(tmpdir(), 'kingu-history-before-acquire-'))
     const initialStore = await AgentSessionRecordStore.open({
       directory: join(root, 'store'),
       hostId: 'local'
@@ -215,7 +215,7 @@ describe('structured session acquisition options', () => {
   })
 
   it('persists create defaults before the first provider acquisition', async () => {
-    root = await mkdtemp(join(tmpdir(), 'orca-create-options-'))
+    root = await mkdtemp(join(tmpdir(), 'kingu-create-options-'))
     const store = await AgentSessionRecordStore.open({
       directory: join(root, 'store'),
       hostId: 'local'
@@ -249,7 +249,7 @@ describe('structured session acquisition options', () => {
   })
 
   it('replays a create retried after the host re-resolved different options', async () => {
-    root = await mkdtemp(join(tmpdir(), 'orca-create-retry-'))
+    root = await mkdtemp(join(tmpdir(), 'kingu-create-retry-'))
     const store = await AgentSessionRecordStore.open({
       directory: join(root, 'store'),
       hostId: 'local'
@@ -283,7 +283,7 @@ describe('structured session acquisition options', () => {
   })
 
   it('persists provider options before proving a resumed legacy record', async () => {
-    root = await mkdtemp(join(tmpdir(), 'orca-acquisition-options-'))
+    root = await mkdtemp(join(tmpdir(), 'kingu-acquisition-options-'))
     const storeDir = join(root, 'store')
     const store = await AgentSessionRecordStore.open({ directory: storeDir, hostId: 'local' })
 
@@ -354,7 +354,7 @@ describe('structured session acquisition options', () => {
   })
 
   it('clears a rejected Fast restore instead of retaining the prior encoded value', async () => {
-    root = await mkdtemp(join(tmpdir(), 'orca-acquisition-fast-restore-'))
+    root = await mkdtemp(join(tmpdir(), 'kingu-acquisition-fast-restore-'))
     const store = await AgentSessionRecordStore.open({
       directory: join(root, 'store'),
       hostId: 'local'
@@ -389,7 +389,7 @@ describe('structured session acquisition options', () => {
   })
 
   it('releases an acquisition when provider options cannot be read', async () => {
-    root = await mkdtemp(join(tmpdir(), 'orca-acquisition-options-failure-'))
+    root = await mkdtemp(join(tmpdir(), 'kingu-acquisition-options-failure-'))
     const store = await AgentSessionRecordStore.open({
       directory: join(root, 'store'),
       hostId: 'local'
@@ -437,7 +437,7 @@ describe('structured session acquisition options', () => {
       ['cleanup error', 'throws']
     ] as const)('atomically settles the lease and operation after %s', async (_case, cleanup) => {
       const exitProven = cleanup === true
-      root = await mkdtemp(join(tmpdir(), `orca-acquisition-${failurePoint}-`))
+      root = await mkdtemp(join(tmpdir(), `kingu-acquisition-${failurePoint}-`))
       const storeDir = join(root, 'store')
       const store = await AgentSessionRecordStore.open({ directory: storeDir, hostId: 'local' })
       const base = adapter({

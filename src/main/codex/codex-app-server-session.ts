@@ -9,7 +9,7 @@ import {
 } from './codex-app-server-process-tree-kill'
 import { createCodexAppServerRecordReader } from './codex-app-server-record-reader'
 
-// Why: `codex app-server` is Orca's sanctioned RPC surface into Codex-owned
+// Why: `codex app-server` is Kingu's sanctioned RPC surface into Codex-owned
 // state (hook trust hashes, the sqlite thread index). This module owns the
 // stdio JSONL transport — spawn, handshake, framing, deadline, reap — so every
 // RPC consumer (trust grant, session index heal) shares one hardened lifecycle.
@@ -21,7 +21,7 @@ export type CodexAppServerInvocation = {
    * The resolved CLI path, used to pair the CLI with the `node` it was installed
    * against — without it a CLI resolved out of a version-manager directory runs
    * under whatever node leads PATH and dies on a NODE_MODULE_VERSION mismatch
-   * (stablyai/orca#10932).
+   * (anthovai/kingu-intelligence#10932).
    *
    * Required, and `null` only for a guest-side launcher (wsl.exe) where the host
    * path means nothing. Optional would let a native builder omit it and silently
@@ -257,7 +257,7 @@ export async function runCodexAppServerSession<T>(
   try {
     const session = async (): Promise<T> => {
       await requestRpc('initialize', {
-        clientInfo: { name: 'orca_desktop', title: 'Orca', version: '0.0.0' }
+        clientInfo: { name: 'kingu_desktop', title: 'Kingu', version: '0.0.0' }
       })
       notify('initialized')
       return body({ request: requestRpc, notify })

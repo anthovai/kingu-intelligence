@@ -38,16 +38,16 @@ afterEach(async () => {
 })
 
 async function createPrivilegedFixture() {
-  const root = await mkdtemp(join(tmpdir(), 'orca-cli-privileged-transaction-'))
+  const root = await mkdtemp(join(tmpdir(), 'kingu-cli-privileged-transaction-'))
   createdRoots.push(root)
   const protectedDirectory = join(root, 'protected')
   protectedDirectories.push(protectedDirectory)
-  const commandPath = join(protectedDirectory, 'orca')
+  const commandPath = join(protectedDirectory, 'kingu')
   const userDataPath = join(root, 'user-data')
   const appPath = join(root, 'app')
   await mkdir(protectedDirectory)
   await mkdir(join(appPath, 'out', 'cli'), { recursive: true })
-  await writeFile(join(appPath, 'out', 'cli', 'index.js'), 'console.log("orca")\n')
+  await writeFile(join(appPath, 'out', 'cli', 'index.js'), 'console.log("kingu")\n')
   return { root, protectedDirectory, commandPath, userDataPath, appPath }
 }
 
@@ -68,7 +68,7 @@ function fixtureInstallerOptions(fixture: Awaited<ReturnType<typeof createPrivil
     isPackaged: false,
     userDataPath: fixture.userDataPath,
     appPath: fixture.appPath,
-    execPath: '/Applications/Orca.app/Contents/MacOS/Orca',
+    execPath: '/Applications/Kingu.app/Contents/MacOS/Kingu',
     commandPathOverride: fixture.commandPath,
     processPathEnv: fixture.protectedDirectory
   }
@@ -103,7 +103,7 @@ describe.skipIf(process.platform !== 'darwin' || process.getuid?.() === 0)(
 
     it('restores a trailing-newline symlink inserted after privileged inspection', async () => {
       const fixture = await createPrivilegedFixture()
-      const staleTarget = join(fixture.userDataPath, 'cli', 'bin', 'old', 'orca')
+      const staleTarget = join(fixture.userDataPath, 'cli', 'bin', 'old', 'kingu')
       const foreignTarget = `${staleTarget}\n`
       await symlink(staleTarget, fixture.commandPath)
       const original = await lstat(fixture.commandPath, { bigint: true })
@@ -131,7 +131,7 @@ describe.skipIf(process.platform !== 'darwin' || process.getuid?.() === 0)(
       await expect(installer.install()).rejects.toThrow()
       await expect(readlink(fixture.commandPath)).resolves.toBe(foreignTarget)
       expect(
-        (await readdir(fixture.protectedDirectory)).some((name) => name.startsWith('.orca-cli-'))
+        (await readdir(fixture.protectedDirectory)).some((name) => name.startsWith('.kingu-cli-'))
       ).toBe(false)
     })
 
@@ -140,7 +140,7 @@ describe.skipIf(process.platform !== 'darwin' || process.getuid?.() === 0)(
       const oldCliPath = join(fixture.root, 'old', 'out', 'cli', 'index.js')
       await writeFile(
         fixture.commandPath,
-        buildUnixDevLauncher('/Applications/Old.app/Contents/MacOS/Orca', oldCliPath, 'user-data')
+        buildUnixDevLauncher('/Applications/Old.app/Contents/MacOS/Kingu', oldCliPath, 'user-data')
       )
       const foreignContent = 'foreign command written into the inspected inode'
       let raced = false
@@ -160,13 +160,13 @@ describe.skipIf(process.platform !== 'darwin' || process.getuid?.() === 0)(
       await expect(installer.install()).rejects.toThrow()
       await expect(readFile(fixture.commandPath, 'utf8')).resolves.toBe(foreignContent)
       expect(
-        (await readdir(fixture.protectedDirectory)).some((name) => name.startsWith('.orca-cli-'))
+        (await readdir(fixture.protectedDirectory)).some((name) => name.startsWith('.kingu-cli-'))
       ).toBe(false)
     })
 
     it('restores the displaced command when publication setup fails', async () => {
       const fixture = await createPrivilegedFixture()
-      const staleTarget = join(fixture.userDataPath, 'cli', 'bin', 'old', 'orca')
+      const staleTarget = join(fixture.userDataPath, 'cli', 'bin', 'old', 'kingu')
       await symlink(staleTarget, fixture.commandPath)
       const installer = new CliInstaller({
         ...fixtureInstallerOptions(fixture),
@@ -182,7 +182,7 @@ describe.skipIf(process.platform !== 'darwin' || process.getuid?.() === 0)(
       await expect(installer.install()).rejects.toThrow()
       await expect(readlink(fixture.commandPath)).resolves.toBe(staleTarget)
       expect(
-        (await readdir(fixture.protectedDirectory)).some((name) => name.startsWith('.orca-cli-'))
+        (await readdir(fixture.protectedDirectory)).some((name) => name.startsWith('.kingu-cli-'))
       ).toBe(false)
     })
   }

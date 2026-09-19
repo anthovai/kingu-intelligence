@@ -4,8 +4,8 @@ import {
   writeEndpointFile
 } from '../../../shared/agent-hook-listener/endpoint-publication'
 import {
-  ORCA_HOOK_PROTOCOL_VERSION,
-  ORCA_HOOK_RAW_JSON_TRANSPORT
+  KINGU_HOOK_PROTOCOL_VERSION,
+  KINGU_HOOK_RAW_JSON_TRANSPORT
 } from '../../../shared/agent-hook-types'
 import { AgentHookServerIngestRemote } from './server-ingest-remote'
 
@@ -15,15 +15,15 @@ export abstract class AgentHookServerRuntimeEnv extends AgentHookServerIngestRem
       return {}
     }
     const env: Record<string, string> = {
-      ORCA_AGENT_HOOK_PORT: String(this.port),
-      ORCA_AGENT_HOOK_TOKEN: this.token,
-      ORCA_AGENT_HOOK_ENV: this.env,
-      ORCA_AGENT_HOOK_VERSION: ORCA_HOOK_PROTOCOL_VERSION,
-      ORCA_AGENT_HOOK_TRANSPORT: ORCA_HOOK_RAW_JSON_TRANSPORT
+      KINGU_AGENT_HOOK_PORT: String(this.port),
+      KINGU_AGENT_HOOK_TOKEN: this.token,
+      KINGU_AGENT_HOOK_ENV: this.env,
+      KINGU_AGENT_HOOK_VERSION: KINGU_HOOK_PROTOCOL_VERSION,
+      KINGU_AGENT_HOOK_TRANSPORT: KINGU_HOOK_RAW_JSON_TRANSPORT
     }
     // Why: hooks source this file at invocation; dev namespaces it so parallel `pnpm dev` runs don't steal each other's hooks.
     if (this.endpointFileWritten && this.endpointFilePathCache) {
-      env.ORCA_AGENT_HOOK_ENDPOINT = this.endpointFilePathCache
+      env.KINGU_AGENT_HOOK_ENDPOINT = this.endpointFilePathCache
     }
     return env
   }
@@ -46,8 +46,8 @@ export abstract class AgentHookServerRuntimeEnv extends AgentHookServerIngestRem
       port: this.port,
       token: this.token,
       env: this.env,
-      version: ORCA_HOOK_PROTOCOL_VERSION,
-      transport: ORCA_HOOK_RAW_JSON_TRANSPORT
+      version: KINGU_HOOK_PROTOCOL_VERSION,
+      transport: KINGU_HOOK_RAW_JSON_TRANSPORT
     })
     this.endpointFileWritten = ok
   }

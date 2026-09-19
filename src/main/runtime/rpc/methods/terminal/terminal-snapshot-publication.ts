@@ -1,4 +1,4 @@
-import type { OrcaRuntimeService } from '../../../orca-runtime'
+import type { KinguRuntimeService } from '../../../kingu-runtime'
 import {
   TerminalStreamOpcode,
   encodeTerminalStreamJson
@@ -17,7 +17,7 @@ import type { SerializedSnapshot, SnapshotFrameOptions } from './terminal-stream
 const REQUESTED_SNAPSHOT_BYTE_BUDGET = 2 * 1024 * 1024
 
 export async function serializeBudgetedRequestedSnapshot(
-  runtime: OrcaRuntimeService,
+  runtime: KinguRuntimeService,
   ptyId: string,
   scrollbackRows: number | undefined
 ): Promise<SerializedSnapshot> {
@@ -111,7 +111,7 @@ export function sendSnapshotFrames(
 }
 
 export async function serializeBudgetedMobileSnapshot(
-  runtime: OrcaRuntimeService,
+  runtime: KinguRuntimeService,
   ptyId: string,
   isMobile: boolean
 ): Promise<SerializedSnapshot> {
@@ -147,7 +147,7 @@ export async function serializeBudgetedMobileSnapshot(
 }
 
 export async function serializeStableMobileRendererSnapshot(
-  runtime: OrcaRuntimeService,
+  runtime: KinguRuntimeService,
   ptyId: string
 ): Promise<SerializedSnapshot> {
   const candidates = [MOBILE_SUBSCRIBE_SCROLLBACK_ROWS, 500, 250, 100, 25, 0]
@@ -185,7 +185,7 @@ export async function serializeStableMobileRendererSnapshot(
 
 // Why: mobile xterm can't rewrap the HARD newlines baked into a restored snapshot, so a real reflow re-serializes and replays the FULL buffer at the new cols.
 export async function sendMobileResizeRestream(
-  runtime: OrcaRuntimeService,
+  runtime: KinguRuntimeService,
   ptyId: string,
   sendFrame: (opcode: TerminalStreamOpcode, payload?: Uint8Array<ArrayBufferLike>) => void,
   event: { cols: number; rows: number; displayMode: string; reason: string; seq?: number },

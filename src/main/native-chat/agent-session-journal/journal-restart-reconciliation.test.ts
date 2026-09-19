@@ -85,7 +85,7 @@ async function reopenAfterCrash(
 }
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'orca-journal-restart-reconcile-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-journal-restart-reconcile-'))
   clock = 1_000
 })
 

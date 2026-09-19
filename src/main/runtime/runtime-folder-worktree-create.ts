@@ -75,9 +75,9 @@ export async function createRuntimeFolderWorktree(args: {
       : {}),
     lastActivityAt: now,
     createdAt: now,
-    orcaCreatedAt: now,
-    orcaCreationSource: 'runtime',
-    orcaCreationWorkspaceLayout: {
+    kinguCreatedAt: now,
+    kinguCreationSource: 'runtime',
+    kinguCreationWorkspaceLayout: {
       path: settings.workspaceDir,
       nestWorkspaces: settings.nestWorkspaces
     },

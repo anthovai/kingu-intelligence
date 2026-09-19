@@ -149,7 +149,7 @@ it.each([
     'src/main/startup/main-process-runtime-service.ts',
     'installChildSessionSearchService'
   ],
-  ['orcad', 'src/main/orcad/orcad-session-search.ts', 'installInProcessSessionSearchService'],
+  ['kingud', 'src/main/kingud/kingud-session-search.ts', 'installInProcessSessionSearchService'],
   [
     'the relay daemon',
     'src/relay/relay-runtime-services.ts',
@@ -179,15 +179,15 @@ it('disables immediately without root discovery', async () => {
   expect(localAiVaultScanRoots).not.toHaveBeenCalled()
 })
 
-it('orcad resolves no roots while disabled and discovers late roots when enabled', async () => {
-  const { installOrcadSessionSearchService } = await import('../orcad/orcad-session-search')
-  installed = await installOrcadSessionSearchService({
+it('kingud resolves no roots while disabled and discovers late roots when enabled', async () => {
+  const { installKingudSessionSearchService } = await import('../kingud/kingud-session-search')
+  installed = await installKingudSessionSearchService({
     userDataPath: harness.root,
     getSettings: () => ({ aiVaultSearch: { enabled: false, historyDays: null } })
   })
   expect(localAiVaultScanRoots).not.toHaveBeenCalled()
   installed?.dispose()
-  installed = await installOrcadSessionSearchService({
+  installed = await installKingudSessionSearchService({
     userDataPath: harness.root,
     getSettings: () => ({ aiVaultSearch: { enabled: true, historyDays: null } })
   })
@@ -232,10 +232,10 @@ it('re-applies consent on an in-process host without reinstalling the service', 
   })
 })
 
-// orcad reaches the index through the deps hook the runtime RPC calls; the wiring is
+// kingud reaches the index through the deps hook the runtime RPC calls; the wiring is
 // what no unit of either module can show.
-it('wires orcad consent from the runtime hook to the installed service', () => {
-  const source = readFileSync(join(ROOT, 'src/main/orcad/orcad-entry.ts'), 'utf8')
+it('wires kingud consent from the runtime hook to the installed service', () => {
+  const source = readFileSync(join(ROOT, 'src/main/kingud/kingud-entry.ts'), 'utf8')
   expect(source).toContain('applySessionSearchSettings:')
   expect(source).toContain('sessionSearch?.apply(next)')
 })

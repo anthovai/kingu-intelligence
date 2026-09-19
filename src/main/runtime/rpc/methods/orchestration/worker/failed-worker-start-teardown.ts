@@ -1,4 +1,4 @@
-import type { OrcaRuntimeService } from '../../../../orca-runtime'
+import type { KinguRuntimeService } from '../../../../kingu-runtime'
 import {
   discardStructuredWorkerSession,
   releaseStructuredWorkerSession
@@ -17,7 +17,7 @@ import type { createStructuredWorkerSessionForWorktree } from './worker-topology
  * `worker-release` on the failed Dispatch owns that cleanup and the coordinator decides when.
  */
 export async function tearDownFailedWorkerStart(args: {
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   structuredSession: Awaited<ReturnType<typeof createStructuredWorkerSessionForWorktree>> | null
   dispatchId: string
 }): Promise<void> {

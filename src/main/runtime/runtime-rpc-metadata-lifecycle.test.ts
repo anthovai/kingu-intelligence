@@ -2,10 +2,10 @@ import { existsSync, mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
-import { OrcaRuntimeService } from './orca-runtime'
+import { KinguRuntimeService } from './kingu-runtime'
 import * as runtimeMetadataModule from './runtime-metadata'
 import { readRuntimeMetadata, writeRuntimeMetadata } from './runtime-metadata'
-import { createRuntimeTransportMetadata, OrcaRuntimeRpcServer } from './runtime-rpc'
+import { createRuntimeTransportMetadata, KinguRuntimeRpcServer } from './runtime-rpc'
 import type { DeviceRegistry } from './device-registry'
 import type { RuntimeMetadata } from '../../shared/runtime-bootstrap'
 
@@ -25,11 +25,11 @@ vi.mock('../git/worktree', () => {
   }
 })
 
-describe('OrcaRuntimeRpcServer', () => {
+describe('KinguRuntimeRpcServer', () => {
   it('writes runtime metadata with transport details when started', async () => {
-    const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-    const runtime = new OrcaRuntimeService()
-    const server = new OrcaRuntimeRpcServer({ runtime, userDataPath })
+    const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+    const runtime = new KinguRuntimeService()
+    const server = new KinguRuntimeRpcServer({ runtime, userDataPath })
 
     await server.start()
 
@@ -47,11 +47,11 @@ describe('OrcaRuntimeRpcServer', () => {
 
   it('reclaims runtime metadata clobbered by a second instance that has since died', async () => {
     // Why: #7848 — a launch that slips past the single-instance lock republishes
-    // orca-runtime.json with its own pid, so the CLI reports stale_bootstrap
+    // kingu-runtime.json with its own pid, so the CLI reports stale_bootstrap
     // against this still-serving runtime once that instance exits.
-    const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-    const runtime = new OrcaRuntimeService()
-    const server = new OrcaRuntimeRpcServer({ runtime, userDataPath })
+    const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+    const runtime = new KinguRuntimeService()
+    const server = new KinguRuntimeRpcServer({ runtime, userDataPath })
     await server.start()
     const published = readRuntimeMetadata(userDataPath)
 
@@ -70,11 +70,11 @@ describe('OrcaRuntimeRpcServer', () => {
   })
 
   it('leaves runtime metadata owned by a live sibling runtime untouched', async () => {
-    const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
+    const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
     // Why: a synthetic owned pid frees the always-alive process.pid to stand in for
     // the sibling — Windows never assigns pid 1, so hardcoding it there reads as dead.
-    const server = new OrcaRuntimeRpcServer({
-      runtime: new OrcaRuntimeService(),
+    const server = new KinguRuntimeRpcServer({
+      runtime: new KinguRuntimeService(),
       userDataPath,
       pid: 4242
     })
@@ -95,8 +95,8 @@ describe('OrcaRuntimeRpcServer', () => {
   })
 
   it('stops reclaiming runtime metadata after the server is stopped', async () => {
-    const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-    const server = new OrcaRuntimeRpcServer({ runtime: new OrcaRuntimeService(), userDataPath })
+    const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+    const server = new KinguRuntimeRpcServer({ runtime: new KinguRuntimeService(), userDataPath })
     await server.start()
     const watch = server['metadataOwnershipWatch']
     if (!watch) {
@@ -123,9 +123,9 @@ describe('OrcaRuntimeRpcServer', () => {
   it('drops a republish from an ownership read that lands after the server stopped', async () => {
     // Why: the read is off-thread now, so a tick can outlive stop(); the cleared
     // activeTransports guard — not the interval teardown — is what stops it republishing.
-    const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-    const runtime = new OrcaRuntimeService()
-    const server = new OrcaRuntimeRpcServer({ runtime, userDataPath, pid: 1001 })
+    const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+    const runtime = new KinguRuntimeService()
+    const server = new KinguRuntimeRpcServer({ runtime, userDataPath, pid: 1001 })
     await server.start()
 
     let releaseRead: (record: RuntimeMetadata | null) => void = () => {}
@@ -154,9 +154,9 @@ describe('OrcaRuntimeRpcServer', () => {
   })
 
   it('flushes a lastSeen refresh scheduled while transports stop', async () => {
-    const server = new OrcaRuntimeRpcServer({
-      runtime: new OrcaRuntimeService(),
-      userDataPath: mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-')),
+    const server = new KinguRuntimeRpcServer({
+      runtime: new KinguRuntimeService(),
+      userDataPath: mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-')),
       enableWebSocket: false
     })
     let pending = false
@@ -206,9 +206,9 @@ describe('OrcaRuntimeRpcServer', () => {
   })
 
   it('leaves the last published metadata in place when a runtime stops', async () => {
-    const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-    const runtime = new OrcaRuntimeService()
-    const server = new OrcaRuntimeRpcServer({
+    const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+    const runtime = new KinguRuntimeService()
+    const server = new KinguRuntimeRpcServer({
       runtime,
       userDataPath,
       pid: 1001
@@ -226,9 +226,9 @@ describe('OrcaRuntimeRpcServer', () => {
   })
 
   it('closes the socket if metadata publication fails during startup', async () => {
-    const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-    const runtime = new OrcaRuntimeService()
-    const server = new OrcaRuntimeRpcServer({ runtime, userDataPath })
+    const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+    const runtime = new KinguRuntimeService()
+    const server = new KinguRuntimeRpcServer({ runtime, userDataPath })
     const writeMetadataSpy = vi
       .spyOn(runtimeMetadataModule, 'writeRuntimeMetadata')
       .mockImplementationOnce(() => {

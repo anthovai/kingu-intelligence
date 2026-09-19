@@ -7,13 +7,13 @@ import {
 import type { TaskProviderIdentity as ProviderIdentity } from '../../../../shared/task-source-context'
 
 const identities = [
-  { provider: 'github', owner: 'Acme', repo: 'Orca', host: 'github.example.com' },
+  { provider: 'github', owner: 'Acme', repo: 'Kingu', host: 'github.example.com' },
   {
     provider: 'gitlab',
     projectId: '123',
     namespace: 'acme/team',
-    project: 'orca',
-    webUrl: 'https://gitlab.example.com/acme/team/orca'
+    project: 'kingu',
+    webUrl: 'https://gitlab.example.com/acme/team/kingu'
   },
   {
     provider: 'linear',
@@ -60,7 +60,7 @@ describe('task provider identity RPC validation', () => {
   })
 
   it('preserves unknown fields and never infers GitHub from owner/repo', () => {
-    const identity = { provider: 'gitlab', owner: 'acme', repo: 'orca', futureField: 'value' }
+    const identity = { provider: 'gitlab', owner: 'acme', repo: 'kingu', futureField: 'value' }
     expect(TaskProviderIdentity.parse(identity)).toEqual(identity)
   })
 
@@ -113,19 +113,19 @@ describe('github identity blank fields', () => {
   // The normalizer treats a blank owner or repo as no identity, so the schema must agree.
   it.each(['', '   ', '\t'])('rejects a blank owner %j', (owner) => {
     expect(
-      TaskProviderIdentity.safeParse({ provider: 'github', owner, repo: 'orca' }).success
+      TaskProviderIdentity.safeParse({ provider: 'github', owner, repo: 'kingu' }).success
     ).toBe(false)
   })
 
   it.each(['', '  '])('rejects a blank repo %j', (repo) => {
     expect(
-      TaskProviderIdentity.safeParse({ provider: 'github', owner: 'stablyai', repo }).success
+      TaskProviderIdentity.safeParse({ provider: 'github', owner: 'anthovai', repo }).success
     ).toBe(false)
   })
 
   it('still accepts a populated identity', () => {
     expect(
-      TaskProviderIdentity.safeParse({ provider: 'github', owner: 'stablyai', repo: 'orca' })
+      TaskProviderIdentity.safeParse({ provider: 'github', owner: 'anthovai', repo: 'kingu' })
         .success
     ).toBe(true)
   })
@@ -133,9 +133,9 @@ describe('github identity blank fields', () => {
   it('leaves the parsed value untrimmed, so no wire bytes change', () => {
     const parsed = TaskProviderIdentity.safeParse({
       provider: 'github',
-      owner: ' stablyai ',
-      repo: 'orca'
+      owner: ' anthovai ',
+      repo: 'kingu'
     })
-    expect(parsed.success && parsed.data?.owner).toBe(' stablyai ')
+    expect(parsed.success && parsed.data?.owner).toBe(' anthovai ')
   })
 })

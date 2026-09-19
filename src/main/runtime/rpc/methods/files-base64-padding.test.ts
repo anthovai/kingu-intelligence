@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import type { OrcaRuntimeService } from '../../orca-runtime'
+import type { KinguRuntimeService } from '../../kingu-runtime'
 import { RpcDispatcher } from '../dispatcher'
 import { FILE_MUTATION_METHODS } from './files-mutation-methods'
 
@@ -29,7 +29,7 @@ describe.each([
     const runtime = {
       getRuntimeId: () => 'test-runtime',
       [runtimeMethod]: write
-    } as unknown as OrcaRuntimeService
+    } as unknown as KinguRuntimeService
     const dispatcher = new RpcDispatcher({ runtime, methods: FILE_MUTATION_METHODS })
 
     const response = await dispatcher.dispatch({

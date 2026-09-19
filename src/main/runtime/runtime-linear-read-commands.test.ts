@@ -49,9 +49,9 @@ describe('RuntimeLinearReadCommands', () => {
       items: [
         {
           id: 'issue-1',
-          identifier: 'ORCA-1',
+          identifier: 'KINGU-1',
           title: 'Preserve result fields',
-          url: 'https://linear.app/orca/issue/ORCA-1',
+          url: 'https://linear.app/kingu/issue/KINGU-1',
           state: null,
           team: null,
           project: null,
@@ -61,7 +61,7 @@ describe('RuntimeLinearReadCommands', () => {
           dueDate: null,
           updatedAt: '2026-08-29T00:00:00.000Z',
           workspaceId: 'workspace-1',
-          workspaceName: 'Orca'
+          workspaceName: 'Kingu'
         }
       ],
       hasMore: true,
@@ -69,7 +69,7 @@ describe('RuntimeLinearReadCommands', () => {
     })
 
     await expect(createCommands().linearIssueListForAgents({ limit: 1 })).resolves.toMatchObject({
-      issues: [{ identifier: 'ORCA-1', priority: 2, priorityLabel: 'high' }],
+      issues: [{ identifier: 'KINGU-1', priority: 2, priorityLabel: 'high' }],
       truncated: true,
       meta: { hasMore: true, returned: 1 }
     })

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { makeTuiIdleRuntime } from './tui-idle-wait-test-harness'
 import type { RuntimeSyncWindowGraph } from '../../shared/runtime-types'
-import type { OrcaRuntimeService } from './orca-runtime'
+import type { KinguRuntimeService } from './kingu-runtime'
 import type { TuiAgent } from '../../shared/tui-agent'
 
 // Follow-ons to #6011. The evidence ranking that fixed the wait path did not reach two
@@ -54,7 +54,7 @@ async function makeRuntime(launchAgent: TuiAgent | null, foreground = 'codex') {
 
 /** Counts real delivery attempts. Spies on the delivery entry point, NOT on the gate
  *  under test — the gate runs for real and decides whether this is ever reached. */
-function watchDelivery(runtime: OrcaRuntimeService) {
+function watchDelivery(runtime: KinguRuntimeService) {
   return vi
     .spyOn(
       // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the delivery entry point is protected; the spy only needs its name and signature.
@@ -175,7 +175,7 @@ describe('mailbox delivery honours the tui-idle evidence ranking', () => {
 
 describe('quiescence treats a missing output clock as quiet', () => {
   it('settles a pane that has never produced output but holds a live agent process', async () => {
-    // No launch metadata: Orca did not start this agent, so the quiet-foreground lane is
+    // No launch metadata: Kingu did not start this agent, so the quiet-foreground lane is
     // the only evidence available, and `lastOutputAt` is null because nothing ever arrived.
     const { runtime, handle } = await makeRuntime(null, 'codex')
     const leaves =

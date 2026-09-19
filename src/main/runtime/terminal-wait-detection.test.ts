@@ -5,7 +5,7 @@ import {
 } from './terminal-wait-detection'
 import { buildTerminalWaitText } from './terminal-wait-tail-state'
 
-// Why these shapes: Codex agents working on Orca print `rg` hits from this very detector and its
+// Why these shapes: Codex agents working on Kingu print `rg` hits from this very detector and its
 // specs, so quoted prompt wording lands in scrollback while the terminal sits at its input box.
 const QUOTED_DETECTOR_SOURCE_LINE =
   "└   if (hooksindex !== -1 && normalized.includes('press enter to confirm', hooksindex)) {"
@@ -18,7 +18,7 @@ function codexIdleScreen(): string[] {
     '',
     '› Ask Codex to do anything',
     '',
-    '  gpt-6-astra medium · ~/orca/workspaces/orca/fix-wait-detector-scrollback'
+    '  gpt-6-astra medium · ~/kingu/workspaces/kingu/fix-wait-detector-scrollback'
   ]
 }
 
@@ -28,10 +28,10 @@ function codexScrollback(quotedLines: string[], trailingLineCount: number): stri
     '  └ Search press enter to confirm in src/main/runtime',
     '    Read terminal-wait-detection.ts',
     '',
-    '• Ran rg -n "press enter to confirm" src/main/runtime/terminal-wait-detection.ts src/main/runtime/orca-runtime-tests/agent-status-and-waits.spec.ts',
+    '• Ran rg -n "press enter to confirm" src/main/runtime/terminal-wait-detection.ts src/main/runtime/kingu-runtime-tests/agent-status-and-waits.spec.ts',
     '  └ src/main/runtime/terminal-wait-detection.ts',
-    '    src/main/runtime/orca-runtime-tests/agent-status-and-waits.spec.ts',
-    '    src/main/runtime/orca-runtime-tests/terminal-creation-and-readiness-part-07.spec.ts',
+    '    src/main/runtime/kingu-runtime-tests/agent-status-and-waits.spec.ts',
+    '    src/main/runtime/kingu-runtime-tests/terminal-creation-and-readiness-part-07.spec.ts',
     ...quotedLines
   ]
   for (let index = 0; index < trailingLineCount; index += 1) {
@@ -80,7 +80,7 @@ describe('detectTerminalWaitBlockedReason scrollback bounding', () => {
       ...codexScrollback([QUOTED_PERMISSION_FIXTURE_LINE], 40),
       ' >_ OpenAI Codex (v0.153.3)',
       ' model:       gpt-6-astra medium   /model to change',
-      ' directory:   ~/orca/workspaces/orca/fix-wait-detector-scrollback'
+      ' directory:   ~/kingu/workspaces/kingu/fix-wait-detector-scrollback'
     ])
 
     expect(isKnownReadyPromptPreview(waitText)).toBe(true)
@@ -176,7 +176,7 @@ describe('detectTerminalWaitBlockedReason live prompts', () => {
         '',
         ...spaced,
         '',
-        '  gpt-6-astra medium · ~/orca/workspaces/orca/fix-wait-detector-scrollback',
+        '  gpt-6-astra medium · ~/kingu/workspaces/kingu/fix-wait-detector-scrollback',
         ''
       ].join('\n')
 
@@ -190,7 +190,7 @@ describe('detectTerminalWaitBlockedReason live prompts', () => {
       'Press enter to continue',
       ' >_ OpenAI Codex (v0.132.0)',
       ' model:       gpt-5.5 high   /model to change',
-      ' directory:   ~/orca/workspaces/orca/cli-debug',
+      ' directory:   ~/kingu/workspaces/kingu/cli-debug',
       'Hooks need review',
       'Press enter to confirm'
     ])
@@ -338,7 +338,7 @@ describe('Antigravity readiness does not absorb its own startup dialog', () => {
         lines: [
           'Antigravity CLI 1.0.3',
           'Do you trust the files in this folder?',
-          '~/orca/workspaces/orca/agy-dispatch-issue',
+          '~/kingu/workspaces/kingu/agy-dispatch-issue',
           '1. Yes',
           '2. No',
           '>'
@@ -363,7 +363,7 @@ describe('Antigravity readiness does not absorb its own startup dialog', () => {
       'Antigravity CLI 1.0.3',
       'user@example.com (Antigravity Business)',
       'Gemini 3.5 Flash (High)',
-      '~/orca/workspaces/orca/agy-dispatch-issue',
+      '~/kingu/workspaces/kingu/agy-dispatch-issue',
       '>',
       'Permission required',
       'Allow once',
@@ -397,7 +397,7 @@ describe('Antigravity readiness does not absorb its own startup dialog', () => {
       'Antigravity CLI 1.0.3',
       'user@example.com (Antigravity Business)',
       'Claude Sonnet 4.5 (High)',
-      '~/orca/workspaces/orca/agy-dispatch-issue',
+      '~/kingu/workspaces/kingu/agy-dispatch-issue',
       '>'
     ])
 
@@ -417,7 +417,7 @@ describe('Antigravity readiness does not absorb its own startup dialog', () => {
         'Antigravity CLI 1.0.3',
         'user@example.com (Antigravity Business)',
         'A new version is available',
-        '~/orca/workspaces/orca/agy-dispatch-issue',
+        '~/kingu/workspaces/kingu/agy-dispatch-issue',
         'Press enter to continue',
         '>'
       ]
@@ -428,7 +428,7 @@ describe('Antigravity readiness does not absorb its own startup dialog', () => {
         'Antigravity CLI 1.0.3',
         'user@example.com (Antigravity Business)',
         'Sign in to continue',
-        '~/orca/workspaces/orca/agy-dispatch-issue',
+        '~/kingu/workspaces/kingu/agy-dispatch-issue',
         '1. Open browser',
         '2. Paste an API key',
         '>'
@@ -440,7 +440,7 @@ describe('Antigravity readiness does not absorb its own startup dialog', () => {
         'Antigravity CLI 1.0.3',
         'user@example.com (Antigravity Business)',
         'Select a model',
-        '~/orca/workspaces/orca/agy-dispatch-issue',
+        '~/kingu/workspaces/kingu/agy-dispatch-issue',
         '1. Claude Sonnet 4.5',
         '2. GPT-5.1',
         '>'
@@ -452,7 +452,7 @@ describe('Antigravity readiness does not absorb its own startup dialog', () => {
         'Antigravity CLI 1.0.3',
         'user@example.com (Antigravity Business)',
         'We collect usage data to improve the product',
-        '~/orca/workspaces/orca/agy-dispatch-issue',
+        '~/kingu/workspaces/kingu/agy-dispatch-issue',
         '1. Accept',
         '2. Decline',
         '>'
@@ -464,7 +464,7 @@ describe('Antigravity readiness does not absorb its own startup dialog', () => {
         'Antigravity CLI 1.0.3',
         'user@example.com (Antigravity Business)',
         'Welcome! Choose a theme',
-        '~/orca/workspaces/orca/agy-dispatch-issue',
+        '~/kingu/workspaces/kingu/agy-dispatch-issue',
         '1. Dark',
         '2. Light',
         '>'

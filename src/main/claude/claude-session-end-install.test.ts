@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { applyManagedHooks } from './hook-settings'
 
 const SCRIPT_FILE_NAME = 'claude-hook.sh'
-const MANAGED_COMMAND = '/home/dev/.orca/agent-hooks/claude-hook.sh'
+const MANAGED_COMMAND = '/home/dev/.kingu/agent-hooks/claude-hook.sh'
 const managedHook = { type: 'command' as const, command: MANAGED_COMMAND }
 
 describe('Claude SessionEnd managed hook capability', () => {
@@ -27,7 +27,7 @@ describe('Claude SessionEnd managed hook capability', () => {
     }
   )
 
-  it('removes only Orca SessionEnd during a capability downgrade', () => {
+  it('removes only Kingu SessionEnd during a capability downgrade', () => {
     const capable = applyManagedHooks(
       {
         hooks: {

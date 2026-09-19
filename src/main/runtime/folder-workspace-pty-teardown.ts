@@ -1,9 +1,9 @@
 import { killAllProcessesForWorktree } from './worktree-teardown'
 import type { IPtyProvider } from '../providers/types'
-import type { OrcaRuntimeService } from './orca-runtime'
+import type { KinguRuntimeService } from './kingu-runtime'
 
 export type FolderWorkspacePtyTeardownDeps = {
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   getSshProvider: ((connectionId: string) => IPtyProvider | undefined) | null
   getLocalProvider: () => IPtyProvider | null
   onPtyStopped: ((ptyId: string) => void) | null

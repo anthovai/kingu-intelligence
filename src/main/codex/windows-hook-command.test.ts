@@ -20,7 +20,7 @@ describe('Codex Windows hook command', () => {
     'uses the existing PowerShell host for %s without a second interpreter',
     (profile) => {
       vi.spyOn(process, 'platform', 'get').mockReturnValue('win32')
-      const path = `C:\\Users\\${profile}\\.orca\\agent-hooks\\codex-hook.cmd`
+      const path = `C:\\Users\\${profile}\\.kingu\\agent-hooks\\codex-hook.cmd`
       const command = getManagedCommand(path)
       expect(command).not.toMatch(/powershell\.exe|EncodedCommand|Set-ExecutionPolicy/)
       expect(command).toContain(`-LiteralPath '${path.replaceAll("'", "''")}' -PathType Leaf`)
@@ -32,11 +32,11 @@ describe('Codex Windows hook command', () => {
 
   it('preserves the existing ASCII command and POSIX launcher', () => {
     vi.spyOn(process, 'platform', 'get').mockReturnValue('win32')
-    const path = 'C:\\Users\\alice\\.orca\\agent-hooks\\codex-hook.cmd'
+    const path = 'C:\\Users\\alice\\.kingu\\agent-hooks\\codex-hook.cmd'
     expect(getManagedCommand(path)).toBe(path)
     vi.spyOn(process, 'platform', 'get').mockReturnValue('linux')
-    expect(getManagedCommand('/home/测试/.orca/agent-hooks/codex-hook.sh')).toContain(
-      "[ -x '/home/测试/.orca/agent-hooks/codex-hook.sh' ]"
+    expect(getManagedCommand('/home/测试/.kingu/agent-hooks/codex-hook.sh')).toContain(
+      "[ -x '/home/测试/.kingu/agent-hooks/codex-hook.sh' ]"
     )
   })
 })
@@ -57,7 +57,7 @@ describe.skipIf(process.platform !== 'win32')('Codex hook delivery through Power
   it.each([windowsPowerShell, ...(windowsPwsh ? [windowsPwsh] : [])])(
     'delivers all eight events exactly once from a Unicode profile through %s',
     async (shell) => {
-      const root = mkdtempSync(join(tmpdir(), 'orca-codex-cjk-'))
+      const root = mkdtempSync(join(tmpdir(), 'kingu-codex-cjk-'))
       const home = join(root, "测试 사용자 O'Brien")
       mkdirSync(home)
       const scriptPath = join(home, 'codex-hook.cmd')
@@ -68,7 +68,7 @@ describe.skipIf(process.platform !== 'win32')('Codex hook delivery through Power
         const chunks: Buffer[] = []
         req.on('data', (chunk) => chunks.push(chunk))
         req.on('end', () => {
-          tokens.push(req.headers['x-orca-agent-hook-token'])
+          tokens.push(req.headers['x-kingu-agent-hook-token'])
           posts.push(new URLSearchParams(Buffer.concat(chunks).toString('utf8')))
           res.writeHead(204).end()
         })
@@ -80,13 +80,13 @@ describe.skipIf(process.platform !== 'win32')('Codex hook delivery through Power
       }
       const env = {
         ...Object.fromEntries(
-          Object.entries(process.env).filter(([key]) => !key.startsWith('ORCA_'))
+          Object.entries(process.env).filter(([key]) => !key.startsWith('KINGU_'))
         ),
-        ORCA_BACKGROUND_LAUNCH: '1',
-        ORCA_AGENT_HOOK_PORT: String(address.port),
-        ORCA_AGENT_HOOK_TOKEN: 'unicode-test-token',
-        ORCA_PANE_KEY: 'unicode-tab:unicode-leaf',
-        ORCA_WORKTREE_ID: 'C:\\folder workspace\\测试 & repo'
+        KINGU_BACKGROUND_LAUNCH: '1',
+        KINGU_AGENT_HOOK_PORT: String(address.port),
+        KINGU_AGENT_HOOK_TOKEN: 'unicode-test-token',
+        KINGU_PANE_KEY: 'unicode-tab:unicode-leaf',
+        KINGU_WORKTREE_ID: 'C:\\folder workspace\\测试 & repo'
       }
       const payloads = CODEX_EVENTS.map((hook_event_name) =>
         JSON.stringify({
@@ -118,8 +118,8 @@ describe.skipIf(process.platform !== 'win32')('Codex hook delivery through Power
         expect(tokens).toEqual(CODEX_EVENTS.map(() => 'unicode-test-token'))
         expect(posts.map((post) => post.get('payload')).sort()).toEqual([...payloads].sort())
         for (const post of posts) {
-          expect(post.get('paneKey')).toBe(env.ORCA_PANE_KEY)
-          expect(post.get('worktreeId')).toBe(env.ORCA_WORKTREE_ID)
+          expect(post.get('paneKey')).toBe(env.KINGU_PANE_KEY)
+          expect(post.get('worktreeId')).toBe(env.KINGU_WORKTREE_ID)
         }
         await new Promise<void>((resolve) => server.close(() => resolve()))
         expect(await invoke(getManagedCommand(scriptPath), payloads[0])).toMatchObject({

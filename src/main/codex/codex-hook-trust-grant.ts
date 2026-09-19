@@ -47,12 +47,12 @@ export const CODEX_TRUST_GRANT_TRANSIENT_RETRY_INTERVAL_MS = 5 * 60_000
  *
  * Scope, because the name reads broader than it is: the real-home rebase
  * (`mutateRealHomeHooksPreservingUserTrust`) still runs its own inspect/repair
- * app-server sessions when Orca's insertion shifts a user's hook positions, and
+ * app-server sessions when Kingu's insertion shifts a user's hook positions, and
  * does not read this flag. That is unchanged from before the grant went async —
  * those sessions simply used to block the main thread instead. Widening the flag
  * to cover the rebase is a follow-up, not something this constant already does.
  */
-const DISABLE_ENV_FLAG = 'ORCA_DISABLE_CODEX_TRUST_RPC'
+const DISABLE_ENV_FLAG = 'KINGU_DISABLE_CODEX_TRUST_RPC'
 
 export type { CodexManagedTrustGrantPlan }
 export type { CodexTrustGrantFallbackReason, CodexTrustGrantTelemetryLane }
@@ -246,7 +246,7 @@ async function runGrantAttempt(
 }
 
 /**
- * Grants trust for Orca's managed Codex hooks through codex's own app-server
+ * Grants trust for Kingu's managed Codex hooks through codex's own app-server
  * RPCs, verified by re-list. Returns the granted entries carrying Codex's
  * verbatim hashes, or a fallback marker — the caller then runs the previous
  * computeTrustedHash lane, byte-identical to the pre-RPC behavior. Never

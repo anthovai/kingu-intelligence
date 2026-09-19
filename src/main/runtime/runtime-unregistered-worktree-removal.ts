@@ -18,8 +18,8 @@ import {
 } from '../ipc/worktree-remote'
 import {
   assertWorktreeDoesNotContainRegisteredWorktree,
-  canCleanupUnregisteredOrcaLeftoverDirectory,
-  canCleanupUnregisteredOrcaWorktreeDirectory,
+  canCleanupUnregisteredKinguLeftoverDirectory,
+  canCleanupUnregisteredKinguWorktreeDirectory,
   canSafelyRemoveOrphanedWorktreeDirectory,
   isDangerousWorktreeRemovalPath,
   ORPHANED_WORKTREE_DIRECTORY_MESSAGE,
@@ -54,7 +54,7 @@ export async function removeRuntimeUnregisteredWorktree(args: {
   const { repo, target, registeredWorktrees, removedMeta, route } = args
   const removalHome = resolveWorktreeRemovalHome(route)
   let canCleanOrphanedDirectory = false
-  if (canCleanupUnregisteredOrcaWorktreeDirectory({ meta: removedMeta })) {
+  if (canCleanupUnregisteredKinguWorktreeDirectory({ meta: removedMeta })) {
     if (route.kind === 'ssh') {
       const fsProvider = route.fsProvider
       if (!fsProvider) {
@@ -97,7 +97,7 @@ export async function removeRuntimeUnregisteredWorktree(args: {
     const access = getLocalWorktreePathAccess(args.localOptions)
     const runtimeWorktreePath = toLocalWorktreeRuntimePath(target.path, args.localOptions)
     if (
-      await canCleanupUnregisteredOrcaLeftoverDirectory({
+      await canCleanupUnregisteredKinguLeftoverDirectory({
         meta: removedMeta,
         worktreePath: target.path,
         runtimeWorktreePath,

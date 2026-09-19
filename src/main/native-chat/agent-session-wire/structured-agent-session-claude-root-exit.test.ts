@@ -26,7 +26,7 @@ afterEach(async () => {
 
 describe('Claude root-exit eviction', () => {
   it('releases a captured live claim after the provider root exits', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'orca-claude-root-exit-'))
+    const root = await mkdtemp(join(tmpdir(), 'kingu-claude-root-exit-'))
     roots.push(root)
     const store = await AgentSessionRecordStore.open({ directory: root, hostId: 'local' })
     const claude = fakeClaude({

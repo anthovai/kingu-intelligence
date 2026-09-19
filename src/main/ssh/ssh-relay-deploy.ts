@@ -387,7 +387,7 @@ async function deployAndLaunchRelayAttempt(
   const hostPlatform = await detectRemoteHostPlatform(conn, { signal: deploySignal })
   if (!hostPlatform) {
     throw new Error(
-      'Unsupported remote platform. Orca relay supports: linux-x64, linux-arm64, darwin-x64, darwin-arm64, win32-x64, win32-arm64.'
+      'Unsupported remote platform. Kingu relay supports: linux-x64, linux-arm64, darwin-x64, darwin-arm64, win32-x64, win32-arm64.'
     )
   }
   const platform = hostPlatform.relayPlatform
@@ -397,7 +397,7 @@ async function deployAndLaunchRelayAttempt(
   if (!localRelayDir) {
     throw new Error(
       `Relay package for ${platform} not found locally. ` +
-        `This may be a packaging issue — try reinstalling Orca.`
+        `This may be a packaging issue — try reinstalling Kingu.`
     )
   }
   // Why: content-hashed version doubles as remote dir name and wire-handshake version; throws on missing rather than falling back (see docs/ssh-relay-versioned-install-dirs.md).
@@ -672,7 +672,7 @@ async function uploadRelay(
   if (!localRelayDir || !existsSync(localRelayDir)) {
     throw new Error(
       `Relay package for ${platform} not found. Searched: ${getLocalRelayCandidates(platform).join(', ')}. ` +
-        `This may be a packaging issue — try reinstalling Orca.`
+        `This may be a packaging issue — try reinstalling Kingu.`
     )
   }
 
@@ -722,7 +722,7 @@ async function uploadRelay(
 }
 
 /**
- * A marker is only meaningful where a split namespace can occur and where Orca
+ * A marker is only meaningful where a split namespace can occur and where Kingu
  * owns the SFTP session: POSIX hosts reached over the bundled ssh2 transport.
  */
 function createInstallNamespaceIfSupported(
@@ -756,7 +756,7 @@ const NODE_PTY_VERSION = '1.1.0'
 const NODE_PTY_CONSOLE_LIST_PATCH_FILENAME = 'node-pty-1.1.0-console-list-agent-patch.cjs'
 const NODE_PTY_WINDOWS_TEARDOWN_PATCH_FILENAME = 'node-pty-1.1.0-windows-pty-teardown-patch.cjs'
 const NODE_PTY_MASTER_CLOEXEC_PATCH_FILENAME = 'node-pty-1.1.0-master-cloexec-patch.cjs'
-const NODE_PTY_CLOEXEC_STATUS_PREFIX = 'ORCA-NPTY-CLOEXEC:'
+const NODE_PTY_CLOEXEC_STATUS_PREFIX = 'KINGU-NPTY-CLOEXEC:'
 /**
  * Whether the tree the patch left behind still leaks a pty fd -- the master into every later child
  * on Linux, a throwaway /dev/ptmx per spawn on macOS. `fixed` is the only outcome a shared cache
@@ -792,7 +792,7 @@ export const RELAY_NATIVE_DEPS = {
 
 type RelayNativeDepName = keyof typeof RELAY_NATIVE_DEPS
 const RELAY_NATIVE_DEP_NAMES = Object.keys(RELAY_NATIVE_DEPS) as RelayNativeDepName[]
-const NATIVE_DEPS_MISSING_PREFIX = 'ORCA-NATIVE-DEPS-MISSING:'
+const NATIVE_DEPS_MISSING_PREFIX = 'KINGU-NATIVE-DEPS-MISSING:'
 
 // Why: npm 12 blocks dependency lifecycle scripts unless each exact package version is approved, even with ignore-scripts disabled.
 const RELAY_NATIVE_DEP_SCRIPT_ALLOWLIST = Object.fromEntries(
@@ -836,7 +836,7 @@ function missingNativeDepsFromProbe(output: string): RelayNativeDepName[] | unde
  * node-gyp source build (no Linux prebuild) against a relay that was never shown to be broken. An
  * unparseable answer is the worse half of that — it is deterministic and per-host, so a node that
  * cannot start (bad NODE_OPTIONS, OOM, exit 127) deleted both modules on every reconnect forever.
- * Same verdict discipline as `src/main/orcad/node-pty-precondition.ts` and
+ * Same verdict discipline as `src/main/kingud/node-pty-precondition.ts` and
  * docs/reference/ssh-execution-boundary.md — loss of contact is not evidence.
  */
 type RelayNativeDepsProbeStatus = 'ok' | 'blocked' | 'unverifiable'
@@ -849,7 +849,7 @@ async function probeRequiredNativeDeps(
   signal?: AbortSignal
 ): Promise<{ status: RelayNativeDepsProbeStatus; missing: RelayNativeDepName[] }> {
   const escapedNode = shellEscape(nodePath)
-  const probeJs = nativeDepsProbeJs('ORCA-NATIVE-DEPS-OK')
+  const probeJs = nativeDepsProbeJs('KINGU-NATIVE-DEPS-OK')
   let probeStderr = ''
   try {
     const command = isWindowsRemoteHost(hostPlatform)
@@ -861,7 +861,7 @@ async function probeRequiredNativeDeps(
         )
       : // Why: no `2>/dev/null` — it discarded the only line that says why node never reached the
         // script. stderr stays its own stream so it can't be mistaken for the verdict, mirroring
-        // src/main/orcad/node-pty-precondition.ts.
+        // src/main/kingud/node-pty-precondition.ts.
         commandWithNodePath(
           hostPlatform,
           nodePath,
@@ -874,7 +874,7 @@ async function probeRequiredNativeDeps(
         probeStderr = text
       }
     })
-    if (probe.includes('ORCA-NATIVE-DEPS-OK')) {
+    if (probe.includes('KINGU-NATIVE-DEPS-OK')) {
       return { status: 'ok', missing: [] }
     }
     const missing = missingNativeDepsFromProbe(probe)
@@ -1121,7 +1121,7 @@ async function installNativeDeps(
       hostPlatform,
       joinRemotePath(hostPlatform, remoteDir, 'package.json'),
       `${JSON.stringify({
-        name: 'orca-relay',
+        name: 'kingu-relay',
         version: '1.0.0',
         private: true,
         type: 'commonjs',
@@ -1602,7 +1602,7 @@ async function probeInstalledNativeDeps(
   stderr: string
 }> {
   // require() catches unloadable installs (wrong arch, missing prebuild, skipped lifecycle script) that require.resolve() and test -d miss.
-  const PROBE_OK = 'ORCA-NPTY-PROBE-OK'
+  const PROBE_OK = 'KINGU-NPTY-PROBE-OK'
   const stderrFile = joinRemotePath(hostPlatform, remoteDir, '.npty-probe.stderr')
   const escapedStderr = shellEscape(stderrFile)
   const probeJs = nativeDepsProbeJs(PROBE_OK)
@@ -1654,8 +1654,8 @@ function getLocalRelayPath(platform: RelayPlatform): string | null {
 
 export function getLocalRelayCandidates(platform: RelayPlatform): string[] {
   const candidates: string[] = []
-  if (process.env.ORCA_RELAY_PATH) {
-    candidates.push(join(process.env.ORCA_RELAY_PATH, platform))
+  if (process.env.KINGU_RELAY_PATH) {
+    candidates.push(join(process.env.KINGU_RELAY_PATH, platform))
   }
 
   // Why: electron-builder copies extraResources next to the app bundle, but app.getAppPath() points at app.asar in packaged builds.
@@ -1698,7 +1698,7 @@ async function launchRelay(
         )
   const escapedDir = shellEscape(remoteDir)
   const escapedNode = shellEscape(nodePath)
-  // Why: remoteRelayDir is shared across Orca targets for one account; hashing the target ID into the socket name stops cross-target attach.
+  // Why: remoteRelayDir is shared across Kingu targets for one account; hashing the target ID into the socket name stops cross-target attach.
   const sockName = relaySocketNameForInstanceId(relayInstanceId)
   const defaultSockFile = relayEndpointForHost(hostPlatform, remoteDir, sockName)
   const endpointDir = relayHookEndpointDirForHost(hostPlatform, remoteDir, defaultSockFile)

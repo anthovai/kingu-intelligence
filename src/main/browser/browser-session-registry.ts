@@ -1,12 +1,12 @@
 import { app, session } from 'electron'
 import { randomUUID } from 'node:crypto'
 import { join } from 'node:path'
-import { ORCA_BROWSER_PARTITION } from '../../shared/constants'
+import { KINGU_BROWSER_PARTITION } from '../../shared/constants'
 import {
-  DEFAULT_LOCAL_ORCA_PROFILE_ID,
-  getOrcaProfileBrowserDefaultPartition,
-  getOrcaProfileBrowserSessionPartition
-} from '../../shared/orca-profiles'
+  DEFAULT_LOCAL_KINGU_PROFILE_ID,
+  getKinguProfileBrowserDefaultPartition,
+  getKinguProfileBrowserSessionPartition
+} from '../../shared/kingu-profiles'
 import type {
   BrowserSessionProfile,
   BrowserSessionProfileScope
@@ -43,7 +43,7 @@ import { getCanonicalUserDataPath } from '../persistence/loading-store/user-data
 import { markBrowserIdentityMigrationNoticePending } from './browser-identity-mode-store'
 
 export type BrowserSessionRegistryProfileOptions = {
-  orcaProfileId: string
+  kinguProfileId: string
   profileDirectory: string
 }
 
@@ -51,18 +51,18 @@ export type BrowserSessionRegistryProfileOptions = {
 
 class BrowserSessionRegistry {
   private readonly profiles = new Map<string, BrowserSessionProfile>()
-  private activeOrcaProfileId = DEFAULT_LOCAL_ORCA_PROFILE_ID
+  private activeKinguProfileId = DEFAULT_LOCAL_KINGU_PROFILE_ID
   private metadataPathOverride: string | null = null
-  private defaultPartition = ORCA_BROWSER_PARTITION
+  private defaultPartition = KINGU_BROWSER_PARTITION
 
   constructor() {
     this.resetDefaultProfile()
   }
 
-  configureForOrcaProfile(options: BrowserSessionRegistryProfileOptions): void {
-    this.activeOrcaProfileId = options.orcaProfileId
+  configureForKinguProfile(options: BrowserSessionRegistryProfileOptions): void {
+    this.activeKinguProfileId = options.kinguProfileId
     this.metadataPathOverride = join(options.profileDirectory, BROWSER_SESSION_META_FILE_NAME)
-    this.defaultPartition = getOrcaProfileBrowserDefaultPartition(options.orcaProfileId)
+    this.defaultPartition = getKinguProfileBrowserDefaultPartition(options.kinguProfileId)
     this.profiles.clear()
     this.resetDefaultProfile()
   }
@@ -113,7 +113,7 @@ class BrowserSessionRegistry {
     const meta = this.loadPersistedMeta()
     const migration = inspectRetiredBrowserSessionProfileUserAgentModes(
       meta.profiles,
-      this.activeOrcaProfileId
+      this.activeKinguProfileId
     )
     if (migration.noticePending) {
       // Why scoped: identity persistence must never reject browser-session startup.
@@ -144,7 +144,7 @@ class BrowserSessionRegistry {
     applyPendingBrowserCookieImports({
       resolveMetadataPath: () => this.metadataPath,
       defaultPartition: this.defaultPartition,
-      activeOrcaProfileId: this.activeOrcaProfileId
+      activeKinguProfileId: this.activeKinguProfileId
     })
   }
 
@@ -194,7 +194,7 @@ class BrowserSessionRegistry {
 
   resolveKnownPartition(profileId: string | null | undefined): string | null {
     if (!profileId) {
-      // Why: use the active Orca profile's default partition, not the legacy constant, or profiles resolve local-default's cookie jar.
+      // Why: use the active Kingu profile's default partition, not the legacy constant, or profiles resolve local-default's cookie jar.
       return this.defaultPartition
     }
     return this.profiles.get(profileId)?.partition ?? null
@@ -228,7 +228,7 @@ class BrowserSessionRegistry {
     }
     const id = randomUUID()
     // Why: deterministic partition-from-id lets main rebuild the allowlist on restart without a separate partition→profile map.
-    const partition = getOrcaProfileBrowserSessionPartition(this.activeOrcaProfileId, id)
+    const partition = getKinguProfileBrowserSessionPartition(this.activeKinguProfileId, id)
     const profile: BrowserSessionProfile = {
       id,
       scope,
@@ -330,7 +330,7 @@ class BrowserSessionRegistry {
 
   hydrateFromPersisted(profiles: BrowserSessionProfile[]): void {
     for (const profile of profiles) {
-      if (!isValidPersistedBrowserSessionProfile(profile, this.activeOrcaProfileId)) {
+      if (!isValidPersistedBrowserSessionProfile(profile, this.activeKinguProfileId)) {
         continue
       }
       this.profiles.set(profile.id, profile)

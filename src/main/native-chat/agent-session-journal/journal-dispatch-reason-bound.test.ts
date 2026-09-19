@@ -50,7 +50,7 @@ async function settle(reason: string): Promise<string | null> {
 }
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'orca-dispatch-reason-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-dispatch-reason-'))
   clock = 1_000
 })
 
@@ -68,7 +68,7 @@ describe('dispatch reason bounding', () => {
 
   it('marks the clipped reason rather than truncating it silently', async () => {
     const stored = await settle(HUGE)
-    expect(stored).toContain('[Orca: output truncated')
+    expect(stored).toContain('[Kingu: output truncated')
   })
 
   it('leaves a reason that already fits exactly as written', async () => {

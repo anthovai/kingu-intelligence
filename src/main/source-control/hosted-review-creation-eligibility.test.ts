@@ -150,7 +150,7 @@ function resetMocks(): void {
 
 function mockGitHubProvider(): void {
   getProjectSlugMock.mockResolvedValue(null)
-  getRepoSlugMock.mockResolvedValue({ owner: 'acme', repo: 'orca' })
+  getRepoSlugMock.mockResolvedValue({ owner: 'acme', repo: 'kingu' })
   getBitbucketRepoSlugMock.mockResolvedValue(null)
   getAzureDevOpsRepoSlugMock.mockResolvedValue(null)
   getGiteaRepoSlugMock.mockResolvedValue(null)
@@ -165,7 +165,7 @@ function mockGitHubEnterpriseProvider(): void {
   // comes back host-qualified instead of null + separate enterprise fallback.
   getRepoSlugMock.mockResolvedValue({
     owner: 'acme',
-    repo: 'orca',
+    repo: 'kingu',
     host: 'github.acme-corp.com'
   })
   getBitbucketRepoSlugMock.mockResolvedValue(null)
@@ -174,13 +174,13 @@ function mockGitHubEnterpriseProvider(): void {
   // The auth gate still keys off the enterprise resolver (authed-GHES signal).
   getEnterpriseGitHubRepoSlugMock.mockResolvedValue({
     owner: 'acme',
-    repo: 'orca',
+    repo: 'kingu',
     host: 'github.acme-corp.com'
   })
 }
 
 function mockGitLabProvider(): void {
-  getProjectSlugMock.mockResolvedValue({ host: 'gitlab.com', path: 'acme/orca' })
+  getProjectSlugMock.mockResolvedValue({ host: 'gitlab.com', path: 'acme/kingu' })
   getRepoSlugMock.mockResolvedValue(null)
   getBitbucketRepoSlugMock.mockResolvedValue(null)
   getAzureDevOpsRepoSlugMock.mockResolvedValue(null)
@@ -194,9 +194,9 @@ function mockAzureDevOpsProvider(): void {
   getAzureDevOpsRepoSlugMock.mockResolvedValue({
     host: 'dev.azure.com',
     project: 'Project',
-    repository: 'orca',
+    repository: 'kingu',
     apiBaseUrl: 'https://dev.azure.com/acme/Project',
-    webBaseUrl: 'https://dev.azure.com/acme/Project/_git/orca'
+    webBaseUrl: 'https://dev.azure.com/acme/Project/_git/kingu'
   })
   getGiteaRepoSlugMock.mockResolvedValue(null)
 }
@@ -209,7 +209,7 @@ function mockGiteaProvider(): void {
   getGiteaRepoSlugMock.mockResolvedValue({
     host: 'git.example.com',
     owner: 'acme',
-    repo: 'orca',
+    repo: 'kingu',
     apiBaseUrl: 'https://git.example.com/api/v1',
     webBaseUrl: 'https://git.example.com'
   })

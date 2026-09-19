@@ -11,7 +11,7 @@ import {
 import { errorResponse, successResponse } from './errors'
 import { ALL_RPC_METHODS } from './methods'
 import { emulatorProbe, emulatorProbeError } from '../../emulator/emulator-probe'
-import type { OrcaRuntimeService } from '../orca-runtime'
+import type { KinguRuntimeService } from '../kingu-runtime'
 import {
   getOrchestrationMutationExecutor,
   type OrchestrationMutationExecutor
@@ -25,14 +25,14 @@ import { RpcStreamingDispatcher } from './rpc-streaming-dispatcher'
 import { invokeDispatcherUnaryMethod } from './dispatcher-unary-method-invocation'
 
 export type DispatcherOptions = {
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   methods?: readonly RpcAnyMethodDeclaration[]
 }
 
 type DispatchCallOptions = RpcDispatchStreamingOptions
 
 export class RpcDispatcher {
-  private readonly runtime: OrcaRuntimeService
+  private readonly runtime: KinguRuntimeService
   private readonly registry: RpcRegistry
   private readonly orchestrationMutations: OrchestrationMutationExecutor
   private readonly legacyOrchestration: OrchestrationLegacyCompatibility

@@ -1,7 +1,7 @@
 import type { CliInstallStatus } from '../../shared/cli-install-types'
 import { getBridgePathFromCommandPath, getPosixDirname, quoteShell } from './wsl-cli-scripts'
 
-const WSL_COMMAND_NAME = 'orca-ide'
+const WSL_COMMAND_NAME = 'kingu-ide'
 
 export type ReadyWslCliState = {
   distro: string
@@ -20,20 +20,20 @@ export async function readWslCliCommandFile(
     distro,
     [
       `if [ -L ${quoteShell(commandPath)} ]; then`,
-      '  printf __ORCA_NOT_FILE__',
+      '  printf __KINGU_NOT_FILE__',
       `elif [ ! -e ${quoteShell(commandPath)} ]; then`,
-      '  printf __ORCA_MISSING__',
+      '  printf __KINGU_MISSING__',
       `elif [ ! -f ${quoteShell(commandPath)} ]; then`,
-      '  printf __ORCA_NOT_FILE__',
+      '  printf __KINGU_NOT_FILE__',
       'else',
       `  cat ${quoteShell(commandPath)}`,
       'fi'
     ].join('\n')
   )
-  if (output === '__ORCA_MISSING__') {
+  if (output === '__KINGU_MISSING__') {
     return null
   }
-  if (output === '__ORCA_NOT_FILE__') {
+  if (output === '__KINGU_NOT_FILE__') {
     return 'not_file'
   }
   return output
@@ -112,7 +112,7 @@ export async function resolveReadyWslCliState(args: {
     return {
       status: unsupportedWslCliStatus(
         hostStatus.unsupportedReason ?? 'launcher_missing',
-        hostStatus.detail ?? 'The Windows Orca CLI launcher is missing.'
+        hostStatus.detail ?? 'The Windows Kingu CLI launcher is missing.'
       )
     }
   }
@@ -138,7 +138,7 @@ export async function resolveReadyWslCliState(args: {
     return {
       status: unsupportedWslCliStatus(
         'launcher_missing',
-        'WSL Windows interop is unavailable; Orca cannot launch the Windows CLI from WSL.'
+        'WSL Windows interop is unavailable; Kingu cannot launch the Windows CLI from WSL.'
       )
     }
   }

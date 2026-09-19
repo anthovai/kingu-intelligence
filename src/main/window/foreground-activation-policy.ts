@@ -5,8 +5,8 @@ import { app as electronApp, type BrowserWindow } from 'electron'
  * validation). These runs may use the machine, but must never take the OS
  * foreground away from whatever the developer is doing.
  *
- * ORCA_BACKGROUND_LAUNCH=1 keeps automation off screen. Native-focus specs
- * can use ORCA_E2E_FOREGROUND=1 only without an explicit background request.
+ * KINGU_BACKGROUND_LAUNCH=1 keeps automation off screen. Native-focus specs
+ * can use KINGU_E2E_FOREGROUND=1 only without an explicit background request.
  */
 
 type ActivationPolicyApp = {
@@ -14,25 +14,25 @@ type ActivationPolicyApp = {
   setActivationPolicy: (policy: 'accessory' | 'prohibited' | 'regular') => void
 }
 
-/** Reads ORCA_BACKGROUND_LAUNCH, ORCA_E2E_FOREGROUND, ORCA_E2E_HEADLESS, ORCA_E2E_HEADFUL. */
+/** Reads KINGU_BACKGROUND_LAUNCH, KINGU_E2E_FOREGROUND, KINGU_E2E_HEADLESS, KINGU_E2E_HEADFUL. */
 type PolicyEnv = Readonly<Record<string, string | undefined>>
 
 /** True when this process must not steal focus, raise windows, or activate the app. */
 export function isBackgroundLaunch(env: PolicyEnv = process.env): boolean {
-  if (env.ORCA_BACKGROUND_LAUNCH === '1') {
+  if (env.KINGU_BACKGROUND_LAUNCH === '1') {
     return true
   }
-  if (env.ORCA_E2E_FOREGROUND === '1') {
+  if (env.KINGU_E2E_FOREGROUND === '1') {
     return false
   }
-  return env.ORCA_E2E_HEADLESS === '1' || env.ORCA_E2E_HEADFUL === '1'
+  return env.KINGU_E2E_HEADLESS === '1' || env.KINGU_E2E_HEADFUL === '1'
 }
 
 /** True when no window should reach the screen at all (background or headless E2E; Playwright drives via CDP). */
 export function isWindowlessLaunch(env: PolicyEnv = process.env): boolean {
   return (
-    env.ORCA_BACKGROUND_LAUNCH === '1' ||
-    (isBackgroundLaunch(env) && env.ORCA_E2E_HEADLESS === '1' && env.ORCA_E2E_HEADFUL !== '1')
+    env.KINGU_BACKGROUND_LAUNCH === '1' ||
+    (isBackgroundLaunch(env) && env.KINGU_E2E_HEADLESS === '1' && env.KINGU_E2E_HEADFUL !== '1')
   )
 }
 

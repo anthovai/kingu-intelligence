@@ -40,7 +40,7 @@ function writeStub(path: string, markerPath: string): void {
 }
 
 function buildFixture(options: { aliasCodex?: boolean } = {}): Fixture {
-  const root = mkdtempSync(join(tmpdir(), 'orca-codex-profile-path-'))
+  const root = mkdtempSync(join(tmpdir(), 'kingu-codex-profile-path-'))
   roots.push(root)
   const resourcesPath = join(root, 'resources')
   const hijackDir = join(root, 'hijack')
@@ -54,10 +54,10 @@ function buildFixture(options: { aliasCodex?: boolean } = {}): Fixture {
   mkdirSync(codexDir, { recursive: true })
   mkdirSync(homePath, { recursive: true })
 
-  // The CLI Orca ships, at the absolute path Orca controls.
+  // The CLI Kingu ships, at the absolute path Kingu controls.
   writeStub(getBundledLauncherPath(process.platform, resourcesPath) as string, intendedMarker)
-  // The impostor a user's own bin directory could hold under every CLI name Orca uses.
-  for (const name of ['orca', 'orca-ide', 'orca-dev']) {
+  // The impostor a user's own bin directory could hold under every CLI name Kingu uses.
+  for (const name of ['kingu', 'kingu-ide', 'kingu-dev']) {
     writeStub(join(hijackDir, name), hijackMarker)
   }
   writeStub(join(codexDir, 'codex'), codexMarker)
@@ -85,11 +85,11 @@ function buildFixture(options: { aliasCodex?: boolean } = {}): Fixture {
 function launchCodexThroughRcfile(fixture: Fixture, preflightValue: string): void {
   const rcfilePath = join(fixture.root, 'rcfile')
   writeFileSync(rcfilePath, getDaemonBashShellReadyRcfileContent(), 'utf8')
-  // Why the second command: the rcfile defines __orca_osc133_preexec *below* the
+  // Why the second command: the rcfile defines __kingu_osc133_preexec *below* the
   // codex wrapper, so its presence proves bash parsed past the snippet.
   // Why the trailing `:` — the markers are this file's oracle, so a failed probe
   // must surface as a missing marker, not an opaque non-zero exit from bash.
-  const command = `codex --version; declare -F __orca_osc133_preexec >/dev/null && printf ran > ${JSON.stringify(fixture.postSnippetMarker)}; :`
+  const command = `codex --version; declare -F __kingu_osc133_preexec >/dev/null && printf ran > ${JSON.stringify(fixture.postSnippetMarker)}; :`
   execFileSync('/bin/bash', ['--rcfile', rcfilePath, '-i', '-c', command], {
     stdio: 'ignore',
     env: {
@@ -98,10 +98,10 @@ function launchCodexThroughRcfile(fixture: Fixture, preflightValue: string): voi
       PATH: ['/usr/bin', '/bin', '/usr/sbin', '/sbin'].join(delimiter),
       TERM: 'dumb',
       SHELL: '/bin/bash',
-      // Why no ORCA_SHELL_FEATURES: absent means no features, so the rcfile
+      // Why no KINGU_SHELL_FEATURES: absent means no features, so the rcfile
       // emits neither the identity nor the readiness marker into stdout.
-      ORCA_CODEX_HOME: join(fixture.root, 'codex-home'),
-      ORCA_CODEX_LAUNCH_PREFLIGHT: preflightValue
+      KINGU_CODEX_HOME: join(fixture.root, 'codex-home'),
+      KINGU_CODEX_LAUNCH_PREFLIGHT: preflightValue
     }
   })
 }
@@ -117,7 +117,7 @@ describe.skipIf(!bashAvailable)('Codex preflight under a profile-rewritten PATH'
     const rcfile = getDaemonBashShellReadyRcfileContent()
 
     expect(rcfile.indexOf('source "$HOME/.bash_profile"')).toBeLessThan(
-      rcfile.indexOf('ORCA_CODEX_LAUNCH_PREFLIGHT')
+      rcfile.indexOf('KINGU_CODEX_LAUNCH_PREFLIGHT')
     )
   })
 
@@ -166,7 +166,7 @@ describe.skipIf(!bashAvailable)('Codex preflight under a profile-rewritten PATH'
   it('skips an unqualified preflight value while still launching codex', () => {
     const fixture = buildFixture()
 
-    launchCodexThroughRcfile(fixture, 'orca')
+    launchCodexThroughRcfile(fixture, 'kingu')
 
     expect(existsSync(fixture.hijackMarker)).toBe(false)
     expect(existsSync(fixture.intendedMarker)).toBe(false)

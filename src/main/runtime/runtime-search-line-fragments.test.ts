@@ -4,41 +4,41 @@ import {
   checkRgAvailableMock,
   resolveAuthorizedPathMock,
   wslAwareSpawnMock
-} from './orca-runtime-files-mock-registry'
+} from './kingu-runtime-files-mock-registry'
 import {
   createRuntimeFileCommands,
   useRuntimeFileCommandsLifecycle
-} from './orca-runtime-files-test-harness'
+} from './kingu-runtime-files-test-harness'
 
-vi.mock('fs', async () => (await import('./orca-runtime-files-mock-registry')).fsModuleMock())
+vi.mock('fs', async () => (await import('./kingu-runtime-files-mock-registry')).fsModuleMock())
 vi.mock('fs/promises', async () =>
-  (await import('./orca-runtime-files-mock-registry')).fsPromisesModuleMock()
+  (await import('./kingu-runtime-files-mock-registry')).fsPromisesModuleMock()
 )
 vi.mock(
   './file-watcher-host',
-  async () => (await import('./orca-runtime-files-mock-registry')).fileWatcherHostMock
+  async () => (await import('./kingu-runtime-files-mock-registry')).fileWatcherHostMock
 )
 vi.mock('../ipc/filesystem-auth', async () =>
-  (await import('./orca-runtime-files-mock-registry')).filesystemAuthModuleMock()
+  (await import('./kingu-runtime-files-mock-registry')).filesystemAuthModuleMock()
 )
 vi.mock('../git/runner', async () =>
-  (await import('./orca-runtime-files-mock-registry')).gitRunnerModuleMock()
+  (await import('./kingu-runtime-files-mock-registry')).gitRunnerModuleMock()
 )
 vi.mock(
   '../ipc/rg-availability',
-  async () => (await import('./orca-runtime-files-mock-registry')).rgAvailabilityMock
+  async () => (await import('./kingu-runtime-files-mock-registry')).rgAvailabilityMock
 )
 vi.mock(
   '../ipc/local-worktree-runtime-options',
-  async () => (await import('./orca-runtime-files-mock-registry')).localWorktreeRuntimeOptionsMock
+  async () => (await import('./kingu-runtime-files-mock-registry')).localWorktreeRuntimeOptionsMock
 )
 vi.mock(
   '../ipc/filesystem-search-git',
-  async () => (await import('./orca-runtime-files-mock-registry')).filesystemSearchGitMock
+  async () => (await import('./kingu-runtime-files-mock-registry')).filesystemSearchGitMock
 )
 vi.mock(
   '../providers/ssh-filesystem-dispatch',
-  async () => (await import('./orca-runtime-files-mock-registry')).sshFilesystemDispatchMock
+  async () => (await import('./kingu-runtime-files-mock-registry')).sshFilesystemDispatchMock
 )
 
 type MockRuntimeSearchChild = EventEmitter & {

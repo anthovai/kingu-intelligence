@@ -31,7 +31,7 @@ const {
   registerEphemeralVmHandlersMock,
   registerAiVaultHandlersMock,
   registerAiVaultSearchHandlersMock,
-  registerOrcaProfileHandlersMock,
+  registerKinguProfileHandlersMock,
   registerCodexAccountHandlersMock,
   registerAgentHookHandlersMock,
   registerAgentTrustHandlersMock,
@@ -98,7 +98,7 @@ const {
   registerEphemeralVmHandlersMock: vi.fn(),
   registerAiVaultHandlersMock: vi.fn(),
   registerAiVaultSearchHandlersMock: vi.fn(),
-  registerOrcaProfileHandlersMock: vi.fn(),
+  registerKinguProfileHandlersMock: vi.fn(),
   registerCodexAccountHandlersMock: vi.fn(),
   registerAgentHookHandlersMock: vi.fn(),
   registerAgentTrustHandlersMock: vi.fn(),
@@ -316,8 +316,8 @@ vi.mock('../ai-vault-search', () => ({
   registerAiVaultSearchHandlers: registerAiVaultSearchHandlersMock
 }))
 
-vi.mock('../orca-profiles', () => ({
-  registerOrcaProfileHandlers: registerOrcaProfileHandlersMock
+vi.mock('../kingu-profiles', () => ({
+  registerKinguProfileHandlers: registerKinguProfileHandlersMock
 }))
 
 vi.mock('../codex-accounts', () => ({
@@ -429,7 +429,7 @@ describe('registerCoreHandlers', () => {
     registerRuntimeEnvironmentHandlersMock.mockReset()
     registerEphemeralVmHandlersMock.mockReset()
     registerAiVaultHandlersMock.mockReset()
-    registerOrcaProfileHandlersMock.mockReset()
+    registerKinguProfileHandlersMock.mockReset()
     registerCodexAccountHandlersMock.mockReset()
     registerAgentHookHandlersMock.mockReset()
     registerAgentTrustHandlersMock.mockReset()
@@ -547,7 +547,7 @@ describe('registerCoreHandlers', () => {
     expect(registerWorkspacePortHandlersMock).toHaveBeenCalledWith(store)
     expect(registerLocalhostWorktreeLabelHandlersMock).toHaveBeenCalledWith(store)
     expect(registerTelemetryHandlersMock).toHaveBeenCalledWith(store)
-    expect(registerOrcaProfileHandlersMock).toHaveBeenCalledWith(store, { onBeforeRelaunch })
+    expect(registerKinguProfileHandlersMock).toHaveBeenCalledWith(store, { onBeforeRelaunch })
     expect(registerSessionHandlersMock).toHaveBeenCalledWith(store)
     expect(registerUIHandlersMock).toHaveBeenCalledWith(store, {
       isDashboardPopoutRenderer: isDashboardPopoutRendererMock

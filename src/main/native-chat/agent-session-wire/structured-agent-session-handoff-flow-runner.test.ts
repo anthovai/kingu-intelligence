@@ -44,7 +44,7 @@ async function failingFlowRunner(
   store: AgentSessionRecordStore
   root: string
 }> {
-  const root = await mkdtemp(join(tmpdir(), 'orca-handoff-flow-runner-'))
+  const root = await mkdtemp(join(tmpdir(), 'kingu-handoff-flow-runner-'))
   roots.push(root)
   const store = await AgentSessionRecordStore.open({
     directory: join(root, 'store'),

@@ -19,7 +19,7 @@ const { homedirMock } = vi.hoisted(() => ({
 
 vi.mock('electron', () => ({
   app: {
-    getPath: () => '/tmp/orca-user-data'
+    getPath: () => '/tmp/kingu-user-data'
   }
 }))
 
@@ -67,7 +67,7 @@ async function startHookListener(): Promise<{
       posts.push({
         payload: form.get('payload'),
         paneKey: form.get('paneKey'),
-        token: req.headers['x-orca-agent-hook-token'] as string | null
+        token: req.headers['x-kingu-agent-hook-token'] as string | null
       })
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end('{}')
@@ -134,7 +134,7 @@ function seedCmdAutoRunTarget(home: string): void {
 
 function hookEnvironment(extra: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
   const base = Object.fromEntries(
-    Object.entries(process.env).filter(([key]) => !key.startsWith('ORCA_'))
+    Object.entries(process.env).filter(([key]) => !key.startsWith('KINGU_'))
   )
   return { ...base, ...extra }
 }
@@ -144,7 +144,7 @@ describe('Windows managed hook launcher', () => {
   // this keeps a ConPTY host from being reintroduced unnoticed by a POSIX-only CI leg.
   it('does not re-host the hook on a pseudoconsole', () => {
     const hook = getWindowsManagedLifecycleHook(
-      'C:\\Users\\alice\\.orca\\agent-hooks\\claude-hook.cmd'
+      'C:\\Users\\alice\\.kingu\\agent-hooks\\claude-hook.cmd'
     )
     expect(hook.command).not.toMatch(/conhost/i)
     expect(hook.args).toBeUndefined()
@@ -166,7 +166,7 @@ describe.skipIf(process.platform !== 'win32')('Windows managed hook payload deli
   })
 
   it('delivers the piped payload to the hook listener through cmd.exe and Git Bash', async () => {
-    home = mkdtempSync(join(tmpdir(), 'orca-hook-payload-'))
+    home = mkdtempSync(join(tmpdir(), 'kingu-hook-payload-'))
     homedirMock.mockReturnValue(home)
     seedCmdAutoRunTarget(home)
     expect(new ClaudeHookService().install().state).toBe('installed')
@@ -179,7 +179,7 @@ describe.skipIf(process.platform !== 'win32')('Windows managed hook payload deli
     const registeredCommand = settings.hooks.PreToolUse[0].hooks[0].command
     // ...with one exception: a cmd-safe profile must reach the script with no interpreter in
     // front of it, or #18875's per-event PowerShell start-up has quietly come back.
-    if (WINDOWS_CMD_SAFE_PATH.test(join(home, '.orca', 'agent-hooks', 'claude-hook.cmd'))) {
+    if (WINDOWS_CMD_SAFE_PATH.test(join(home, '.kingu', 'agent-hooks', 'claude-hook.cmd'))) {
       expect(registeredCommand).not.toMatch(/powershell|-EncodedCommand/i)
     }
 
@@ -188,9 +188,9 @@ describe.skipIf(process.platform !== 'win32')('Windows managed hook payload deli
     const env = hookEnvironment({
       USERPROFILE: home,
       HOME: home,
-      ORCA_AGENT_HOOK_PORT: String(listener.port),
-      ORCA_AGENT_HOOK_TOKEN: HOOK_TOKEN,
-      ORCA_PANE_KEY: PANE_KEY
+      KINGU_AGENT_HOOK_PORT: String(listener.port),
+      KINGU_AGENT_HOOK_TOKEN: HOOK_TOKEN,
+      KINGU_PANE_KEY: PANE_KEY
     })
 
     const shells = [

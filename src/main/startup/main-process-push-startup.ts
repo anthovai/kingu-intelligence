@@ -1,7 +1,7 @@
-import { getOrcaPushGatewayUrl } from '../orca-profiles/profile-cloud-auth-config'
+import { getKinguPushGatewayUrl } from '../kingu-profiles/profile-cloud-auth-config'
 import { DesktopPushService } from '../runtime/push/desktop-push-service'
-import type { OrcaRuntimeService } from '../runtime/orca-runtime'
-import type { OrcaRuntimeRpcServer } from '../runtime/runtime-rpc'
+import type { KinguRuntimeService } from '../runtime/kingu-runtime'
+import type { KinguRuntimeRpcServer } from '../runtime/runtime-rpc'
 import { mainProcessState as state } from './main-process-state'
 
 // Why: deliberately not gated on cloud sign-in like the relay is — the push gateway
@@ -9,8 +9,8 @@ import { mainProcessState as state } from './main-process-state'
 // exactly the same path. The runtime is read from shared state because both launch
 // modes have already stored it there; threading it as a parameter would push the
 // launch module past its line budget for no gain.
-export function startDesktopPushService(runtimeRpc: OrcaRuntimeRpcServer): void {
-  const runtime: OrcaRuntimeService | null = state.runtime
+export function startDesktopPushService(runtimeRpc: KinguRuntimeRpcServer): void {
+  const runtime: KinguRuntimeService | null = state.runtime
   if (!runtime) {
     console.warn('[push] Background push startup skipped: runtime not started')
     return
@@ -19,7 +19,7 @@ export function startDesktopPushService(runtimeRpc: OrcaRuntimeRpcServer): void 
     const pushService = DesktopPushService.create({
       runtime,
       runtimeRpc,
-      gatewayUrl: getOrcaPushGatewayUrl()
+      gatewayUrl: getKinguPushGatewayUrl()
     })
     pushService?.start()
     state.desktopPushService = pushService

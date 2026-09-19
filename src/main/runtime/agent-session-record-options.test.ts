@@ -10,7 +10,7 @@ const SESSION = 'session-options'
 let directory: string
 
 beforeEach(async () => {
-  directory = await mkdtemp(join(tmpdir(), 'orca-agent-session-options-'))
+  directory = await mkdtemp(join(tmpdir(), 'kingu-agent-session-options-'))
 })
 
 afterEach(async () => {

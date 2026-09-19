@@ -33,7 +33,7 @@ function getMiniMaxReferer(endpoint: MiniMaxEndpoint): string {
   return `${consoleOrigin}/console/usage`
 }
 
-const MINIMAX_SESSION_PARTITION = 'orca-minimax-rate-limit-fetch'
+const MINIMAX_SESSION_PARTITION = 'kingu-minimax-rate-limit-fetch'
 const SENSITIVE_COOKIE_NAMES = new Set([
   '_token',
   '_twpid',

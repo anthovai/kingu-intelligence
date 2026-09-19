@@ -21,9 +21,9 @@ describe('Grok hook removal leaves no remnant that blocks reinstall', () => {
   let configPath: string
 
   beforeEach(() => {
-    homeDir = mkdtempSync(join(tmpdir(), 'orca-grok-remnant-'))
+    homeDir = mkdtempSync(join(tmpdir(), 'kingu-grok-remnant-'))
     homedirMock.mockReturnValue(homeDir)
-    configPath = join(homeDir, '.grok', 'hooks', 'orca-status.json')
+    configPath = join(homeDir, '.grok', 'hooks', 'kingu-status.json')
   })
 
   afterEach(() => {

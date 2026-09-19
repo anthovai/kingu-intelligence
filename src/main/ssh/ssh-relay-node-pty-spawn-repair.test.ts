@@ -17,9 +17,9 @@ vi.mock('fs', () => ({
 
 vi.mock('./relay-protocol', () => ({
   RELAY_VERSION: '0.1.0',
-  RELAY_REMOTE_DIR: '.orca-remote',
+  RELAY_REMOTE_DIR: '.kingu-remote',
   parseUnameToRelayPlatform: vi.fn().mockReturnValue('linux-x64'),
-  RELAY_SENTINEL: 'ORCA-RELAY v0.1.0 READY\n',
+  RELAY_SENTINEL: 'KINGU-RELAY v0.1.0 READY\n',
   RELAY_SENTINEL_TIMEOUT_MS: 10_000
 }))
 
@@ -45,7 +45,7 @@ vi.mock('./ssh-relay-install-marker', async (importOriginal) => ({
 
 vi.mock('./ssh-relay-versioned-install', () => ({
   readLocalFullVersion: vi.fn().mockReturnValue('0.1.0+testhash'),
-  computeRemoteRelayDir: (home: string, v: string) => `${home}/.orca-remote/relay-${v}`,
+  computeRemoteRelayDir: (home: string, v: string) => `${home}/.kingu-remote/relay-${v}`,
   isRelayAlreadyInstalled: vi.fn().mockResolvedValue(true),
   finalizeInstall: vi.fn().mockResolvedValue(undefined),
   abandonInstall: vi.fn().mockResolvedValue(undefined),
@@ -105,19 +105,19 @@ const ABI_MISMATCH: TerminalUnavailableCause = {
 // describes. @parcel/watcher is healthy, so only node-pty is reset and rebuilt.
 // Stdout of the relay-side pty-master cloexec patch, which runs on Linux hosts once a
 // freshly installed node-pty loads (#17915).
-const NPTY_CLOEXEC_PATCHED = 'ORCA-NPTY-CLOEXEC:patched\n'
-const NODE_PTY_BROKEN = 'ORCA-NATIVE-DEPS-MISSING:node-pty\nMISSING'
+const NPTY_CLOEXEC_PATCHED = 'KINGU-NPTY-CLOEXEC:patched\n'
+const NODE_PTY_BROKEN = 'KINGU-NATIVE-DEPS-MISSING:node-pty\nMISSING'
 
 function repairSucceedsResponses(): ExecResponse[] {
   return [
-    '__ORCA_REMOTE_PLATFORM__ Linux x86_64',
+    '__KINGU_REMOTE_PLATFORM__ Linux x86_64',
     '/home/u',
     NODE_PTY_BROKEN, // health probe before the lock
     NODE_PTY_BROKEN, // re-probe under the repair lock
     '', // SFTP-namespace install-owner marker
     '', // reset node-pty + npm install
     '', // chmod prebuilds
-    'ORCA-NPTY-PROBE-OK\n', // node-pty loads again
+    'KINGU-NPTY-PROBE-OK\n', // node-pty loads again
     '', // rm -f probe stderr
     NPTY_CLOEXEC_PATCHED,
     'DEAD',
@@ -127,7 +127,7 @@ function repairSucceedsResponses(): ExecResponse[] {
 
 function lockUnavailableResponses(): ExecResponse[] {
   return [
-    '__ORCA_REMOTE_PLATFORM__ Linux x86_64',
+    '__KINGU_REMOTE_PLATFORM__ Linux x86_64',
     '/home/u',
     NODE_PTY_BROKEN, // health probe before the lock
     'DEAD',

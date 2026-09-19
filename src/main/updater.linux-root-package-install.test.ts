@@ -36,10 +36,10 @@ const packageSha512 = Buffer.alloc(64).toString('base64')
 
 function downloadedEvent(packageType: LinuxRootPackageType): Record<string, unknown> {
   const fileName =
-    packageType === 'deb' ? 'orca-ide_1.0.61_amd64.deb' : 'orca-ide-1.0.61.x86_64.rpm'
+    packageType === 'deb' ? 'kingu-ide_1.0.61_amd64.deb' : 'kingu-ide-1.0.61.x86_64.rpm'
   return {
     version: '1.0.61',
-    downloadedFile: join(tmpdir(), 'orca-updater', 'pending', fileName),
+    downloadedFile: join(tmpdir(), 'kingu-updater', 'pending', fileName),
     files: [{ url: fileName, sha512: packageSha512 }]
   }
 }
@@ -113,7 +113,7 @@ describe('updater Linux root packages', () => {
 
       expect(lastStatus(send)).toEqual({
         state: 'error',
-        message: 'Quit Orca before running the system package install command.',
+        message: 'Quit Kingu before running the system package install command.',
         recovery: {
           kind: 'linux-package-install',
           packageType,
@@ -154,7 +154,7 @@ describe('updater Linux root packages', () => {
       updater,
       {
         version: '1.0.61',
-        downloadedFile: join(tmpdir(), 'Orca-1.0.61.AppImage'),
+        downloadedFile: join(tmpdir(), 'Kingu-1.0.61.AppImage'),
         files: []
       },
       true
@@ -222,13 +222,13 @@ describe('updater Linux root packages', () => {
 
     await reachDownloaded(updater, {
       version: '1.0.61',
-      downloadedFile: join(tmpdir(), 'orca-updater', 'pending', 'orca-ide_1.0.61_amd64.deb'),
-      files: [{ url: 'orca-ide_1.0.61_amd64.deb', sha512: packageSha512 }]
+      downloadedFile: join(tmpdir(), 'kingu-updater', 'pending', 'kingu-ide_1.0.61_amd64.deb'),
+      files: [{ url: 'kingu-ide_1.0.61_amd64.deb', sha512: packageSha512 }]
     })
     expect(lastStatus(send)).toEqual({
       state: 'error',
       message:
-        'Orca could not verify the installed Linux package format, so it will not install this update automatically. Download the update from the official release page and install it manually.',
+        'Kingu could not verify the installed Linux package format, so it will not install this update automatically. Download the update from the official release page and install it manually.',
       version: '1.0.61',
       retryable: false
     })

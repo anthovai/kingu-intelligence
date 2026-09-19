@@ -55,7 +55,7 @@ function disclosure(journal: AgentSessionJournal): string | null {
 }
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'orca-journal-remnant-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-journal-remnant-'))
   clock = 1_000
 })
 

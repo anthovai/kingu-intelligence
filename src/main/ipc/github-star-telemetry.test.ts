@@ -16,7 +16,8 @@ vi.mock('./ui', () => mocks.ui)
 import { registerGitHubHandlers } from './github'
 import { createGitHubIpcHarness } from './github-ipc-test-harness'
 
-const { getAuthenticatedViewer: getAuthenticatedViewerMock, starOrca: starOrcaMock } = mocks.client
+const { getAuthenticatedViewer: getAuthenticatedViewerMock, starKingu: starKinguMock } =
+  mocks.client
 const { track: trackMock } = mocks.telemetry
 const { getCohortAtEmit: getCohortAtEmitMock } = mocks.cohort
 
@@ -38,25 +39,25 @@ describe('registerGitHubHandlers', () => {
     expect(getAuthenticatedViewerMock).toHaveBeenCalled()
   })
 
-  it('emits app_starred_orca once after a successful star with cohort context', async () => {
-    starOrcaMock.mockResolvedValue(true)
+  it('emits app_starred_kingu once after a successful star with cohort context', async () => {
+    starKinguMock.mockResolvedValue(true)
     getCohortAtEmitMock.mockReturnValue({ nth_repo_added: 3 })
 
     registerGitHubHandlers(store as never, stats as never)
 
-    await expect(handlers['gh:starOrca'](null, 'settings')).resolves.toBe(true)
+    await expect(handlers['gh:starKingu'](null, 'settings')).resolves.toBe(true)
 
-    expect(starOrcaMock).toHaveBeenCalledTimes(1)
+    expect(starKinguMock).toHaveBeenCalledTimes(1)
     expect(getCohortAtEmitMock).toHaveBeenCalledTimes(1)
     expect(trackMock).toHaveBeenCalledTimes(1)
-    expect(trackMock).toHaveBeenCalledWith('app_starred_orca', {
+    expect(trackMock).toHaveBeenCalledWith('app_starred_kingu', {
       source: 'settings',
       nth_repo_added: 3
     })
   })
 
   it('accepts every app star source for success telemetry', async () => {
-    starOrcaMock.mockResolvedValue(true)
+    starKinguMock.mockResolvedValue(true)
 
     registerGitHubHandlers(store as never, stats as never)
 
@@ -67,7 +68,7 @@ describe('registerGitHubHandlers', () => {
       'settings',
       'landing'
     ] as const) {
-      await expect(handlers['gh:starOrca'](null, source)).resolves.toBe(true)
+      await expect(handlers['gh:starKingu'](null, source)).resolves.toBe(true)
     }
 
     expect(trackMock).toHaveBeenCalledTimes(5)
@@ -80,37 +81,37 @@ describe('registerGitHubHandlers', () => {
     ])
   })
 
-  it('does not emit app_starred_orca when the star action returns false', async () => {
-    starOrcaMock.mockResolvedValue(false)
+  it('does not emit app_starred_kingu when the star action returns false', async () => {
+    starKinguMock.mockResolvedValue(false)
 
     registerGitHubHandlers(store as never, stats as never)
 
-    await expect(handlers['gh:starOrca'](null, 'landing')).resolves.toBe(false)
+    await expect(handlers['gh:starKingu'](null, 'landing')).resolves.toBe(false)
 
-    expect(starOrcaMock).toHaveBeenCalledTimes(1)
+    expect(starKinguMock).toHaveBeenCalledTimes(1)
     expect(trackMock).not.toHaveBeenCalled()
     expect(getCohortAtEmitMock).not.toHaveBeenCalled()
   })
 
-  it('does not emit app_starred_orca when the star action throws', async () => {
-    starOrcaMock.mockRejectedValue(new Error('gh failed'))
+  it('does not emit app_starred_kingu when the star action throws', async () => {
+    starKinguMock.mockRejectedValue(new Error('gh failed'))
 
     registerGitHubHandlers(store as never, stats as never)
 
-    await expect(handlers['gh:starOrca'](null, 'star_nag')).rejects.toThrow('gh failed')
+    await expect(handlers['gh:starKingu'](null, 'star_nag')).rejects.toThrow('gh failed')
 
     expect(trackMock).not.toHaveBeenCalled()
     expect(getCohortAtEmitMock).not.toHaveBeenCalled()
   })
 
   it('preserves star result but skips telemetry for an invalid IPC source', async () => {
-    starOrcaMock.mockResolvedValue(true)
+    starKinguMock.mockResolvedValue(true)
 
     registerGitHubHandlers(store as never, stats as never)
 
-    await expect(handlers['gh:starOrca'](null, 'github_website')).resolves.toBe(true)
+    await expect(handlers['gh:starKingu'](null, 'github_website')).resolves.toBe(true)
 
-    expect(starOrcaMock).toHaveBeenCalledTimes(1)
+    expect(starKinguMock).toHaveBeenCalledTimes(1)
     expect(trackMock).not.toHaveBeenCalled()
     expect(getCohortAtEmitMock).not.toHaveBeenCalled()
   })

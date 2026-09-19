@@ -13,7 +13,7 @@ describe('Claude compaction transcript content', () => {
     const tracker = new StructuredSessionCompaction()
     const event = {
       type: 'message' as const,
-      sessionId: 'orca-session',
+      sessionId: 'kingu-session',
       message: {
         type: 'user',
         session_id: 'provider',
@@ -22,13 +22,13 @@ describe('Claude compaction transcript content', () => {
       }
     }
     expect(isClaudeCompactionContent(tracker, event)).toBe(false)
-    const completion = tracker.run('orca-session', 'provider', async () => ({}))
+    const completion = tracker.run('kingu-session', 'provider', async () => ({}))
     expect(isClaudeCompactionContent(tracker, event)).toBe(true)
     expect(isClaudeCompactionContent(tracker, { ...event, sessionId: 'other' })).toBe(false)
     expect(isClaudeCompactionContent(tracker, { ...event, message: { type: 'result' } })).toBe(
       false
     )
-    tracker.ended('orca-session')
+    tracker.ended('kingu-session')
     await completion
     expect(isClaudeCompactionContent(tracker, event)).toBe(false)
   })
@@ -39,7 +39,7 @@ describe('Claude compaction transcript content', () => {
       vi.fn().mockRejectedValue(claudeUnwrittenUserMessageError(new Error('input closed')))
     )
     const pending = compactClaudeSession(session, new StructuredSessionCompaction(60_000), {
-      sessionId: 'orca-session',
+      sessionId: 'kingu-session',
       fence: 1,
       turnId: 'compact-1'
     })
@@ -53,7 +53,7 @@ describe('Claude compaction transcript content', () => {
     vi.useFakeTimers()
     const session = sessionFor(vi.fn().mockRejectedValue(new Error('input pump stopped')))
     const pending = compactClaudeSession(session, new StructuredSessionCompaction(10), {
-      sessionId: 'orca-session',
+      sessionId: 'kingu-session',
       fence: 1,
       turnId: 'compact-1'
     })

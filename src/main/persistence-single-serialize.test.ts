@@ -67,7 +67,7 @@ async function createStore() {
 }
 
 function dataFile(): string {
-  return join(testState.dir, 'orca-data.json')
+  return join(testState.dir, 'kingu-data.json')
 }
 
 const SECRETS = {
@@ -78,7 +78,7 @@ const KAGI_LINK = 'https://kagi.com/session?token=abc123'
 
 describe('persistence single-serialize save guard', () => {
   beforeEach(() => {
-    testState.dir = mkdtempSync(join(tmpdir(), 'orca-test-'))
+    testState.dir = mkdtempSync(join(tmpdir(), 'kingu-test-'))
     cipherState.encryptionAvailable = true
     cipherState.deterministic = false
     vi.useFakeTimers()
@@ -223,7 +223,7 @@ describe('persistence single-serialize save guard', () => {
 
     const P = 'cookie-plaintext-value'
     // Persist cookie=P, then read its on-disk ciphertext C (what a user could
-    // copy out of orca-data.json).
+    // copy out of kingu-data.json).
     store.updateSettings({ opencodeSessionCookie: P })
     vi.advanceTimersByTime(1000)
     await store.waitForPendingWrite()

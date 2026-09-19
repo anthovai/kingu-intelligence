@@ -173,7 +173,7 @@ describe('attach', () => {
       return originalAppend(...args)
     })
     events?.appendItem(
-      { provider: 'orca', clientMessageId: 'old-journal-write' },
+      { provider: 'kingu', clientMessageId: 'old-journal-write' },
       { kind: 'status', text: 'old journal write' }
     )
     await vi.waitFor(() => expect(append).toHaveBeenCalledOnce())
@@ -446,7 +446,7 @@ describe('respondToPrompt', () => {
     expect(result.ok).toBe(true)
     const page = host.history({ sessionId: SESSION, direction: 'tail' })
     const statusId = agentJournalItemKey({
-      provider: 'orca',
+      provider: 'kingu',
       clientMessageId: `${prompt.itemId}#delivery`
     })
     expect(page.ok && page.page.items.some((entry) => entry.itemId === statusId)).toBe(true)

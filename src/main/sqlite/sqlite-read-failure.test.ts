@@ -20,7 +20,7 @@ afterEach(() => {
 })
 
 function contendedDatabase(): { path: string; release: () => void } {
-  const dir = mkdtempSync(join(tmpdir(), 'orca-sqlite-failure-'))
+  const dir = mkdtempSync(join(tmpdir(), 'kingu-sqlite-failure-'))
   tempDirs.push(dir)
   const path = join(dir, 'contended.db')
   const writer = new SyncDatabase(path)

@@ -10,7 +10,7 @@ import { BrowserManagerDownloadLifecycle } from './browser-manager-download-life
 import { getBrowserProcessUserAgentIdentity } from './browser-process-user-agent'
 
 export abstract class BrowserManagerViewport extends BrowserManagerDownloadLifecycle {
-  // Why: guests are isolated from Orca's preload bridge, so main owns the devtools escape hatch after a tab→guest lookup.
+  // Why: guests are isolated from Kingu's preload bridge, so main owns the devtools escape hatch after a tab→guest lookup.
   async openDevTools(browserTabId: string): Promise<boolean> {
     const webContentsId = this.webContentsIdByTabId.get(browserTabId)
     if (!webContentsId) {

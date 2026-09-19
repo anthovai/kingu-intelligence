@@ -10,7 +10,7 @@ vi.mock('../../../browser/browser-identity-mode-store', () => ({
   setBrowserIdentityMode: mocks.set
 }))
 
-import type { OrcaRuntimeService } from '../../orca-runtime'
+import type { KinguRuntimeService } from '../../kingu-runtime'
 import { RpcDispatcher } from '../dispatcher'
 import type { RpcRequest } from '../core'
 import { BROWSER_IDENTITY_METHODS } from './browser-identity-rpc'
@@ -20,7 +20,7 @@ function request(method: string, params?: unknown): RpcRequest {
 }
 
 // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the identity handlers read no runtime member; only the reply envelope needs getRuntimeId.
-const RUNTIME = { getRuntimeId: () => 'runtime-1' } as unknown as OrcaRuntimeService
+const RUNTIME = { getRuntimeId: () => 'runtime-1' } as unknown as KinguRuntimeService
 
 function identityDispatcher(): RpcDispatcher {
   return new RpcDispatcher({ runtime: RUNTIME, methods: BROWSER_IDENTITY_METHODS })

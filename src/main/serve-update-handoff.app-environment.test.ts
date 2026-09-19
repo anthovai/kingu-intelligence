@@ -14,14 +14,14 @@ import {
  *
  * The sibling serve-update-handoff.test.ts mocks `./persistence`, so under it
  * getCanonicalUserDataPath() can never throw — which is exactly why a module-scope call to
- * installServeSupervisorDisconnectQuit() shipped and killed every `orca serve` process on
+ * installServeSupervisorDisconnectQuit() shipped and killed every `kingu serve` process on
  * macOS. This file keeps the real path resolver so that dependency stays visible.
  */
 vi.mock('electron', () => ({ app: { getVersion: () => '1.0.51', quit: vi.fn() } }))
 
 // Why reach for the slot directly: there is no uninstall API, and vitest-host-ports-setup installs
 // a fake before every test — so the uninstalled state this guards can only be reproduced this way.
-const APP_ENVIRONMENT_SLOT = Symbol.for('orca.host.appEnvironment')
+const APP_ENVIRONMENT_SLOT = Symbol.for('kingu.host.appEnvironment')
 
 describe('serve supervisor disconnect quit', () => {
   const originalPlatform = Object.getOwnPropertyDescriptor(process, 'platform')!
@@ -30,7 +30,7 @@ describe('serve supervisor disconnect quit', () => {
   let userDataDir: string
 
   beforeEach(() => {
-    userDataDir = mkdtempSync(join(tmpdir(), 'orca-serve-handoff-env-'))
+    userDataDir = mkdtempSync(join(tmpdir(), 'kingu-serve-handoff-env-'))
     installedHandoffPath = process.env[SERVE_UPDATE_HANDOFF_PATH_ENV]
     const slot = globalThis as Record<symbol, unknown>
     installedEnvironment = slot[APP_ENVIRONMENT_SLOT]

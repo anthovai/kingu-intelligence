@@ -32,7 +32,7 @@ vi.mock('../telemetry/client', () =>
 vi.mock('../telemetry/classify-error', () =>
   import('./pty-ipc-mock-registry').then((m) => m.classifyErrorModuleMock())
 )
-vi.mock('../cli/linux-terminal-orca-cli-shim', () =>
+vi.mock('../cli/linux-terminal-kingu-cli-shim', () =>
   import('./pty-ipc-mock-registry').then((m) => m.linuxCliShimModuleMock())
 )
 vi.mock('../memory/pty-registry', () =>
@@ -151,9 +151,9 @@ describe('registerPtyHandlers', () => {
       tabId,
       leafId,
       env: {
-        ORCA_PANE_KEY: paneKey,
-        ORCA_TAB_ID: tabId,
-        ORCA_WORKTREE_ID: worktreeId
+        KINGU_PANE_KEY: paneKey,
+        KINGU_TAB_ID: tabId,
+        KINGU_WORKTREE_ID: worktreeId
       }
     })
 
@@ -275,9 +275,9 @@ describe('registerPtyHandlers', () => {
       tabId,
       leafId,
       env: {
-        ORCA_PANE_KEY: paneKey,
-        ORCA_TAB_ID: tabId,
-        ORCA_WORKTREE_ID: worktreeId
+        KINGU_PANE_KEY: paneKey,
+        KINGU_TAB_ID: tabId,
+        KINGU_WORKTREE_ID: worktreeId
       }
     })
 
@@ -413,9 +413,9 @@ describe('registerPtyHandlers', () => {
       tabId,
       leafId,
       env: {
-        ORCA_PANE_KEY: paneKey,
-        ORCA_TAB_ID: tabId,
-        ORCA_WORKTREE_ID: worktreeId
+        KINGU_PANE_KEY: paneKey,
+        KINGU_TAB_ID: tabId,
+        KINGU_WORKTREE_ID: worktreeId
       }
     })
 

@@ -41,7 +41,7 @@ const stalePidRecord: ParsedDaemonPid = {
   linuxStartTicks: null,
   bootId: null,
   spawnerExecPath:
-    '/Users/alice/Library/Caches/com.stablyai.orca.ShipIt/u/Orca.app/Contents/MacOS/Orca'
+    '/Users/alice/Library/Caches/com.anthovai.kingu.ShipIt/u/Kingu.app/Contents/MacOS/Kingu'
 }
 const origin = { app_version_match: 'different', spawner_path_class: 'updater-cache' } as const
 const PID_PATH = '/fake/daemon.pid'
@@ -128,7 +128,7 @@ describe('trackDaemonPtyCwdDeniedIfDiverged', () => {
       JSON.stringify({
         ...stalePidRecord,
         appVersion: '1.4.191',
-        spawnerExecPath: '/Applications/Orca.app/Contents/MacOS/Orca'
+        spawnerExecPath: '/Applications/Kingu.app/Contents/MacOS/Kingu'
       })
     )
     trackDaemonPtyCwdDeniedIfDiverged('/Users/alice/Documents/repo', false, PID_PATH)

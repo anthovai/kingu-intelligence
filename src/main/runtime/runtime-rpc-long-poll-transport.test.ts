@@ -3,10 +3,10 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createConnection } from 'node:net'
 import { describe, expect, it, vi } from 'vitest'
-import { OrcaRuntimeService } from './orca-runtime'
+import { KinguRuntimeService } from './kingu-runtime'
 import { OrchestrationDb } from './orchestration/db'
 import { readRuntimeMetadata } from './runtime-metadata'
-import { classifyRuntimeLongPoll, OrcaRuntimeRpcServer } from './runtime-rpc'
+import { classifyRuntimeLongPoll, KinguRuntimeRpcServer } from './runtime-rpc'
 import {
   sendRequest,
   openFramedSession,
@@ -32,7 +32,7 @@ vi.mock('../git/worktree', () => {
   }
 })
 
-describe('OrcaRuntimeRpcServer', () => {
+describe('KinguRuntimeRpcServer', () => {
   it('classifies worker-start as a keepalive-backed long poll', () => {
     expect(
       classifyRuntimeLongPoll({
@@ -64,9 +64,9 @@ describe('OrcaRuntimeRpcServer', () => {
   })
 
   it('rejects oversized RPC frames instead of buffering them indefinitely', async () => {
-    const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-    const runtime = new OrcaRuntimeService()
-    const server = new OrcaRuntimeRpcServer({ runtime, userDataPath })
+    const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+    const runtime = new KinguRuntimeService()
+    const server = new KinguRuntimeRpcServer({ runtime, userDataPath })
 
     await server.start()
 
@@ -105,9 +105,9 @@ describe('OrcaRuntimeRpcServer', () => {
   // that a unit-level test would miss.
   describe('long-poll transport (§3.1)', () => {
     it('emits keepalives while orchestration.workerStart blocks', async () => {
-      const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-      const runtime = new OrcaRuntimeService()
-      const server = new OrcaRuntimeRpcServer({
+      const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+      const runtime = new KinguRuntimeService()
+      const server = new KinguRuntimeRpcServer({
         runtime,
         userDataPath,
         keepaliveIntervalMs: 30
@@ -144,15 +144,15 @@ describe('OrcaRuntimeRpcServer', () => {
     })
 
     it('emits keepalive frames while a check --wait handler blocks', async () => {
-      const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-      const runtime = new OrcaRuntimeService()
+      const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+      const runtime = new KinguRuntimeService()
       const db = new OrchestrationDb(':memory:')
       runtime.setOrchestrationDb(db)
       // A consuming check now requires a live pane; these transport tests only need it to block.
       vi.spyOn(runtime, 'getTerminalPaneKey').mockImplementation((handle) => `tab_${handle}:leaf`)
       // Why: 50ms keepalive lets us collect ≥3 frames within a 300ms wait
       // window without slowing the suite.
-      const server = new OrcaRuntimeRpcServer({
+      const server = new KinguRuntimeRpcServer({
         runtime,
         userDataPath,
         keepaliveIntervalMs: 50
@@ -187,8 +187,8 @@ describe('OrcaRuntimeRpcServer', () => {
     })
 
     it('emits keepalive frames while orchestration.ask blocks for a reply', async () => {
-      const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-      const runtime = new OrcaRuntimeService()
+      const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+      const runtime = new KinguRuntimeService()
       const db = new OrchestrationDb(':memory:')
       runtime.setOrchestrationDb(db)
       // A consuming check now requires a live pane; these transport tests only need it to block.
@@ -204,7 +204,7 @@ describe('OrcaRuntimeRpcServer', () => {
       })
       const task = db.createTask({ spec: 'Wait for an answer', runId: run.id })
       createRootDispatch(db, task.id, 'term_asker', askerPaneKey)
-      const server = new OrcaRuntimeRpcServer({
+      const server = new KinguRuntimeRpcServer({
         runtime,
         userDataPath,
         keepaliveIntervalMs: 50
@@ -245,9 +245,9 @@ describe('OrcaRuntimeRpcServer', () => {
     })
 
     it('emits keepalive frames while terminal.wait blocks and returns its structured timeout', async () => {
-      const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-      const runtime = new OrcaRuntimeService()
-      const server = new OrcaRuntimeRpcServer({
+      const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+      const runtime = new KinguRuntimeService()
+      const server = new KinguRuntimeRpcServer({
         runtime,
         userDataPath,
         keepaliveIntervalMs: 30
@@ -316,9 +316,9 @@ describe('OrcaRuntimeRpcServer', () => {
     })
 
     it('emits keepalive frames while agent-prompt verification blocks', async () => {
-      const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-      const runtime = new OrcaRuntimeService()
-      const server = new OrcaRuntimeRpcServer({
+      const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+      const runtime = new KinguRuntimeService()
+      const server = new KinguRuntimeRpcServer({
         runtime,
         userDataPath,
         keepaliveIntervalMs: 30
@@ -355,9 +355,9 @@ describe('OrcaRuntimeRpcServer', () => {
     })
 
     it('releases terminal.wait long-poll slot when the client closes mid-wait', async () => {
-      const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-      const runtime = new OrcaRuntimeService()
-      const server = new OrcaRuntimeRpcServer({
+      const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+      const runtime = new KinguRuntimeService()
+      const server = new KinguRuntimeRpcServer({
         runtime,
         userDataPath,
         keepaliveIntervalMs: 1000,
@@ -430,13 +430,13 @@ describe('OrcaRuntimeRpcServer', () => {
     })
 
     it('releases long-poll slot when client closes mid-wait', async () => {
-      const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-      const runtime = new OrcaRuntimeService()
+      const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+      const runtime = new KinguRuntimeService()
       const db = new OrchestrationDb(':memory:')
       runtime.setOrchestrationDb(db)
       // A consuming check now requires a live pane; these transport tests only need it to block.
       vi.spyOn(runtime, 'getTerminalPaneKey').mockImplementation((handle) => `tab_${handle}:leaf`)
-      const server = new OrcaRuntimeRpcServer({
+      const server = new KinguRuntimeRpcServer({
         runtime,
         userDataPath,
         keepaliveIntervalMs: 1000,
@@ -492,13 +492,13 @@ describe('OrcaRuntimeRpcServer', () => {
     })
 
     it('destroys active Unix socket connections when the runtime stops', async () => {
-      const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-      const runtime = new OrcaRuntimeService()
+      const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+      const runtime = new KinguRuntimeService()
       const db = new OrchestrationDb(':memory:')
       runtime.setOrchestrationDb(db)
       // A consuming check now requires a live pane; these transport tests only need it to block.
       vi.spyOn(runtime, 'getTerminalPaneKey').mockImplementation((handle) => `tab_${handle}:leaf`)
-      const server = new OrcaRuntimeRpcServer({
+      const server = new KinguRuntimeRpcServer({
         runtime,
         userDataPath,
         keepaliveIntervalMs: 1000,
@@ -534,13 +534,13 @@ describe('OrcaRuntimeRpcServer', () => {
     })
 
     it('responds runtime_busy once the long-poll cap is saturated', async () => {
-      const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-      const runtime = new OrcaRuntimeService()
+      const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+      const runtime = new KinguRuntimeService()
       const db = new OrchestrationDb(':memory:')
       runtime.setOrchestrationDb(db)
       // A consuming check now requires a live pane; these transport tests only need it to block.
       vi.spyOn(runtime, 'getTerminalPaneKey').mockImplementation((handle) => `tab_${handle}:leaf`)
-      const server = new OrcaRuntimeRpcServer({
+      const server = new KinguRuntimeRpcServer({
         runtime,
         userDataPath,
         keepaliveIntervalMs: 1000,
@@ -593,15 +593,15 @@ describe('OrcaRuntimeRpcServer', () => {
     })
 
     it('reserves long-poll headroom for terminal.wait when orchestration.ask floods', async () => {
-      const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-      const runtime = new OrcaRuntimeService()
+      const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+      const runtime = new KinguRuntimeService()
       const db = new OrchestrationDb(':memory:')
       runtime.setOrchestrationDb(db)
       // A consuming check now requires a live pane; these transport tests only need it to block.
       vi.spyOn(runtime, 'getTerminalPaneKey').mockImplementation((handle) => `tab_${handle}:leaf`)
       seedSupervisedAskWorkers(db, ['term_w0', 'term_w1', 'term_w2', 'term_w3'])
       // Why: cap 4 → ask sub-cap 2, so 4 concurrent asks can only take half the budget.
-      const server = new OrcaRuntimeRpcServer({
+      const server = new KinguRuntimeRpcServer({
         runtime,
         userDataPath,
         keepaliveIntervalMs: 1000,
@@ -707,13 +707,13 @@ describe('OrcaRuntimeRpcServer', () => {
     })
 
     it('keeps the full cap available to terminal.wait and check --wait', async () => {
-      const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-      const runtime = new OrcaRuntimeService()
+      const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+      const runtime = new KinguRuntimeService()
       const db = new OrchestrationDb(':memory:')
       runtime.setOrchestrationDb(db)
       // A consuming check now requires a live pane; these transport tests only need it to block.
       vi.spyOn(runtime, 'getTerminalPaneKey').mockImplementation((handle) => `tab_${handle}:leaf`)
-      const server = new OrcaRuntimeRpcServer({
+      const server = new KinguRuntimeRpcServer({
         runtime,
         userDataPath,
         keepaliveIntervalMs: 1000,
@@ -758,13 +758,13 @@ describe('OrcaRuntimeRpcServer', () => {
     })
 
     it('does not emit keepalive frames for short RPCs', async () => {
-      const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-      const runtime = new OrcaRuntimeService()
+      const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+      const runtime = new KinguRuntimeService()
       // Why: a 10ms interval means any frame in the first ~100ms of a short
       // RPC would show up; `status.get` returns in <10ms so no keepalive
       // should ever fire. Locks in the "keepalive is long-poll-only" invariant
       // so a future refactor can't silently re-broaden the timer.
-      const server = new OrcaRuntimeRpcServer({
+      const server = new KinguRuntimeRpcServer({
         runtime,
         userDataPath,
         keepaliveIntervalMs: 10
@@ -797,9 +797,9 @@ describe('OrcaRuntimeRpcServer', () => {
       // Without the `.catch` on handleMessage's promise, a throw would leave
       // the client hanging until the 30s idle timer and leak the dispatch's
       // AbortController in the transport's in-flight set.
-      const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-      const runtime = new OrcaRuntimeService()
-      const server = new OrcaRuntimeRpcServer({ runtime, userDataPath })
+      const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+      const runtime = new KinguRuntimeService()
+      const server = new KinguRuntimeRpcServer({ runtime, userDataPath })
       await server.start()
 
       // Force the dispatcher to throw a non-envelope error.

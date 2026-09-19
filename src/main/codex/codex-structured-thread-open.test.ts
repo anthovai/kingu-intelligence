@@ -57,7 +57,7 @@ describe('openCodexThread', () => {
 
   // The regression this pins: Manual used to resolve to no policy at all, and the params below
   // spread it — so neither field was sent and app-server fell back to the config.toml of the
-  // home Orca mirrors from the user's ~/.codex. With `approval_policy = "never"` there, a Manual
+  // home Kingu mirrors from the user's ~/.codex. With `approval_policy = "never"` there, a Manual
   // session never prompted; a resume separately inherits the policy it was last started with.
   it('sends Manual as an explicit policy on resume, not as absent fields', async () => {
     const request = vi.fn(async (_method: string, _params?: Record<string, unknown>) => ({

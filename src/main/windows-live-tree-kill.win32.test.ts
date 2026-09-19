@@ -30,7 +30,7 @@ import { terminateWindowsProcessTree } from './windows-process-tree-kill'
 const describeOnWindows = process.platform === 'win32' ? describe : describe.skip
 
 /** Read live by the guard on every kill, so a case can flip it mid-test. */
-let orcaChromiumPids: number[] = []
+let kinguChromiumPids: number[] = []
 
 function appEnvironment(): AppEnvironment {
   return {
@@ -41,7 +41,7 @@ function appEnvironment(): AppEnvironment {
     onWillQuit: () => {},
     exit: () => {},
     getAppMetrics: (() =>
-      orcaChromiumPids.map((pid) => ({
+      kinguChromiumPids.map((pid) => ({
         pid,
         type: 'Tab'
       }))) as unknown as AppEnvironment['getAppMetrics']
@@ -110,9 +110,9 @@ async function spawnLiveTree(): Promise<{
 
 describeOnWindows('own-Chromium gate against real Windows process trees', () => {
   beforeEach(() => {
-    markerDirectory ||= mkdtempSync(join(tmpdir(), 'orca-live-tree-kill-'))
+    markerDirectory ||= mkdtempSync(join(tmpdir(), 'kingu-live-tree-kill-'))
     resetSelfInitiatedTreeKillLogForTest()
-    orcaChromiumPids = []
+    kinguChromiumPids = []
     setAppEnvironment(appEnvironment())
     installMainProcessTreeKillGate()
     observedSpawns.length = 0
@@ -121,7 +121,7 @@ describeOnWindows('own-Chromium gate against real Windows process trees', () => 
 
   afterEach(async () => {
     unsubscribe('child_process', observeSpawn)
-    orcaChromiumPids = []
+    kinguChromiumPids = []
     for (const leafPid of spawnedLeaves.splice(0)) {
       await terminateWindowsProcessTree(leafPid, { site: 'live-tree-kill-cleanup' })
     }
@@ -153,7 +153,7 @@ describeOnWindows('own-Chromium gate against real Windows process trees', () => 
 
   it('refused: the tree survives, nothing is recorded, and the handle kill still reaps the root', async () => {
     const { child, rootPid, leafPid } = await spawnLiveTree()
-    orcaChromiumPids = [rootPid]
+    kinguChromiumPids = [rootPid]
 
     await terminateWindowsProcessTree(rootPid, { site: 'live-tree-kill-refuse' })
 
@@ -173,7 +173,7 @@ describeOnWindows('own-Chromium gate against real Windows process trees', () => 
 
   it('signalProcessTree refused: the root goes by handle and the barrier reports unverified', async () => {
     const { child, rootPid, leafPid } = await spawnLiveTree()
-    orcaChromiumPids = [rootPid]
+    kinguChromiumPids = [rootPid]
     observedSpawns.length = 0
 
     await expect(signalProcessTree(child, 'SIGKILL')).resolves.toBe(false)

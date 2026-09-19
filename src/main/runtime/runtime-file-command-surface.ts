@@ -1,4 +1,4 @@
-import type { RuntimeFileCommands } from './orca-runtime-files'
+import type { RuntimeFileCommands } from './kingu-runtime-files'
 
 type RuntimeFileCommandName =
   | 'listMobileFiles'

@@ -119,7 +119,7 @@ export function openSessionSearchDatabase(path: string): SyncDatabase {
 function openExisting(path: string): SyncDatabase {
   // Nulled while no handle is open, because closing an already-closed handle
   // throws ERR_INVALID_STATE, which would replace whatever really failed —
-  // an unlink refused by a virus scanner or a second Orca holding the file —
+  // an unlink refused by a virus scanner or a second Kingu holding the file —
   // with an error nothing classifies as worth rebuilding for.
   let db: SyncDatabase | null = openWithPragmas(path)
   try {

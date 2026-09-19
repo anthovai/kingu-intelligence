@@ -61,18 +61,18 @@ describe('WSL Claude plugin skill discovery', () => {
     const result = await discoverSkillsInWsl({
       distro: 'Ubuntu',
       homeDir: '/home/alice',
-      cwd: '/work/orca',
+      cwd: '/work/kingu',
       names: ['orchestration'],
       sourceKinds: ['home']
     })
 
     expect(runWslProcessMock).toHaveBeenCalledTimes(1)
     const scanScript = recordedScript(0)
-    expect(scanScript).not.toContain('/work/orca')
+    expect(scanScript).not.toContain('/work/kingu')
     expect(scanScript).not.toContain("'/home/alice/.codex/plugins/cache'")
     const expectedRoots = buildSkillDiscoverySources({
       homeDir: '/home/alice',
-      cwd: '/work/orca',
+      cwd: '/work/kingu',
       repos: [],
       includeCwd: true,
       pathApi: pathPosix
@@ -84,7 +84,7 @@ describe('WSL Claude plugin skill discovery', () => {
     'preserves enabled plugins with explicit workspace=%s',
     async (explicitWorkspace) => {
       const homeDir = '/home/alice'
-      const cwd = explicitWorkspace ? '/work/orca' : homeDir
+      const cwd = explicitWorkspace ? '/work/kingu' : homeDir
       // Why: a Windows host's own Hermes location says nothing about the distro's,
       // so neither variable may reach the posix scan script.
       vi.stubEnv('HERMES_HOME', 'C:\\Users\\alice\\hermes')

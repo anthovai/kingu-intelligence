@@ -1,8 +1,8 @@
-import type { OrcaRuntimeService } from '../../../orca-runtime'
+import type { KinguRuntimeService } from '../../../kingu-runtime'
 import type { TerminalViewportClient } from './terminal-stream-types'
 
 export async function updateViewportForClient(
-  runtime: OrcaRuntimeService,
+  runtime: KinguRuntimeService,
   ptyId: string,
   subscriptionKey: string,
   client: TerminalViewportClient,

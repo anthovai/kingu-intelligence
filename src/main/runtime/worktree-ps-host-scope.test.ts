@@ -29,7 +29,7 @@ vi.mock('../git/worktree', async (importOriginal) => ({
   listWorktreesStrict: listWorktreesStrictMock
 }))
 
-import { OrcaRuntimeService } from './orca-runtime'
+import { KinguRuntimeService } from './kingu-runtime'
 
 const LOCAL_REPO_ID = 'repo-local'
 const LOCAL_REPO_PATH = '/Users/me/dev/app'
@@ -108,7 +108,7 @@ describe('worktree.ps host coverage', () => {
   })
 
   it('names every host the page covers', async () => {
-    const runtime = new OrcaRuntimeService(makeStore() as never)
+    const runtime = new KinguRuntimeService(makeStore() as never)
 
     const result = await runtime.getWorktreePs(10_000)
 
@@ -117,7 +117,7 @@ describe('worktree.ps host coverage', () => {
   })
 
   it('keeps a remote row in the page when the cap cannot hold every local row', async () => {
-    const runtime = new OrcaRuntimeService(makeStore() as never)
+    const runtime = new KinguRuntimeService(makeStore() as never)
 
     const result = await runtime.getWorktreePs(2)
 

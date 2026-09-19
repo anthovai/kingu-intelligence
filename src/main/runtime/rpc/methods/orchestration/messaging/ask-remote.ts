@@ -1,12 +1,12 @@
 import type { z } from 'zod'
-import type { OrcaRuntimeService } from '../../../../orca-runtime'
+import type { KinguRuntimeService } from '../../../../kingu-runtime'
 import { OrchestrationError } from '../../../../orchestration/orchestration-error'
 import { clampOrchestrationAskTimeoutMs } from '../../../../../../shared/orchestration-ask-timeout'
 import type { AskParams } from '../schemas'
 
 export async function askRemoteRunHome(args: {
   params: z.infer<typeof AskParams>
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   signal?: AbortSignal
   orchestrationCapability?: string
   recordMutationReceipt?: (receipt: unknown) => void

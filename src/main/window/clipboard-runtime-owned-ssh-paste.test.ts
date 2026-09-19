@@ -1,4 +1,4 @@
-// Nested Remote Orca Server -> SSH image paste (#17679). The REAL ssh-filesystem-dispatch registry
+// Nested Remote Kingu Server -> SSH image paste (#17679). The REAL ssh-filesystem-dispatch registry
 // is used on purpose: the runtime's SSH target is never registered in the client process, so any
 // route that consults the local registry fails exactly the way the report did.
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -69,7 +69,7 @@ const rendererEvent = {
   sender: {
     id: 1,
     getType: () => 'window',
-    getURL: () => 'file:///orca/index.html',
+    getURL: () => 'file:///kingu/index.html',
     isDestroyed: () => false
   }
 }
@@ -197,7 +197,7 @@ describe('clipboard image paste for a runtime-owned SSH workspace', () => {
 
     await expect(
       saveImageHandler()(rendererEvent, { connectionId: CLIENT_SSH_TARGET })
-    ).resolves.toMatch(/^\/var\/tmp\/orca-paste-.*\.png$/)
+    ).resolves.toMatch(/^\/var\/tmp\/kingu-paste-.*\.png$/)
 
     expect(writeFileBase64).toHaveBeenCalledTimes(1)
     expect(callRuntimeEnvironmentMock).not.toHaveBeenCalled()
@@ -214,7 +214,7 @@ describe('clipboard image paste for a runtime-owned SSH workspace', () => {
     fsWriteFileMock.mockResolvedValue(undefined)
 
     await expect(saveImageHandler()(rendererEvent, undefined)).resolves.toMatch(
-      /orca-paste-.*\.png$/
+      /kingu-paste-.*\.png$/
     )
 
     expect(fsWriteFileMock).toHaveBeenCalledTimes(1)

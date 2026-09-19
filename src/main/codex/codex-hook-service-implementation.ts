@@ -4,7 +4,7 @@ import type { AgentHookInstallStatus } from '../../shared/agent-hook-types'
 import { normalizeRuntimePathForComparison } from '../../shared/cross-platform-path'
 import { dedupeInFlightRun } from '../in-flight-run-dedupe'
 import { refreshManagedScriptIfPresent } from '../agent-hooks/managed-hook-script-refresh'
-import { getOrcaManagedCodexHomePath } from './codex-home-paths'
+import { getKinguManagedCodexHomePath } from './codex-home-paths'
 import { getManagedScriptPath } from './codex-hook-definition'
 import { installCodexHooksExclusively } from './codex-hook-local-install'
 import {
@@ -181,13 +181,13 @@ export class CodexHookService {
     return wslPlan ? refreshWslRuntimeUserHooks(wslPlan) : null
   }
 
-  getStatus(runtimeHomePath: string = getOrcaManagedCodexHomePath()): AgentHookInstallStatus {
+  getStatus(runtimeHomePath: string = getKinguManagedCodexHomePath()): AgentHookInstallStatus {
     return this.getStatusAfterInstall(null, runtimeHomePath)
   }
 
   private getStatusAfterInstall(
     recentGrantEntries: readonly CodexTrustEntry[] | null,
-    runtimeHomePath: string = getOrcaManagedCodexHomePath()
+    runtimeHomePath: string = getKinguManagedCodexHomePath()
   ): AgentHookInstallStatus {
     return getCodexHookStatusAfterInstall(recentGrantEntries, runtimeHomePath)
   }
@@ -196,7 +196,7 @@ export class CodexHookService {
   // account launching against its own self-contained CODEX_HOME passes that
   // per-account home so hooks.json/config.toml/trust land where codex reads.
   install(
-    runtimeHomePath: string = getOrcaManagedCodexHomePath()
+    runtimeHomePath: string = getKinguManagedCodexHomePath()
   ): Promise<AgentHookInstallStatus> {
     // Why: same lane as the grant it performs — see installManagedHooksIntoWslRuntime.
     return runExclusivelyForRuntimeAndSystemTrustConfig(runtimeHomePath, () =>
@@ -218,14 +218,14 @@ export class CodexHookService {
    * managed script can all change between spawns, and only a fresh run sees them.
    */
   installForLaunchPrep(runtimeHomePath?: string): Promise<AgentHookInstallStatus> {
-    const homePath = runtimeHomePath ?? getOrcaManagedCodexHomePath()
+    const homePath = runtimeHomePath ?? getKinguManagedCodexHomePath()
     return dedupeInFlightRun(this.launchPrepInFlight, launchPrepKey('install', homePath), () =>
       this.install(homePath)
     )
   }
 
   refreshRuntimeUserHooksForLaunchPrep(runtimeHomePath?: string): Promise<AgentHookInstallStatus> {
-    const homePath = runtimeHomePath ?? getOrcaManagedCodexHomePath()
+    const homePath = runtimeHomePath ?? getKinguManagedCodexHomePath()
     return dedupeInFlightRun(this.launchPrepInFlight, launchPrepKey('refresh', homePath), () =>
       this.refreshRuntimeUserHooks(homePath)
     )
@@ -246,7 +246,7 @@ export class CodexHookService {
   }
 
   refreshRuntimeUserHooks(
-    runtimeHomePath: string = getOrcaManagedCodexHomePath()
+    runtimeHomePath: string = getKinguManagedCodexHomePath()
   ): Promise<AgentHookInstallStatus> {
     return runExclusivelyForRuntimeAndSystemTrustConfig(runtimeHomePath, () =>
       this.refreshRuntimeUserHooksExclusively(runtimeHomePath)
@@ -262,7 +262,7 @@ export class CodexHookService {
   }
 
   remove(): Promise<AgentHookInstallStatus> {
-    return runExclusivelyForRuntimeAndSystemTrustConfig(getOrcaManagedCodexHomePath(), () =>
+    return runExclusivelyForRuntimeAndSystemTrustConfig(getKinguManagedCodexHomePath(), () =>
       this.removeExclusively()
     )
   }

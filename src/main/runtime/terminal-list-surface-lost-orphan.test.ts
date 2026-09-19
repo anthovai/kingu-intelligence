@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { OrcaRuntimeService } from './orca-runtime'
+import { KinguRuntimeService } from './kingu-runtime'
 import { getDefaultWorkspaceSession } from '../../shared/constants'
 import type { WorkspaceSessionState } from '../../shared/workspace-session-state-types'
 import type { TerminalLayoutSnapshot, TerminalTab } from '../../shared/terminal-tab-types'
@@ -98,9 +98,9 @@ function tab(tabId: string, activeLeafId: string) {
 }
 
 /** Both PTYs stay live on the host throughout; only the graph changes. */
-function makeRuntime(session?: WorkspaceSessionState): OrcaRuntimeService {
+function makeRuntime(session?: WorkspaceSessionState): KinguRuntimeService {
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: makeStore returns the repo and session reads this suite drives; the rest of Store is unreached.
-  const runtime = new OrcaRuntimeService(makeStore(session) as never)
+  const runtime = new KinguRuntimeService(makeStore(session) as never)
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the stub carries the four controller members this suite drives; both PTYs stay live throughout.
   runtime.setPtyController({
     spawn: vi.fn(async () => ({ id: 'never' })),
@@ -120,7 +120,7 @@ function makeRuntime(session?: WorkspaceSessionState): OrcaRuntimeService {
 }
 
 /** The restart republishes a graph that kept one pane and dropped the other. */
-function dropOnePane(runtime: OrcaRuntimeService): void {
+function dropOnePane(runtime: KinguRuntimeService): void {
   runtime.syncWindowGraph(1, {
     tabs: [tab('tab-kept', KEPT_LEAF)],
     leaves: [leaf('tab-kept', KEPT_LEAF, KEPT_PTY)]
@@ -179,7 +179,7 @@ describe('terminal inventory after a pane is dropped', () => {
     // Spawn records the renderer's pane identity before the graph carrying it arrives (#7587).
     // Re-recording the dropped pane stands in for that: the graph has not spoken since, so its
     // silence is not a retraction. This also pins that the runtime stamps the record at all —
-    // orca-runtime-record-pty-worktree.ts is `@ts-nocheck`, so a missing stamp is silent there
+    // kingu-runtime-record-pty-worktree.ts is `@ts-nocheck`, so a missing stamp is silent there
     // and would leave every freshly spawned terminal reporting orphaned for one graph.
     // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: recordPtyWorktree is protected; reaching it is the only way to stamp a pane the graph never published.
     const stamp = runtime as unknown as {

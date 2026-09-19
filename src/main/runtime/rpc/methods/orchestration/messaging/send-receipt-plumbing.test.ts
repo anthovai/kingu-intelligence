@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { RpcContext } from '../../../core'
 import type { OrchestrationDb } from '../../../../orchestration/db'
-import type { OrcaRuntimeService } from '../../../../orca-runtime'
+import type { KinguRuntimeService } from '../../../../kingu-runtime'
 import type { RuntimeTerminalSummary } from '../../../../../../shared/runtime-types'
 import { createOrchestrationRpcHarness } from '../rpc-test-harness'
 import { createRootDispatch } from '../../../../orchestration/db/root-dispatch-test-fixture'
@@ -36,7 +36,7 @@ function terminalSummary(handle: string): RuntimeTerminalSummary {
 describe('orchestration send and reply receipts', () => {
   const h = createOrchestrationRpcHarness()
   let db: OrchestrationDb
-  let runtime: OrcaRuntimeService
+  let runtime: KinguRuntimeService
   let ctx: RpcContext
   let activeRunId: string | undefined
 

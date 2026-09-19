@@ -22,11 +22,11 @@ import { getStatusPluginOwnershipSource } from './status-plugin-ownership-source
 import { getStatusPluginLifecycleSource } from './status-plugin-lifecycle-source'
 import { getStatusPluginFactorySource } from './status-plugin-factory-source'
 
-const ORCA_OPENCODE_PLUGIN_FILE = 'orca-opencode-status.js'
+const KINGU_OPENCODE_PLUGIN_FILE = 'kingu-opencode-status.js'
 const OPENCODE_LEGACY_HOOKS_DIR = 'opencode-hooks'
 const OPENCODE_OVERLAY_DIR = 'opencode-config-overlays'
 const OPENCODE_SHARED_CONFIG_DIR = 'shared'
-const OPENCODE_OVERLAY_MANIFEST_FILE = '.orca-opencode-overlay-manifest.json'
+const OPENCODE_OVERLAY_MANIFEST_FILE = '.kingu-opencode-overlay-manifest.json'
 
 type OpenCodeOverlayManifest = {
   topLevelEntries: string[]
@@ -73,7 +73,7 @@ export class OpenCodeHookService {
 
   buildPtyEnv(ptyId: string, existingConfigDir?: string | undefined): Record<string, string> {
     if (!isUsableId(ptyId)) {
-      // Why: on a bad id, still preserve a user-set OPENCODE_CONFIG_DIR; only the Orca status plugin is forfeited.
+      // Why: on a bad id, still preserve a user-set OPENCODE_CONFIG_DIR; only the Kingu status plugin is forfeited.
       return existingConfigDir ? { OPENCODE_CONFIG_DIR: existingConfigDir } : {}
     }
 
@@ -149,17 +149,17 @@ export class OpenCodeHookService {
 
     const overlayPluginsDir = join(overlayDir, 'plugins')
     for (const entryName of manifest.pluginEntries) {
-      if (entryName === ORCA_OPENCODE_PLUGIN_FILE) {
+      if (entryName === KINGU_OPENCODE_PLUGIN_FILE) {
         continue
       }
       safeRemoveTree(join(overlayPluginsDir, entryName))
     }
   }
 
-  // Why: mirror user config entries as symlinks so edits propagate live; only plugins/ becomes a real overlay dir so Orca can drop a sibling plugin file.
+  // Why: mirror user config entries as symlinks so edits propagate live; only plugins/ becomes a real overlay dir so Kingu can drop a sibling plugin file.
   private mirrorUserConfig(sourceDir: string, overlayDir: string): void {
     const previousManifest = this.readOverlayManifest(overlayDir)
-    // Why: overlays persist across terminals; remove only Orca-mirrored paths so stale user config clears but OpenCode runtime dirs (node_modules) survive.
+    // Why: overlays persist across terminals; remove only Kingu-mirrored paths so stale user config clears but OpenCode runtime dirs (node_modules) survive.
     this.clearManifestEntries(overlayDir, previousManifest)
 
     const nextManifest: OpenCodeOverlayManifest = { topLevelEntries: [], pluginEntries: [] }
@@ -186,8 +186,8 @@ export class OpenCodeHookService {
           const overlayPluginsDir = join(overlayDir, 'plugins')
           mkdirSync(overlayPluginsDir, { recursive: true })
           for (const pluginEntry of readdirSync(resolvedSource, { withFileTypes: true })) {
-            // Why: skip a user plugin sharing Orca's filename; mirroring it would let writePluginIntoOverlay clobber the user's file.
-            if (pluginEntry.name === ORCA_OPENCODE_PLUGIN_FILE) {
+            // Why: skip a user plugin sharing Kingu's filename; mirroring it would let writePluginIntoOverlay clobber the user's file.
+            if (pluginEntry.name === KINGU_OPENCODE_PLUGIN_FILE) {
               continue
             }
             mirrorEntry(
@@ -211,7 +211,7 @@ export class OpenCodeHookService {
   private writePluginIntoOverlay(overlayDir: string): void {
     const pluginsDir = join(overlayDir, 'plugins')
     mkdirSync(pluginsDir, { recursive: true })
-    const pluginPath = join(pluginsDir, ORCA_OPENCODE_PLUGIN_FILE)
+    const pluginPath = join(pluginsDir, KINGU_OPENCODE_PLUGIN_FILE)
     try {
       unlinkSync(pluginPath)
     } catch {
@@ -225,7 +225,7 @@ export class OpenCodeHookService {
     const pluginsDir = join(configDir, 'plugins')
     try {
       mkdirSync(pluginsDir, { recursive: true })
-      writeFileSync(join(pluginsDir, ORCA_OPENCODE_PLUGIN_FILE), getOpenCodePluginSource())
+      writeFileSync(join(pluginsDir, KINGU_OPENCODE_PLUGIN_FILE), getOpenCodePluginSource())
     } catch {
       // Why: userData can be locked on Windows (EPERM/EBUSY); plugin is non-critical, so spawn without it.
       return null

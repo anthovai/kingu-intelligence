@@ -8,13 +8,13 @@ export const AGENT_HOOK_METHODS = [
     params: PrepareCodexForWslPaneParams,
     handler: async (params, { runtime, clientKind }) => {
       if (clientKind !== undefined) {
-        throw new Error('Codex hook preparation is only available to the local Orca CLI.')
+        throw new Error('Codex hook preparation is only available to the local Kingu CLI.')
       }
       const settings = runtime.getClientSettings()
       return await prepareManagedWslCodexHomeBeforeShellLaunch({
         env: {
           CODEX_HOME: params.codexHome,
-          ORCA_CODEX_HOME: params.orcaCodexHome,
+          KINGU_CODEX_HOME: params.kinguCodexHome,
           WSL_DISTRO_NAME: params.wslDistro
         },
         hooksEnabled:

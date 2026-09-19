@@ -55,14 +55,14 @@ export function failWorkerStartWithReceipt(args: {
     ...(agentSessionRefusal ? { agentSessionRefusal } : {}),
     ...(releasable
       ? {
-          recovery: `This start created a terminal that never ran the Task. Close it with: orca orchestration worker-release --dispatch ${args.dispatchId}`
+          recovery: `This start created a terminal that never ran the Task. Close it with: kingu orchestration worker-release --dispatch ${args.dispatchId}`
         }
       : {}),
     ...(unknown
       ? {
           nextCommands: [
-            `orca orchestration worker-show --dispatch ${args.dispatchId} --json`,
-            `orca orchestration worker-abandon --dispatch ${args.dispatchId} --json`
+            `kingu orchestration worker-show --dispatch ${args.dispatchId} --json`,
+            `kingu orchestration worker-abandon --dispatch ${args.dispatchId} --json`
           ]
         }
       : {})

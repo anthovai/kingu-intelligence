@@ -31,7 +31,7 @@ let root: string
 let storePath: string
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'orca-store-recovery-publish-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-store-recovery-publish-'))
   storePath = join(root, 'agent-sessions.json')
 })
 

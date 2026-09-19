@@ -13,7 +13,7 @@
 
 import type { StructuredAgentSessionHost } from '../native-chat/agent-session-wire/structured-agent-session-host'
 import { getStructuredAgentSessionHost } from '../native-chat/agent-session-wire/structured-agent-session-registry'
-import type { OrcaRuntimeService } from './orca-runtime'
+import type { KinguRuntimeService } from './kingu-runtime'
 import { retireSettledStructuredWorkerTab } from './structured-agent-session-tab-retirement'
 import { observeStructuredWorker } from './structured-worker-authority'
 
@@ -26,7 +26,7 @@ export type StructuredAgentSessionCloseOutcome = {
 
 export type StructuredAgentSessionCloseOptions = {
   runtime?: Pick<
-    OrcaRuntimeService,
+    KinguRuntimeService,
     'forgetStructuredSessionMail' | 'retireStructuredAgentSessionTabFromSnapshot'
   >
   /**

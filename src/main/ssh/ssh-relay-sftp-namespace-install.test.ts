@@ -18,9 +18,9 @@ vi.mock('fs', () => ({
 
 vi.mock('./relay-protocol', () => ({
   RELAY_VERSION: '0.1.0',
-  RELAY_REMOTE_DIR: '.orca-remote',
+  RELAY_REMOTE_DIR: '.kingu-remote',
   parseUnameToRelayPlatform: vi.fn().mockReturnValue('linux-x64'),
-  RELAY_SENTINEL: 'ORCA-RELAY v0.1.0 READY\n',
+  RELAY_SENTINEL: 'KINGU-RELAY v0.1.0 READY\n',
   RELAY_SENTINEL_TIMEOUT_MS: 10_000
 }))
 
@@ -48,7 +48,7 @@ vi.mock('./ssh-relay-install-marker', async (importOriginal) => ({
 
 vi.mock('./ssh-relay-versioned-install', () => ({
   readLocalFullVersion: vi.fn().mockReturnValue('0.1.0+testhash'),
-  computeRemoteRelayDir: (home: string, v: string) => `${home}/.orca-remote/relay-${v}`,
+  computeRemoteRelayDir: (home: string, v: string) => `${home}/.kingu-remote/relay-${v}`,
   isRelayAlreadyInstalled: vi.fn().mockResolvedValue(false),
   finalizeInstall: vi.fn().mockResolvedValue(undefined),
   abandonInstall: vi.fn().mockResolvedValue(undefined),
@@ -101,16 +101,16 @@ type TransferOptions = { sftpNamespace?: SftpNamespacePathMapping }
 
 const SHELL_HOME = '/home/u'
 const SFTP_HOME = '/homes/u'
-const RELAY_SUFFIX = '.orca-remote/relay-0.1.0+testhash'
+const RELAY_SUFFIX = '.kingu-remote/relay-0.1.0+testhash'
 const SHELL_RELAY_DIR = `${SHELL_HOME}/${RELAY_SUFFIX}`
 const SFTP_RELAY_DIR = `${SFTP_HOME}/${RELAY_SUFFIX}`
 const MARKER_PATTERN = /\.sftp-namespace-[0-9a-f]{32}/
 // Stdout of the relay-side pty-master cloexec patch, which runs on Linux hosts once a
 // freshly installed node-pty loads (#17915).
-const NPTY_CLOEXEC_PATCHED = 'ORCA-NPTY-CLOEXEC:patched\n'
+const NPTY_CLOEXEC_PATCHED = 'KINGU-NPTY-CLOEXEC:patched\n'
 const STAGE_OWNER = '.sftp-namespace-00000000000000000000000000000000'
-const STAGE_RESERVED = `__ORCA_UPLOAD_STAGE_SLOT__${STAGE_OWNER}:slot-0`
-const STAGE_PROMOTED = `__ORCA_UPLOAD_STAGE_PROMOTION__${STAGE_OWNER}:PROMOTED`
+const STAGE_RESERVED = `__KINGU_UPLOAD_STAGE_SLOT__${STAGE_OWNER}:slot-0`
+const STAGE_PROMOTED = `__KINGU_UPLOAD_STAGE_PROMOTION__${STAGE_OWNER}:PROMOTED`
 
 type ConnectionOptions = {
   // '/homes/u' models a DSM host whose SFTP subsystem starts outside the shell home.
@@ -247,7 +247,7 @@ function feed(responses: string[]): void {
 
 // POSIX first install, healthy npm install and node-pty probe.
 const POSIX_FIRST_INSTALL = [
-  '__ORCA_REMOTE_PLATFORM__ Linux x86_64',
+  '__KINGU_REMOTE_PLATFORM__ Linux x86_64',
   SHELL_HOME,
   '', // bounded stale-stage recovery
   STAGE_RESERVED,
@@ -257,7 +257,7 @@ const POSIX_FIRST_INSTALL = [
   '', // shared native-deps cache probe (miss)
   '', // npm install native deps
   '', // chmod prebuilds
-  'ORCA-NPTY-PROBE-OK\n',
+  'KINGU-NPTY-PROBE-OK\n',
   '', // rm probe stderr
   NPTY_CLOEXEC_PATCHED,
   '', // promote into the shared native-deps cache
@@ -267,7 +267,7 @@ const POSIX_FIRST_INSTALL = [
 ]
 
 const POSIX_SYSTEM_SSH_FIRST_INSTALL = [
-  '__ORCA_REMOTE_PLATFORM__ Linux x86_64',
+  '__KINGU_REMOTE_PLATFORM__ Linux x86_64',
   SHELL_HOME,
   '', // bounded stale-stage recovery
   STAGE_RESERVED,
@@ -276,7 +276,7 @@ const POSIX_SYSTEM_SSH_FIRST_INSTALL = [
   '', // shared native-deps cache probe (miss)
   '', // npm install native deps
   '', // chmod prebuilds
-  'ORCA-NPTY-PROBE-OK\n',
+  'KINGU-NPTY-PROBE-OK\n',
   '', // rm probe stderr
   NPTY_CLOEXEC_PATCHED,
   '', // promote into the shared native-deps cache
@@ -287,14 +287,14 @@ const POSIX_SYSTEM_SSH_FIRST_INSTALL = [
 
 // POSIX repair of an installed dir whose native deps are missing.
 const POSIX_REPAIR = [
-  '__ORCA_REMOTE_PLATFORM__ Linux x86_64',
+  '__KINGU_REMOTE_PLATFORM__ Linux x86_64',
   SHELL_HOME,
   BOTH_NATIVE_DEPS_MISSING_PROBE, // probe before the repair lock: the marker names both deps
   BOTH_NATIVE_DEPS_MISSING_PROBE, // re-probe under the lock
   '', // install-owner marker
   '', // npm install native deps
   '', // chmod prebuilds
-  'ORCA-NPTY-PROBE-OK\n',
+  'KINGU-NPTY-PROBE-OK\n',
   '', // rm probe stderr
   NPTY_CLOEXEC_PATCHED,
   'DEAD',
@@ -302,9 +302,9 @@ const POSIX_REPAIR = [
 ]
 
 const POSIX_HEALTHY_RECONNECT = [
-  '__ORCA_REMOTE_PLATFORM__ Linux x86_64',
+  '__KINGU_REMOTE_PLATFORM__ Linux x86_64',
   SHELL_HOME,
-  'ORCA-NATIVE-DEPS-OK',
+  'KINGU-NATIVE-DEPS-OK',
   '', // per-launch namespace marker
   'DEAD',
   'READY'
@@ -341,7 +341,7 @@ describe('relay install writes on a split SFTP namespace', () => {
     await deployAndLaunchRelay(conn)
 
     expect(capture.uploadTargets).toHaveLength(1)
-    expect(capture.uploadTargets[0]).toBe('/homes/u/.orca-remote/.upload-stages/slot-0/payload')
+    expect(capture.uploadTargets[0]).toBe('/homes/u/.kingu-remote/.upload-stages/slot-0/payload')
     expect(capture.writePaths).toEqual([
       `${capture.uploadTargets[0]}/.version`,
       `${SFTP_RELAY_DIR}/package.json`
@@ -361,11 +361,11 @@ describe('relay install writes on a split SFTP namespace', () => {
 
     const markerCommands = execCommands().filter((command) => MARKER_PATTERN.test(command))
     const reservation = markerCommands.find((command) =>
-      command.includes('__ORCA_UPLOAD_STAGE_SLOT__')
+      command.includes('__KINGU_UPLOAD_STAGE_SLOT__')
     )
     const installMarker = markerCommands.find((command) => command.includes('.install-lock'))
     expect(reservation).toContain('mkdir')
-    expect(reservation).toContain('/.orca-remote/.upload-stages')
+    expect(reservation).toContain('/.kingu-remote/.upload-stages')
     expect(reservation).not.toContain('.install-lock')
     expect(installMarker).toContain(`${SHELL_RELAY_DIR}/.install-lock`)
   })
@@ -399,7 +399,7 @@ describe('relay install writes on a split SFTP namespace', () => {
 
     await deployAndLaunchRelay(conn)
 
-    expect(capture.uploadTargets[0]).toContain('/.orca-remote/.upload-stages/slot-0/payload')
+    expect(capture.uploadTargets[0]).toContain('/.kingu-remote/.upload-stages/slot-0/payload')
     expect(capture.uploadTargets[0]).toMatch(/\/payload$/)
     expect(capture.writePaths).toEqual([
       `${capture.uploadTargets[0]}/.version`,
@@ -413,7 +413,7 @@ describe('relay install writes on a split SFTP namespace', () => {
 
     await deployAndLaunchRelay(conn)
 
-    expect(capture.uploadTargets[0]).toContain('/.orca-remote/.upload-stages/slot-0/payload')
+    expect(capture.uploadTargets[0]).toContain('/.kingu-remote/.upload-stages/slot-0/payload')
     expect(capture.uploadTargets[0]).toMatch(/\/payload$/)
     expect(capture.lstatCalls).toEqual([])
   })
@@ -428,7 +428,7 @@ describe('relay install writes on a split SFTP namespace', () => {
     await deployAndLaunchRelay(conn)
 
     expect(capture.uploadTargets[0]).toContain(
-      '/volume1/shared/.orca-remote/.upload-stages/slot-0/payload'
+      '/volume1/shared/.kingu-remote/.upload-stages/slot-0/payload'
     )
     expect(capture.uploadTargets[0]).toMatch(/\/payload$/)
   })
@@ -440,7 +440,7 @@ describe('relay install writes on a split SFTP namespace', () => {
     await deployAndLaunchRelay(conn)
 
     // The shipping path hands over shell paths plus a mapping; resolution happens on the write session.
-    expect(capture.uploadTargets[0]).toContain('/.orca-remote/.upload-stages/slot-0/payload')
+    expect(capture.uploadTargets[0]).toContain('/.kingu-remote/.upload-stages/slot-0/payload')
     expect(capture.uploadTargets[0]).toMatch(/\/payload$/)
     expect(capture.writePaths).toEqual([
       `${capture.uploadTargets[0]}/.version`,
@@ -451,11 +451,11 @@ describe('relay install writes on a split SFTP namespace', () => {
       (options) => options?.sftpNamespace
     )
     expect(mappings).toHaveLength(3)
-    expect(mappings[0]?.shellProbePath).toContain('/.orca-remote/.upload-stages/slot-0/')
+    expect(mappings[0]?.shellProbePath).toContain('/.kingu-remote/.upload-stages/slot-0/')
     expect(mappings[0]?.shellProbePath).toContain(stageMarker)
     expect(mappings[1]?.shellProbePath).toBe(mappings[0]?.shellProbePath)
     expect(mappings[2]?.shellProbePath).toBe(`${SHELL_RELAY_DIR}/.install-lock/${installMarker}`)
-    expect(mappings[0]?.homeRelativePath).toBe('.orca-remote/.upload-stages/slot-0/payload')
+    expect(mappings[0]?.homeRelativePath).toBe('.kingu-remote/.upload-stages/slot-0/payload')
     expect(mappings[1]?.homeRelativePath).toBe(`${mappings[0]?.homeRelativePath}/.version`)
     expect(mappings[2]?.homeRelativePath).toBe(`${RELAY_SUFFIX}/package.json`)
     expect(capture.realpathCalls).toEqual([])
@@ -473,7 +473,7 @@ describe('relay install writes on a split SFTP namespace', () => {
     expect(capture.lstatCalls).toEqual([])
     expect(conn.sftp).not.toHaveBeenCalled()
     // System SSH never retargets: shell absolute paths, no mapping, no SFTP session.
-    expect(capture.uploadTargets[0]).toContain('/.orca-remote/.upload-stages/slot-0/payload')
+    expect(capture.uploadTargets[0]).toContain('/.kingu-remote/.upload-stages/slot-0/payload')
     expect(capture.uploadTargets[0]).toMatch(/\/payload$/)
     expect(capture.writePaths).toEqual([
       `${capture.uploadTargets[0]}/.version`,
@@ -491,16 +491,16 @@ describe('relay install writes on a split SFTP namespace', () => {
     const conn = makeConnection(capture)
     vi.mocked(execCommand).mockImplementation((_conn, command) => {
       const decoded = decodeCommand(command)
-      if (decoded.includes('__ORCA_REMOTE_PLATFORM__')) {
-        return Promise.resolve('__ORCA_REMOTE_PLATFORM__ Windows AMD64')
+      if (decoded.includes('__KINGU_REMOTE_PLATFORM__')) {
+        return Promise.resolve('__KINGU_REMOTE_PLATFORM__ Windows AMD64')
       }
       if (decoded.includes('[Environment]::GetFolderPath')) {
         return Promise.resolve('C:\\Users\\u')
       }
-      if (decoded.includes('__ORCA_UPLOAD_STAGE_SLOT__')) {
+      if (decoded.includes('__KINGU_UPLOAD_STAGE_SLOT__')) {
         return Promise.resolve(STAGE_RESERVED)
       }
-      if (decoded.includes('__ORCA_UPLOAD_STAGE_PROMOTION__')) {
+      if (decoded.includes('__KINGU_UPLOAD_STAGE_PROMOTION__')) {
         return Promise.resolve(STAGE_PROMOTED)
       }
       if (decoded.includes('npm install')) {
@@ -514,9 +514,9 @@ describe('relay install writes on a split SFTP namespace', () => {
     expect(execCommands().some((command) => MARKER_PATTERN.test(command))).toBe(true)
     expect(capture.realpathCalls).toEqual([])
     expect(capture.writePaths[0]).toBe(
-      'C:/Users/u/.orca-remote/.upload-stages/slot-0/payload/.version'
+      'C:/Users/u/.kingu-remote/.upload-stages/slot-0/payload/.version'
     )
-    expect(capture.writePaths[1]).toBe('C:/Users/u/.orca-remote/relay-0.1.0+testhash/package.json')
+    expect(capture.writePaths[1]).toBe('C:/Users/u/.kingu-remote/relay-0.1.0+testhash/package.json')
   })
 
   it('releases the first-install lock when a redirected upload fails', async () => {
@@ -619,9 +619,9 @@ describe('relay repair writes on a split SFTP namespace', () => {
       const conn = makeConnection(capture)
       vi.mocked(tryAcquireRelayRepairLock).mockResolvedValue(lockResult)
       feed([
-        '__ORCA_REMOTE_PLATFORM__ Linux x86_64',
+        '__KINGU_REMOTE_PLATFORM__ Linux x86_64',
         SHELL_HOME,
-        'ORCA-NATIVE-DEPS-OK',
+        'KINGU-NATIVE-DEPS-OK',
         'DEAD',
         'READY'
       ])
@@ -637,9 +637,9 @@ describe('relay repair writes on a split SFTP namespace', () => {
   it('keeps a healthy system-SSH reconnect on its secure shell-path writer', async () => {
     const conn = makeConnection(capture, { systemSsh: true, transferMethods: true })
     feed([
-      '__ORCA_REMOTE_PLATFORM__ Linux x86_64',
+      '__KINGU_REMOTE_PLATFORM__ Linux x86_64',
       SHELL_HOME,
-      'ORCA-NATIVE-DEPS-OK',
+      'KINGU-NATIVE-DEPS-OK',
       'DEAD',
       'READY'
     ])
@@ -653,7 +653,7 @@ describe('relay repair writes on a split SFTP namespace', () => {
 
   it('launches without a client-side credential when a healthy marker is unavailable', async () => {
     const conn = makeConnection(capture)
-    feed(['__ORCA_REMOTE_PLATFORM__ Linux x86_64', SHELL_HOME, 'ORCA-NATIVE-DEPS-OK'])
+    feed(['__KINGU_REMOTE_PLATFORM__ Linux x86_64', SHELL_HOME, 'KINGU-NATIVE-DEPS-OK'])
     vi.mocked(execCommand).mockRejectedValueOnce(new Error('read-only marker'))
     feed(['DEAD', 'READY'])
 
@@ -685,13 +685,13 @@ describe('relay repair writes on a split SFTP namespace', () => {
   it('does not stamp a marker when repairing over system SSH', async () => {
     const conn = makeConnection(capture, { systemSsh: true, transferMethods: true })
     feed([
-      '__ORCA_REMOTE_PLATFORM__ Linux x86_64',
+      '__KINGU_REMOTE_PLATFORM__ Linux x86_64',
       SHELL_HOME,
       BOTH_NATIVE_DEPS_MISSING_PROBE,
       BOTH_NATIVE_DEPS_MISSING_PROBE,
       '', // npm install native deps
       '', // chmod prebuilds
-      'ORCA-NPTY-PROBE-OK\n',
+      'KINGU-NPTY-PROBE-OK\n',
       '', // rm probe stderr
       NPTY_CLOEXEC_PATCHED,
       'DEAD',
@@ -710,7 +710,7 @@ describe('relay repair writes on a split SFTP namespace', () => {
   it('degrades to shell paths when marker creation fails outright', async () => {
     const conn = makeConnection(capture)
     feed([
-      '__ORCA_REMOTE_PLATFORM__ Linux x86_64',
+      '__KINGU_REMOTE_PLATFORM__ Linux x86_64',
       SHELL_HOME,
       BOTH_NATIVE_DEPS_MISSING_PROBE,
       BOTH_NATIVE_DEPS_MISSING_PROBE
@@ -719,7 +719,7 @@ describe('relay repair writes on a split SFTP namespace', () => {
     feed([
       '', // npm install native deps
       '', // chmod prebuilds
-      'ORCA-NPTY-PROBE-OK\n',
+      'KINGU-NPTY-PROBE-OK\n',
       '', // rm probe stderr
       NPTY_CLOEXEC_PATCHED,
       'DEAD',
@@ -739,7 +739,7 @@ describe('relay repair writes on a split SFTP namespace', () => {
   it('keeps the repair lock when marker creation has unconfirmed termination', async () => {
     const conn = makeConnection(capture)
     feed([
-      '__ORCA_REMOTE_PLATFORM__ Linux x86_64',
+      '__KINGU_REMOTE_PLATFORM__ Linux x86_64',
       SHELL_HOME,
       BOTH_NATIVE_DEPS_MISSING_PROBE,
       BOTH_NATIVE_DEPS_MISSING_PROBE

@@ -15,7 +15,7 @@ it.each(['end', 'abort', 'timeout'] as const)(
       const notify = vi.fn()
       const mux = {
         request: vi.fn(async () => ({
-          __orcaGitResponseStream: { streamId: 7, totalBytes: encoded.length, chunkCount: 1000 }
+          __kinguGitResponseStream: { streamId: 7, totalBytes: encoded.length, chunkCount: 1000 }
         })),
         isDisposed: () => false,
         notify,

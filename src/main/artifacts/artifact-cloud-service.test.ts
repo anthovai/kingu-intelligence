@@ -8,18 +8,18 @@ vi.mock('electron', () => ({
   safeStorage: { isEncryptionAvailable: () => false }
 }))
 
-import type { OrcaProfileCloudSummary } from '../../shared/orca-profiles'
-import { ensureActiveOrcaProfile } from '../orca-profiles/profile-index-store'
+import type { KinguProfileCloudSummary } from '../../shared/kingu-profiles'
+import { ensureActiveKinguProfile } from '../kingu-profiles/profile-index-store'
 import {
-  linkOrcaProfileToCloud,
-  unlinkOrcaProfileFromCloud
-} from '../orca-profiles/profile-cloud-index'
+  linkKinguProfileToCloud,
+  unlinkKinguProfileFromCloud
+} from '../kingu-profiles/profile-cloud-index'
 import {
   cloudSessionIdentity,
   recordSuccessfulCloudSessionLogin,
   tombstoneCloudSession
-} from '../orca-profiles/profile-cloud-session-mutation'
-import { saveOrcaCloudSession } from '../orca-profiles/profile-cloud-session-store'
+} from '../kingu-profiles/profile-cloud-session-mutation'
+import { saveKinguCloudSession } from '../kingu-profiles/profile-cloud-session-store'
 import {
   ARTIFACT_SHARING_DISABLED_CODE,
   ARTIFACT_SHARING_DISABLED_MESSAGE,
@@ -30,13 +30,13 @@ import { ArtifactCloudService } from './artifact-cloud-service'
 
 const createdPaths: string[] = []
 const apiUrl = 'http://localhost:3000'
-const cloudA: OrcaProfileCloudSummary = {
+const cloudA: KinguProfileCloudSummary = {
   cloudProfileId: 'cloud-a',
   userId: 'user-a',
   email: 'a@example.com',
   linkedAt: 1
 }
-const cloudB: OrcaProfileCloudSummary = {
+const cloudB: KinguProfileCloudSummary = {
   cloudProfileId: 'cloud-b',
   userId: 'user-b',
   email: 'b@example.com',
@@ -62,7 +62,7 @@ function createResponse(
         byteSize: 12,
         deletedAt: null
       },
-      shareUrl: `https://share.onorca.dev/a/${slug}`,
+      shareUrl: `https://share.onkingu.dev/a/${slug}`,
       editToken: 'edit-secret'
     }),
     { status: 200, headers: { 'content-type': 'application/json' } }
@@ -74,10 +74,10 @@ async function setup(sharingEnabled: { value: boolean } = { value: true }): Prom
   profileId: string
   service: ArtifactCloudService
 }> {
-  const userDataPath = await mkdtemp(join(tmpdir(), 'orca-artifact-service-'))
+  const userDataPath = await mkdtemp(join(tmpdir(), 'kingu-artifact-service-'))
   createdPaths.push(userDataPath)
-  const active = ensureActiveOrcaProfile(userDataPath)
-  linkOrcaProfileToCloud(active.profile.id, cloudA, userDataPath)
+  const active = ensureActiveKinguProfile(userDataPath)
+  linkKinguProfileToCloud(active.profile.id, cloudA, userDataPath)
   recordSuccessfulCloudSessionLogin(cloudSessionIdentity(active.profile.id, cloudA), userDataPath)
   return {
     userDataPath,
@@ -162,11 +162,11 @@ describe('ArtifactCloudService record authorization', () => {
 
     await expect(service.publish(writeRequest)).resolves.toMatchObject({
       status: 'ok',
-      value: { change: 'created', item: { shareUrl: 'https://share.onorca.dev/a/artifact-a' } }
+      value: { change: 'created', item: { shareUrl: 'https://share.onkingu.dev/a/artifact-a' } }
     })
     await expect(service.publish(writeRequest)).resolves.toMatchObject({
       status: 'ok',
-      value: { change: 'updated', item: { shareUrl: 'https://share.onorca.dev/a/artifact-a' } }
+      value: { change: 'updated', item: { shareUrl: 'https://share.onkingu.dev/a/artifact-a' } }
     })
 
     expect(fetchMock.mock.calls[0]?.[1]).toMatchObject({ method: 'POST' })
@@ -185,7 +185,7 @@ describe('ArtifactCloudService record authorization', () => {
       service.getPublishedLink({ sourceKey: writeRequest.sourceKey, apiUrl, authToken: 'token-a' })
     ).resolves.toEqual({
       status: 'ok',
-      value: { shareUrl: 'https://share.onorca.dev/a/artifact-a' }
+      value: { shareUrl: 'https://share.onkingu.dev/a/artifact-a' }
     })
     await expect(
       service.getPublishedLink({ sourceKey: '/repo/other.html', apiUrl, authToken: 'token-a' })
@@ -246,7 +246,7 @@ describe('ArtifactCloudService record authorization', () => {
 
     await expect(Promise.all([publish, share])).resolves.toMatchObject([
       { status: 'ok', value: { change: 'created' } },
-      { status: 'ok', value: { shareUrl: 'https://share.onorca.dev/a/artifact-b' } }
+      { status: 'ok', value: { shareUrl: 'https://share.onkingu.dev/a/artifact-b' } }
     ])
     expect(fetchMock).toHaveBeenCalledTimes(2)
   })
@@ -296,11 +296,11 @@ describe('ArtifactCloudService record authorization', () => {
     await service.publish(writeRequest)
     await expect(service.publish(writeRequest)).resolves.toMatchObject({
       status: 'ok',
-      value: { change: 'created', item: { shareUrl: 'https://share.onorca.dev/a/artifact-b' } }
+      value: { change: 'created', item: { shareUrl: 'https://share.onkingu.dev/a/artifact-b' } }
     })
     await expect(service.publish(writeRequest)).resolves.toMatchObject({
       status: 'ok',
-      value: { change: 'updated', item: { shareUrl: 'https://share.onorca.dev/a/artifact-b' } }
+      value: { change: 'updated', item: { shareUrl: 'https://share.onkingu.dev/a/artifact-b' } }
     })
 
     expect(fetchMock.mock.calls.map(([, options]) => options?.method)).toEqual([
@@ -313,9 +313,9 @@ describe('ArtifactCloudService record authorization', () => {
 
   it('keeps the idempotency key stable across an auth-refresh retry', async () => {
     const { service, profileId, userDataPath } = await setup()
-    vi.stubEnv('ORCA_CLOUD_API_URL', 'http://localhost:4100')
-    vi.stubEnv('ORCA_CLOUD_CLIENT_ID', 'desktop-client')
-    saveOrcaCloudSession(profileId, userDataPath, {
+    vi.stubEnv('KINGU_CLOUD_API_URL', 'http://localhost:4100')
+    vi.stubEnv('KINGU_CLOUD_CLIENT_ID', 'desktop-client')
+    saveKinguCloudSession(profileId, userDataPath, {
       accessToken: 'access-old',
       refreshToken: 'refresh-old',
       expiresAt: Date.now() + 120_000,
@@ -367,8 +367,8 @@ describe('ArtifactCloudService record authorization', () => {
     await service.share(writeRequest)
 
     tombstoneCloudSession(cloudSessionIdentity(profileId, cloudA), userDataPath)
-    unlinkOrcaProfileFromCloud(profileId, userDataPath)
-    linkOrcaProfileToCloud(profileId, cloudB, userDataPath)
+    unlinkKinguProfileFromCloud(profileId, userDataPath)
+    linkKinguProfileToCloud(profileId, cloudB, userDataPath)
     recordSuccessfulCloudSessionLogin(cloudSessionIdentity(profileId, cloudB), userDataPath)
 
     await expect(service.update({ ...writeRequest, authToken: 'token-b' })).rejects.toThrow(
@@ -395,8 +395,8 @@ describe('ArtifactCloudService record authorization', () => {
     await vi.waitFor(() => expect(resolvePost).toBeTypeOf('function'))
 
     tombstoneCloudSession(cloudSessionIdentity(profileId, cloudA), userDataPath)
-    unlinkOrcaProfileFromCloud(profileId, userDataPath)
-    linkOrcaProfileToCloud(profileId, cloudB, userDataPath)
+    unlinkKinguProfileFromCloud(profileId, userDataPath)
+    linkKinguProfileToCloud(profileId, cloudB, userDataPath)
     recordSuccessfulCloudSessionLogin(cloudSessionIdentity(profileId, cloudB), userDataPath)
     resolvePost?.(createResponse())
 
@@ -421,7 +421,7 @@ describe('ArtifactCloudService record authorization', () => {
     const pending = service.share(writeRequest)
     await vi.waitFor(() => expect(resolvePost).toBeTypeOf('function'))
 
-    linkOrcaProfileToCloud(
+    linkKinguProfileToCloud(
       profileId,
       { ...cloudA, displayName: 'Updated name', linkedAt: 99 },
       userDataPath
@@ -554,7 +554,7 @@ describe('ArtifactCloudService publish capability gate', () => {
       service.getPublishedLink({ sourceKey: writeRequest.sourceKey, apiUrl, authToken: 'token-a' })
     ).resolves.toEqual({
       status: 'ok',
-      value: { shareUrl: 'https://share.onorca.dev/a/artifact-a' }
+      value: { shareUrl: 'https://share.onkingu.dev/a/artifact-a' }
     })
     await expect(
       service.unshare({ sourceKey: writeRequest.sourceKey, apiUrl, authToken: 'token-a' })

@@ -16,7 +16,7 @@ describe('journal row schema versions', () => {
   const opener = createTrackedJournalOpener()
 
   beforeEach(async () => {
-    root = await mkdtemp(join(tmpdir(), 'orca-journal-row-version-'))
+    root = await mkdtemp(join(tmpdir(), 'kingu-journal-row-version-'))
   })
   afterEach(async () => {
     await opener.closeAll()
@@ -35,7 +35,7 @@ describe('journal row schema versions', () => {
       now: () => 1_000,
       journalDir: join(root, 'session-1')
     })
-    const identity = { provider: 'orca' as const, clientMessageId: 'm1' }
+    const identity = { provider: 'kingu' as const, clientMessageId: 'm1' }
     await journal.appendItem(
       identity,
       { kind: 'message', role: 'user', blocks: [{ type: 'text', text: 'hi' }] },

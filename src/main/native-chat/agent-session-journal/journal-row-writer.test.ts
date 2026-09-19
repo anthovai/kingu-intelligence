@@ -42,7 +42,7 @@ describe('journal row writer', () => {
   let readOnly = false
 
   beforeEach(async () => {
-    root = await mkdtemp(join(tmpdir(), 'orca-journal-row-writer-'))
+    root = await mkdtemp(join(tmpdir(), 'kingu-journal-row-writer-'))
     database = openJournalDatabase(journalDatabaseFile(root))
     upsertJournalSessionRow(database.db, SESSION_ID, EPOCH, 1)
     readOnly = false

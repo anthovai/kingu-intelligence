@@ -123,7 +123,7 @@ describe('who may call agent.launch', () => {
 })
 
 describe('what agent.launch accepts', () => {
-  it('rejects an agent Orca cannot launch', () => {
+  it('rejects an agent Kingu cannot launch', () => {
     expect(parseLaunch({ ...CREATE_LAUNCH, agent: 'not-an-agent' }).success).toBe(false)
   })
 
@@ -388,7 +388,7 @@ describe('a create that succeeded but is incomplete', () => {
     // settings: {} leaves the structured preference off, so the launch is agent-first and returns
     // on the cached startup handle - the early path that also had to learn to carry a warning.
     // Wording matters: the producer cannot emit "startup terminal failed" ALONGSIDE a handle —
-    // `orca-runtime-create-managed-worktree.ts:283` gates startupTerminal on the spawn having
+    // `kingu-runtime-create-managed-worktree.ts:283` gates startupTerminal on the spawn having
     // succeeded. An untracked-copy warning is the one that genuinely co-occurs with a handle.
     const runtime = runtimeStub({
       settings: {},

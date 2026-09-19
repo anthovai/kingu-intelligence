@@ -379,7 +379,7 @@ describe('Claude hook normalization', () => {
     let transcriptPath: string
 
     beforeEach(() => {
-      tmpDir = mkdtempSync(join(tmpdir(), 'orca-hook-test-'))
+      tmpDir = mkdtempSync(join(tmpdir(), 'kingu-hook-test-'))
       transcriptPath = join(tmpDir, 'transcript.jsonl')
     })
 

@@ -176,7 +176,7 @@ describe('ClaudeRuntimeAuthService', () => {
     const service = new ClaudeRuntimeAuthService(store as never)
     await service.syncForCurrentSelection()
 
-    const markerPath = join(managedAuthPath, '.orca-managed-claude-auth')
+    const markerPath = join(managedAuthPath, '.kingu-managed-claude-auth')
     expect(readFileSync(runtimeCredentialsPath, 'utf-8')).toBe(managedCredentials)
     expect(lstatSync(markerPath).isFile()).toBe(true)
     expect(readFileSync(markerPath, 'utf-8')).toBe('account-1\n')
@@ -190,7 +190,7 @@ describe('ClaudeRuntimeAuthService', () => {
     const managedAuthPath = join(testState.userDataDir, 'claude-accounts', 'account-1', 'auth')
     const escapedCredentialsPath = join(testState.fakeHomeDir, 'escaped-credentials.json')
     mkdirSync(managedAuthPath, { recursive: true })
-    writeFileSync(join(managedAuthPath, '.orca-managed-claude-auth'), 'account-1\n', 'utf-8')
+    writeFileSync(join(managedAuthPath, '.kingu-managed-claude-auth'), 'account-1\n', 'utf-8')
     writeFileSync(
       join(managedAuthPath, 'oauth-account.json'),
       '{"accountUuid":"account-1"}\n',
@@ -351,7 +351,7 @@ describe('ClaudeRuntimeAuthService', () => {
     )
     const managedAuthPath2 = join(testState.userDataDir, 'claude-accounts', 'account-2', 'auth')
     mkdirSync(managedAuthPath2, { recursive: true })
-    writeFileSync(join(managedAuthPath2, '.orca-managed-claude-auth'), 'account-2\n', 'utf-8')
+    writeFileSync(join(managedAuthPath2, '.kingu-managed-claude-auth'), 'account-2\n', 'utf-8')
     writeFileSync(
       join(managedAuthPath2, 'oauth-account.json'),
       '{"accountUuid":"account-2"}\n',

@@ -6,10 +6,10 @@ vi.mock('../native-chat/agent-session-wire/structured-agent-session-registry', (
   getStructuredAgentSessionHost: () => hostRef.current
 }))
 
-const { OrcaRuntimeWithGetOrchestrationDispatchAuthority } =
-  await import('./orca-runtime-get-orchestration-dispatch-authority')
-const { OrcaRuntimeWithVerifyOrchestrationCompatibilityCaller } =
-  await import('./orca-runtime-verify-orchestration-compatibility-caller')
+const { KinguRuntimeWithGetOrchestrationDispatchAuthority } =
+  await import('./kingu-runtime-get-orchestration-dispatch-authority')
+const { KinguRuntimeWithVerifyOrchestrationCompatibilityCaller } =
+  await import('./kingu-runtime-verify-orchestration-compatibility-caller')
 const {
   mintStructuredWorkerHandle,
   mintStructuredWorkerPaneKey,
@@ -20,11 +20,11 @@ const {
 const SESSION_ID = 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d'
 
 const getAuthority =
-  OrcaRuntimeWithGetOrchestrationDispatchAuthority.prototype.getOrchestrationDispatchAuthority
+  KinguRuntimeWithGetOrchestrationDispatchAuthority.prototype.getOrchestrationDispatchAuthority
 // Both borrowed from the real prototype through their public surface: a stubbed copy of the
 // method under test would pin nothing.
 const verifyCaller =
-  OrcaRuntimeWithVerifyOrchestrationCompatibilityCaller.prototype
+  KinguRuntimeWithVerifyOrchestrationCompatibilityCaller.prototype
     .verifyOrchestrationCompatibilityCaller
 
 function registerStructuredWorker(): string {

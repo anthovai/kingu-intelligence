@@ -3,12 +3,12 @@ import {
   BROWSER_UNAVAILABLE_ERROR_CODE,
   type RuntimeBrowserUnavailableReason
 } from '../../shared/runtime-types'
-import type { RuntimeBrowserCommandHost, RuntimeBrowserCommands } from './orca-runtime-browser'
+import type { RuntimeBrowserCommandHost, RuntimeBrowserCommands } from './kingu-runtime-browser'
 
 /**
- * How `OrcaRuntimeService` obtains its browser-automation commands.
+ * How `KinguRuntimeService` obtains its browser-automation commands.
  *
- * Why a factory rather than a direct import: `orca-runtime-browser.ts` reaches the
+ * Why a factory rather than a direct import: `kingu-runtime-browser.ts` reaches the
  * whole Chromium cluster — `BrowserWindow`, `session`, `webContents`, cookie jars —
  * 15 modules that a Node host cannot load at all. Importing the class for its *type*
  * is free; constructing it is what drags the cluster in.

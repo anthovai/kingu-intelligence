@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import type { OrcaRuntimeService } from '../../orca-runtime'
+import type { KinguRuntimeService } from '../../kingu-runtime'
 import type { RpcRequest } from '../core'
 import { RpcDispatcher } from '../dispatcher'
 import { WORKTREE_METHODS } from './worktree'
@@ -9,7 +9,7 @@ describe('worktree GitHub PR suppression RPC', () => {
     const runtime = {
       getRuntimeId: () => 'test-runtime',
       updateManagedWorktreeMeta: vi.fn().mockResolvedValue({ id: 'wt-1' })
-    } as unknown as OrcaRuntimeService
+    } as unknown as KinguRuntimeService
     const request: RpcRequest = {
       id: 'req-1',
       authToken: 'tok',

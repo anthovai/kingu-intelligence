@@ -26,7 +26,7 @@ function sinkState() {
 function userTurn(uuid: string) {
   return {
     type: 'message' as const,
-    sessionId: 'orca-session',
+    sessionId: 'kingu-session',
     startsTurn: true as const,
     message: {
       type: 'user',
@@ -43,7 +43,7 @@ function result(fields: Record<string, unknown>) {
 }
 
 const TURN = {
-  sessionId: 'orca-session',
+  sessionId: 'kingu-session',
   turnId: 'user-1',
   startedAt: 1_000,
   userItemId: 'claude:user-1'
@@ -166,7 +166,7 @@ describe('a turn end the host inferred', () => {
     [
       'the child ending',
       (translator: ReturnType<typeof createClaudeJournalTranslator>) =>
-        translator.handle({ type: 'ended', sessionId: 'orca-session', reason: 'closed' })
+        translator.handle({ type: 'ended', sessionId: 'kingu-session', reason: 'closed' })
     ],
     [
       'a new turn superseding it',

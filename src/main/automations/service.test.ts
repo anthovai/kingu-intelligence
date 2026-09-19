@@ -31,7 +31,7 @@ async function createStore() {
 
 /** Simulate registry drift after a record was stored; the create path derives contexts itself. */
 function mutateDataFile(mutate: (state: { automations: Record<string, unknown>[] }) => void): void {
-  const file = join(testState.dir, 'orca-data.json')
+  const file = join(testState.dir, 'kingu-data.json')
   const state = JSON.parse(readFileSync(file, 'utf-8'))
   mutate(state)
   writeFileSync(file, JSON.stringify(state, null, 2), 'utf-8')
@@ -48,7 +48,7 @@ const makeRepo = (overrides: Partial<Repo> = {}): Repo => ({
 
 describe('AutomationService', () => {
   beforeEach(() => {
-    testState.dir = mkdtempSync(join(tmpdir(), 'orca-automations-test-'))
+    testState.dir = mkdtempSync(join(tmpdir(), 'kingu-automations-test-'))
     vi.useFakeTimers()
   })
 
@@ -701,7 +701,7 @@ describe('AutomationService', () => {
     const poisonRun = reloaded.listAutomationRuns(poison.id)[0]
     expect(poisonRun?.status).toBe('skipped_unavailable')
     expect(poisonRun?.error).toBe(
-      'Orca could not evaluate this automation and skipped the occurrence.'
+      'Kingu could not evaluate this automation and skipped the occurrence.'
     )
     expect(logged).toHaveBeenCalled()
   })
@@ -758,7 +758,7 @@ describe('AutomationService', () => {
     expect(payload.automation.id).toBe(healthy.id)
     expect(reloaded.listAutomationRuns(healthy.id)[0]?.status).toBe('dispatching')
     expect(reloaded.listAutomationRuns(poison.id)[0]?.error).toBe(
-      'Orca could not evaluate this automation and skipped the occurrence.'
+      'Kingu could not evaluate this automation and skipped the occurrence.'
     )
     expect(logged).toHaveBeenCalled()
   })

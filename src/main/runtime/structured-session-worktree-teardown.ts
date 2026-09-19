@@ -31,7 +31,7 @@ import { observeStructuredWorker } from './structured-worker-authority'
 import { closeStructuredAgentSessionChild } from './structured-agent-session-close'
 import { retireSettledStructuredWorkerTab } from './structured-agent-session-tab-retirement'
 import type { WorktreePtyHostFence } from './worktree-pty-host-fence'
-import type { OrcaRuntimeService } from './orca-runtime'
+import type { KinguRuntimeService } from './kingu-runtime'
 
 export type StructuredSessionInWorkspace = {
   sessionId: string
@@ -44,7 +44,7 @@ export type UnclosedStructuredSession = StructuredSessionInWorkspace & {
 }
 
 export type StructuredWorktreeSweepRuntime = Pick<
-  OrcaRuntimeService,
+  KinguRuntimeService,
   'forgetStructuredSessionMail' | 'retireStructuredAgentSessionTabFromSnapshot'
 >
 
@@ -163,7 +163,7 @@ function countStructuredSessions(sessions: readonly UnclosedStructuredSession[])
  * Both groups are named, though, which is where this differs from the PTY sibling: there, the
  * verdict is a fresh inventory, so anything absent from the live list is PROVEN exited and
  * rightly dropped. Here an `unverifiable` session is unclosed too — folding it into the live
- * count would overstate what Orca watched, and dropping it said "1 agent session" while three
+ * count would overstate what Kingu watched, and dropping it said "1 agent session" while three
  * were about to be discarded.
  */
 export function describeUnclosedStructuredSessions(

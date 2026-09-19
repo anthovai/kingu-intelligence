@@ -38,7 +38,7 @@ afterEach(() => {
 
 describe('AgentHookServer startup failure lifecycle', () => {
   it('rolls back only transport on bind failure and preserves owner state through retry', async () => {
-    const userDataPath = mkdtempSync(join(tmpdir(), 'orca-hook-start-failure-'))
+    const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-hook-start-failure-'))
     const persisted = new AgentHookServer()
     await persisted.start({ env: 'production', userDataPath })
     persisted.ingestRemote(
@@ -126,10 +126,10 @@ describe('AgentHookServer startup failure lifecycle', () => {
         })
       ])
       expect(server.buildPtyEnv()).toMatchObject({
-        ORCA_AGENT_HOOK_ENV: 'production',
-        ORCA_AGENT_HOOK_PORT: expect.any(String),
-        ORCA_AGENT_HOOK_TOKEN: expect.any(String),
-        ORCA_AGENT_HOOK_ENDPOINT: server.endpointFilePath
+        KINGU_AGENT_HOOK_ENV: 'production',
+        KINGU_AGENT_HOOK_PORT: expect.any(String),
+        KINGU_AGENT_HOOK_TOKEN: expect.any(String),
+        KINGU_AGENT_HOOK_ENDPOINT: server.endpointFilePath
       })
       server.ingestTerminalStatus(duplicateOsc)
       expect(freshness).toHaveBeenCalledTimes(2)

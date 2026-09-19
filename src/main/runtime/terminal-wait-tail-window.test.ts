@@ -10,7 +10,7 @@ let scratch = ''
 let childPath = ''
 
 beforeAll(async () => {
-  scratch = await mkdtemp(join(tmpdir(), 'orca-tail-window-'))
+  scratch = await mkdtemp(join(tmpdir(), 'kingu-tail-window-'))
   childPath = join(scratch, 'leading-blank.cjs')
   await build({
     stdin: {
@@ -48,7 +48,7 @@ describe('terminal wait nonblank tail window', () => {
     const result = await runProcess({
       program: process.execPath,
       args: ['--max-old-space-size=64', childPath],
-      env: { ...process.env, ORCA_BACKGROUND_LAUNCH: '1' },
+      env: { ...process.env, KINGU_BACKGROUND_LAUNCH: '1' },
       timeoutMs: 2_000,
       maxOutputBytes: 4096
     })

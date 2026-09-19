@@ -36,7 +36,7 @@ vi.mock('./linux-update-package-type', () => ({
 vi.mock('./updater-changelog', () => ({ fetchChangelog: vi.fn().mockResolvedValue(null) }))
 vi.mock('./updater-lifecycle-diagnostics', () => ({ recordUpdaterLifecycle: vi.fn() }))
 
-const DEB_PATH = '/home/tester/.cache/orca-updater/pending/orca-ide_1.0.61_amd64.deb'
+const DEB_PATH = '/home/tester/.cache/kingu-updater/pending/kingu-ide_1.0.61_amd64.deb'
 // A real 64-byte SHA-512; capture rejects a digest that cannot decode to one.
 const DEB_SHA512 =
   'LHlL7dKoqg98gS2nfQv878dK+UoktbAkm4M20/hoJ2Qr0Kqsa3MSL4VmWy/Lll/MYjQFkpvOxduQ/vswentozA=='
@@ -109,7 +109,7 @@ function downloadedEvent(overrides?: Record<string, unknown>): Record<string, un
   return {
     version: '1.0.61',
     downloadedFile: DEB_PATH,
-    files: [{ url: 'orca-ide_1.0.61_amd64.deb', sha512: DEB_SHA512 }],
+    files: [{ url: 'kingu-ide_1.0.61_amd64.deb', sha512: DEB_SHA512 }],
     ...overrides
   }
 }
@@ -164,19 +164,19 @@ describe('registerAutoUpdaterHandlers linux package artifact tracking', () => {
       getLinuxPackageTypeMock.mockReturnValue(packageType)
       getLinuxRootPackageTypeMock.mockReturnValue(packageType)
       const { emit, context } = await register()
-      const fileName = packageType === 'deb' ? 'orca.deb' : 'orca.rpm'
+      const fileName = packageType === 'deb' ? 'kingu.deb' : 'kingu.rpm'
 
       emit(
         'update-downloaded',
         downloadedEvent({
-          downloadedFile: `/home/tester/.cache/orca-updater/pending/${fileName}`,
+          downloadedFile: `/home/tester/.cache/kingu-updater/pending/${fileName}`,
           files: [{ url: fileName, sha512: DEB_SHA512 }]
         })
       )
 
       expect(context.sendStatus).toHaveBeenLastCalledWith({
         state: 'error',
-        message: 'Quit Orca before running the system package install command.',
+        message: 'Quit Kingu before running the system package install command.',
         recovery: {
           kind: 'linux-package-install',
           packageType,
@@ -188,8 +188,8 @@ describe('registerAutoUpdaterHandlers linux package artifact tracking', () => {
   )
 
   it.each([
-    ['missing', [{ url: 'orca-ide_1.0.61_amd64.deb' }]],
-    ['malformed', [{ url: 'orca-ide_1.0.61_amd64.deb', sha512: 'not-a-digest' }]]
+    ['missing', [{ url: 'kingu-ide_1.0.61_amd64.deb' }]],
+    ['malformed', [{ url: 'kingu-ide_1.0.61_amd64.deb', sha512: 'not-a-digest' }]]
   ])('does not offer recovery when the package digest is %s', async (_kind, files) => {
     const { emit, context, getArtifact } = await register()
 
@@ -198,7 +198,7 @@ describe('registerAutoUpdaterHandlers linux package artifact tracking', () => {
     const status = {
       state: 'error',
       message:
-        'The downloaded package metadata could not be verified. Quit Orca before downloading and installing the update from the official release page.',
+        'The downloaded package metadata could not be verified. Quit Kingu before downloading and installing the update from the official release page.',
       version: '1.0.61',
       retryable: false
     }
@@ -239,7 +239,7 @@ describe('registerAutoUpdaterHandlers linux package artifact tracking', () => {
     expect(context.sendStatus).toHaveBeenLastCalledWith({
       state: 'error',
       message:
-        'Orca could not verify the installed Linux package format, so it will not install this update automatically. Download the update from the official release page and install it manually.',
+        'Kingu could not verify the installed Linux package format, so it will not install this update automatically. Download the update from the official release page and install it manually.',
       version: '1.0.61',
       retryable: false
     })
@@ -272,7 +272,7 @@ describe('registerAutoUpdaterHandlers linux package artifact tracking', () => {
     expect(getArtifact()).toEqual(expect.objectContaining({ version: '1.0.61' }))
     expect(context.sendStatus).toHaveBeenLastCalledWith({
       state: 'error',
-      message: 'Quit Orca before running the system package install command.',
+      message: 'Quit Kingu before running the system package install command.',
       recovery: {
         kind: 'linux-package-install',
         packageType: 'deb',
@@ -295,7 +295,7 @@ describe('registerAutoUpdaterHandlers linux package artifact tracking', () => {
     expect(getArtifact()).toEqual(expect.objectContaining({ version: '1.0.61' }))
     expect(context.sendStatus).toHaveBeenLastCalledWith({
       state: 'error',
-      message: 'Quit Orca before running the system package install command.',
+      message: 'Quit Kingu before running the system package install command.',
       recovery: {
         kind: 'linux-package-install',
         packageType: 'deb',
@@ -372,7 +372,7 @@ describe('registerAutoUpdaterHandlers linux package artifact tracking', () => {
     expect(getArtifact()).toEqual(expect.objectContaining({ version: '1.0.61' }))
     expect(context.sendStatus).toHaveBeenLastCalledWith({
       state: 'error',
-      message: 'Quit Orca before running the system package install command.',
+      message: 'Quit Kingu before running the system package install command.',
       recovery: {
         kind: 'linux-package-install',
         packageType: 'deb',
@@ -430,7 +430,7 @@ describe('registerAutoUpdaterHandlers linux package artifact tracking', () => {
       await vi.waitFor(() =>
         expect(context.sendStatus).toHaveBeenLastCalledWith({
           state: 'error',
-          message: 'Quit Orca before running the system package install command.',
+          message: 'Quit Kingu before running the system package install command.',
           recovery: {
             kind: 'linux-package-install',
             packageType: 'deb',

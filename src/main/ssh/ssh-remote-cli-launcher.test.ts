@@ -8,7 +8,7 @@ import { createRemoteCliInstallPlan } from './ssh-remote-cli-launcher'
 import { getRemoteHostPlatform } from './ssh-remote-platform'
 
 // Why: the compile case is six process creations - powershell.exe -> csc.exe,
-// then the freshly built orca.exe -> node.exe, twice - and hosted Windows
+// then the freshly built kingu.exe -> node.exe, twice - and hosted Windows
 // runners periodically slow process creation down. Across 176 native-smoke runs
 // it spanned 1.9s-35.4s (p50 4.3s) while this file's powershell-only test held
 // its median, so the cost is the runner, not the assertions. The shared 30s
@@ -30,14 +30,14 @@ function decodePowerShellCommand(command: string): string {
   return Buffer.from(encoded, 'base64').toString('utf16le')
 }
 
-describe('SSH remote Orca CLI launcher', () => {
+describe('SSH remote Kingu CLI launcher', () => {
   function windowsInstallPlan(): ReturnType<typeof createRemoteCliInstallPlan> {
     return createRemoteCliInstallPlan({
-      binDir: 'C:/Users/me user/.orca-relay/bin',
-      relayDir: 'C:/Users/me user/.orca-remote/relay-v1',
+      binDir: 'C:/Users/me user/.kingu-relay/bin',
+      relayDir: 'C:/Users/me user/.kingu-remote/relay-v1',
       nodePath: 'C:/Program Files/nodejs/node.exe',
-      sockPath: '\\\\.\\pipe\\orca-relay-123',
-      credentialFile: 'C:/Users/me user/.orca-remote/relay-v1/relay.sock.credential',
+      sockPath: '\\\\.\\pipe\\kingu-relay-123',
+      credentialFile: 'C:/Users/me user/.kingu-remote/relay-v1/relay.sock.credential',
       hostPlatform: getRemoteHostPlatform('win32-x64')
     })
   }
@@ -45,11 +45,11 @@ describe('SSH remote Orca CLI launcher', () => {
   it('compiles a native Windows launcher without a cmd.exe argument bridge', () => {
     const plan = windowsInstallPlan()
 
-    expect(plan.launcherPath).toBe('C:/Users/me user/.orca-relay/bin/orca.exe')
+    expect(plan.launcherPath).toBe('C:/Users/me user/.kingu-relay/bin/kingu.exe')
     expect(plan.files).toHaveLength(1)
-    expect(plan.files[0]?.path).toBe('C:/Users/me user/.orca-relay/bin/orca-launcher.cs')
+    expect(plan.files[0]?.path).toBe('C:/Users/me user/.kingu-relay/bin/kingu-launcher.cs')
     expect(plan.files[0]?.contents).toContain('ProcessStartInfo')
-    expect(plan.files[0]?.contents).toContain('"--orca-cli"')
+    expect(plan.files[0]?.contents).toContain('"--kingu-cli"')
     expect(plan.files[0]?.contents).toContain('socketPath + ".credential"')
     expect(plan.files[0]?.contents).toContain("value[index] == '\"'")
     expect(plan.files[0]?.contents).toContain("character == '\\\\'")
@@ -62,23 +62,23 @@ describe('SSH remote Orca CLI launcher', () => {
     // Why: legacy csc.exe is invoked from the bin directory with bare, space-free
     // file names so PowerShell 5.1 never mangles a space-bearing absolute path.
     expect(compileScript).toContain(
-      "Set-Location -ErrorAction Stop -LiteralPath 'C:/Users/me user/.orca-relay/bin'"
+      "Set-Location -ErrorAction Stop -LiteralPath 'C:/Users/me user/.kingu-relay/bin'"
     )
-    expect(compileScript).toContain('/out:orca.exe')
-    expect(compileScript).toContain('C:/Users/me user/.orca-relay/bin/orca-launcher.cs')
-    expect(compileScript).toContain('C:/Users/me user/.orca-relay/bin/orca.cmd')
+    expect(compileScript).toContain('/out:kingu.exe')
+    expect(compileScript).toContain('C:/Users/me user/.kingu-relay/bin/kingu-launcher.cs')
+    expect(compileScript).toContain('C:/Users/me user/.kingu-relay/bin/kingu.cmd')
   })
 
-  it('removes the legacy orca.cmd only after every compile guard has passed', () => {
+  it('removes the legacy kingu.cmd only after every compile guard has passed', () => {
     const script = decodePowerShellCommand(windowsInstallPlan().postWriteCommands[0] ?? '')
     const legacyShimRemoval =
-      "Remove-Item -LiteralPath 'C:/Users/me user/.orca-relay/bin/orca.cmd' -Force -ErrorAction SilentlyContinue"
+      "Remove-Item -LiteralPath 'C:/Users/me user/.kingu-relay/bin/kingu.cmd' -Force -ErrorAction SilentlyContinue"
     // Why: a host missing csc.exe or failing the compile must keep its existing
     // CLI, so every fail-closed guard precedes the legacy %* shim removal.
     const guards = [
-      "if (-not $compiler) { Write-Error 'Unable to find the .NET Framework C# compiler required for the Orca SSH CLI launcher.'; exit 1 }",
+      "if (-not $compiler) { Write-Error 'Unable to find the .NET Framework C# compiler required for the Kingu SSH CLI launcher.'; exit 1 }",
       'if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }',
-      "if (-not (Test-Path -LiteralPath 'C:/Users/me user/.orca-relay/bin/orca.exe' -PathType Leaf))"
+      "if (-not (Test-Path -LiteralPath 'C:/Users/me user/.kingu-relay/bin/kingu.exe' -PathType Leaf))"
     ]
     expect(script).toContain(legacyShimRemoval)
     for (const guard of guards) {
@@ -88,11 +88,11 @@ describe('SSH remote Orca CLI launcher', () => {
   })
 
   itWindows('preserves a multiline argument through the compiled remote launcher', () => {
-    const root = mkdtempSync(join(tmpdir(), 'orca remote cli '))
+    const root = mkdtempSync(join(tmpdir(), 'kingu remote cli '))
     try {
       const binDir = join(root, 'bin').replaceAll('\\', '/')
       const relayDir = join(root, 'relay').replaceAll('\\', '/')
-      const sockPath = '\\\\.\\pipe\\orca-relay-test'
+      const sockPath = '\\\\.\\pipe\\kingu-relay-test'
       const credentialFile = `${relayDir}/relay.sock.credential`
       const plan = createRemoteCliInstallPlan({
         binDir,
@@ -137,10 +137,10 @@ describe('SSH remote Orca CLI launcher', () => {
           encoding: 'utf8',
           env: {
             ...process.env,
-            ORCA_RELAY_NODE_PATH: process.execPath,
-            ORCA_RELAY_DIR: relayDir,
-            ORCA_RELAY_SOCKET_PATH: sockPath,
-            ORCA_RELAY_CREDENTIAL_FILE: credentialFile
+            KINGU_RELAY_NODE_PATH: process.execPath,
+            KINGU_RELAY_DIR: relayDir,
+            KINGU_RELAY_SOCKET_PATH: sockPath,
+            KINGU_RELAY_CREDENTIAL_FILE: credentialFile
           }
         }
       )
@@ -151,7 +151,7 @@ describe('SSH remote Orca CLI launcher', () => {
         sockPath,
         '--credential-file',
         credentialFile,
-        '--orca-cli',
+        '--kingu-cli',
         'orchestration',
         'send',
         '--body',
@@ -163,10 +163,10 @@ describe('SSH remote Orca CLI launcher', () => {
         encoding: 'utf8',
         env: {
           ...process.env,
-          ORCA_RELAY_NODE_PATH: process.execPath,
-          ORCA_RELAY_DIR: relayDir,
-          ORCA_RELAY_SOCKET_PATH: sockPath,
-          ORCA_RELAY_CREDENTIAL_FILE: ''
+          KINGU_RELAY_NODE_PATH: process.execPath,
+          KINGU_RELAY_DIR: relayDir,
+          KINGU_RELAY_SOCKET_PATH: sockPath,
+          KINGU_RELAY_CREDENTIAL_FILE: ''
         }
       })
       expect(defaulted.status, defaulted.stderr).toBe(0)
@@ -175,7 +175,7 @@ describe('SSH remote Orca CLI launcher', () => {
         sockPath,
         '--credential-file',
         `${sockPath}.credential`,
-        '--orca-cli',
+        '--kingu-cli',
         'status'
       ])
     } finally {
@@ -183,19 +183,19 @@ describe('SSH remote Orca CLI launcher', () => {
     }
   })
 
-  itWindows('preserves the existing orca.cmd when the compiler is missing', () => {
-    const root = mkdtempSync(join(tmpdir(), 'orca remote cli '))
+  itWindows('preserves the existing kingu.cmd when the compiler is missing', () => {
+    const root = mkdtempSync(join(tmpdir(), 'kingu remote cli '))
     try {
       const binDir = join(root, 'bin').replaceAll('\\', '/')
       mkdirSync(binDir, { recursive: true })
-      const legacyShimPath = join(binDir, 'orca.cmd')
-      writeFileSync(legacyShimPath, '@echo legacy orca cli\r\n', 'utf8')
+      const legacyShimPath = join(binDir, 'kingu.cmd')
+      writeFileSync(legacyShimPath, '@echo legacy kingu cli\r\n', 'utf8')
 
       const plan = createRemoteCliInstallPlan({
         binDir,
         relayDir: join(root, 'relay').replaceAll('\\', '/'),
         nodePath: process.execPath,
-        sockPath: '\\\\.\\pipe\\orca-relay-test',
+        sockPath: '\\\\.\\pipe\\kingu-relay-test',
         credentialFile: join(root, 'relay', 'relay.sock.credential').replaceAll('\\', '/'),
         hostPlatform: getRemoteHostPlatform('win32-x64')
       })
@@ -221,7 +221,7 @@ describe('SSH remote Orca CLI launcher', () => {
       )
 
       expect(compile.status).not.toBe(0)
-      expect(existsSync(legacyShimPath), 'existing orca.cmd must survive a failed install').toBe(
+      expect(existsSync(legacyShimPath), 'existing kingu.cmd must survive a failed install').toBe(
         true
       )
     } finally {
@@ -231,18 +231,18 @@ describe('SSH remote Orca CLI launcher', () => {
 
   it('keeps the POSIX launcher as an argv-preserving shell exec', () => {
     const plan = createRemoteCliInstallPlan({
-      binDir: '/home/me/.orca-relay/bin',
-      relayDir: '/home/me/.orca-remote/relay-v1',
+      binDir: '/home/me/.kingu-relay/bin',
+      relayDir: '/home/me/.kingu-remote/relay-v1',
       nodePath: '/usr/bin/node',
-      sockPath: '/home/me/.orca-remote/relay-v1/relay.sock',
+      sockPath: '/home/me/.kingu-remote/relay-v1/relay.sock',
       hostPlatform: getRemoteHostPlatform('linux-x64')
     })
 
-    expect(plan.launcherPath).toBe('/home/me/.orca-relay/bin/orca')
+    expect(plan.launcherPath).toBe('/home/me/.kingu-relay/bin/kingu')
     expect(plan.files).toEqual([
       expect.objectContaining({
-        path: '/home/me/.orca-relay/bin/orca',
-        contents: expect.stringContaining('--orca-cli "$@"')
+        path: '/home/me/.kingu-relay/bin/kingu',
+        contents: expect.stringContaining('--kingu-cli "$@"')
       })
     ])
   })

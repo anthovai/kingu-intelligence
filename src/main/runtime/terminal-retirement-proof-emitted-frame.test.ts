@@ -4,9 +4,9 @@ import type {
   RuntimeMobileSessionTabsSnapshot
 } from '../../shared/runtime-types'
 
-const { OrcaRuntimeService } = await import('./orca-runtime-test-mocks.spec')
-await import('./orca-runtime-test-lifecycle.spec')
-const { store, TEST_WORKTREE_ID } = await import('./orca-runtime-test-fixtures.spec')
+const { KinguRuntimeService } = await import('./kingu-runtime-test-mocks.spec')
+await import('./kingu-runtime-test-lifecycle.spec')
+const { store, TEST_WORKTREE_ID } = await import('./kingu-runtime-test-fixtures.spec')
 
 const retired = {
   parentTabId: 'tab',
@@ -25,10 +25,10 @@ type RuntimeInternals = {
 }
 
 function seedRuntimeWithStoredProof(): {
-  runtime: InstanceType<typeof OrcaRuntimeService>
+  runtime: InstanceType<typeof KinguRuntimeService>
   internals: RuntimeInternals
 } {
-  const runtime = new OrcaRuntimeService(store)
+  const runtime = new KinguRuntimeService(store)
   runtime.setPtyController({
     spawn: vi.fn().mockResolvedValue({ id: 'pty-runtime-fallback' }),
     write: () => true,

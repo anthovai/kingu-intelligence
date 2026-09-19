@@ -4,7 +4,7 @@ import type {
   OrchestrationWorkerReadSource
 } from '../../../../../../shared/orchestration-worker-output'
 import type { RuntimeTerminalState } from '../../../../../../shared/runtime-types'
-import type { OrcaRuntimeService } from '../../../../orca-runtime'
+import type { KinguRuntimeService } from '../../../../kingu-runtime'
 import { OrchestrationError } from '../../../../orchestration/orchestration-error'
 import {
   createWorkerOutputSourceIdentity,
@@ -17,7 +17,7 @@ import { getSshFilesystemProvider } from '../../../../../providers/ssh-filesyste
 import { isWslHookRelayConnectionId } from '../../../../../../shared/wsl-hook-relay-contract'
 
 export async function readExactWorkerOutput(args: {
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   dispatchId: string
   terminalHandle: string
   workerState: string

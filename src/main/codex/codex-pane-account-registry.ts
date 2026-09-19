@@ -1,7 +1,7 @@
 import { mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import { isDefinitiveAbsence } from '../../shared/definitive-filesystem-absence'
 import { dirname, join } from 'node:path'
-import { getOrcaUserDataPath } from './codex-home-paths'
+import { getKinguUserDataPath } from './codex-home-paths'
 import { CodexPaneAccountRegistryMutations } from './codex-pane-account-registry-mutations'
 import type {
   CodexPaneAccountRecord,
@@ -24,7 +24,7 @@ export type {
  * Why: `CODEX_HOME` is baked into a PTY's environment at spawn and can never be
  * changed afterwards, so a shell keeps launching Codex against the account that
  * was selected when the terminal opened. The daemon keeps those shells alive
- * across app restarts, so without an on-disk record Orca forgets a pane is on
+ * across app restarts, so without an on-disk record Kingu forgets a pane is on
  * the old account and the user is stuck there with no prompt to escape it.
  */
 
@@ -32,7 +32,7 @@ let cachedRegistry: CodexPaneAccountRegistryFile | null = null
 let cachedRegistryIsAuthoritative = true
 
 function getRegistryPath(): string {
-  return join(getOrcaUserDataPath(), 'codex-pane-accounts.json')
+  return join(getKinguUserDataPath(), 'codex-pane-accounts.json')
 }
 
 /**

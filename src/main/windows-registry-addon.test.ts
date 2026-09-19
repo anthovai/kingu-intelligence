@@ -6,9 +6,9 @@ import {
   WINDOWS_REG_SZ
 } from './windows-native-registry'
 
-// Why this file exists: the addon behind `@orca/windows-registry` is vendored source rather
+// Why this file exists: the addon behind `@kingu/windows-registry` is vendored source rather
 // than a published package, so nothing upstream proves it still decodes the registry the way
-// Orca's PATH readers expect. These cases check it against `reg.exe`, which is the only
+// Kingu's PATH readers expect. These cases check it against `reg.exe`, which is the only
 // independent oracle available on the box.
 const describeWindows = process.platform === 'win32' ? describe : describe.skip
 
@@ -67,7 +67,7 @@ describeWindows('vendored windows registry addon', () => {
 
   it('returns null for a key that does not exist instead of throwing', () => {
     const registry = loadWindowsNativeRegistry()
-    expect(registry.getRegistryKey(registry.HK.CU, 'Software\\OrcaNoSuchKey\\Absent')).toBeNull()
+    expect(registry.getRegistryKey(registry.HK.CU, 'Software\\KinguNoSuchKey\\Absent')).toBeNull()
   })
 
   it('reports every value in the key keyed by its own name', () => {

@@ -1,7 +1,7 @@
 import { win32 as pathWin32 } from 'node:path'
 import { shouldUseShellReadyStartupDelivery } from '../../shared/codex-startup-delivery'
 import { expandWindowsPathEnvironmentVariables } from '../../shared/windows-environment-expansion'
-import { dropInheritedOrcaFishHistory } from '../fish-history-session'
+import { dropInheritedKinguFishHistory } from '../fish-history-session'
 import { dropIncoherentCondaActivationEnv } from '../pty/conda-activation-env'
 import { stripLegacyTerminalShimEnv } from '../pty/legacy-terminal-shim-dir'
 import {
@@ -21,7 +21,7 @@ import {
   type HistoryInjectionResult
 } from '../terminal-history'
 import { addWslEnvKeys } from '../wsl-env'
-import { dropInheritedOrcaHistFile } from '../worktree-history-file-path'
+import { dropInheritedKinguHistFile } from '../worktree-history-file-path'
 import { promoteAgentTeamsShimPath } from './local-pty-launch-helpers'
 import type { LocalPtyLaunchPlan } from './local-pty-launch-plan'
 import type { LocalPtyProviderOptions } from './local-pty-provider-types'
@@ -78,14 +78,14 @@ export function finalizeLocalPtySpawnEnvironment(args: {
     logHistoryInjection(worktreeId, historyResult)
   } else {
     // Why: injectHistoryEnv is what normally clears it, so when history is off
-    // an inherited ORCA_HISTFILE would still reach the wrapper. Credit: #11146.
-    delete env.ORCA_HISTFILE
+    // an inherited KINGU_HISTFILE would still reach the wrapper. Credit: #11146.
+    delete env.KINGU_HISTFILE
     // Same for an exported `fish_history` from the fish pane that launched this
-    // Orca: history off means fish's own default, not another worktree's file.
-    dropInheritedOrcaFishHistory(env)
+    // Kingu: history off means fish's own default, not another worktree's file.
+    dropInheritedKinguFishHistory(env)
     // And for an exported HISTFILE: history off means the shell's own default,
-    // not the history file of the worktree this Orca was launched from.
-    dropInheritedOrcaHistFile(env)
+    // not the history file of the worktree this Kingu was launched from.
+    dropInheritedKinguHistFile(env)
   }
 
   if (!plan.wslInfo && process.platform !== 'win32') {
@@ -100,9 +100,9 @@ export function finalizeLocalPtySpawnEnvironment(args: {
         command: codexStartupCommand,
         startupCommandDelivery: spawn.startupCommandDelivery
       })
-    // Why delete: ORCA_SHELL_FEATURES is Orca-owned, and only the launch
+    // Why delete: KINGU_SHELL_FEATURES is Kingu-owned, and only the launch
     // config below may name features for this shell.
-    delete env.ORCA_SHELL_FEATURES
+    delete env.KINGU_SHELL_FEATURES
     delete env[POSIX_SHELL_STARTUP_COMMAND_ENV]
     plan.getFallbackShellReadyConfig = (shell) => {
       const wrapperStartupCommand =

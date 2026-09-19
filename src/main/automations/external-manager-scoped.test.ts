@@ -29,7 +29,7 @@ function sshTarget(overrides: Partial<SshTarget> = {}): SshTarget {
     label: 'Build box',
     host: 'build.example',
     port: 22,
-    username: 'orca',
+    username: 'kingu',
     generation: 3,
     ...overrides
   }
@@ -44,8 +44,8 @@ function desktopSsh(targetId: string, targetGeneration: number): AutomationOwner
   return { authority: { kind: 'desktop' }, selector: { kind: 'ssh', targetId, targetGeneration } }
 }
 
-/** Stands in for the Orca automation store: readable, but never markable unavailable from here. */
-function orcaStoreHealth() {
+/** Stands in for the Kingu automation store: readable, but never markable unavailable from here. */
+function kinguStoreHealth() {
   return { read: vi.fn<() => void>(), markUnavailable: vi.fn<() => void>() }
 }
 
@@ -217,8 +217,8 @@ describe('scoped external automations', () => {
     expect(getActiveMultiplexer).not.toHaveBeenCalled()
   })
 
-  it('confines a manager failure to its own scope and never to Orca store health', async () => {
-    const health = orcaStoreHealth()
+  it('confines a manager failure to its own scope and never to Kingu store health', async () => {
+    const health = kinguStoreHealth()
     vi.mocked(getActiveMultiplexer).mockReturnValue(
       undefined as unknown as ReturnType<typeof getActiveMultiplexer>
     )

@@ -9,7 +9,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { setStructuredAgentSessionHost } from '../../../native-chat/agent-session-wire/structured-agent-session-registry'
-import { OrcaRuntimeService } from '../../orca-runtime'
+import { KinguRuntimeService } from '../../kingu-runtime'
 import { OrchestrationDb } from '../../orchestration/db'
 import { structuredWorkerIdentities } from '../../structured-worker-identity'
 import { createStructuredWorkerSession } from './orchestration-structured-worker-session'
@@ -60,13 +60,13 @@ function installHost(): { emit: (type: string) => void; unsubscribed: () => bool
 
 describe('the structured redrive edge', () => {
   let db: OrchestrationDb
-  let runtime: OrcaRuntimeService
+  let runtime: KinguRuntimeService
 
   beforeEach(() => {
     vi.useFakeTimers()
     structuredWorkerIdentities.clear()
     db = new OrchestrationDb(':memory:')
-    runtime = new OrcaRuntimeService()
+    runtime = new KinguRuntimeService()
     runtime.setOrchestrationDb(db)
     vi.spyOn(runtime, 'ensureStructuredAgentSessionHost').mockResolvedValue(undefined as never)
   })

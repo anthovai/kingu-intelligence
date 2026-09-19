@@ -1,4 +1,4 @@
-// Why: talks to the Orca push gateway (cloud/packages/push-contract/src).
+// Why: talks to the Kingu push gateway (cloud/packages/push-contract/src).
 // Every method returns a result instead of throwing — push is best-effort and
 // must never break the socket fan-out it rides along with.
 import { z } from 'zod'

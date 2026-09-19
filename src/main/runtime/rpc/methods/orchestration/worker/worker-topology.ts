@@ -1,7 +1,7 @@
 import type { AgentLaunchPreferences } from '../../../../../../shared/agent-session-host-authority'
 import { narrowStructuredLaunchSeedOptions } from '../../../../../../shared/native-chat-session-option-defaults'
 import type { TuiAgent } from '../../../../../../shared/tui-agent'
-import type { OrcaRuntimeService } from '../../../../orca-runtime'
+import type { KinguRuntimeService } from '../../../../kingu-runtime'
 import type { OrchestrationDb } from '../../../../orchestration/db'
 import { OrchestrationError } from '../../../../orchestration/orchestration-error'
 import { createStructuredWorkerSession } from '../../orchestration-structured-worker-session'
@@ -40,7 +40,7 @@ export type WorkerSetupReceipt = {
     | 'not_applicable'
 }
 
-export function requireWorkerAuthority(runtime: OrcaRuntimeService, terminalHandle: string) {
+export function requireWorkerAuthority(runtime: KinguRuntimeService, terminalHandle: string) {
   const authority = runtime.getOrchestrationDispatchAuthority(terminalHandle)
   const paneKey = authority?.paneKey ?? runtime.getTerminalPaneKey(terminalHandle)
   const processIncarnation =
@@ -57,7 +57,7 @@ export function requireWorkerAuthority(runtime: OrcaRuntimeService, terminalHand
 }
 
 export async function createExistingWorktreeWorkerTerminal(args: {
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   worktreeId: string
   agent: TuiAgent
   launchPreferences?: AgentLaunchPreferences
@@ -93,7 +93,7 @@ export async function createExistingWorktreeWorkerTerminal(args: {
  * consult the structured registry, so the handle minted here answers exactly like a PTY handle.
  */
 export async function createStructuredWorkerSessionForWorktree(args: {
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   worktreeId: string
   agent: TuiAgent
   dispatchId: string
@@ -149,7 +149,7 @@ export function applyWaitForSetupOutcome(
 }
 
 export function monitorWorkerSetup(args: {
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   db: OrchestrationDb
   runId: string
   dispatchId: string

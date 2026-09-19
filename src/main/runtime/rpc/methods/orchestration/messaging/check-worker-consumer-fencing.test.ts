@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { RpcContext } from '../../../core'
-import type { OrcaRuntimeService } from '../../../../orca-runtime'
+import type { KinguRuntimeService } from '../../../../kingu-runtime'
 import type { OrchestrationDb } from '../../../../orchestration/db'
 import { createRootDispatch } from '../../../../orchestration/db/root-dispatch-test-fixture'
 import { createOrchestrationRpcHarness } from '../rpc-test-harness'
@@ -19,7 +19,7 @@ type CheckResult = {
 describe('orchestration.check on a re-attached Dispatch', () => {
   const h = createOrchestrationRpcHarness()
   let db: OrchestrationDb
-  let runtime: OrcaRuntimeService
+  let runtime: KinguRuntimeService
   let ctx: RpcContext
 
   afterEach(() => {

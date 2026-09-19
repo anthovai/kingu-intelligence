@@ -54,22 +54,22 @@ describe('registrable family across public-suffix sections', () => {
 })
 
 // Why: `.local` is absent from the PSL, and the two libraries disagreed about what that means. psl
-// returned an all-null parse, so every `*.orca.local` host was its own family; tldts applies the
-// default single-label rule and stops at `orca.local`, which is what Chromium treats as registrable.
+// returned an all-null parse, so every `*.kingu.local` host was its own family; tldts applies the
+// default single-label rule and stops at `kingu.local`, which is what Chromium treats as registrable.
 // The widening is deliberate, so it is pinned here rather than left to the next library bump.
 describe('unlisted .local suffix', () => {
   it('stops at the two-label boundary', () => {
-    expect(registrableFamily('app.orca.local')).toBe('orca.local')
-    expect(registrableFamily('orca.local')).toBe('orca.local')
+    expect(registrableFamily('app.kingu.local')).toBe('kingu.local')
+    expect(registrableFamily('kingu.local')).toBe('kingu.local')
   })
 
   // The consequence of the boundary move: a replace-mode import of one host now also clears
-  // non-host-only cookies scoped to `.orca.local`, which every sibling `*.orca.local` host shares.
+  // non-host-only cookies scoped to `.kingu.local`, which every sibling `*.kingu.local` host shares.
   it('pulls the shared parent into the removal scope', () => {
-    const scope = importedDomainScope(['app.orca.local'])
+    const scope = importedDomainScope(['app.kingu.local'])
 
-    expect(domainIsInImportedScope(scope, 'orca.local', false)).toBe(true)
-    expect(domainIsInImportedScope(scope, 'orca.local', true)).toBe(false)
+    expect(domainIsInImportedScope(scope, 'kingu.local', false)).toBe(true)
+    expect(domainIsInImportedScope(scope, 'kingu.local', true)).toBe(false)
   })
 })
 

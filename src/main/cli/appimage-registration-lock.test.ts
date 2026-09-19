@@ -19,7 +19,7 @@ describe('withAppImageRegistrationLock', () => {
     lockMock.mockReset().mockResolvedValue(vi.fn().mockResolvedValue(undefined))
     const { withAppImageRegistrationLock } = await load()
 
-    await withAppImageRegistrationLock('/cache/orca/appimage', async () => 'done')
+    await withAppImageRegistrationLock('/cache/kingu/appimage', async () => 'done')
 
     const options = lockMock.mock.calls[0][1]
     // Why: `retries` alone caps attempts, not elapsed time — 1000 x 1s is ~16 minutes.
@@ -32,8 +32,8 @@ describe('withAppImageRegistrationLock', () => {
     const { withAppImageRegistrationLock } = await load()
 
     await expect(
-      withAppImageRegistrationLock('/cache/orca/appimage', async () => 'done')
-    ).rejects.toThrow(/Timed out waiting for another Orca process[\s\S]*remove .*\.lock/)
+      withAppImageRegistrationLock('/cache/kingu/appimage', async () => 'done')
+    ).rejects.toThrow(/Timed out waiting for another Kingu process[\s\S]*remove .*\.lock/)
   })
 
   it('releases the lock when the operation throws', async () => {
@@ -42,7 +42,7 @@ describe('withAppImageRegistrationLock', () => {
     const { withAppImageRegistrationLock } = await load()
 
     await expect(
-      withAppImageRegistrationLock('/cache/orca/appimage', async () => {
+      withAppImageRegistrationLock('/cache/kingu/appimage', async () => {
         throw new Error('boom')
       })
     ).rejects.toThrow('boom')

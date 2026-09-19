@@ -16,7 +16,7 @@ import {
 } from './ssh-relay-endpoint-incumbent'
 
 async function probe(script: string, listening = false) {
-  const dir = mkdtempSync(join(tmpdir(), 'orca-incumbent-'))
+  const dir = mkdtempSync(join(tmpdir(), 'kingu-incumbent-'))
   const socket = join(dir, 'socket with spaces.sock')
   const server = createServer((s) => s.end())
   const pidFile = join(dir, 'probe.pid')

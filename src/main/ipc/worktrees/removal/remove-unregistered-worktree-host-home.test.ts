@@ -80,7 +80,7 @@ function removeOverSsh(
     `ssh:${CONNECTION_ID}`,
     [],
     // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the removed-meta fields here are the two the SSH route inspects.
-    { orcaCreatedAt: 1, orcaCreationSource: 'ssh' } as never,
+    { kinguCreatedAt: 1, kinguCreationSource: 'ssh' } as never,
     undefined,
     {},
     // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the trailing options bag is unread: every value it could carry applies after the guard.

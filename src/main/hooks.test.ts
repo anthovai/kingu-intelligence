@@ -227,7 +227,7 @@ describe('runHook', () => {
       const { runHook } = await import('./hooks')
       const result = await runHook('setup', '\\\\wsl.localhost\\Ubuntu\\home\\jin\\feature', {
         ...makeRepo(),
-        path: 'C:\\Users\\jinwo\\git\\orca'
+        path: 'C:\\Users\\jinwo\\git\\kingu'
       })
 
       expect(result).toEqual({ success: true, output: '' })
@@ -240,10 +240,10 @@ describe('runHook', () => {
           // #7652 regression: the unattended WSL hook branch must carry the
           // credential guard into the guest env.
           env: expect.objectContaining({
-            ORCA_ROOT_PATH: '/mnt/c/Users/jinwo/git/orca',
-            ORCA_WORKTREE_PATH: '/home/jin/feature',
-            CONDUCTOR_ROOT_PATH: '/mnt/c/Users/jinwo/git/orca',
-            GHOSTX_ROOT_PATH: '/mnt/c/Users/jinwo/git/orca',
+            KINGU_ROOT_PATH: '/mnt/c/Users/jinwo/git/kingu',
+            KINGU_WORKTREE_PATH: '/home/jin/feature',
+            CONDUCTOR_ROOT_PATH: '/mnt/c/Users/jinwo/git/kingu',
+            GHOSTX_ROOT_PATH: '/mnt/c/Users/jinwo/git/kingu',
             GIT_TERMINAL_PROMPT: '0',
             GCM_INTERACTIVE: 'never'
           })
@@ -284,10 +284,10 @@ describe('runHook', () => {
       const { runHook } = await import('./hooks')
       const result = await runHook(
         'setup',
-        'C:\\Users\\jinwo\\git\\orca-feature',
+        'C:\\Users\\jinwo\\git\\kingu-feature',
         {
           ...makeRepo(),
-          path: 'C:\\Users\\jinwo\\git\\orca'
+          path: 'C:\\Users\\jinwo\\git\\kingu'
         },
         undefined,
         { wslDistro: 'Ubuntu' }
@@ -299,12 +299,12 @@ describe('runHook', () => {
           distro: 'Ubuntu',
           loginPath: 'preferred',
           script: 'echo hello',
-          cwd: '/mnt/c/Users/jinwo/git/orca-feature',
+          cwd: '/mnt/c/Users/jinwo/git/kingu-feature',
           env: expect.objectContaining({
-            ORCA_ROOT_PATH: '/mnt/c/Users/jinwo/git/orca',
-            ORCA_WORKTREE_PATH: '/mnt/c/Users/jinwo/git/orca-feature',
-            CONDUCTOR_ROOT_PATH: '/mnt/c/Users/jinwo/git/orca',
-            GHOSTX_ROOT_PATH: '/mnt/c/Users/jinwo/git/orca'
+            KINGU_ROOT_PATH: '/mnt/c/Users/jinwo/git/kingu',
+            KINGU_WORKTREE_PATH: '/mnt/c/Users/jinwo/git/kingu-feature',
+            CONDUCTOR_ROOT_PATH: '/mnt/c/Users/jinwo/git/kingu',
+            GHOSTX_ROOT_PATH: '/mnt/c/Users/jinwo/git/kingu'
           })
         })
       )
@@ -319,7 +319,7 @@ describe('runHook', () => {
 
   it('writes Windows-path setup runners through WSL git when the project runtime targets WSL', async () => {
     gitExecFileSyncMock.mockReset()
-    gitExecFileSyncMock.mockReturnValue('/mnt/c/Users/jinwo/git/orca/.git/orca/setup-runner.sh\n')
+    gitExecFileSyncMock.mockReturnValue('/mnt/c/Users/jinwo/git/kingu/.git/kingu/setup-runner.sh\n')
 
     const fs = await import('node:fs')
     const mkdirSyncMock = vi.mocked(fs.mkdirSync)
@@ -337,17 +337,17 @@ describe('runHook', () => {
       const result = createSetupRunnerScript(
         {
           ...makeRepo(),
-          path: 'C:\\Users\\jinwo\\git\\orca'
+          path: 'C:\\Users\\jinwo\\git\\kingu'
         },
-        'C:\\Users\\jinwo\\git\\orca-feature',
+        'C:\\Users\\jinwo\\git\\kingu-feature',
         'echo hello',
         { wslDistro: 'Ubuntu' }
       )
 
       expect(gitExecFileSyncMock).toHaveBeenCalledWith(
-        ['rev-parse', '--git-path', 'orca/setup-runner.sh'],
+        ['rev-parse', '--git-path', 'kingu/setup-runner.sh'],
         {
-          cwd: 'C:\\Users\\jinwo\\git\\orca-feature',
+          cwd: 'C:\\Users\\jinwo\\git\\kingu-feature',
           wslDistro: 'Ubuntu'
         }
       )
@@ -396,7 +396,7 @@ describe('runHook', () => {
       const { runHook } = await import('./hooks')
       const result = await runHook('setup', '\\\\wsl.localhost\\Ubuntu\\home\\jin\\feature', {
         ...makeRepo(),
-        path: 'C:\\Users\\jinwo\\git\\orca'
+        path: 'C:\\Users\\jinwo\\git\\kingu'
       })
 
       expect(result).toMatchObject({

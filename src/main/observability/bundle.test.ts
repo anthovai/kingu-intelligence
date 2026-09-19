@@ -14,7 +14,7 @@ let dir: string
 let traceFile: string
 
 beforeEach(() => {
-  dir = mkdtempSync(join(tmpdir(), 'orca-bundle-'))
+  dir = mkdtempSync(join(tmpdir(), 'kingu-bundle-'))
   traceFile = join(dir, 'main.trace.ndjson')
 })
 afterEach(() => {
@@ -72,7 +72,7 @@ describe('bundle — collection', () => {
       platform: 'win32',
       arch: 'x64',
       osRelease: 'test',
-      orcaChannel: 'dev'
+      kinguChannel: 'dev'
     })
     expect(bundle.bytes).toBe(Buffer.byteLength(bundle.payload))
   })
@@ -86,7 +86,7 @@ describe('bundle — collection', () => {
       platform: 'darwin',
       arch: 'arm64',
       osRelease: '24.0.0',
-      orcaChannel: 'dev'
+      kinguChannel: 'dev'
     })
     const header = JSON.parse(bundle.payload.split('\n').find(Boolean) ?? '')
     expect(header.type).toBe('bundle-header')
@@ -94,7 +94,7 @@ describe('bundle — collection', () => {
     expect(header.app_version).toBe('1.2.3')
     expect(header.platform).toBe('darwin')
     expect(header.arch).toBe('arm64')
-    expect(header.orca_channel).toBe('dev')
+    expect(header.kingu_channel).toBe('dev')
     expect(header.schema_version).toBe(1)
   })
 
@@ -107,7 +107,7 @@ describe('bundle — collection', () => {
       platform: 'darwin',
       arch: 'arm64',
       osRelease: '24',
-      orcaChannel: 'dev'
+      kinguChannel: 'dev'
     })
     const header = JSON.parse(bundle.payload.split('\n')[0])
     expect(header).not.toHaveProperty('install_id')
@@ -125,7 +125,7 @@ describe('bundle — collection', () => {
       platform: 'darwin',
       arch: 'arm64',
       osRelease: '24',
-      orcaChannel: 'dev'
+      kinguChannel: 'dev'
     })
     expect(bundle.spanCount).toBe(2)
   })
@@ -151,7 +151,7 @@ describe('bundle — collection', () => {
       platform: 'darwin',
       arch: 'arm64',
       osRelease: '24',
-      orcaChannel: 'dev'
+      kinguChannel: 'dev'
     })
     // Header + recent only.
     expect(bundle.spanCount).toBe(1)
@@ -185,7 +185,7 @@ describe('bundle — collection', () => {
       platform: 'darwin',
       arch: 'arm64',
       osRelease: '24',
-      orcaChannel: 'dev'
+      kinguChannel: 'dev'
     })
     expect(bundle.payload).toContain('"event":"startup"')
     expect(bundle.payload).toContain('"name":"recent"')
@@ -201,7 +201,7 @@ describe('bundle — collection', () => {
       platform: 'darwin',
       arch: 'arm64',
       osRelease: '24',
-      orcaChannel: 'dev'
+      kinguChannel: 'dev'
     })
     expect(bundle.payload).not.toContain('"src":"daemon"')
   })
@@ -223,7 +223,7 @@ describe('bundle — collection', () => {
       platform: 'darwin',
       arch: 'arm64',
       osRelease: '24',
-      orcaChannel: 'dev'
+      kinguChannel: 'dev'
     })
     expect(bundle.payload).not.toContain('sk-ant-api03-aaaaa')
     expect(bundle.payload).toContain('[redacted:anthropic-key]')
@@ -254,7 +254,7 @@ describe('bundle — collection', () => {
       platform: 'darwin',
       arch: 'arm64',
       osRelease: '24',
-      orcaChannel: 'dev'
+      kinguChannel: 'dev'
     })
     expect(bundle.payload).not.toContain('posthog-install-id')
     expect(bundle.payload).not.toContain('plain-secret')
@@ -277,7 +277,7 @@ describe('bundle — collection', () => {
       platform: 'darwin',
       arch: 'arm64',
       osRelease: '24',
-      orcaChannel: 'dev'
+      kinguChannel: 'dev'
     })
     expect(bundle.bytes).toBeLessThanOrEqual(_internalsForTests.MAX_BUNDLE_BYTES)
     expect(bundle.spanCount).toBe(0)
@@ -297,7 +297,7 @@ describe('bundle — collection', () => {
       platform: 'darwin',
       arch: 'arm64',
       osRelease: '24',
-      orcaChannel: 'dev'
+      kinguChannel: 'dev'
     })
     expect(bundle.payload).toContain('"name":"newest"')
     expect(bundle.payload).not.toContain('"name":"oldest"')
@@ -320,7 +320,7 @@ describe('bundle — collection', () => {
       platform: 'darwin',
       arch: 'arm64',
       osRelease: '24',
-      orcaChannel: 'dev'
+      kinguChannel: 'dev'
     })
     expect(bundle.payload).toContain('"name":"useful"')
     expect(bundle.payload).not.toContain('"name":"oversized"')
@@ -341,7 +341,7 @@ describe('bundle — collection', () => {
       platform: 'darwin',
       arch: 'arm64',
       osRelease: '24',
-      orcaChannel: 'dev'
+      kinguChannel: 'dev'
     })
     expect(bundle.payload).toContain('"name":"newest-useful"')
     expect(bundle.payload).toContain('"name":"older-useful"')
@@ -358,7 +358,7 @@ describe('bundle — collection', () => {
         platform: 'darwin',
         arch: 'arm64',
         osRelease: '24',
-        orcaChannel: 'dev'
+        kinguChannel: 'dev'
       })
     ).not.toThrow()
   })
@@ -375,7 +375,7 @@ describe('bundle — collection', () => {
       platform: 'darwin',
       arch: 'arm64',
       osRelease: '24',
-      orcaChannel: 'dev'
+      kinguChannel: 'dev'
     })
 
     expect(bundle.spanCount).toBe(1)

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import type { OrcaRuntimeService } from '../../orca-runtime'
+import type { KinguRuntimeService } from '../../kingu-runtime'
 import { SESSION_TABS_RETIREMENT_PROOF_DELTA_RUNTIME_CAPABILITY } from '../../../../shared/protocol-version'
 import type {
   RuntimeMobileSessionRetiredTerminalSurface,
@@ -109,7 +109,7 @@ describe('session.tabs.subscribe retirement proof payload', () => {
           return () => {}
         }
       )
-    } as unknown as OrcaRuntimeService
+    } as unknown as KinguRuntimeService
     const dispatcher = new RpcDispatcher({ runtime, methods: SESSION_TAB_METHODS })
     const messages: string[] = []
     await dispatcher.dispatchStreaming(

@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { OrcaRuntimeService } from './orca-runtime'
+import { KinguRuntimeService } from './kingu-runtime'
 import { OrchestrationDb } from './orchestration/db'
 import type { DispatchContextRow } from './orchestration/types'
 import { createRootDispatch } from './orchestration/db/root-dispatch-test-fixture'
@@ -30,8 +30,8 @@ function createDb(): OrchestrationDb {
   return new OrchestrationDb(join(directory, 'orchestration.db'))
 }
 
-function createRuntime(db: OrchestrationDb): OrcaRuntimeService {
-  const runtime = new OrcaRuntimeService(null)
+function createRuntime(db: OrchestrationDb): KinguRuntimeService {
+  const runtime = new KinguRuntimeService(null)
   runtime.setOrchestrationDb(db)
   runtime.setPtyController({
     write: () => true,
@@ -242,9 +242,9 @@ describe('STA-4603/STA-4536 exit provenance', () => {
 
   it('marks the intent from the real close path, not just from the helper', async () => {
     const db = createDb()
-    const runtime = new OrcaRuntimeService(null)
+    const runtime = new KinguRuntimeService(null)
     runtime.setOrchestrationDb(db)
-    // Model the shipping controller: `orca terminal close` reaches stopAndWait,
+    // Model the shipping controller: `kingu terminal close` reaches stopAndWait,
     // which verifies the stop and then reports it with a synthetic code 0 --
     // a number indistinguishable from a clean agent finish.
     runtime.setPtyController({

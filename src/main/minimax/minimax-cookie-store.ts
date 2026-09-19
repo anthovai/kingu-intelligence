@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { hardenExistingSecureFile, writeSecureFile } from '../../shared/secure-file'
 
 const MINIMAX_COOKIE_FILE = 'minimax-session-cookie.enc'
-const COOKIE_ENVELOPE_PREFIX = 'orca-minimax-cookie:v1:'
+const COOKIE_ENVELOPE_PREFIX = 'kingu-minimax-cookie:v1:'
 let cachedMiniMaxCookie: string | null = null
 let warnedMiniMaxCookieStatusHardenFailure = false
 
@@ -14,12 +14,12 @@ type MiniMaxCookieEnvelope = {
   payload: Buffer
 }
 
-function getOrcaDir(): string {
-  return join(homedir(), '.orca')
+function getKinguDir(): string {
+  return join(homedir(), '.kingu')
 }
 
 function getMiniMaxCookiePath(): string {
-  return join(getOrcaDir(), MINIMAX_COOKIE_FILE)
+  return join(getKinguDir(), MINIMAX_COOKIE_FILE)
 }
 
 function encodeCookieEnvelope(kind: MiniMaxCookieEnvelope['kind'], payload: Buffer): string {

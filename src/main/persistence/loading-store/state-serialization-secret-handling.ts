@@ -58,7 +58,7 @@ export class StateSerializationSecretHandlingOperations {
       if (blob === plaintext && hashValue === plaintext) {
         return blob
       }
-      const sentinel = `orca-secret-slot-${randomUUID()}`
+      const sentinel = `kingu-secret-slot-${randomUUID()}`
       secretSubs.push({ sentinel, blob, hashValue })
       return sentinel
     }

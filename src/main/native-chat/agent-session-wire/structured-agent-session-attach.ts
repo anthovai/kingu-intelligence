@@ -179,7 +179,7 @@ export type AttachedJournal = {
  * is read, and the window stays valid until the resume consumes it. Every other
  * settlement site — a proven child exit, a handoff suspend — runs while the host
  * may still start another child, and a read there could be overtaken before it
- * is acted on. Orca still never re-sends: this decides state only.
+ * is acted on. Kingu still never re-sends: this decides state only.
  */
 export async function attachJournal(input: {
   record: AgentSessionRecord

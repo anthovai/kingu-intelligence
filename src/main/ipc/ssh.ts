@@ -34,7 +34,7 @@ export {
 } from '../ssh/ssh-target-registry'
 import { registerSshBrowseHandler } from './ssh-browse'
 import { registerCredentialHandler } from './ssh-passphrase'
-import type { OrcaRuntimeService } from '../runtime/orca-runtime'
+import type { KinguRuntimeService } from '../runtime/kingu-runtime'
 import {
   initializeSshConnectionGenerationSession,
   resetSshConnectionGenerations
@@ -172,7 +172,7 @@ export async function requestActiveSshAiVaultSessionTitles(
 export function registerSshHandlers(
   store: Store,
   getMainWindow: () => BrowserWindow | null,
-  runtime?: OrcaRuntimeService
+  runtime?: KinguRuntimeService
 ): { connectionManager: SshConnectionManager; sshStore: SshConnectionStore } {
   initializeSshConnectionGenerationSession()
   // Why: macOS re-activation re-calls this with a new BrowserWindow; ipcMain.handle() throws on a duplicate channel, so remove prior handlers first.

@@ -5,7 +5,7 @@ import { createService, restorePlatform, setPlatform } from './claude-account-se
 
 vi.mock('electron', () => ({
   app: {
-    getPath: () => '/tmp/orca-claude-windows-login-test'
+    getPath: () => '/tmp/kingu-claude-windows-login-test'
   }
 }))
 

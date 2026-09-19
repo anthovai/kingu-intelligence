@@ -101,7 +101,7 @@ describe('registerWorktreeHandlers', () => {
   it.each(['command', ' '])(
     'preserves local file writes with an unavailable runtime: %j',
     async (content) => {
-      const root = mkdtempSync(join(tmpdir(), 'orca-runtime-ignore-'))
+      const root = mkdtempSync(join(tmpdir(), 'kingu-runtime-ignore-'))
       const repo = {
         id: 'repo-1',
         path: root,
@@ -109,8 +109,8 @@ describe('registerWorktreeHandlers', () => {
         badgeColor: '#000',
         addedAt: 0
       }
-      mkdirSync(join(root, '.orca'))
-      writeFileSync(join(root, '.orca', 'issue-command'), 'old command\n')
+      mkdirSync(join(root, '.kingu'))
+      writeFileSync(join(root, '.kingu', 'issue-command'), 'old command\n')
       store.getRepo.mockReturnValue(repo)
       store.getRepos.mockReturnValue([repo])
       const resolver = vi
@@ -121,10 +121,10 @@ describe('registerWorktreeHandlers', () => {
       try {
         await handlers['hooks:writeIssueCommand'](null, { repoId: repo.id, content })
         if (content.trim()) {
-          expect(readFileSync(join(root, '.orca', 'issue-command'), 'utf8')).toBe('command\n')
-          expect(readFileSync(join(root, '.gitignore'), 'utf8')).toBe('.orca\n')
+          expect(readFileSync(join(root, '.kingu', 'issue-command'), 'utf8')).toBe('command\n')
+          expect(readFileSync(join(root, '.gitignore'), 'utf8')).toBe('.kingu\n')
         } else {
-          expect(existsSync(join(root, '.orca', 'issue-command'))).toBe(false)
+          expect(existsSync(join(root, '.kingu', 'issue-command'))).toBe(false)
           expect(existsSync(join(root, '.gitignore'))).toBe(false)
           expect(resolver).not.toHaveBeenCalled()
         }
@@ -173,10 +173,10 @@ describe('registerWorktreeHandlers', () => {
       undefined
     )
     expect(result).toMatchObject({
-      runnerScriptPath: '/workspace/repo/.git/orca/issue-command-runner.sh',
+      runnerScriptPath: '/workspace/repo/.git/kingu/issue-command-runner.sh',
       envVars: {
-        ORCA_ROOT_PATH: '/workspace/repo',
-        ORCA_WORKTREE_PATH: '/workspace/improve-dashboard'
+        KINGU_ROOT_PATH: '/workspace/repo',
+        KINGU_WORKTREE_PATH: '/workspace/improve-dashboard'
       }
     })
   })
@@ -193,7 +193,7 @@ describe('registerWorktreeHandlers', () => {
     }
     const fsProvider = {
       readFile: vi.fn(async (filePath: string) => {
-        if (filePath.endsWith('/.orca/issue-command')) {
+        if (filePath.endsWith('/.kingu/issue-command')) {
           return { content: 'local command\n', isBinary: false }
         }
         throw new Error('shared read failed')
@@ -237,7 +237,7 @@ describe('registerWorktreeHandlers', () => {
     await expect(
       handlers['hooks:writeIssueCommand'](null, {
         repoId: 'repo-ssh',
-        content: 'orca issue command'
+        content: 'kingu issue command'
       })
     ).rejects.toThrow('ssh read failed')
 
@@ -260,7 +260,7 @@ describe('registerWorktreeHandlers', () => {
     }
     const fsProvider = {
       readFile: vi.fn(async (filePath: string) => {
-        if (filePath.endsWith('/.orca/issue-command')) {
+        if (filePath.endsWith('/.kingu/issue-command')) {
           return { content: 'remote command\n', isBinary: false }
         }
         throw Object.assign(new Error('missing'), { code: 'ENOENT' })
@@ -280,7 +280,7 @@ describe('registerWorktreeHandlers', () => {
       effectiveContent: 'remote command',
       source: 'local'
     })
-    expect(fsProvider.readFile).toHaveBeenCalledWith('/remote/repo/.orca/issue-command')
+    expect(fsProvider.readFile).toHaveBeenCalledWith('/remote/repo/.kingu/issue-command')
   })
 
   it('creates remote .gitignore only when it is missing while writing SSH issue commands', async () => {
@@ -305,14 +305,14 @@ describe('registerWorktreeHandlers', () => {
 
     await handlers['hooks:writeIssueCommand'](null, {
       repoId: 'repo-ssh',
-      content: 'orca issue command'
+      content: 'kingu issue command'
     })
 
-    expect(fsProvider.writeFile).toHaveBeenNthCalledWith(1, '/remote/repo/.gitignore', '.orca\n')
+    expect(fsProvider.writeFile).toHaveBeenNthCalledWith(1, '/remote/repo/.gitignore', '.kingu\n')
     expect(fsProvider.writeFile).toHaveBeenNthCalledWith(
       2,
-      '/remote/repo/.orca/issue-command',
-      'orca issue command\n'
+      '/remote/repo/.kingu/issue-command',
+      'kingu issue command\n'
     )
   })
 
@@ -332,12 +332,12 @@ describe('registerWorktreeHandlers', () => {
     await expect(
       handlers['hooks:writeIssueCommand'](null, {
         repoId: 'repo-ssh',
-        content: 'orca issue command'
+        content: 'kingu issue command'
       })
     ).rejects.toThrow('Remote filesystem unavailable')
   })
 
-  it('preserves .gitignore when the SSH host already ignores .orca', async () => {
+  it('preserves .gitignore when the SSH host already ignores .kingu', async () => {
     store.getRepo.mockReturnValue({
       id: 'repo-ssh',
       path: '/remote/repo',
@@ -346,7 +346,7 @@ describe('registerWorktreeHandlers', () => {
       addedAt: 0,
       connectionId: 'conn-1'
     })
-    const checkIgnoredPaths = vi.fn().mockResolvedValue(['.orca/issue-command'])
+    const checkIgnoredPaths = vi.fn().mockResolvedValue(['.kingu/issue-command'])
     getSshGitProviderMock.mockReturnValue({ checkIgnoredPaths })
     const fsProvider = {
       createDir: vi.fn().mockResolvedValue(undefined),
@@ -361,10 +361,10 @@ describe('registerWorktreeHandlers', () => {
     })
 
     expect(getSshGitProviderMock).toHaveBeenCalledWith('conn-1')
-    expect(checkIgnoredPaths).toHaveBeenCalledWith('/remote/repo', ['.orca/issue-command'])
+    expect(checkIgnoredPaths).toHaveBeenCalledWith('/remote/repo', ['.kingu/issue-command'])
     expect(fsProvider.readFile).not.toHaveBeenCalled()
     expect(fsProvider.writeFile).toHaveBeenCalledExactlyOnceWith(
-      '/remote/repo/.orca/issue-command',
+      '/remote/repo/.kingu/issue-command',
       'local command\n'
     )
   })

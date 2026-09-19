@@ -5,19 +5,19 @@ import { BrowserRoutePartitionBindingStore } from './browser-route-partition-bin
 const BINDING_FILE_NAME = 'browser-route-partition-bindings.json'
 const PARTITION_DATA_DIRECTORY_NAME = 'Partitions'
 let bindingFilePathOverride: string | null = null
-let activeOrcaProfileId: string | null = null
+let activeKinguProfileId: string | null = null
 
-export function configureBrowserRoutePartitionBindingsForOrcaProfile(options: {
-  orcaProfileId: string
+export function configureBrowserRoutePartitionBindingsForKinguProfile(options: {
+  kinguProfileId: string
   profileDirectory: string
 }): void {
   bindingFilePathOverride = join(options.profileDirectory, BINDING_FILE_NAME)
-  activeOrcaProfileId = options.orcaProfileId
+  activeKinguProfileId = options.kinguProfileId
 }
 
-/** Null before the active Orca profile is known, when no partition can exist yet. */
-export function activeBrowserRoutePartitionOrcaProfileId(): string | null {
-  return activeOrcaProfileId
+/** Null before the active Kingu profile is known, when no partition can exist yet. */
+export function activeBrowserRoutePartitionKinguProfileId(): string | null {
+  return activeKinguProfileId
 }
 
 export function routePartitionDataRoot(): string {

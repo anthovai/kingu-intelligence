@@ -85,7 +85,7 @@ describe('UnixSocketTransport', () => {
 
   it('clears request keepalive timers when the socket closes before a reply', () => {
     const transport = new UnixSocketTransport({
-      endpoint: '/tmp/orca-runtime-rpc-test.sock',
+      endpoint: '/tmp/kingu-runtime-rpc-test.sock',
       kind: 'unix',
       keepaliveIntervalMs: 100
     })

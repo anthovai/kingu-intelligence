@@ -65,7 +65,7 @@ async function createStore() {
 }
 
 function dataFile(): string {
-  return join(testState.dir, 'orca-data.json')
+  return join(testState.dir, 'kingu-data.json')
 }
 
 type ProtectedState = {
@@ -135,7 +135,7 @@ async function settleSave(store: Awaited<ReturnType<typeof createStore>>): Promi
 
 describe('protected persistence when safeStorage fails', () => {
   beforeEach(() => {
-    testState.dir = mkdtempSync(join(tmpdir(), 'orca-safe-storage-test-'))
+    testState.dir = mkdtempSync(join(tmpdir(), 'kingu-safe-storage-test-'))
     cipherState.availability = 'available'
     cipherState.encryptionThrows = false
     cipherState.decryptionThrows = false

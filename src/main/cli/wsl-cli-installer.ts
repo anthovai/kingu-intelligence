@@ -19,7 +19,7 @@ import { buildWslCliStatus, readWslCliCommandFile, resolveReadyWslCliState } fro
 
 const MANAGED_MARKER = getWslLauncherMarker()
 const BRIDGE_MANAGED_MARKER = getWslBridgeMarker()
-const LEGACY_WSL_COMMAND_NAME = 'orca'
+const LEGACY_WSL_COMMAND_NAME = 'kingu'
 const WSL_COMMAND_TIMEOUT_MS = 10_000
 
 function normalizeManagedScriptContent(content: string): string {
@@ -76,7 +76,7 @@ export class WslCliInstaller {
         state: 'not_installed',
         currentTarget: null,
         pathConfigured: ready.pathConfigured,
-        detail: `Register ${ready.commandPath} to use Orca from WSL.`
+        detail: `Register ${ready.commandPath} to use Kingu from WSL.`
       })
     }
 
@@ -88,7 +88,7 @@ export class WslCliInstaller {
         state: 'conflict',
         currentTarget: null,
         pathConfigured: ready.pathConfigured,
-        detail: `${ready.commandPath} exists but is not an Orca launcher script.`
+        detail: `${ready.commandPath} exists but is not an Kingu launcher script.`
       })
     }
 
@@ -125,7 +125,7 @@ export class WslCliInstaller {
         detail:
           bridgeContent === null || bridgeManaged
             ? `${ready.commandPath} is missing its PowerShell bridge.`
-            : `${ready.bridgePath} exists but is not managed by Orca.`
+            : `${ready.bridgePath} exists but is not managed by Kingu.`
       })
     }
 
@@ -141,10 +141,10 @@ export class WslCliInstaller {
       currentTarget,
       pathConfigured: ready.pathConfigured,
       detail: !managed
-        ? `${ready.commandPath} exists but is not managed by Orca.`
+        ? `${ready.commandPath} exists but is not managed by Kingu.`
         : bridgeConflict
-          ? `${ready.bridgePath} exists but is not managed by Orca.`
-          : `${ready.commandPath} points to a different Orca launcher.`
+          ? `${ready.bridgePath} exists but is not managed by Kingu.`
+          : `${ready.commandPath} points to a different Kingu launcher.`
     })
   }
 
@@ -163,7 +163,7 @@ export class WslCliInstaller {
     }
     if (status.state === 'conflict') {
       // Why: a user-owned bridge conflicts with repair, but the launcher is
-      // still Orca-managed and must remain registered for future reconciliation.
+      // still Kingu-managed and must remain registered for future reconciliation.
       return { changed: false, managed: status.currentTarget !== null, status }
     }
 
@@ -208,7 +208,7 @@ export class WslCliInstaller {
     }
     if (status.state === 'conflict') {
       throw new Error(
-        `Refusing to replace non-Orca command at ${status.commandPath}. Remove it and register again if it is no longer needed.`
+        `Refusing to replace non-Kingu command at ${status.commandPath}. Remove it and register again if it is no longer needed.`
       )
     }
 
@@ -230,7 +230,7 @@ export class WslCliInstaller {
     }
     const legacyCommandPath = `${getPosixDirname(status.commandPath)}/${LEGACY_WSL_COMMAND_NAME}`
     if (status.state === 'not_installed') {
-      // Why: a managed legacy `orca` left behind would later be re-adopted by
+      // Why: a managed legacy `kingu` left behind would later be re-adopted by
       // startup reconciliation as opt-in proof, silently undoing this removal.
       await this.run(
         this.distro as string,
@@ -239,7 +239,7 @@ export class WslCliInstaller {
       return status
     }
     if (status.state === 'conflict') {
-      throw new Error(`Refusing to remove non-Orca command at ${status.commandPath}.`)
+      throw new Error(`Refusing to remove non-Kingu command at ${status.commandPath}.`)
     }
 
     await this.run(

@@ -142,7 +142,7 @@ const attachParams = {
 } as unknown as Parameters<typeof attachStructuredAgentSession>[2]
 
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'orca-close-retry-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-close-retry-'))
   // The registry is process-wide; drain it so one case cannot see another's.
   await agentSessionJournalCloseRetries.retryAll()
 })

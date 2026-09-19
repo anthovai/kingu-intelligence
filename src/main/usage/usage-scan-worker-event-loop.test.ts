@@ -33,7 +33,12 @@ const EXPECTED_EVENTS = FILE_COUNT * EVENTS_PER_FILE
 const TOKENS_PER_EVENT = 200
 
 const WORKTREES: UsageScanWorktreeRef[] = [
-  { repoId: 'repo-1', worktreeId: 'wt-1', path: '/tmp/orca-usage-oracle-project', displayName: 'demo' }
+  {
+    repoId: 'repo-1',
+    worktreeId: 'wt-1',
+    path: '/tmp/kingu-usage-oracle-project',
+    displayName: 'demo'
+  }
 ]
 
 let corpusRoot = ''
@@ -44,12 +49,12 @@ function buildRolloutLines(sessionId: string, seed: number): string {
     JSON.stringify({
       timestamp: '2026-01-01T00:00:00.000Z',
       type: 'session_meta',
-      payload: { id: sessionId, cwd: '/tmp/orca-usage-oracle-project' }
+      payload: { id: sessionId, cwd: '/tmp/kingu-usage-oracle-project' }
     }),
     JSON.stringify({
       timestamp: '2026-01-01T00:00:01.000Z',
       type: 'turn_context',
-      payload: { cwd: '/tmp/orca-usage-oracle-project', model: 'gpt-5.6-sol' }
+      payload: { cwd: '/tmp/kingu-usage-oracle-project', model: 'gpt-5.6-sol' }
     })
   ]
   // Seeded per file so no two rollouts mint the same event key; identical keys
@@ -141,11 +146,11 @@ function createWorkerClient(): UsageScanWorkerClient {
  */
 async function withCorpusEnv<T>(fn: () => Promise<T>): Promise<T> {
   const previous = {
-    ORCA_USER_DATA_PATH: process.env.ORCA_USER_DATA_PATH,
+    KINGU_USER_DATA_PATH: process.env.KINGU_USER_DATA_PATH,
     HOME: process.env.HOME,
     USERPROFILE: process.env.USERPROFILE
   }
-  process.env.ORCA_USER_DATA_PATH = corpusRoot
+  process.env.KINGU_USER_DATA_PATH = corpusRoot
   process.env.HOME = corpusRoot
   process.env.USERPROFILE = corpusRoot
   try {
@@ -158,7 +163,7 @@ async function withCorpusEnv<T>(fn: () => Promise<T>): Promise<T> {
 }
 
 beforeAll(async () => {
-  corpusRoot = mkdtempSync(join(tmpdir(), 'orca-usage-scan-oracle-'))
+  corpusRoot = mkdtempSync(join(tmpdir(), 'kingu-usage-scan-oracle-'))
   writeCorpus(corpusRoot)
   workerEntryPath = join(corpusRoot, 'usage-scan-worker-entry.cjs')
   // Why bundle here: `new Worker` needs JavaScript, and the production entry is

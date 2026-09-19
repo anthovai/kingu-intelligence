@@ -13,7 +13,7 @@ export type WslProcessGroupTermination = ProcessTerminationBarrier & {
 }
 
 export function createWslProcessGroupTermination(distro: string): WslProcessGroupTermination {
-  const marker = `__ORCA_WSL_PROCESS_GROUP_${randomUUID()}__=`
+  const marker = `__KINGU_WSL_PROCESS_GROUP_${randomUUID()}__=`
   let processGroupId: number | null = null
   let stderrTail = ''
 
@@ -32,12 +32,12 @@ export function createWslProcessGroupTermination(distro: string): WslProcessGrou
       return false
     }
     const script = [
-      '_orca_group=$1',
-      `kill -${signal} "-$_orca_group" 2>/dev/null || :`,
-      '_orca_attempt=0',
-      'while kill -0 "-$_orca_group" 2>/dev/null; do',
-      `  [ "$_orca_attempt" -ge ${GUEST_TERMINATION_ATTEMPTS} ] && exit 1`,
-      '  _orca_attempt=$((_orca_attempt + 1))',
+      '_kingu_group=$1',
+      `kill -${signal} "-$_kingu_group" 2>/dev/null || :`,
+      '_kingu_attempt=0',
+      'while kill -0 "-$_kingu_group" 2>/dev/null; do',
+      `  [ "$_kingu_attempt" -ge ${GUEST_TERMINATION_ATTEMPTS} ] && exit 1`,
+      '  _kingu_attempt=$((_kingu_attempt + 1))',
       `  sleep ${GUEST_TERMINATION_INTERVAL_SECONDS}`,
       'done'
     ].join('\n')
@@ -69,11 +69,11 @@ export function createWslProcessGroupTermination(distro: string): WslProcessGrou
       // and the caller falls back to waiting for the root exit.
       const script = [
         'if setsid --wait true 2>/dev/null; then',
-        `  exec setsid --wait sh -c ${quotePosixShell(reportGroup)} orca-wsl-process-group "$@"`,
+        `  exec setsid --wait sh -c ${quotePosixShell(reportGroup)} kingu-wsl-process-group "$@"`,
         'fi',
         'exec "$@"'
       ].join('\n')
-      return ['sh', '-c', script, 'orca-wsl-process-group', ...args]
+      return ['sh', '-c', script, 'kingu-wsl-process-group', ...args]
     },
     stripControlOutput: (stderr) => stderr.replace(new RegExp(`${marker}\\d+\\r?\\n?`, 'g'), '')
   }

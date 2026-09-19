@@ -12,11 +12,11 @@ import {
 } from './browser-client-upload-staging'
 import type { BrowserRoutePageGuestIdentity } from './browser-route-page-authority'
 
-const partition = `persist:orca-browser-v1-${'a'.repeat(64)}`
+const partition = `persist:kingu-browser-v1-${'a'.repeat(64)}`
 let stagingRoot = ''
 
 beforeEach(async () => {
-  stagingRoot = await realpath(await mkdtemp(path.join(tmpdir(), 'orca-upload-routing-')))
+  stagingRoot = await realpath(await mkdtemp(path.join(tmpdir(), 'kingu-upload-routing-')))
 })
 
 afterEach(async () => {
@@ -87,7 +87,7 @@ function createHarness(
   const releaseRouteSession = vi.fn(() => {})
   const releaseNetworkRoute = vi.fn(async () => {})
   const executor = new BrowserClientPageCommandExecutor({
-    orcaProfileId: 'orca-profile-a',
+    kinguProfileId: 'kingu-profile-a',
     authorityConnectionIdentity: 'authority-a',
     retainNetworkRoute: async () => ({
       key: 'execution-a',

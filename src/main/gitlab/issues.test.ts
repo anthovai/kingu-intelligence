@@ -55,29 +55,35 @@ describe('gitlab issue operations', () => {
   })
 
   it('gets a single issue from the project ref', async () => {
-    getIssueProjectRefMock.mockResolvedValueOnce({ host: 'gitlab.com', path: 'stablyai/orca' })
+    getIssueProjectRefMock.mockResolvedValueOnce({
+      host: 'gitlab.com',
+      path: 'anthovai/kingu-intelligence'
+    })
     glabExecFileAsyncMock.mockResolvedValueOnce({
       stdout: JSON.stringify({
         iid: 923,
         title: 'Use upstream issues',
         state: 'opened',
-        web_url: 'https://gitlab.com/stablyai/orca/-/issues/923',
+        web_url: 'https://gitlab.com/anthovai/kingu-intelligence/-/issues/923',
         labels: []
       })
     })
 
     await expect(getIssue('/repo-root', 923)).resolves.toMatchObject({ number: 923 })
     expect(glabExecFileAsyncMock).toHaveBeenCalledWith(
-      ['api', 'projects/stablyai%2Forca/issues/923'],
+      ['api', 'projects/anthovai%2Fkingu/issues/923'],
       { cwd: '/repo-root' }
     )
   })
 
   it('routes local WSL issue operations through project resolution and glab execution options', async () => {
     const localGitOptions = { wslDistro: 'Ubuntu' }
-    getIssueProjectRefMock.mockResolvedValue({ host: 'gitlab.com', path: 'stablyai/orca' })
+    getIssueProjectRefMock.mockResolvedValue({
+      host: 'gitlab.com',
+      path: 'anthovai/kingu-intelligence'
+    })
     resolveIssueSourceMock.mockResolvedValue({
-      source: { host: 'gitlab.com', path: 'stablyai/orca' },
+      source: { host: 'gitlab.com', path: 'anthovai/kingu-intelligence' },
       fellBack: false
     })
     glabExecFileAsyncMock
@@ -86,14 +92,14 @@ describe('gitlab issue operations', () => {
           iid: 923,
           title: 'Use WSL',
           state: 'opened',
-          web_url: 'https://gitlab.com/stablyai/orca/-/issues/923',
+          web_url: 'https://gitlab.com/anthovai/kingu-intelligence/-/issues/923',
           labels: []
         })
       })
       .mockResolvedValueOnce({
         stdout: JSON.stringify({
           iid: 924,
-          web_url: 'https://gitlab.com/stablyai/orca/-/issues/924'
+          web_url: 'https://gitlab.com/anthovai/kingu-intelligence/-/issues/924'
         })
       })
       .mockResolvedValueOnce({ stdout: '{}' })
@@ -143,7 +149,7 @@ describe('gitlab issue operations', () => {
     )
     expect(glabApiWithHeadersMock).toHaveBeenCalledWith(
       [
-        'projects/stablyai%2Forca/issues?page=1&per_page=5&order_by=updated_at&sort=desc&state=opened'
+        'projects/anthovai%2Fkingu/issues?page=1&per_page=5&order_by=updated_at&sort=desc&state=opened'
       ],
       { cwd: '/repo-root', ...localGitOptions }
     )
@@ -166,7 +172,10 @@ describe('gitlab issue operations', () => {
   })
 
   it('lists issues with state=opened ordering', async () => {
-    getIssueProjectRefMock.mockResolvedValueOnce({ host: 'gitlab.com', path: 'stablyai/orca' })
+    getIssueProjectRefMock.mockResolvedValueOnce({
+      host: 'gitlab.com',
+      path: 'anthovai/kingu-intelligence'
+    })
     glabApiWithHeadersMock.mockResolvedValueOnce({
       body: '[]',
       headers: { 'x-total': '123', 'x-total-pages': '25' }
@@ -176,14 +185,17 @@ describe('gitlab issue operations', () => {
 
     expect(glabApiWithHeadersMock).toHaveBeenCalledWith(
       [
-        'projects/stablyai%2Forca/issues?page=1&per_page=5&order_by=updated_at&sort=desc&state=opened'
+        'projects/anthovai%2Fkingu/issues?page=1&per_page=5&order_by=updated_at&sort=desc&state=opened'
       ],
       { cwd: '/repo-root' }
     )
   })
 
   it('forwards an explicit page into the issues API path after localGitOptions', async () => {
-    getIssueProjectRefMock.mockResolvedValueOnce({ host: 'gitlab.com', path: 'stablyai/orca' })
+    getIssueProjectRefMock.mockResolvedValueOnce({
+      host: 'gitlab.com',
+      path: 'anthovai/kingu-intelligence'
+    })
     glabApiWithHeadersMock.mockResolvedValueOnce({ body: '[]', headers: {} })
 
     await expect(
@@ -192,28 +204,34 @@ describe('gitlab issue operations', () => {
 
     expect(glabApiWithHeadersMock).toHaveBeenCalledWith(
       [
-        'projects/stablyai%2Forca/issues?page=3&per_page=50&order_by=updated_at&sort=desc&state=opened'
+        'projects/anthovai%2Fkingu/issues?page=3&per_page=50&order_by=updated_at&sort=desc&state=opened'
       ],
       { cwd: '/repo-root' }
     )
   })
 
   it('derives total pages from x-total when x-total-pages is unavailable', async () => {
-    getIssueProjectRefMock.mockResolvedValueOnce({ host: 'gitlab.com', path: 'stablyai/orca' })
+    getIssueProjectRefMock.mockResolvedValueOnce({
+      host: 'gitlab.com',
+      path: 'anthovai/kingu-intelligence'
+    })
     glabApiWithHeadersMock.mockResolvedValueOnce({ body: '[]', headers: { 'x-total': '11' } })
 
     await expect(listIssues('/repo-root', 5)).resolves.toMatchObject({ totalPages: 3 })
   })
 
   it('keeps a next-page probe when a proxy strips pagination headers', async () => {
-    getIssueProjectRefMock.mockResolvedValueOnce({ host: 'gitlab.com', path: 'stablyai/orca' })
+    getIssueProjectRefMock.mockResolvedValueOnce({
+      host: 'gitlab.com',
+      path: 'anthovai/kingu-intelligence'
+    })
     glabApiWithHeadersMock.mockResolvedValueOnce({
       body: JSON.stringify(
         Array.from({ length: 5 }, (_, index) => ({
           iid: index + 1,
           title: `Issue ${index + 1}`,
           state: 'opened',
-          web_url: `https://gitlab.com/stablyai/orca/-/issues/${index + 1}`,
+          web_url: `https://gitlab.com/anthovai/kingu-intelligence/-/issues/${index + 1}`,
           labels: []
         }))
       ),
@@ -224,7 +242,10 @@ describe('gitlab issue operations', () => {
   })
 
   it('surfaces a permission_denied error instead of collapsing to empty', async () => {
-    getIssueProjectRefMock.mockResolvedValueOnce({ host: 'gitlab.com', path: 'stablyai/orca' })
+    getIssueProjectRefMock.mockResolvedValueOnce({
+      host: 'gitlab.com',
+      path: 'anthovai/kingu-intelligence'
+    })
     glabApiWithHeadersMock.mockRejectedValueOnce(new Error('HTTP 403 Forbidden'))
 
     const result = await listIssues('/repo-root', 5)
@@ -234,7 +255,10 @@ describe('gitlab issue operations', () => {
   })
 
   it('reports the body instead of ".map is not a function" when the API returns a non-array', async () => {
-    getIssueProjectRefMock.mockResolvedValueOnce({ host: 'gitlab.com', path: 'stablyai/orca' })
+    getIssueProjectRefMock.mockResolvedValueOnce({
+      host: 'gitlab.com',
+      path: 'anthovai/kingu-intelligence'
+    })
     glabApiWithHeadersMock.mockResolvedValueOnce({
       body: JSON.stringify({ data: [], total: 0 }),
       headers: {}
@@ -249,7 +273,10 @@ describe('gitlab issue operations', () => {
   })
 
   it('reports a GitLab error envelope by its own message', async () => {
-    getIssueProjectRefMock.mockResolvedValueOnce({ host: 'gitlab.com', path: 'stablyai/orca' })
+    getIssueProjectRefMock.mockResolvedValueOnce({
+      host: 'gitlab.com',
+      path: 'anthovai/kingu-intelligence'
+    })
     glabApiWithHeadersMock.mockResolvedValueOnce({
       body: JSON.stringify({ message: '403 Forbidden' }),
       headers: {}
@@ -284,7 +311,10 @@ describe('gitlab issue operations', () => {
   })
 
   it('threads connectionId into getGlabKnownHosts for listIssues', async () => {
-    getIssueProjectRefMock.mockResolvedValueOnce({ host: 'gitlab.com', path: 'stablyai/orca' })
+    getIssueProjectRefMock.mockResolvedValueOnce({
+      host: 'gitlab.com',
+      path: 'anthovai/kingu-intelligence'
+    })
     glabApiWithHeadersMock.mockResolvedValueOnce({ body: '[]', headers: {} })
 
     await listIssues('/repo-root', 5, undefined, 'opened', undefined, 'conn-7')
@@ -293,25 +323,28 @@ describe('gitlab issue operations', () => {
   })
 
   it('creates an issue and returns its iid + web_url', async () => {
-    getIssueProjectRefMock.mockResolvedValueOnce({ host: 'gitlab.com', path: 'stablyai/orca' })
+    getIssueProjectRefMock.mockResolvedValueOnce({
+      host: 'gitlab.com',
+      path: 'anthovai/kingu-intelligence'
+    })
     glabExecFileAsyncMock.mockResolvedValueOnce({
       stdout: JSON.stringify({
         iid: 924,
-        web_url: 'https://gitlab.com/stablyai/orca/-/issues/924'
+        web_url: 'https://gitlab.com/anthovai/kingu-intelligence/-/issues/924'
       })
     })
 
     await expect(createIssue('/repo-root', 'New issue', 'Body')).resolves.toEqual({
       ok: true,
       number: 924,
-      url: 'https://gitlab.com/stablyai/orca/-/issues/924'
+      url: 'https://gitlab.com/anthovai/kingu-intelligence/-/issues/924'
     })
     expect(glabExecFileAsyncMock).toHaveBeenCalledWith(
       [
         'api',
         '-X',
         'POST',
-        'projects/stablyai%2Forca/issues',
+        'projects/anthovai%2Fkingu/issues',
         '-f',
         'title=New issue',
         '-f',
@@ -330,25 +363,34 @@ describe('gitlab issue operations', () => {
   })
 
   it('updateIssue closes via `glab issue close` when state=closed', async () => {
-    getIssueProjectRefMock.mockResolvedValueOnce({ host: 'gitlab.com', path: 'stablyai/orca' })
+    getIssueProjectRefMock.mockResolvedValueOnce({
+      host: 'gitlab.com',
+      path: 'anthovai/kingu-intelligence'
+    })
     glabExecFileAsyncMock.mockResolvedValueOnce({ stdout: '' })
 
     await expect(updateIssue('/repo-root', 5, { state: 'closed' })).resolves.toEqual({ ok: true })
     expect(glabExecFileAsyncMock).toHaveBeenCalledWith(
-      ['issue', 'close', '5', '-R', 'stablyai/orca'],
+      ['issue', 'close', '5', '-R', 'anthovai/kingu-intelligence'],
       { cwd: '/repo-root' }
     )
   })
 
   it("updateIssue treats 'already closed' as a no-op", async () => {
-    getIssueProjectRefMock.mockResolvedValueOnce({ host: 'gitlab.com', path: 'stablyai/orca' })
+    getIssueProjectRefMock.mockResolvedValueOnce({
+      host: 'gitlab.com',
+      path: 'anthovai/kingu-intelligence'
+    })
     glabExecFileAsyncMock.mockRejectedValueOnce(new Error('Issue is already closed'))
 
     await expect(updateIssue('/repo-root', 5, { state: 'closed' })).resolves.toEqual({ ok: true })
   })
 
   it('updateIssue applies field edits via `glab issue update`', async () => {
-    getIssueProjectRefMock.mockResolvedValueOnce({ host: 'gitlab.com', path: 'stablyai/orca' })
+    getIssueProjectRefMock.mockResolvedValueOnce({
+      host: 'gitlab.com',
+      path: 'anthovai/kingu-intelligence'
+    })
     glabExecFileAsyncMock.mockResolvedValueOnce({ stdout: '' })
 
     await expect(
@@ -367,7 +409,7 @@ describe('gitlab issue operations', () => {
         'update',
         '5',
         '-R',
-        'stablyai/orca',
+        'anthovai/kingu-intelligence',
         '--title',
         'Renamed',
         '--label',
@@ -384,7 +426,10 @@ describe('gitlab issue operations', () => {
   })
 
   it('updateIssue applies body edits via the issue API', async () => {
-    getIssueProjectRefMock.mockResolvedValueOnce({ host: 'gitlab.com', path: 'stablyai/orca' })
+    getIssueProjectRefMock.mockResolvedValueOnce({
+      host: 'gitlab.com',
+      path: 'anthovai/kingu-intelligence'
+    })
     glabExecFileAsyncMock.mockResolvedValueOnce({ stdout: '' })
 
     await expect(updateIssue('/repo-root', 5, { body: 'Updated body' })).resolves.toEqual({
@@ -392,15 +437,15 @@ describe('gitlab issue operations', () => {
     })
 
     expect(glabExecFileAsyncMock).toHaveBeenCalledWith(
-      ['api', '-X', 'PUT', 'projects/stablyai%2Forca/issues/5', '-f', 'description=Updated body'],
+      ['api', '-X', 'PUT', 'projects/anthovai%2Fkingu/issues/5', '-f', 'description=Updated body'],
       { cwd: '/repo-root' }
     )
   })
 
   it('routes issue metadata reads through the selected SSH GitLab host', async () => {
     getIssueProjectRefMock
-      .mockResolvedValueOnce({ host: 'git.internal', path: 'stablyai/orca' })
-      .mockResolvedValueOnce({ host: 'git.internal', path: 'stablyai/orca' })
+      .mockResolvedValueOnce({ host: 'git.internal', path: 'anthovai/kingu-intelligence' })
+      .mockResolvedValueOnce({ host: 'git.internal', path: 'anthovai/kingu-intelligence' })
     glabExecFileAsyncMock
       .mockResolvedValueOnce({ stdout: 'bug\nfeature\n' })
       .mockResolvedValueOnce({
@@ -427,7 +472,7 @@ describe('gitlab issue operations', () => {
       '--hostname',
       'git.internal',
       '--paginate',
-      'projects/stablyai%2Forca/labels',
+      'projects/anthovai%2Fkingu/labels',
       '--jq',
       '.[].name'
     ])
@@ -436,14 +481,17 @@ describe('gitlab issue operations', () => {
       '--hostname',
       'git.internal',
       '--paginate',
-      'projects/stablyai%2Forca/members/all?per_page=100',
+      'projects/anthovai%2Fkingu/members/all?per_page=100',
       '--jq',
       '.[] | {id, username, name, avatar_url, state}'
     ])
   })
 
   it('addIssueComment posts to /notes and maps the response', async () => {
-    getIssueProjectRefMock.mockResolvedValueOnce({ host: 'gitlab.com', path: 'stablyai/orca' })
+    getIssueProjectRefMock.mockResolvedValueOnce({
+      host: 'gitlab.com',
+      path: 'anthovai/kingu-intelligence'
+    })
     glabExecFileAsyncMock.mockResolvedValueOnce({
       stdout: JSON.stringify({
         id: 100,
@@ -467,7 +515,7 @@ describe('gitlab issue operations', () => {
       }
     })
     expect(glabExecFileAsyncMock).toHaveBeenCalledWith(
-      ['api', '-X', 'POST', 'projects/stablyai%2Forca/issues/5/notes', '-f', 'body=Hello'],
+      ['api', '-X', 'POST', 'projects/anthovai%2Fkingu/issues/5/notes', '-f', 'body=Hello'],
       { cwd: '/repo-root' }
     )
   })
@@ -475,7 +523,7 @@ describe('gitlab issue operations', () => {
   it('addIssueComment passes hostname for SSH-backed self-hosted repos', async () => {
     getIssueProjectRefMock.mockResolvedValueOnce({
       host: 'gitlab.example.com',
-      path: 'stablyai/orca'
+      path: 'anthovai/kingu-intelligence'
     })
     glabExecFileAsyncMock.mockResolvedValueOnce({
       stdout: JSON.stringify({ id: 100, body: 'Hello' })
@@ -490,7 +538,7 @@ describe('gitlab issue operations', () => {
         'gitlab.example.com',
         '-X',
         'POST',
-        'projects/stablyai%2Forca/issues/5/notes',
+        'projects/anthovai%2Fkingu/issues/5/notes',
         '-f',
         'body=Hello'
       ],

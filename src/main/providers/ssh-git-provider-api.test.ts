@@ -54,7 +54,7 @@ describe('SshGitProvider public API parity', () => {
       'worktreeIsClean',
       'refreshLocalBaseRefForWorktreeCreate',
       'renameCurrentBranch',
-      'markRemoteOrcaCreated',
+      'markRemoteKinguCreated',
       'forceDeletePreservedBranch',
       'exec',
       'clone',

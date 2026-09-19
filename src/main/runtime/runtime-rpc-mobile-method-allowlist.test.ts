@@ -2,16 +2,16 @@ import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { OrcaRuntimeRpcServer } from './runtime-rpc'
+import { KinguRuntimeRpcServer } from './runtime-rpc'
 import { remoteRpcContentBudget } from '../../shared/remote-rpc-content-budget'
 import { DeviceRegistry } from './device-registry'
 import { createMobileRpcSurfaceRuntime } from './runtime-rpc-mobile-method-allowlist-fixtures'
 
-describe('OrcaRuntimeRpcServer', () => {
+describe('KinguRuntimeRpcServer', () => {
   it('limits mobile-scoped WebSocket tokens to the mobile RPC surface', async () => {
-    const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
+    const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
     const { runtime, mocks, expectedCodexResetScope } = createMobileRpcSurfaceRuntime()
-    const server = new OrcaRuntimeRpcServer({ runtime, userDataPath, enableWebSocket: false })
+    const server = new KinguRuntimeRpcServer({ runtime, userDataPath, enableWebSocket: false })
     server['deviceRegistry'] = new DeviceRegistry(userDataPath)
     const mobile = server['deviceRegistry']!.addDevice('phone', 'mobile')
     const replies: Record<string, unknown>[] = []
@@ -57,27 +57,27 @@ describe('OrcaRuntimeRpcServer', () => {
       id: 'req_project_issue_types',
       method: 'github.project.listIssueTypesBySlug',
       deviceToken: mobile.token,
-      params: { owner: 'stablyai', repo: 'orca' }
+      params: { owner: 'anthovai', repo: 'kingu' }
     })
     await dispatch({
       id: 'req_project_labels',
       method: 'github.project.listLabelsBySlug',
       deviceToken: mobile.token,
-      params: { owner: 'stablyai', repo: 'orca' }
+      params: { owner: 'anthovai', repo: 'kingu' }
     })
     await dispatch({
       id: 'req_project_assignees',
       method: 'github.project.listAssignableUsersBySlug',
       deviceToken: mobile.token,
-      params: { owner: 'stablyai', repo: 'orca', seedLogins: ['alex'] }
+      params: { owner: 'anthovai', repo: 'kingu', seedLogins: ['alex'] }
     })
     await dispatch({
       id: 'req_project_update_issue',
       method: 'github.project.updateIssueBySlug',
       deviceToken: mobile.token,
       params: {
-        owner: 'stablyai',
-        repo: 'orca',
+        owner: 'anthovai',
+        repo: 'kingu',
         number: 123,
         updates: { title: 'New title' }
       }
@@ -87,8 +87,8 @@ describe('OrcaRuntimeRpcServer', () => {
       method: 'github.project.updateIssueTypeBySlug',
       deviceToken: mobile.token,
       params: {
-        owner: 'stablyai',
-        repo: 'orca',
+        owner: 'anthovai',
+        repo: 'kingu',
         number: 123,
         issueTypeId: 'type-1'
       }
@@ -119,8 +119,8 @@ describe('OrcaRuntimeRpcServer', () => {
       method: 'github.project.updatePullRequestBySlug',
       deviceToken: mobile.token,
       params: {
-        owner: 'stablyai',
-        repo: 'orca',
+        owner: 'anthovai',
+        repo: 'kingu',
         number: 456,
         updates: { state: 'closed' }
       }
@@ -130,8 +130,8 @@ describe('OrcaRuntimeRpcServer', () => {
       method: 'github.project.addIssueCommentBySlug',
       deviceToken: mobile.token,
       params: {
-        owner: 'stablyai',
-        repo: 'orca',
+        owner: 'anthovai',
+        repo: 'kingu',
         number: 123,
         body: 'done'
       }
@@ -141,8 +141,8 @@ describe('OrcaRuntimeRpcServer', () => {
       method: 'github.project.updateIssueCommentBySlug',
       deviceToken: mobile.token,
       params: {
-        owner: 'stablyai',
-        repo: 'orca',
+        owner: 'anthovai',
+        repo: 'kingu',
         commentId: 101,
         body: 'edited'
       }
@@ -152,8 +152,8 @@ describe('OrcaRuntimeRpcServer', () => {
       method: 'github.project.deleteIssueCommentBySlug',
       deviceToken: mobile.token,
       params: {
-        owner: 'stablyai',
-        repo: 'orca',
+        owner: 'anthovai',
+        repo: 'kingu',
         commentId: 101
       }
     })
@@ -664,51 +664,51 @@ describe('OrcaRuntimeRpcServer', () => {
       page: 'page-1'
     })
     expect(mocks.listGitHubIssueTypesBySlug).toHaveBeenCalledWith({
-      owner: 'stablyai',
-      repo: 'orca'
+      owner: 'anthovai',
+      repo: 'kingu'
     })
     expect(mocks.listGitHubLabelsBySlug).toHaveBeenCalledWith({
-      owner: 'stablyai',
-      repo: 'orca'
+      owner: 'anthovai',
+      repo: 'kingu'
     })
     expect(mocks.listGitHubAssignableUsersBySlug).toHaveBeenCalledWith({
-      owner: 'stablyai',
-      repo: 'orca',
+      owner: 'anthovai',
+      repo: 'kingu',
       seedLogins: ['alex']
     })
     expect(mocks.updateGitHubIssueBySlug).toHaveBeenCalledWith({
-      owner: 'stablyai',
-      repo: 'orca',
+      owner: 'anthovai',
+      repo: 'kingu',
       number: 123,
       updates: { title: 'New title' }
     })
     expect(mocks.updateGitHubIssueTypeBySlug).toHaveBeenCalledWith({
-      owner: 'stablyai',
-      repo: 'orca',
+      owner: 'anthovai',
+      repo: 'kingu',
       number: 123,
       issueTypeId: 'type-1'
     })
     expect(mocks.updateGitHubPullRequestBySlug).toHaveBeenCalledWith({
-      owner: 'stablyai',
-      repo: 'orca',
+      owner: 'anthovai',
+      repo: 'kingu',
       number: 456,
       updates: { state: 'closed' }
     })
     expect(mocks.addGitHubIssueCommentBySlug).toHaveBeenCalledWith({
-      owner: 'stablyai',
-      repo: 'orca',
+      owner: 'anthovai',
+      repo: 'kingu',
       number: 123,
       body: 'done'
     })
     expect(mocks.updateGitHubIssueCommentBySlug).toHaveBeenCalledWith({
-      owner: 'stablyai',
-      repo: 'orca',
+      owner: 'anthovai',
+      repo: 'kingu',
       commentId: 101,
       body: 'edited'
     })
     expect(mocks.deleteGitHubIssueCommentBySlug).toHaveBeenCalledWith({
-      owner: 'stablyai',
-      repo: 'orca',
+      owner: 'anthovai',
+      repo: 'kingu',
       commentId: 101
     })
     expect(mocks.updateRepoIssue).toHaveBeenCalledWith('id:repo-1', 123, {

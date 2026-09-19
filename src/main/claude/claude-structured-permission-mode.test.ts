@@ -4,7 +4,7 @@ import { claudeStructuredPermissionModeForSettings } from './claude-structured-p
 describe('claudeStructuredPermissionModeForSettings', () => {
   // The three states the Agent Permissions toggle can leave behind. The untouched case is the
   // common one and the easiest to get wrong: the toggle writes nothing until it is used, and the
-  // default Orca ships for the key it did not write is the bypass flag — which is what a terminal
+  // default Kingu ships for the key it did not write is the bypass flag — which is what a terminal
   // launch has always applied to an untouched profile.
   it('bypasses when the user has never opened Agent settings', () => {
     expect(claudeStructuredPermissionModeForSettings({ agentDefaultArgs: {} })).toBe(

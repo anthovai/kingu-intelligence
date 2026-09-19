@@ -218,7 +218,7 @@ describe('structured rows and last-status.json', () => {
   let userDataPath: string
 
   beforeEach(() => {
-    userDataPath = mkdtempSync(join(tmpdir(), 'orca-structured-status-'))
+    userDataPath = mkdtempSync(join(tmpdir(), 'kingu-structured-status-'))
   })
 
   afterEach(() => {

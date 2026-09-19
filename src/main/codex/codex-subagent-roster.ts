@@ -72,7 +72,7 @@ export function codexSubagentGroupId(threadId: string, turnId: string | null): s
 /** Durable journal identity for the group's row — stable across revisions and
  *  across a restart, so replay finds the same row instead of appending a new one. */
 export function codexSubagentGroupIdentity(groupId: string): AgentJournalItemIdentity {
-  return { provider: 'orca', clientMessageId: `codex-subagents:${groupId}` }
+  return { provider: 'kingu', clientMessageId: `codex-subagents:${groupId}` }
 }
 
 export type CodexSubagentRosterDeps = {

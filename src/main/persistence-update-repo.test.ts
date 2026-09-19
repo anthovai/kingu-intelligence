@@ -58,7 +58,7 @@ vi.mock('./telemetry/cohort-classifier', () => ({
 
 describe('Store', () => {
   beforeEach(() => {
-    testState.dir = mkdtempSync(join(tmpdir(), 'orca-test-'))
+    testState.dir = mkdtempSync(join(tmpdir(), 'kingu-test-'))
     trackMock.mockReset()
     getCohortAtEmitMock.mockReset()
     getCohortAtEmitMock.mockReturnValue({ nth_repo_added: 2 })
@@ -126,12 +126,12 @@ describe('Store', () => {
     store.updateRepo('r1', {
       displayName: 'renamed',
       worktreeBasePath: '../new-worktrees',
-      upstream: { owner: 'stablyai', repo: 'orca' }
+      upstream: { owner: 'anthovai', repo: 'kingu' }
     })
 
     expect(store.getProjects()).toEqual([
       expect.objectContaining({
-        id: 'github:stablyai/orca',
+        id: 'github:anthovai/kingu-intelligence',
         displayName: 'renamed',
         sourceRepoIds: ['r1']
       })
@@ -139,7 +139,7 @@ describe('Store', () => {
     expect(store.getProjectHostSetups()).toEqual([
       expect.objectContaining({
         id: 'r1',
-        projectId: 'github:stablyai/orca',
+        projectId: 'github:anthovai/kingu-intelligence',
         displayName: 'renamed',
         worktreeBasePath: '../new-worktrees'
       })
@@ -231,11 +231,11 @@ describe('Store', () => {
     const store = await createStore()
     store.addRepo({
       ...makeRepo({ id: 'r1', displayName: 'Cloud Project' }),
-      upstream: { owner: 'stablyai', repo: 'cloud-project' }
+      upstream: { owner: 'anthovai', repo: 'cloud-project' }
     })
 
     const result = store.createProjectHostSetup({
-      projectId: 'github:stablyai/cloud-project',
+      projectId: 'github:anthovai/cloud-project',
       hostId: 'runtime:gpu-vm',
       setupId: 'cloud-project::gpu-vm',
       displayName: 'GPU VM',
@@ -244,12 +244,12 @@ describe('Store', () => {
     })
 
     expect(result?.project).toMatchObject({
-      id: 'github:stablyai/cloud-project',
+      id: 'github:anthovai/cloud-project',
       displayName: 'Cloud Project'
     })
     expect(result?.setup).toMatchObject({
       id: 'cloud-project::gpu-vm',
-      projectId: 'github:stablyai/cloud-project',
+      projectId: 'github:anthovai/cloud-project',
       hostId: 'runtime:gpu-vm',
       repoId: '',
       path: '',
@@ -268,11 +268,11 @@ describe('Store', () => {
     const store = await createStore()
     store.addRepo({
       ...makeRepo({ id: 'r1', displayName: 'Cloud Project' }),
-      upstream: { owner: 'stablyai', repo: 'cloud-project' }
+      upstream: { owner: 'anthovai', repo: 'cloud-project' }
     })
     const independentSetup = makeProjectHostSetup({
       id: 'cloud-project::gpu-vm',
-      projectId: 'github:stablyai/cloud-project',
+      projectId: 'github:anthovai/cloud-project',
       hostId: 'runtime:gpu-vm'
     })
     store.createProjectHostSetup({
@@ -283,7 +283,7 @@ describe('Store', () => {
 
     expect(() =>
       store.createProjectHostSetup({
-        projectId: 'github:stablyai/cloud-project',
+        projectId: 'github:anthovai/cloud-project',
         hostId: 'runtime:gpu-vm',
         setupId: 'duplicate'
       })
@@ -449,9 +449,9 @@ describe('Store', () => {
     store.addRepo(makeRepo())
 
     const updated = store.updateRepo('r1', {
-      upstream: { owner: ' stablyai ', repo: ' orca ' }
+      upstream: { owner: ' anthovai ', repo: ' kingu ' }
     })
-    expect(updated!.upstream).toEqual({ owner: 'stablyai', repo: 'orca' })
+    expect(updated!.upstream).toEqual({ owner: 'anthovai', repo: 'kingu' })
 
     store.updateRepo('r1', { upstream: null })
     store.flush()
@@ -465,15 +465,15 @@ describe('Store', () => {
 
     const updated = store.updateRepo('r1', {
       gitRemoteIdentity: {
-        canonicalKey: 'gitlab.example.com/team/orca',
+        canonicalKey: 'gitlab.example.com/team/kingu',
         remoteName: 'origin',
-        remoteUrl: 'git@gitlab.example.com:team/orca.git'
+        remoteUrl: 'git@gitlab.example.com:team/kingu.git'
       }
     })
     expect(updated!.gitRemoteIdentity).toEqual({
-      canonicalKey: 'gitlab.example.com/team/orca',
+      canonicalKey: 'gitlab.example.com/team/kingu',
       remoteName: 'origin',
-      remoteUrl: 'git@gitlab.example.com:team/orca.git'
+      remoteUrl: 'git@gitlab.example.com:team/kingu.git'
     })
 
     store.updateRepo('r1', { gitRemoteIdentity: null })
@@ -514,9 +514,9 @@ describe('Store', () => {
 
   it('leaves a hostless persisted upstream hostless rather than inventing one', async () => {
     const store = await createStore()
-    store.addRepo(makeRepo({ upstream: { owner: 'stablyai', repo: 'orca' } }))
+    store.addRepo(makeRepo({ upstream: { owner: 'anthovai', repo: 'kingu' } }))
 
-    expect(store.getRepo('r1')!.upstream).toEqual({ owner: 'stablyai', repo: 'orca' })
+    expect(store.getRepo('r1')!.upstream).toEqual({ owner: 'anthovai', repo: 'kingu' })
     expect(store.getRepo('r1')!.upstream).not.toHaveProperty('host')
   })
 

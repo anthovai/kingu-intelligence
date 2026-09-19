@@ -2,16 +2,16 @@ import {
   STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY,
   type RuntimeCapability
 } from '../../../../shared/protocol-version'
-import type { OrcaRuntimeService } from '../../orca-runtime'
+import type { KinguRuntimeService } from '../../kingu-runtime'
 import type { RpcContext } from '../core'
 
 type StructuredPolicyContext = Pick<RpcContext, 'clientCapabilities' | 'clientKind'> & {
-  runtime?: Pick<OrcaRuntimeService, 'getClientSettings'>
+  runtime?: Pick<KinguRuntimeService, 'getClientSettings'>
   structuredNativeChatEnabled?: boolean
 }
 
 export function isStructuredNativeChatEnabled(
-  runtime: Pick<OrcaRuntimeService, 'getClientSettings'>
+  runtime: Pick<KinguRuntimeService, 'getClientSettings'>
 ): boolean {
   try {
     return runtime.getClientSettings().experimentalStructuredNativeChat === true

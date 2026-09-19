@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { OrcaRuntimeService } from './orca-runtime'
+import { KinguRuntimeService } from './kingu-runtime'
 import { getDefaultWorkspaceSession } from '../../shared/constants'
 import { HEADLESS_RUNTIME_WINDOW_ID } from '../../shared/runtime-types'
 import { makePaneKey } from '../../shared/stable-pane-id'
@@ -38,9 +38,9 @@ function makeStore() {
 }
 
 /** A headless host: no renderer ever attaches, and the only graph is the launch placeholder. */
-function makeHeadlessRuntime(): OrcaRuntimeService {
+function makeHeadlessRuntime(): KinguRuntimeService {
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: makeStore returns the repo and session reads this suite drives; the rest of Store is unreached.
-  const runtime = new OrcaRuntimeService(makeStore() as never)
+  const runtime = new KinguRuntimeService(makeStore() as never)
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the stub carries the members this suite drives; the PTY stays live throughout.
   runtime.setPtyController({
     spawn: vi.fn(async () => ({ id: 'never' })),
@@ -52,7 +52,7 @@ function makeHeadlessRuntime(): OrcaRuntimeService {
 }
 
 /** Reaching `recordPtyWorktree` is the only way to write a claim the way a replay path does. */
-function recordSurfaceWithoutStanding(runtime: OrcaRuntimeService): void {
+function recordSurfaceWithoutStanding(runtime: KinguRuntimeService): void {
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: recordPtyWorktree is protected; the replay paths this stands in for all reach it.
   const internals = runtime as unknown as {
     recordPtyWorktree: (ptyId: string, worktreeId: string, state: Record<string, unknown>) => void

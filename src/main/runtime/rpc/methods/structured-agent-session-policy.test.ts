@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY } from '../../../../shared/protocol-version'
-import type { OrcaRuntimeService } from '../../orca-runtime'
+import type { KinguRuntimeService } from '../../kingu-runtime'
 import { supportsStructuredAgentSessions } from './structured-agent-session-policy'
 
 function runtimeWithSetting(
   experimentalStructuredNativeChat: boolean
-): Pick<OrcaRuntimeService, 'getClientSettings'> {
+): Pick<KinguRuntimeService, 'getClientSettings'> {
   return {
     getClientSettings: () => ({ experimentalStructuredNativeChat })
-  } as unknown as Pick<OrcaRuntimeService, 'getClientSettings'>
+  } as unknown as Pick<KinguRuntimeService, 'getClientSettings'>
 }
 
 const CAPABLE = [STRUCTURED_AGENT_SESSION_RUNTIME_CAPABILITY]
@@ -94,7 +94,7 @@ describe('supportsStructuredAgentSessions', () => {
           getClientSettings: () => {
             throw new Error('settings unavailable')
           }
-        } as unknown as Pick<OrcaRuntimeService, 'getClientSettings'>
+        } as unknown as Pick<KinguRuntimeService, 'getClientSettings'>
       })
     ).toBe(false)
   })

@@ -194,7 +194,7 @@ export abstract class BrowserManagerVisibility extends BrowserManagerState {
                 ${JSON.stringify(prev?.targetBrowserPageId)} &&
               typeof state.setActiveBrowserPage === 'function'
             ) {
-              // Why: Orca remembers the last browser workspace/page even when
+              // Why: Kingu remembers the last browser workspace/page even when
               // the user is currently in terminal/editor view. Screenshot prep
               // temporarily switches that hidden browser selection state, so
               // restore it independently of the visible tab type.
@@ -233,7 +233,7 @@ export abstract class BrowserManagerVisibility extends BrowserManagerState {
     const acquirePromise = renderer
       .executeJavaScript(
         `(async function() {
-            var bridge = window.__orcaBrowserAutomationVisibility;
+            var bridge = window.__kinguBrowserAutomationVisibility;
             if (!bridge || typeof bridge.acquire !== 'function') return null;
             return await bridge.acquire(${JSON.stringify(browserPageId)});
           })()`

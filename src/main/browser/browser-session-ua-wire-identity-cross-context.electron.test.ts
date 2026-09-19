@@ -72,7 +72,7 @@ describe('browser session wire identity in cross-site frames and dedicated worke
 })
 
 async function runProbe(arm: ProbeArm): Promise<ProbeResult> {
-  const root = mkdtempSync(join(tmpdir(), `orca-wire-cross-context-${arm}-`))
+  const root = mkdtempSync(join(tmpdir(), `kingu-wire-cross-context-${arm}-`))
   fixtureRoots.push(root)
   const processIdentityModulePath = join(root, 'browser-process-user-agent.cjs')
   const exceptionModulePath = join(root, 'browser-session-ua.cjs')
@@ -181,7 +181,7 @@ function launchFixture(fixturePath: string, root: string, cdpPort: number): Chil
     process.platform === 'linux' ? 'xvfb-run' : electronBinary,
     process.platform === 'linux' ? ['--auto-servernum', electronBinary, ...args] : args,
     {
-      env: { ...env, ORCA_BACKGROUND_LAUNCH: '1' },
+      env: { ...env, KINGU_BACKGROUND_LAUNCH: '1' },
       stdio: ['ignore', 'pipe', 'pipe']
     }
   )
@@ -201,7 +201,7 @@ const { existsSync, writeFileSync } = require('node:fs')
 const processIdentity = require(${JSON.stringify(options.processIdentityModulePath)})
 const { cleanElectronUserAgent } = require(${JSON.stringify(options.exceptionModulePath)})
 const arm = ${JSON.stringify(options.arm)}
-app.setName('OrcaCrossContextFixture')
+app.setName('KinguCrossContextFixture')
 app.commandLine.appendSwitch('site-per-process')
 const rawUserAgent = app.userAgentFallback
 if (arm === 'clean') processIdentity.initializeBrowserProcessUserAgent('clean')
@@ -327,7 +327,7 @@ function clientHintIdentityIsClean(
   if (!secChUa || wireBrands.length === 0 || navigatorBrands.length === 0) {
     return false
   }
-  const token = /electron|orca/i
+  const token = /electron|kingu/i
   return (
     receipt.userAgent === cleanUserAgent &&
     !token.test(receipt.userAgent ?? '') &&

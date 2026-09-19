@@ -7,10 +7,10 @@ import {
 
 describe('serve-mode-argv', () => {
   it('detects --serve and bare serve subcommand', () => {
-    expect(argvRequestsServeMode(['orca', '--serve'])).toBe(true)
+    expect(argvRequestsServeMode(['kingu', '--serve'])).toBe(true)
     expect(argvRequestsServeMode(['/AppRun', 'serve'])).toBe(true)
     expect(argvRequestsServeMode(['/AppRun', '--no-sandbox', 'serve', '--port', '8080'])).toBe(true)
-    expect(argvRequestsServeMode(['orca'])).toBe(false)
+    expect(argvRequestsServeMode(['kingu'])).toBe(false)
   })
 
   it('does not treat serve as a subcommand when it is an option value', () => {
@@ -76,15 +76,15 @@ describe('serve-mode-argv', () => {
     // Why: a false positive here is the expensive direction — the window never opens and a runtime
     // server binds instead. These are the argv shapes the desktop actually receives.
     for (const argv of [
-      ['/Applications/Orca.app/Contents/MacOS/Orca', '-psn_0_123456'],
-      ['C:\\Program Files\\Orca\\Orca.exe', '--squirrel-firstrun'],
-      ['C:\\Program Files\\Orca\\Orca.exe', 'orca://worktree/serve'],
-      ['/opt/orca/orca-ide', '/home/u/serve'],
+      ['/Applications/Kingu.app/Contents/MacOS/Kingu', '-psn_0_123456'],
+      ['C:\\Program Files\\Kingu\\Kingu.exe', '--squirrel-firstrun'],
+      ['C:\\Program Files\\Kingu\\Kingu.exe', 'kingu://worktree/serve'],
+      ['/opt/kingu/kingu-ide', '/home/u/serve'],
       // `--pairing-code` takes the next token, so its value is never the subcommand.
-      ['/opt/orca/orca-ide', '--pairing-code', 'serve'],
-      ['/opt/orca/orca-ide', '--environment=serve'],
-      ['/opt/orca/orca-ide', '--', 'serve'],
-      ['/opt/orca/orca-ide', 'Serve']
+      ['/opt/kingu/kingu-ide', '--pairing-code', 'serve'],
+      ['/opt/kingu/kingu-ide', '--environment=serve'],
+      ['/opt/kingu/kingu-ide', '--', 'serve'],
+      ['/opt/kingu/kingu-ide', 'Serve']
     ]) {
       expect(argvRequestsServeMode(argv), argv.join(' ')).toBe(false)
       expect(normalizeServeModeArgv(argv)).toEqual(argv)
@@ -123,14 +123,14 @@ describe('serve-mode-argv', () => {
   it('keeps Electron-injected Chromium switches while normalizing direct serve', () => {
     expect(
       normalizeServeModeArgv([
-        '/opt/orca/orca-ide',
+        '/opt/kingu/kingu-ide',
         '--disable-features=FedCm,DirectSockets',
         'serve',
         '--port',
         '6768'
       ])
     ).toEqual([
-      '/opt/orca/orca-ide',
+      '/opt/kingu/kingu-ide',
       '--disable-features=FedCm,DirectSockets',
       '--serve',
       '--serve-port',
@@ -139,10 +139,10 @@ describe('serve-mode-argv', () => {
   })
 
   it('leaves already-normalized argv unchanged', () => {
-    // Why every value flag: the CLI's own `orca serve` spawns the app with exactly this shape
-    // (serveOrcaApp), and the rewrite now runs over it too — a bad mapping would drop the port here.
+    // Why every value flag: the CLI's own `kingu serve` spawns the app with exactly this shape
+    // (serveKinguApp), and the rewrite now runs over it too — a bad mapping would drop the port here.
     const argv = [
-      'orca',
+      'kingu',
       '--serve',
       '--serve-json',
       '--serve-port',
@@ -174,8 +174,8 @@ describe('serve-mode-argv', () => {
 
   it('translates serve flags in the mixed `--serve --port` form', () => {
     // Why: leaving these untranslated silently kept pairing enabled despite --no-pairing.
-    expect(normalizeServeModeArgv(['orca', '--serve', '--port', '9090', '--no-pairing'])).toEqual([
-      'orca',
+    expect(normalizeServeModeArgv(['kingu', '--serve', '--port', '9090', '--no-pairing'])).toEqual([
+      'kingu',
       '--serve',
       '--serve-port',
       '9090',
@@ -184,7 +184,7 @@ describe('serve-mode-argv', () => {
   })
 
   it('leaves a non-serve launch untouched', () => {
-    const argv = ['orca', '--no-sandbox', '/home/u/project']
+    const argv = ['kingu', '--no-sandbox', '/home/u/project']
     expect(argvRequestsServeMode(argv)).toBe(false)
     expect(normalizeServeModeArgv(argv)).toEqual(argv)
   })

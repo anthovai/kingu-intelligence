@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
-  canCleanupUnregisteredOrcaWorktreeDirectory,
+  canCleanupUnregisteredKinguWorktreeDirectory,
   isWorktreePathMissing,
-  stripOrcaProvenanceMetaUpdates
+  stripKinguProvenanceMetaUpdates
 } from './worktree-removal-safety'
 import type { WorktreeMeta } from '../shared/worktree/meta-types'
 
@@ -30,26 +30,26 @@ describe('isWorktreePathMissing', () => {
   })
 })
 
-describe('canCleanupUnregisteredOrcaWorktreeDirectory', () => {
-  it('does not treat orcaCreatedAt alone as cleanup authority', () => {
+describe('canCleanupUnregisteredKinguWorktreeDirectory', () => {
+  it('does not treat kinguCreatedAt alone as cleanup authority', () => {
     expect(
-      canCleanupUnregisteredOrcaWorktreeDirectory({
-        meta: { orcaCreatedAt: Date.now() }
+      canCleanupUnregisteredKinguWorktreeDirectory({
+        meta: { kinguCreatedAt: Date.now() }
       })
     ).toBe(false)
     expect(
-      canCleanupUnregisteredOrcaWorktreeDirectory({
+      canCleanupUnregisteredKinguWorktreeDirectory({
         meta: {
-          orcaCreatedAt: Date.now(),
-          orcaCreationSource: 'runtime'
+          kinguCreatedAt: Date.now(),
+          kinguCreationSource: 'runtime'
         }
       })
     ).toBe(true)
   })
 
-  it('accepts legacy Orca-created metadata before explicit provenance existed', () => {
+  it('accepts legacy Kingu-created metadata before explicit provenance existed', () => {
     expect(
-      canCleanupUnregisteredOrcaWorktreeDirectory({
+      canCleanupUnregisteredKinguWorktreeDirectory({
         meta: { createdAt: Date.now() }
       })
     ).toBe(true)
@@ -70,11 +70,11 @@ describe('canCleanupUnregisteredOrcaWorktreeDirectory', () => {
       sortOrder: 0,
       lastActivityAt: 0,
       workspaceStatus: 'todo',
-      orcaCreationWorkspaceLayout: { path: '/orca/workspaces', nestWorkspaces: true }
+      kinguCreationWorkspaceLayout: { path: '/kingu/workspaces', nestWorkspaces: true }
     }
 
     expect(
-      canCleanupUnregisteredOrcaWorktreeDirectory({
+      canCleanupUnregisteredKinguWorktreeDirectory({
         meta: layoutOnlyMeta
       })
     ).toBe(false)
@@ -82,21 +82,21 @@ describe('canCleanupUnregisteredOrcaWorktreeDirectory', () => {
 
   it('does not trust paths without provenance or legacy metadata', () => {
     expect(
-      canCleanupUnregisteredOrcaWorktreeDirectory({
+      canCleanupUnregisteredKinguWorktreeDirectory({
         meta: undefined
       })
     ).toBe(false)
   })
 })
 
-describe('stripOrcaProvenanceMetaUpdates', () => {
-  it('removes Orca-owned provenance fields from user metadata updates', () => {
+describe('stripKinguProvenanceMetaUpdates', () => {
+  it('removes Kingu-owned provenance fields from user metadata updates', () => {
     expect(
-      stripOrcaProvenanceMetaUpdates({
+      stripKinguProvenanceMetaUpdates({
         comment: 'keep me',
-        orcaCreatedAt: 123,
-        orcaCreationSource: 'desktop',
-        orcaCreationWorkspaceLayout: { path: '/workspace', nestWorkspaces: false },
+        kinguCreatedAt: 123,
+        kinguCreationSource: 'desktop',
+        kinguCreationWorkspaceLayout: { path: '/workspace', nestWorkspaces: false },
         automationProvenance: {
           kind: 'created-by-automation',
           automationId: 'automation-1',

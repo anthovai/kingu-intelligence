@@ -132,8 +132,8 @@ describe('holdFor', () => {
 // per-client seam. A `project` call that bypasses it publishes an unheld -- or another client's --
 // answer, which is invisible to any behavioral test that does not happen to cover that call site.
 describe('session-tabs projection census', () => {
-  it('routes every client projection in orca-runtime through the per-client seam', () => {
-    const source = readOrcaRuntimeSourceFamily()
+  it('routes every client projection in kingu-runtime through the per-client seam', () => {
+    const source = readKinguRuntimeSourceFamily()
     const direct = source.match(/this\.clientSessionTabSelections\.project\(/g) ?? []
 
     // Exactly two: inside `projectMobileSessionTabsForClient` itself, and the removed-worktree
@@ -143,17 +143,17 @@ describe('session-tabs projection census', () => {
   })
 
   it('keeps the unreconciled flag out of every other runtime publication site', () => {
-    const source = readOrcaRuntimeSourceFamily()
+    const source = readKinguRuntimeSourceFamily()
 
     expect(source).not.toContain('clientHostedPagesUnreconciled')
   })
 })
 
-function readOrcaRuntimeSourceFamily(): string {
+function readKinguRuntimeSourceFamily(): string {
   return readdirSync(import.meta.dirname)
     .filter(
       (name) =>
-        (name === 'orca-runtime.ts' || name.startsWith('orca-runtime-')) &&
+        (name === 'kingu-runtime.ts' || name.startsWith('kingu-runtime-')) &&
         name.endsWith('.ts') &&
         !name.includes('.test.') &&
         !name.endsWith('-fixtures.ts') &&

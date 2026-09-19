@@ -13,7 +13,7 @@ afterEach(async () => {
 })
 
 async function stagedRoot(stagedName: string): Promise<string> {
-  const root = await mkdtemp(join(tmpdir(), 'orca-staging-visibility-'))
+  const root = await mkdtemp(join(tmpdir(), 'kingu-staging-visibility-'))
   roots.push(root)
   const staged = join(root, stagedName)
   await mkdir(staged, { recursive: true })
@@ -23,15 +23,15 @@ async function stagedRoot(stagedName: string): Promise<string> {
 
 describe('isSkillStagingEntryName', () => {
   it.each([
-    '.demo.orca-skill-delete-1234',
-    '.demo.orca-remove-backup-1234',
-    '.demo.orca-placement-backup-1234',
-    '.demo.orca-placement-staging-1234'
+    '.demo.kingu-skill-delete-1234',
+    '.demo.kingu-remove-backup-1234',
+    '.demo.kingu-placement-backup-1234',
+    '.demo.kingu-placement-staging-1234'
   ])('matches the %s convention', (name) => {
     expect(isSkillStagingEntryName(name)).toBe(true)
   })
 
-  it.each(['demo', '.hidden-skill', '..cache', '.orca'])('leaves %s alone', (name) => {
+  it.each(['demo', '.hidden-skill', '..cache', '.kingu'])('leaves %s alone', (name) => {
     expect(isSkillStagingEntryName(name)).toBe(false)
   })
 })
@@ -39,8 +39,8 @@ describe('isSkillStagingEntryName', () => {
 describe('native walker', () => {
   it.each([
     skillDeleteStagedName('demo', 'id'),
-    '.demo.orca-remove-backup-id',
-    '.demo.orca-placement-backup-id'
+    '.demo.kingu-remove-backup-id',
+    '.demo.kingu-placement-backup-id'
   ])('does not surface a %s staged directly in a scanned root', async (stagedName) => {
     const root = await stagedRoot(stagedName)
     expect(await findSkillFiles(root, 4)).toEqual([])

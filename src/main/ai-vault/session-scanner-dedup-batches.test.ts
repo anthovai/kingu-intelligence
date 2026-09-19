@@ -20,7 +20,7 @@ describe('session scan batch deduplication', () => {
     async (host) => {
       const count = 128
       const provider = new MemoryRemoteProvider()
-      const root = await mkdtemp(join(tmpdir(), 'orca-session-dedup-'))
+      const root = await mkdtemp(join(tmpdir(), 'kingu-session-dedup-'))
       tempRoots.push(root)
       const roots = isolatedScanRoots(root)
       await mkdir(roots.codexSessionsDir, { recursive: true })
@@ -68,7 +68,7 @@ describe('session scan batch deduplication', () => {
 
   it('replaces aliases across remote batches without consuming the unique-session budget', async () => {
     const provider = new MemoryRemoteProvider()
-    const managedHome = '/home/ada/.local/share/orca/codex-runtime-home/home'
+    const managedHome = '/home/ada/.local/share/kingu/codex-runtime-home/home'
     const content = (id: string) =>
       jsonLines([
         { type: 'session_meta', payload: { id, cwd: '/repo/folder' } },

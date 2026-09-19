@@ -4,9 +4,9 @@ import { join } from 'node:path'
 import { EventEmitter } from 'node:events'
 import type WebSocket from 'ws'
 import { describe, expect, it, vi } from 'vitest'
-import { OrcaRuntimeService } from './orca-runtime'
+import { KinguRuntimeService } from './kingu-runtime'
 import { OrchestrationDb } from './orchestration/db'
-import { OrcaRuntimeRpcServer } from './runtime-rpc'
+import { KinguRuntimeRpcServer } from './runtime-rpc'
 import { DeviceRegistry } from './device-registry'
 import {
   withCurrentOrchestrationContract,
@@ -35,15 +35,15 @@ class FakeWebSocket extends EventEmitter {
   readyState = this.OPEN
 }
 
-describe('OrcaRuntimeRpcServer', () => {
+describe('KinguRuntimeRpcServer', () => {
   it('caps WebSocket long-polls and aborts them when the socket closes', async () => {
-    const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-    const runtime = new OrcaRuntimeService()
+    const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+    const runtime = new KinguRuntimeService()
     const db = new OrchestrationDb(':memory:')
     runtime.setOrchestrationDb(db)
     // A consuming check now requires a live pane; these transport tests only need it to block.
     vi.spyOn(runtime, 'getTerminalPaneKey').mockImplementation((handle) => `tab_${handle}:leaf`)
-    const server = new OrcaRuntimeRpcServer({
+    const server = new KinguRuntimeRpcServer({
       runtime,
       userDataPath,
       enableWebSocket: false,
@@ -114,15 +114,15 @@ describe('OrcaRuntimeRpcServer', () => {
   })
 
   it('applies the ask sub-cap on the WebSocket path and releases both counters on close', async () => {
-    const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
-    const runtime = new OrcaRuntimeService()
+    const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
+    const runtime = new KinguRuntimeService()
     const db = new OrchestrationDb(':memory:')
     runtime.setOrchestrationDb(db)
     // A consuming check now requires a live pane; these transport tests only need it to block.
     vi.spyOn(runtime, 'getTerminalPaneKey').mockImplementation((handle) => `tab_${handle}:leaf`)
     seedSupervisedAskWorkers(db, ['term_w0', 'term_w1', 'term_w2'])
     // Why: cap 4 → ask sub-cap 2, so the third ask must be shed while waits keep the other half.
-    const server = new OrcaRuntimeRpcServer({
+    const server = new KinguRuntimeRpcServer({
       runtime,
       userDataPath,
       enableWebSocket: false,
@@ -205,12 +205,12 @@ describe('OrcaRuntimeRpcServer', () => {
   })
 
   it('shares one socket close listener across concurrent WebSocket dispatches', async () => {
-    const userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-rpc-'))
+    const userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-rpc-'))
     const runtime = {
       configureNotificationDismissalStore: () => {},
       getRuntimeId: () => 'test-runtime'
-    } as unknown as OrcaRuntimeService
-    const server = new OrcaRuntimeRpcServer({ runtime, userDataPath, enableWebSocket: false })
+    } as unknown as KinguRuntimeService
+    const server = new KinguRuntimeRpcServer({ runtime, userDataPath, enableWebSocket: false })
     server['deviceRegistry'] = new DeviceRegistry(userDataPath)
     const entry = server['deviceRegistry']!.addDevice('runtime-test', 'runtime')
     const ws = new FakeWebSocket()

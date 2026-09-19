@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { IPtyProvider } from '../providers/types'
 import type { Repo } from '../../shared/repo-types'
-import type { OrcaRuntimeService } from './orca-runtime'
+import type { KinguRuntimeService } from './kingu-runtime'
 import { stopMissingWorktreeTerminals } from './missing-worktree-terminal-reconciliation'
 
 function createProvider(sessionIds: string[]): IPtyProvider {
@@ -13,10 +13,10 @@ function createProvider(sessionIds: string[]): IPtyProvider {
   } as unknown as IPtyProvider
 }
 
-function createRuntime(): OrcaRuntimeService {
+function createRuntime(): KinguRuntimeService {
   return {
     stopTerminalsForWorktree: vi.fn(async () => ({ stopped: 0 }))
-  } as unknown as OrcaRuntimeService
+  } as unknown as KinguRuntimeService
 }
 
 const localRepo: Repo = {

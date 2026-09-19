@@ -12,7 +12,7 @@ const BYPASS_POLICY = { approvalPolicy: 'never', sandbox: 'danger-full-access' }
  * Manual: approvals on, writes confined to the workspace.
  *
  * Why state it rather than omit it, which is what Manual used to do: app-server resolves an
- * omitted field through the `config.toml` it was started with, and Orca mirrors the user's
+ * omitted field through the `config.toml` it was started with, and Kingu mirrors the user's
  * `~/.codex/config.toml` into the managed home it hands the app-server. Measured against codex
  * 0.153.4 — with `approval_policy = "never"` in that file, a FRESH Manual thread comes up
  * `never` + `dangerFullAccess` and never prompts. Manual was not a posture at all; it was
@@ -32,7 +32,7 @@ const MANUAL_POLICY = { approvalPolicy: 'on-request', sandbox: 'workspace-write'
  * Derived per acquisition from the resolved launch arguments, never from the free-text Arguments
  * field: app-server takes a narrower option set than the interactive CLI and the two are versioned
  * apart, so the only thing read out of that field is the posture the toggle stores in it. An
- * untouched profile resolves to the default Orca ships, which is the bypass flag.
+ * untouched profile resolves to the default Kingu ships, which is the bypass flag.
  *
  * Always a policy, never `undefined`: both postures have to be said out loud, because the one
  * that goes unsaid is the one a resume silently inherits from the other.

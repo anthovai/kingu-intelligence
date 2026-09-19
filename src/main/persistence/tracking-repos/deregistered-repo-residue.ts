@@ -7,10 +7,10 @@ import { parseExecutionHostId } from '../../../shared/execution-host'
 import { addWorkspaceSessionWorktreeOwners } from '../restoring-sessions/session-worktree-ownership'
 import { splitWorktreeId } from '../../../shared/worktree/id'
 import type { WorkspaceSessionState } from '../../../shared/workspace-session-state-types'
-import { SESSION_FIELDS_PRUNED_BY_OWNER_KEY } from '../../orca-profiles/profile-project-session-field-disposition'
-import { ownerKeyWorktreeIds } from '../../orca-profiles/profile-project-worktree-identity'
+import { SESSION_FIELDS_PRUNED_BY_OWNER_KEY } from '../../kingu-profiles/profile-project-session-field-disposition'
+import { ownerKeyWorktreeIds } from '../../kingu-profiles/profile-project-worktree-identity'
 
-/** A `runtime:*` host addresses a paired Orca desktop's rows, whose catalog lives on that host. */
+/** A `runtime:*` host addresses a paired Kingu desktop's rows, whose catalog lives on that host. */
 const isPairedHost = (hostId: string | null | undefined): boolean =>
   parseExecutionHostId(hostId)?.kind === 'runtime'
 

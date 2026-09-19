@@ -226,7 +226,7 @@ describe('Claude structured reading control', () => {
     })
     const resumeReading = vi.spyOn(claude.connections[0], 'resumeReading')
     deferred.sink.appendItem(
-      { provider: 'orca', clientMessageId: 'blocked-prefill' },
+      { provider: 'kingu', clientMessageId: 'blocked-prefill' },
       { kind: 'message', role: 'system', blocks: [{ type: 'text', text: 'prefill' }] }
     )
     await appendEntered.promise

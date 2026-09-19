@@ -79,9 +79,9 @@ async function probeGuestEnvironment(
   // Resolve `env` rather than assume /usr/bin/env: a distro that moved it would
   // otherwise fail every later call.
   const script = [
-    '_orca_env=$(command -v env 2>/dev/null || true)',
-    'case "$_orca_env" in /*) [ -x "$_orca_env" ] || exit 127 ;; *) exit 127 ;; esac',
-    `printf '%s\\0%s\\0%s' "$PATH" "$HOME" "$_orca_env"`
+    '_kingu_env=$(command -v env 2>/dev/null || true)',
+    'case "$_kingu_env" in /*) [ -x "$_kingu_env" ] || exit 127 ;; *) exit 127 ;; esac',
+    `printf '%s\\0%s\\0%s' "$PATH" "$HOME" "$_kingu_env"`
   ].join('\n')
   const captured = buildWslCapturedLoginShellCommand(script)
   const result = await runProcess({

@@ -5,7 +5,7 @@ import type { GitPushTarget } from '../../shared/worktree/types'
 import type { GitRemoteExec, WorktreePushTargetStore } from './worktree-push-target-cleanup'
 import {
   _resetPrRemoteReconciliationRateLimitForTests,
-  isOrcaGeneratedPrRemoteName,
+  isKinguGeneratedPrRemoteName,
   reconcileOrphanedPrRemotesWithExec
 } from './worktree-push-target-reconciliation'
 
@@ -13,8 +13,8 @@ type ExecMock = Mock<GitRemoteExec>
 
 const REPO_PATH = '/repo-root'
 const REPO_ID = 'repo-1'
-const FORK_URL = 'git@github.com:contributor/orca.git'
-const FORK_REMOTE = 'pr-contributor-orca'
+const FORK_URL = 'git@github.com:contributor/kingu.git'
+const FORK_REMOTE = 'pr-contributor-kingu'
 
 function worktreeId(suffix: string): string {
   return `${REPO_ID}::${suffix}`
@@ -79,23 +79,23 @@ function removeCalls(exec: ExecMock): string[][] {
     .filter((args) => args[0] === 'remote' && args[1] === 'remove')
 }
 
-describe('isOrcaGeneratedPrRemoteName', () => {
-  it('matches Orca-generated names, including disambiguated ones', () => {
-    expect(isOrcaGeneratedPrRemoteName('pr-head')).toBe(true)
-    expect(isOrcaGeneratedPrRemoteName('pr-contributor-orca')).toBe(true)
-    expect(isOrcaGeneratedPrRemoteName('pr-head-2')).toBe(true)
-    expect(isOrcaGeneratedPrRemoteName('pr-contributor-orca-3')).toBe(true)
+describe('isKinguGeneratedPrRemoteName', () => {
+  it('matches Kingu-generated names, including disambiguated ones', () => {
+    expect(isKinguGeneratedPrRemoteName('pr-head')).toBe(true)
+    expect(isKinguGeneratedPrRemoteName('pr-contributor-kingu')).toBe(true)
+    expect(isKinguGeneratedPrRemoteName('pr-head-2')).toBe(true)
+    expect(isKinguGeneratedPrRemoteName('pr-contributor-kingu-3')).toBe(true)
   })
 
   it('does not match unrelated remote names', () => {
-    expect(isOrcaGeneratedPrRemoteName('origin')).toBe(false)
-    expect(isOrcaGeneratedPrRemoteName('upstream')).toBe(false)
-    expect(isOrcaGeneratedPrRemoteName('project-remote')).toBe(false)
+    expect(isKinguGeneratedPrRemoteName('origin')).toBe(false)
+    expect(isKinguGeneratedPrRemoteName('upstream')).toBe(false)
+    expect(isKinguGeneratedPrRemoteName('project-remote')).toBe(false)
   })
 })
 
 describe('reconcileOrphanedPrRemotesWithExec', () => {
-  it('leaves a remote alone when no worktree metadata ever proves Orca created it (user-created, ambiguous)', async () => {
+  it('leaves a remote alone when no worktree metadata ever proves Kingu created it (user-created, ambiguous)', async () => {
     // Same naming shape a user could coincidentally pick; no pushTarget anywhere claims it.
     const exec = makeExec({ remotes: remoteLines([{ name: FORK_REMOTE, url: FORK_URL }]) })
     const reclaimed = await reconcileOrphanedPrRemotesWithExec(
@@ -109,7 +109,7 @@ describe('reconcileOrphanedPrRemotesWithExec', () => {
     expect(removeCalls(exec)).toEqual([])
   })
 
-  it('leaves a remote alone that is not shaped like an Orca-generated pr-* remote', async () => {
+  it('leaves a remote alone that is not shaped like an Kingu-generated pr-* remote', async () => {
     const exec = makeExec({
       remotes: remoteLines([{ name: 'my-fork', url: FORK_URL }])
     })
@@ -173,9 +173,9 @@ describe('reconcileOrphanedPrRemotesWithExec', () => {
     expect(removeCalls(exec)).toEqual([['remote', 'remove', FORK_REMOTE]])
   })
 
-  it('reclaims a remote left behind by a worktree removed outside Orca (path 3)', async () => {
+  it('reclaims a remote left behind by a worktree removed outside Kingu (path 3)', async () => {
     const exec = makeExec({ remotes: remoteLines([{ name: FORK_REMOTE, url: FORK_URL }]) })
-    // Metadata still records the (now-vanished) worktree's Orca-created pushTarget.
+    // Metadata still records the (now-vanished) worktree's Kingu-created pushTarget.
     const reclaimed = await reconcileOrphanedPrRemotesWithExec(
       REPO_PATH,
       REPO_ID,

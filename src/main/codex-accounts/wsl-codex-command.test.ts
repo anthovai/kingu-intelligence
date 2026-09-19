@@ -14,7 +14,7 @@ describe('WSL Codex commands', () => {
   it('checks the alias-neutral PATH the runner supplies', () => {
     const script = buildWslCodexAvailabilityScript()
 
-    expect(script).toContain('_orca_lookup_command=')
+    expect(script).toContain('_kingu_lookup_command=')
     expect(script).toContain("'codex'")
     expect(script).toContain('[ -n "$resolved" ]')
     expect(script).not.toContain('bash -ic')

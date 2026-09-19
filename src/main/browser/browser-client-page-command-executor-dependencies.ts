@@ -24,7 +24,7 @@ export type BrowserClientPageAuthorityIdentity = {
 }
 
 export type BrowserClientPageCommandExecutorDependencies = BrowserClientPageAuthorityIdentity & {
-  orcaProfileId: string
+  kinguProfileId: string
   /** Environment record that owns this host's partitions for storage lifecycle. */
   storageScope: string
   retainNetworkRoute(

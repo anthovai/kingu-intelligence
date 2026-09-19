@@ -86,7 +86,7 @@ describe('ghExecFileAsync WSL fallback', () => {
         "cd '/home/jinwoo/stably/noqa' && 'gh' 'issue' 'list' '--repo' 'stablyhq/noqa' '--json' 'number,title'"
       ],
       // Why a concrete directory (#16463): `undefined` makes CreateProcessW inherit
-      // Orca's own cwd, a deletable WSL UNC path when it was launched from a
+      // Kingu's own cwd, a deletable WSL UNC path when it was launched from a
       // worktree. The Linux directory still rides inside the command.
       expect.objectContaining({ cwd: expect.any(String) })
     )
@@ -232,7 +232,7 @@ describe('ghExecFileAsync WSL fallback', () => {
     spawnMock.mockImplementation(fakeSpawnReturning({ stderr: TRANSIENT_502, code: 1 }))
 
     await expect(
-      ghExecFileAsync(['api', '-X', 'POST', 'repos/stablyai/orca/issues'])
+      ghExecFileAsync(['api', '-X', 'POST', 'repos/anthovai/kingu-intelligence/issues'])
     ).rejects.toThrow('HTTP 502 Bad Gateway')
 
     expect(spawnMock).toHaveBeenCalledTimes(1)
@@ -257,7 +257,7 @@ describe('ghExecFileAsync WSL fallback', () => {
     spawnMock.mockImplementation(fakeSpawnReturning({ stderr: TRANSIENT_502, code: 1 }))
 
     await expect(
-      ghExecFileAsync(['issue', 'edit', '5', '--repo', 'stablyai/orca'])
+      ghExecFileAsync(['issue', 'edit', '5', '--repo', 'anthovai/kingu-intelligence'])
     ).rejects.toThrow('HTTP 502 Bad Gateway')
 
     expect(spawnMock).toHaveBeenCalledTimes(1)
@@ -279,7 +279,7 @@ describe('ghExecFileAsync WSL fallback', () => {
       'wsl.exe',
       ['-d', 'Ubuntu', '--exec', 'bash', '-c', "'gh' 'api' 'rate_limit'"],
       // Why a concrete directory (#16463): `undefined` makes CreateProcessW inherit
-      // Orca's own cwd, a deletable WSL UNC path when it was launched from a
+      // Kingu's own cwd, a deletable WSL UNC path when it was launched from a
       // worktree. This global call has no repo directory at all, so nothing about
       // where it runs changes.
       expect.objectContaining({ cwd: expect.any(String) })
@@ -330,7 +330,7 @@ describe('ghExecFileAsync WSL fallback', () => {
     spawnMock.mockImplementation(fakeSpawnReturning({ stderr: TRANSIENT_502, code: 1 }))
 
     await expect(
-      glabExecFileAsync(['api', '-X', 'POST', 'projects/stablyai%2Forca/issues/5/notes'], {
+      glabExecFileAsync(['api', '-X', 'POST', 'projects/anthovai%2Fkingu/issues/5/notes'], {
         cwd: String.raw`C:\repo`
       })
     ).rejects.toThrow('HTTP 502 Bad Gateway')
@@ -342,7 +342,7 @@ describe('ghExecFileAsync WSL fallback', () => {
     spawnMock.mockImplementation(fakeSpawnReturning({ stderr: TRANSIENT_502, code: 1 }))
 
     await expect(
-      glabExecFileAsync(['issue', 'update', '5', '-R', 'stablyai/orca'], {
+      glabExecFileAsync(['issue', 'update', '5', '-R', 'anthovai/kingu-intelligence'], {
         cwd: String.raw`C:\repo`
       })
     ).rejects.toThrow('HTTP 502 Bad Gateway')
@@ -366,7 +366,7 @@ describe('ghExecFileAsync WSL fallback', () => {
       'wsl.exe',
       ['-d', 'Ubuntu', '--exec', 'bash', '-c', "'glab' 'api' 'projects'"],
       // Why a concrete directory (#16463): `undefined` makes CreateProcessW inherit
-      // Orca's own cwd, a deletable WSL UNC path when it was launched from a
+      // Kingu's own cwd, a deletable WSL UNC path when it was launched from a
       // worktree. This global call has no repo directory at all, so nothing about
       // where it runs changes.
       expect.objectContaining({ cwd: expect.any(String) })
@@ -464,7 +464,7 @@ describe('ghExecFileAsync WSL fallback', () => {
       .mockImplementationOnce(fakeSpawnReturning({ stdout: '[]' }))
 
     await expect(
-      glabExecFileAsync(['api', 'projects/stablyai%2Forca/issues'], {
+      glabExecFileAsync(['api', 'projects/anthovai%2Fkingu/issues'], {
         cwd: String.raw`C:\repo`
       })
     ).resolves.toEqual({ stdout: '[]', stderr: '' })

@@ -1,12 +1,12 @@
-import type { OrcaRuntimeService } from '../orca-runtime'
+import type { KinguRuntimeService } from '../kingu-runtime'
 
 export function routeDispatcherClientHostedBrowserRpc(
-  runtime: OrcaRuntimeService,
+  runtime: KinguRuntimeService,
   method: string,
   params: unknown
 ) {
-  const candidate = runtime as OrcaRuntimeService & {
-    routeClientHostedBrowserRpc?: OrcaRuntimeService['routeClientHostedBrowserRpc']
+  const candidate = runtime as KinguRuntimeService & {
+    routeClientHostedBrowserRpc?: KinguRuntimeService['routeClientHostedBrowserRpc']
   }
   return candidate.routeClientHostedBrowserRpc?.(method, params) ?? { handled: false as const }
 }

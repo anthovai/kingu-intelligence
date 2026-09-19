@@ -1,7 +1,7 @@
 import { homedir } from 'node:os'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../../shared/constants'
-import { OrcaRuntimeService } from '../../orca-runtime'
+import { KinguRuntimeService } from '../../kingu-runtime'
 import { AGENT_LAUNCH_METHODS } from './agent-launch'
 import { CAPABLE_CLIENT, methodNamed, STRUCTURED_PREFERENCE } from './agent-launch.test-fixture'
 
@@ -19,7 +19,7 @@ afterEach(() => vi.restoreAllMocks())
 
 describe('agent.launch with the real floating workspace resolver', () => {
   it.each(selectors)('resolves %s without a managed worktree record', async (selector) => {
-    const runtime = new OrcaRuntimeService()
+    const runtime = new KinguRuntimeService()
 
     await expect(runtime.showManagedTerminalWorkspace(selector)).rejects.toThrow(
       'selector_not_found'
@@ -35,13 +35,13 @@ describe('agent.launch with the real floating workspace resolver', () => {
 
   describe.each([true, false])('structured preference %s', (structuredPreference) => {
     it.each(selectors)('launches a terminal through %s', async (selector) => {
-      const runtime = new OrcaRuntimeService()
+      const runtime = new KinguRuntimeService()
       vi.spyOn(runtime, 'getClientSettings').mockReturnValue(
         // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the launch reads only these preferences and optional agentCmdOverrides; no other settings consumer runs because terminal creation is stubbed.
         {
           ...STRUCTURED_PREFERENCE,
           openAgentTabsInChatByDefault: structuredPreference
-        } as ReturnType<OrcaRuntimeService['getClientSettings']>
+        } as ReturnType<KinguRuntimeService['getClientSettings']>
       )
       const scope = vi.spyOn(runtime, 'showTerminalWorkspaceLaunchScope')
       const createSupport = vi.spyOn(runtime, 'getStructuredAgentSessionCreateSupport')

@@ -16,24 +16,24 @@ import {
   type StatPath
 } from './worktree-orphan-gitdir-proof'
 
-const ORCA_CREATION_SOURCES = new Set<NonNullable<WorktreeMeta['orcaCreationSource']>>([
+const KINGU_CREATION_SOURCES = new Set<NonNullable<WorktreeMeta['kinguCreationSource']>>([
   'desktop',
   'runtime',
   'cli',
   'ssh'
 ])
-const ORCA_OWNED_PROVENANCE_META_KEYS = [
-  'orcaCreatedAt',
-  'orcaCreationSource',
-  'orcaCreationWorkspaceLayout',
+const KINGU_OWNED_PROVENANCE_META_KEYS = [
+  'kinguCreatedAt',
+  'kinguCreationSource',
+  'kinguCreationWorkspaceLayout',
   'automationProvenance',
   'cliProvenance',
   'creatorProvenance'
 ] as const
-type UnregisteredOrcaCleanupMeta = Pick<
+type UnregisteredKinguCleanupMeta = Pick<
   WorktreeMeta,
-  | 'orcaCreatedAt'
-  | 'orcaCreationSource'
+  | 'kinguCreatedAt'
+  | 'kinguCreationSource'
   | 'createdAt'
   | 'createdWithAgent'
   | 'pushTarget'
@@ -165,24 +165,24 @@ export async function canSafelyRemoveOrphanedWorktreeDirectory(
   })
 }
 
-export function canCleanupUnregisteredOrcaWorktreeDirectory(args: {
-  meta: UnregisteredOrcaCleanupMeta | null | undefined
+export function canCleanupUnregisteredKinguWorktreeDirectory(args: {
+  meta: UnregisteredKinguCleanupMeta | null | undefined
 }): boolean {
-  if (hasCurrentOrcaCreationProvenance(args.meta)) {
+  if (hasCurrentKinguCreationProvenance(args.meta)) {
     return true
   }
 
-  if (hasLegacyOrcaCreationEvidence(args.meta)) {
+  if (hasLegacyKinguCreationEvidence(args.meta)) {
     return true
   }
 
   // Why: path shape alone is not authority; users can create plain Git
-  // worktrees inside Orca's workspace directory too.
+  // worktrees inside Kingu's workspace directory too.
   return false
 }
 
-export async function canCleanupUnregisteredOrcaLeftoverDirectory(args: {
-  meta: UnregisteredOrcaCleanupMeta | null | undefined
+export async function canCleanupUnregisteredKinguLeftoverDirectory(args: {
+  meta: UnregisteredKinguCleanupMeta | null | undefined
   worktreePath: string
   runtimeWorktreePath: string
   repo: Pick<Repo, 'path'>
@@ -195,8 +195,8 @@ export async function canCleanupUnregisteredOrcaLeftoverDirectory(args: {
   // Why: this recovery state has already lost the worktree .git marker, so the
   // existing .git-file orphan proof cannot establish ownership.
   // Why: without a surviving .git file, path shape alone is too weak to prove
-  // ownership for recursive deletion; require persisted Orca-created evidence.
-  if (!hasCurrentOrcaCreationProvenance(args.meta) && !hasLegacyOrcaCreationEvidence(args.meta)) {
+  // ownership for recursive deletion; require persisted Kingu-created evidence.
+  if (!hasCurrentKinguCreationProvenance(args.meta) && !hasLegacyKinguCreationEvidence(args.meta)) {
     return false
   }
 
@@ -233,18 +233,18 @@ export async function canCleanupUnregisteredOrcaLeftoverDirectory(args: {
   return !(await args.isGitRepository(args.runtimeWorktreePath))
 }
 
-function hasCurrentOrcaCreationProvenance(
-  meta: Pick<WorktreeMeta, 'orcaCreatedAt' | 'orcaCreationSource'> | null | undefined
+function hasCurrentKinguCreationProvenance(
+  meta: Pick<WorktreeMeta, 'kinguCreatedAt' | 'kinguCreationSource'> | null | undefined
 ): boolean {
   return (
-    typeof meta?.orcaCreatedAt === 'number' &&
-    !!meta.orcaCreationSource &&
-    ORCA_CREATION_SOURCES.has(meta.orcaCreationSource)
+    typeof meta?.kinguCreatedAt === 'number' &&
+    !!meta.kinguCreationSource &&
+    KINGU_CREATION_SOURCES.has(meta.kinguCreationSource)
   )
 }
 
-function hasLegacyOrcaCreationEvidence(
-  meta: UnregisteredOrcaCleanupMeta | null | undefined
+function hasLegacyKinguCreationEvidence(
+  meta: UnregisteredKinguCleanupMeta | null | undefined
 ): boolean {
   return Boolean(
     meta?.createdAt ||
@@ -256,11 +256,11 @@ function hasLegacyOrcaCreationEvidence(
   )
 }
 
-export function stripOrcaProvenanceMetaUpdates(
+export function stripKinguProvenanceMetaUpdates(
   updates: Partial<WorktreeMeta> | null | undefined
 ): Partial<WorktreeMeta> {
   const sanitized = { ...updates }
-  for (const key of ORCA_OWNED_PROVENANCE_META_KEYS) {
+  for (const key of KINGU_OWNED_PROVENANCE_META_KEYS) {
     delete sanitized[key]
   }
   return sanitized

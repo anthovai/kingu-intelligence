@@ -28,7 +28,7 @@ afterEach(async () => {
 
 describe('performCancel', () => {
   it('acknowledges only the request and leaves the running lifecycle row intact', async () => {
-    root = await mkdtemp(join(tmpdir(), 'orca-turn-cancel-'))
+    root = await mkdtemp(join(tmpdir(), 'kingu-turn-cancel-'))
     const journal = await journals.open({ identity: IDENTITY, journalDir: root })
     const lifecycleIdentity = {
       provider: 'legacy' as const,
@@ -76,7 +76,7 @@ describe('performCancel', () => {
   })
 
   it('hands the adapter a live-turn read of the published journal', async () => {
-    root = await mkdtemp(join(tmpdir(), 'orca-turn-cancel-live-turn-'))
+    root = await mkdtemp(join(tmpdir(), 'kingu-turn-cancel-live-turn-'))
     const journal = await journals.open({ identity: IDENTITY, journalDir: root })
     const lifecycleIdentity = {
       provider: 'legacy' as const,
@@ -129,7 +129,7 @@ describe('performCancel', () => {
   })
 
   it('keeps the running lifecycle when cancellation cannot be confirmed', async () => {
-    root = await mkdtemp(join(tmpdir(), 'orca-turn-cancel-unconfirmed-'))
+    root = await mkdtemp(join(tmpdir(), 'kingu-turn-cancel-unconfirmed-'))
     const journal = await journals.open({ identity: IDENTITY, journalDir: root })
     await journal.appendItem(
       {
@@ -176,7 +176,7 @@ describe('performCancel', () => {
   })
 
   it('stops background tasks without interrupting the foreground turn or writing a row', async () => {
-    root = await mkdtemp(join(tmpdir(), 'orca-background-task-cancel-'))
+    root = await mkdtemp(join(tmpdir(), 'kingu-background-task-cancel-'))
     const journal = await journals.open({ identity: IDENTITY, journalDir: root })
     const cancelTurn = vi.fn(async () => ({ cancelled: true }))
     const stopBackgroundTasks = vi.fn(async () => ({ cancelled: true }))
@@ -208,7 +208,7 @@ describe('performCancel', () => {
   })
 
   it('routes one background task id without interrupting the foreground turn or writing a row', async () => {
-    root = await mkdtemp(join(tmpdir(), 'orca-background-task-targeted-cancel-'))
+    root = await mkdtemp(join(tmpdir(), 'kingu-background-task-targeted-cancel-'))
     const journal = await journals.open({ identity: IDENTITY, journalDir: root })
     const cancelTurn = vi.fn(async () => ({ cancelled: true }))
     const stopBackgroundTasks = vi.fn(async () => ({ cancelled: true }))

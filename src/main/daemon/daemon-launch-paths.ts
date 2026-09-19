@@ -29,8 +29,8 @@ export function getDaemonHistoryDir(): string {
 export function getDaemonEntryPath(): string {
   const appPath = getAppEnvironment().getAppPath()
   // Why: packaged getAppPath() points at app.asar, so redirect to app.asar.unpacked where daemon-entry.js is fork-executable.
-  // Why asar and not isPackaged: orcad is a packaged non-Electron host whose bundle root holds
-  // orcad.js and daemon-entry.js side by side with no asar to redirect (see parcel-watcher-entry-path.ts).
+  // Why asar and not isPackaged: kingud is a packaged non-Electron host whose bundle root holds
+  // kingud.js and daemon-entry.js side by side with no asar to redirect (see parcel-watcher-entry-path.ts).
   const basePath = appPath.includes('app.asar')
     ? appPath.replace('app.asar', 'app.asar.unpacked')
     : appPath
@@ -46,9 +46,9 @@ export function resolvePackagedDarwinAppVersion(): string | null {
   return process.platform === 'darwin' && environment.isPackaged() ? environment.getVersion() : null
 }
 
-// Why: pass a log-file arg so field failures are diagnosable, but honor the ORCA_DIAGNOSTICS_DISABLED privacy switch.
+// Why: pass a log-file arg so field failures are diagnosable, but honor the KINGU_DIAGNOSTICS_DISABLED privacy switch.
 export function daemonLogArgs(): string[] {
-  const disabled = (process.env.ORCA_DIAGNOSTICS_DISABLED ?? '').trim().toLowerCase()
+  const disabled = (process.env.KINGU_DIAGNOSTICS_DISABLED ?? '').trim().toLowerCase()
   return disabled === '1' || disabled === 'true' ? [] : ['--log-file', getDaemonLogFilePath()]
 }
 

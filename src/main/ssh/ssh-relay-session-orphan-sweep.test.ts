@@ -38,8 +38,8 @@ vi.mock('../ipc/ssh-pty-output-intake-registry', () => ({
   installSshPtySourceCancellationPublisher: vi.fn(() => () => {})
 }))
 vi.mock('./ssh-relay-deploy-helpers', () => ({ execCommand: vi.fn().mockResolvedValue('') }))
-vi.mock('./ssh-remote-orca-cli', () => ({
-  runRemoteOrcaCli: vi.fn().mockResolvedValue({ exitCode: 0, stdout: '', stderr: '' })
+vi.mock('./ssh-remote-kingu-cli', () => ({
+  runRemoteKinguCli: vi.fn().mockResolvedValue({ exitCode: 0, stdout: '', stderr: '' })
 }))
 vi.mock('./ssh-channel-multiplexer', () => ({
   SshChannelMultiplexer: class MockSshChannelMultiplexer {

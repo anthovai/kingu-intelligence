@@ -1,6 +1,6 @@
 import type { BrowserWindow } from 'electron'
 import { join } from 'node:path'
-import { ORCA_BROWSER_GUEST_WEB_PREFERENCES } from '../../shared/browser-guest-web-preferences'
+import { KINGU_BROWSER_GUEST_WEB_PREFERENCES } from '../../shared/browser-guest-web-preferences'
 import { normalizeBrowserNavigationUrl } from '../../shared/browser-url'
 import { browserManager } from '../browser/browser-manager'
 import { browserSessionRegistry } from '../browser/browser-session-registry'
@@ -12,7 +12,7 @@ import {
   browserRouteSessionRegistry,
   browserRouteWebContentsRegistry
 } from '../browser/browser-route-session-runtime'
-import { ORCA_BROWSER_BLANK_URL } from '../../shared/constants'
+import { KINGU_BROWSER_BLANK_URL } from '../../shared/constants'
 import { DOC_PREVIEW_PARTITION, parseDocPreviewUrl } from '../../shared/doc-preview-scheme'
 import { setDocPreviewFailureSink } from '../browser/doc-preview-failure-notice'
 import {
@@ -21,11 +21,12 @@ import {
 } from '../browser/doc-preview-grant-registry'
 import { isDocPreviewSession } from '../browser/doc-preview-protocol'
 import { registerPluginPanelNavigationGuard } from '../plugins/plugin-panel-navigation-guard'
+import { isAdmissibleIdeAttach } from '../ide/ide-webview-admission'
 import { installPrivilegedWindowNavigationPolicy } from './privileged-window-navigation'
 
 /**
  * Why a separate admission rule: `normalizeBrowserNavigationUrl` answers only for
- * http(s) and `file:`, so `orca-preview://` can only ever attach here — and only
+ * http(s) and `file:`, so `kingu-preview://` can only ever attach here — and only
  * on the doc-preview partition, carrying a grant the main process minted for a
  * deliberate user preview action. Web content has no way to reach either.
  */
@@ -74,13 +75,17 @@ export function installMainWindowWebviewSecurity(mainWindow: BrowserWindow): voi
     // profile partitions — the renderer owns their URLs, no main-side grants.
     const isLocalSshPartition = isLocalSshBrowserPartition(partition)
     const isDocPreviewAttach = isAdmissibleDocPreviewAttach(partition, src)
+    // Why alongside doc-preview: the IDE guest's origin is minted by the main
+    // process when its server starts, so the renderer never names the target.
+    const isIdeAttach = isAdmissibleIdeAttach(partition, src)
 
     // Why: fail closed — deny any src or partition not in the registry allowlist so a renderer bug can't smuggle preload/Node into an unprivileged guest.
     if (
       !isDocPreviewAttach &&
+      !isIdeAttach &&
       (!normalizedSrc ||
         (!isProfilePartition && !isRoutePartition && !isLocalSshPartition) ||
-        (isRoutePartition && normalizedSrc !== ORCA_BROWSER_BLANK_URL))
+        (isRoutePartition && normalizedSrc !== KINGU_BROWSER_BLANK_URL))
     ) {
       event.preventDefault()
       return
@@ -104,7 +109,7 @@ export function installMainWindowWebviewSecurity(mainWindow: BrowserWindow): voi
     webPreferences.contextIsolation = true
     webPreferences.sandbox = true
     // Why: force the browser guest policy even if host markup omits or misspells a preference.
-    Object.assign(webPreferences, ORCA_BROWSER_GUEST_WEB_PREFERENCES)
+    Object.assign(webPreferences, KINGU_BROWSER_GUEST_WEB_PREFERENCES)
     // Why: keep the registry-validated partition so isolated session profiles use their own storage while other hardening stays intact.
     webPreferences.partition = partition
   })

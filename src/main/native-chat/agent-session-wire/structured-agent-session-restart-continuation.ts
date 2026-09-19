@@ -20,7 +20,7 @@ import type { AgentSessionResumeMarker } from '../../../shared/agent-session-res
 /**
  * All four dispatch states are preserved, never collapsed into transport success.
  *
- * The send layer answers `ok: true` as soon as Orca OWNS the message — a rejected or unverifiable
+ * The send layer answers `ok: true` as soon as Kingu OWNS the message — a rejected or unverifiable
  * provider dispatch is recorded inside the submission, not on the envelope. Reading only the
  * envelope reports a refused `turn/start` as continued and stamps the journal saying so.
  *
@@ -96,7 +96,7 @@ export type StructuredAgentSessionContinuationDeps = {
   }) => Promise<{
     ok: boolean
     refusal?: { code: string }
-    /** The submission is where the provider's answer lives; the envelope only says Orca took it. */
+    /** The submission is where the provider's answer lives; the envelope only says Kingu took it. */
     value?: { submission?: { dispatchState?: string; reason?: string | null } }
   }>
   /**
@@ -110,7 +110,7 @@ export type StructuredAgentSessionContinuationDeps = {
     sessionId: string,
     clientMessageId: string
   ) => Promise<{ dispatchState?: string; reason?: string | null } | undefined>
-  /** Records the host-authored journal note that marks this send as Orca's, not the user's. */
+  /** Records the host-authored journal note that marks this send as Kingu's, not the user's. */
   note: (sessionId: string, text: string) => Promise<void>
   /** Reports a note that could not be written. The note is best effort, but its failure is not
    *  allowed to be silent — a swallowed append is how this regressed unnoticed once already. */
@@ -152,7 +152,7 @@ export async function continueStructuredAgentSessionAfterRestart(
       reason: sent.refusal?.code ?? 'agent_session_send_failed'
     }
   }
-  // The send result carries the dispatch as it stood when Orca took the message, which for a normal
+  // The send result carries the dispatch as it stood when Kingu took the message, which for a normal
   // successful send is `pending`. Judging it here would report every delivered continuation as
   // pending and never write the note, so the settled value is what decides.
   const submission =
@@ -175,7 +175,7 @@ export async function continueStructuredAgentSessionAfterRestart(
     // neither success nor failure — and writes no note saying the agent was asked to continue.
     return { sessionId, outcome: 'unknown' }
   }
-  // Only an accepted dispatch gets the note: it is a durable claim that Orca asked this agent to
+  // Only an accepted dispatch gets the note: it is a durable claim that Kingu asked this agent to
   // carry on, and it must not sit beside a message the provider refused or never confirmed. Best
   // effort beyond that — losing the note must not turn a delivered continuation into a failure —
   // but reported, never swallowed.

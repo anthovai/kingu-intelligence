@@ -3,7 +3,7 @@ import type { WorkerTerminalListState } from '../../../../orchestration/worker-t
 import type { OrchestrationDb } from '../../../../orchestration/db'
 import { WORKER_LIST_CURSOR_EXPIRED_MESSAGE } from '../../../../orchestration/db/worker-terminal/worker-terminal-listing'
 import { OrchestrationError } from '../../../../orchestration/orchestration-error'
-import type { OrcaRuntimeService } from '../../../../orca-runtime'
+import type { KinguRuntimeService } from '../../../../kingu-runtime'
 import { defineMethod } from '../../../core'
 import {
   applyFederatedFleetObservations,
@@ -137,7 +137,7 @@ export const ORCHESTRATION_WORKER_LIST_METHOD = defineMethod({
 })
 
 function readSnapshotRows(
-  runtime: OrcaRuntimeService,
+  runtime: KinguRuntimeService,
   db: OrchestrationDb,
   cursor: Extract<WorkerListCursor, { version: 3 }>,
   params: WorkerListPageParams,
@@ -159,7 +159,7 @@ function readSnapshotRows(
 }
 
 async function projectWorkerListPage(args: {
-  runtime: OrcaRuntimeService
+  runtime: KinguRuntimeService
   params: WorkerListPageParams
   limit: number
   rows: ReturnType<OrchestrationDb['listWorkerTerminalResources']>
@@ -183,7 +183,7 @@ async function projectWorkerListPage(args: {
 
 async function projectWorkerListPageWithFilteredSnapshot(
   args: {
-    runtime: OrcaRuntimeService
+    runtime: KinguRuntimeService
     params: WorkerListPageParams
     limit: number
     rows: ReturnType<OrchestrationDb['listWorkerTerminalResources']>

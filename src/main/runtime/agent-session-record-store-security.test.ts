@@ -36,7 +36,7 @@ function reserveRequest(): AgentSessionReserveRequest {
 }
 
 beforeEach(async () => {
-  directory = await mkdtemp(join(tmpdir(), 'orca-agent-session-security-'))
+  directory = await mkdtemp(join(tmpdir(), 'kingu-agent-session-security-'))
 })
 
 afterEach(async () => {

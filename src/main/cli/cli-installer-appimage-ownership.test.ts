@@ -36,12 +36,12 @@ afterEach(async () => {
 })
 
 async function makeFixture() {
-  const root = await mkdtemp(join(tmpdir(), 'orca-cli-appimage-ownership-'))
+  const root = await mkdtemp(join(tmpdir(), 'kingu-cli-appimage-ownership-'))
   created.push(root)
-  const appImagePath = join(root, 'Orca.AppImage')
+  const appImagePath = join(root, 'Kingu.AppImage')
   const cacheRootPath = join(root, 'cache')
   const commandDirectory = join(root, 'home', '.local', 'bin')
-  const commandPath = join(commandDirectory, 'orca-ide')
+  const commandPath = join(commandDirectory, 'kingu-ide')
   await mkdir(commandDirectory, { recursive: true })
   await writeFile(appImagePath, '#!/usr/bin/env bash\n', { mode: 0o755 })
   return { root, appImagePath, cacheRootPath, commandDirectory, commandPath }
@@ -50,7 +50,7 @@ async function makeFixture() {
 async function extractPayload(_appImagePath: string, cwd: string): Promise<void> {
   const launcherDirectory = join(cwd, 'squashfs-root', 'resources', 'bin')
   await mkdir(launcherDirectory, { recursive: true })
-  await writeFile(join(launcherDirectory, 'orca-ide'), '#!/usr/bin/env bash\n', { mode: 0o755 })
+  await writeFile(join(launcherDirectory, 'kingu-ide'), '#!/usr/bin/env bash\n', { mode: 0o755 })
 }
 
 function installerOptions(fixture: Fixture) {
@@ -59,7 +59,7 @@ function installerOptions(fixture: Fixture) {
     isPackaged: true,
     userDataPath: join(fixture.root, 'user-data'),
     resourcesPath: join(fixture.root, 'mount', 'resources'),
-    execPath: join(fixture.root, 'mount', 'orca-ide'),
+    execPath: join(fixture.root, 'mount', 'kingu-ide'),
     appPath: join(fixture.root, 'mount', 'resources', 'app.asar'),
     homePath: join(fixture.root, 'home'),
     processPathEnv: fixture.commandDirectory,
@@ -73,7 +73,7 @@ describe.skipIf(process.platform === 'win32')('AppImage CLI ownership', () => {
   it('uses the mounted bundled launcher when only APPDIR is inherited', async () => {
     const fixture = await makeFixture()
     const resourcesPath = join(fixture.root, 'mounted', 'resources')
-    const launcherPath = join(resourcesPath, 'bin', 'orca-ide')
+    const launcherPath = join(resourcesPath, 'bin', 'kingu-ide')
     await mkdir(dirname(launcherPath), { recursive: true })
     await writeFile(launcherPath, '#!/usr/bin/env bash\n', { mode: 0o755 })
     vi.stubEnv('APPIMAGE', '')
@@ -84,7 +84,7 @@ describe.skipIf(process.platform === 'win32')('AppImage CLI ownership', () => {
       isPackaged: true,
       userDataPath: join(fixture.root, 'user-data'),
       resourcesPath,
-      execPath: join(dirname(resourcesPath), 'orca-ide'),
+      execPath: join(dirname(resourcesPath), 'kingu-ide'),
       appPath: join(resourcesPath, 'app.asar'),
       homePath: join(fixture.root, 'home'),
       processPathEnv: fixture.commandDirectory,
@@ -105,7 +105,7 @@ describe.skipIf(process.platform === 'win32')('AppImage CLI ownership', () => {
   it('ignores inherited APPIMAGE without the matching runtime identity', async () => {
     const fixture = await makeFixture()
     const resourcesPath = join(fixture.root, 'installed', 'resources')
-    const launcherPath = join(resourcesPath, 'bin', 'orca-ide')
+    const launcherPath = join(resourcesPath, 'bin', 'kingu-ide')
     await mkdir(dirname(launcherPath), { recursive: true })
     await writeFile(launcherPath, '#!/usr/bin/env bash\n', { mode: 0o755 })
     vi.stubEnv('APPIMAGE', fixture.appImagePath)
@@ -117,7 +117,7 @@ describe.skipIf(process.platform === 'win32')('AppImage CLI ownership', () => {
       isPackaged: true,
       userDataPath: join(fixture.root, 'user-data'),
       resourcesPath,
-      execPath: join(fixture.root, 'installed', 'orca-ide'),
+      execPath: join(fixture.root, 'installed', 'kingu-ide'),
       appPath: join(resourcesPath, 'app.asar'),
       homePath: join(fixture.root, 'home'),
       processPathEnv: fixture.commandDirectory,
@@ -134,9 +134,9 @@ describe.skipIf(process.platform === 'win32')('AppImage CLI ownership', () => {
     expect(extract).not.toHaveBeenCalled()
   })
 
-  it('refuses an arbitrary resources/bin/orca-ide symlink', async () => {
+  it('refuses an arbitrary resources/bin/kingu-ide symlink', async () => {
     const fixture = await makeFixture()
-    const foreignTarget = join(fixture.root, 'foreign', 'resources', 'bin', 'orca-ide')
+    const foreignTarget = join(fixture.root, 'foreign', 'resources', 'bin', 'kingu-ide')
     await symlink(foreignTarget, fixture.commandPath)
     const extract = vi.fn(extractPayload)
     const installer = new CliInstaller({
@@ -145,15 +145,15 @@ describe.skipIf(process.platform === 'win32')('AppImage CLI ownership', () => {
     })
 
     await expect(installer.getStatus()).resolves.toMatchObject({ state: 'conflict' })
-    await expect(installer.install()).rejects.toThrow('Refusing to replace non-Orca command')
+    await expect(installer.install()).rejects.toThrow('Refusing to replace non-Kingu command')
     await expect(readlink(fixture.commandPath)).resolves.toBe(foreignTarget)
     expect(extract).not.toHaveBeenCalled()
   })
 
-  it('leaves a foreign legacy resources/bin/orca symlink untouched', async () => {
+  it('leaves a foreign legacy resources/bin/kingu symlink untouched', async () => {
     const fixture = await makeFixture()
-    const legacyCommandPath = join(fixture.commandDirectory, 'orca')
-    const foreignTarget = join(fixture.root, 'foreign', 'resources', 'bin', 'orca')
+    const legacyCommandPath = join(fixture.commandDirectory, 'kingu')
+    const foreignTarget = join(fixture.root, 'foreign', 'resources', 'bin', 'kingu')
     await symlink(foreignTarget, legacyCommandPath)
 
     await expect(new CliInstaller(installerOptions(fixture)).install()).resolves.toMatchObject({
@@ -197,7 +197,7 @@ describe.skipIf(process.platform === 'win32')('AppImage CLI ownership', () => {
       appImagePath: fixture.appImagePath,
       cacheRootPath: fixture.cacheRootPath
     })!
-    const relocatedPath = join(fixture.root, 'downloads', 'Orca.AppImage')
+    const relocatedPath = join(fixture.root, 'downloads', 'Kingu.AppImage')
     await mkdir(dirname(relocatedPath), { recursive: true })
     await rename(fixture.appImagePath, relocatedPath)
     const relocatedFixture = { ...fixture, appImagePath: relocatedPath }
@@ -229,9 +229,9 @@ describe.skipIf(process.platform === 'win32')('AppImage CLI ownership', () => {
       'a'.repeat(24),
       'resources',
       'bin',
-      'orca-ide'
+      'kingu-ide'
     )
-    const foreignTarget = join(fixture.root, 'foreign', 'orca-ide')
+    const foreignTarget = join(fixture.root, 'foreign', 'kingu-ide')
     await symlink(ownedOldTarget, fixture.commandPath)
 
     class RacedInstaller extends CliInstaller {
@@ -251,10 +251,10 @@ describe.skipIf(process.platform === 'win32')('AppImage CLI ownership', () => {
     }
 
     await expect(new RacedInstaller(installerOptions(fixture)).install()).rejects.toThrow(
-      'Refusing to replace non-Orca command'
+      'Refusing to replace non-Kingu command'
     )
     await expect(readlink(fixture.commandPath)).resolves.toBe(foreignTarget)
-    expect((await readdir(fixture.commandDirectory)).some((name) => name.includes('.orca-'))).toBe(
+    expect((await readdir(fixture.commandDirectory)).some((name) => name.includes('.kingu-'))).toBe(
       false
     )
   })
@@ -262,9 +262,9 @@ describe.skipIf(process.platform === 'win32')('AppImage CLI ownership', () => {
   // #15081 review: the Linux reclaim rule was narrowed to extracted-cache launchers, which left a
   // deb/rpm -> AppImage migration wedged on its own leftover symlink.
   it('reclaims a symlink left by a packaged deb/rpm install', async () => {
-    for (const directory of ['/opt/Orca', '/opt/orca-ide', '/opt/orca']) {
+    for (const directory of ['/opt/Kingu', '/opt/kingu-ide', '/opt/kingu']) {
       const fixture = await makeFixture()
-      await symlink(`${directory}/resources/bin/orca-ide`, fixture.commandPath)
+      await symlink(`${directory}/resources/bin/kingu-ide`, fixture.commandPath)
 
       await expect(new CliInstaller(installerOptions(fixture)).getStatus()).resolves.toMatchObject({
         state: 'stale'
@@ -274,7 +274,7 @@ describe.skipIf(process.platform === 'win32')('AppImage CLI ownership', () => {
 
   it('still refuses a launcher-named symlink outside the packaged install tree', async () => {
     const fixture = await makeFixture()
-    await symlink('/opt/not-orca/resources/bin/orca-ide', fixture.commandPath)
+    await symlink('/opt/not-kingu/resources/bin/kingu-ide', fixture.commandPath)
 
     await expect(new CliInstaller(installerOptions(fixture)).getStatus()).resolves.toMatchObject({
       state: 'conflict'

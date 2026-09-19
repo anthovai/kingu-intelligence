@@ -92,7 +92,7 @@ describe('registerRuntimeEnvironmentHandlers', () => {
   }
 
   beforeEach(() => {
-    userDataPath = mkdtempSync(join(tmpdir(), 'orca-runtime-env-ipc-'))
+    userDataPath = mkdtempSync(join(tmpdir(), 'kingu-runtime-env-ipc-'))
     activeRuntimeEnvironmentId = null
     store = {
       getSettings: () => ({ activeRuntimeEnvironmentId }),
@@ -341,7 +341,7 @@ describe('registerRuntimeEnvironmentHandlers', () => {
         lastError: 'closed'
       })
       sendRemoteRuntimeRequestMock.mockRejectedValue(
-        new Error('Could not connect to the remote Orca runtime.')
+        new Error('Could not connect to the remote Kingu runtime.')
       )
 
       const add = handler<

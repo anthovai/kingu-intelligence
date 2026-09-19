@@ -22,7 +22,7 @@ vi.mock('./telemetry/cohort-classifier', () => ({ getCohortAtEmit: () => ({}) })
  */
 describe('ssh remote pty lease reclaim after a proven reattach', () => {
   beforeEach(() => {
-    testState.dir = mkdtempSync(join(tmpdir(), 'orca-test-'))
+    testState.dir = mkdtempSync(join(tmpdir(), 'kingu-test-'))
   })
   afterEach(() => {
     rmSync(testState.dir, { recursive: true, force: true })

@@ -267,9 +267,9 @@ describe('registerWorktreeHandlers', () => {
       repoId: 'repo-1',
       name: 'wsl-fork',
       pushTarget: {
-        remoteName: 'pr-contributor-orca',
+        remoteName: 'pr-contributor-kingu',
         branchName: 'contributor/wsl-fork',
-        remoteUrl: 'git@github.com:contributor/orca.git'
+        remoteUrl: 'git@github.com:contributor/kingu.git'
       }
     })
 
@@ -281,9 +281,9 @@ describe('registerWorktreeHandlers', () => {
       expect.any(String),
       expect.objectContaining({
         pushTarget: {
-          remoteName: 'pr-contributor-orca',
+          remoteName: 'pr-contributor-kingu',
           branchName: 'contributor/wsl-fork',
-          remoteUrl: 'git@github.com:contributor/orca.git'
+          remoteUrl: 'git@github.com:contributor/kingu.git'
         }
       })
     )
@@ -296,9 +296,9 @@ describe('registerWorktreeHandlers', () => {
   it('routes fork push target materialization through the selected WSL project runtime', async () => {
     gitExecFileAsyncMock.mockResolvedValue({ stdout: '', stderr: '' })
     const target = {
-      remoteName: 'pr-contributor-orca',
+      remoteName: 'pr-contributor-kingu',
       branchName: 'contributor/wsl-fork',
-      remoteUrl: 'git@github.com:contributor/orca.git'
+      remoteUrl: 'git@github.com:contributor/kingu.git'
     }
 
     const result = await materializeWorktreePushTargetRemote(
@@ -325,30 +325,30 @@ describe('registerWorktreeHandlers', () => {
         '-t',
         'contributor/wsl-fork',
         '--no-tags',
-        'pr-contributor-orca',
-        'git@github.com:contributor/orca.git'
+        'pr-contributor-kingu',
+        'git@github.com:contributor/kingu.git'
       ],
       wslRoutingOptions
     )
     expect(gitExecFileAsyncMock).toHaveBeenCalledWith(
-      ['config', '--get-all', 'remote.pr-contributor-orca.fetch'],
+      ['config', '--get-all', 'remote.pr-contributor-kingu.fetch'],
       wslRoutingOptions
     )
     expect(gitExecFileAsyncMock).toHaveBeenCalledWith(
       [
         'config',
         '--add',
-        'remote.pr-contributor-orca.fetch',
-        '+refs/heads/contributor/wsl-fork*:refs/remotes/pr-contributor-orca/contributor/wsl-fork*'
+        'remote.pr-contributor-kingu.fetch',
+        '+refs/heads/contributor/wsl-fork*:refs/remotes/pr-contributor-kingu/contributor/wsl-fork*'
       ],
       wslRoutingOptions
     )
     expect(gitExecFileAsyncMock).toHaveBeenCalledWith(
-      ['config', 'remote.pr-contributor-orca.tagOpt', '--no-tags'],
+      ['config', 'remote.pr-contributor-kingu.tagOpt', '--no-tags'],
       wslRoutingOptions
     )
     expect(gitExecFileAsyncMock).toHaveBeenCalledWith(
-      ['config', 'remote.pr-contributor-orca.orca-created', 'true'],
+      ['config', 'remote.pr-contributor-kingu.kingu-created', 'true'],
       wslRoutingOptions
     )
     // Why: the mint's fetch is the one call in this sequence that talks to the network --
@@ -358,8 +358,8 @@ describe('registerWorktreeHandlers', () => {
     expect(gitExecFileAsyncMock).toHaveBeenCalledWith(
       [
         'fetch',
-        'pr-contributor-orca',
-        '+refs/heads/contributor/wsl-fork*:refs/remotes/pr-contributor-orca/contributor/wsl-fork*'
+        'pr-contributor-kingu',
+        '+refs/heads/contributor/wsl-fork*:refs/remotes/pr-contributor-kingu/contributor/wsl-fork*'
       ],
       { ...wslRoutingOptions, timeout: expect.any(Number) }
     )

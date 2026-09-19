@@ -84,7 +84,7 @@ export async function performPrompt(
       throw error
     }
     await ctx.journal.appendItem(
-      { provider: 'orca', clientMessageId: `${input.itemId}#delivery` },
+      { provider: 'kingu', clientMessageId: `${input.itemId}#delivery` },
       {
         kind: 'status',
         text: `Your answer was recorded but the agent did not confirm it: ${

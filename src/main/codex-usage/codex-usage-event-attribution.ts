@@ -49,7 +49,7 @@ export async function attributeCodexUsageEvent(
       projectKey = `worktree:${worktree.worktreeId}`
       projectLabel = worktree.displayName
     } else {
-      // Why: all-local mode should still collapse repeated off-Orca sessions by
+      // Why: all-local mode should still collapse repeated off-Kingu sessions by
       // location, but those keys must normalize slash/case differences so the
       // same folder does not fragment into multiple "projects" across platforms.
       projectKey = `cwd:${normalizeComparablePath(event.cwd)}`

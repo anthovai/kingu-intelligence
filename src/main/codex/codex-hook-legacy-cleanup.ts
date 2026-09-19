@@ -27,9 +27,9 @@ import { readCodexTrustGrantLedgerHomeForReconciliation } from './codex-managed-
 import { runExclusivelyForCodexTrustConfig } from './codex-trust-config-mutation-queue'
 import { mutateRealHomeHooksPreservingUserTrust } from './codex-user-hook-trust-rebase'
 
-const LEGACY_ORCA_PROFILE_NAME = 'orca-agent-status'
-const LEGACY_ORCA_PROFILE_BLOCK_START = '# BEGIN ORCA AGENT STATUS HOOKS'
-const LEGACY_ORCA_PROFILE_BLOCK_END = '# END ORCA AGENT STATUS HOOKS'
+const LEGACY_KINGU_PROFILE_NAME = 'kingu-agent-status'
+const LEGACY_KINGU_PROFILE_BLOCK_START = '# BEGIN KINGU AGENT STATUS HOOKS'
+const LEGACY_KINGU_PROFILE_BLOCK_END = '# END KINGU AGENT STATUS HOOKS'
 
 // Why: when the real-home lane owns ~/.codex/hooks.json (system-default flag ON
 // with hooks enabled), the legacy system-home sweep must stand down or every
@@ -43,7 +43,7 @@ export function setSystemCodexHomeHookSweepSuppressed(gate: () => boolean): void
 }
 
 function getLegacyCodexProfileTomlPath(): string {
-  return join(getSystemCodexHomePath(), `${LEGACY_ORCA_PROFILE_NAME}.config.toml`)
+  return join(getSystemCodexHomePath(), `${LEGACY_KINGU_PROFILE_NAME}.config.toml`)
 }
 
 export function cleanupLegacySystemManagedHooks(): Promise<void> {
@@ -114,10 +114,10 @@ async function sweepLegacySystemManagedHooks(): Promise<void> {
     }
   }
 
-  // Why: Codex hooks moved to Orca's managed CODEX_HOME; stale ~/.codex entries would keep external Codex sessions reporting into Orca.
+  // Why: Codex hooks moved to Kingu's managed CODEX_HOME; stale ~/.codex entries would keep external Codex sessions reporting into Kingu.
   if (removedManagedHook) {
-    // Why: this is the user's system hooks file, not Orca's runtime copy.
-    // Remove only stale Orca hook entries and preserve other managers' metadata.
+    // Why: this is the user's system hooks file, not Kingu's runtime copy.
+    // Remove only stale Kingu hook entries and preserve other managers' metadata.
     const hooksWritePath = resolveHooksJsonWritePath(legacyConfigPath)
     const previousMode = statSync(hooksWritePath).mode
     await mutateRealHomeHooksPreservingUserTrust({
@@ -152,8 +152,8 @@ async function sweepLegacySystemManagedHooks(): Promise<void> {
 
 export function stripLegacyManagedProfileBlock(content: string): string {
   const regions = findManagedTomlBlocks(content, {
-    startMarker: LEGACY_ORCA_PROFILE_BLOCK_START,
-    endMarker: LEGACY_ORCA_PROFILE_BLOCK_END
+    startMarker: LEGACY_KINGU_PROFILE_BLOCK_START,
+    endMarker: LEGACY_KINGU_PROFILE_BLOCK_END
   })
   // A stray marker above a complete block must not hide it: take the first
   // terminated region and leave the orphan (and the user text around it) alone.
@@ -194,7 +194,7 @@ function cleanupLegacyCodexProfileHooks(): void {
   if (next === existing) {
     return
   }
-  // Why: #2778 wrote Orca hooks into a Codex profile file; runtime CODEX_HOME supersedes it, so remove only Orca's marked block.
+  // Why: #2778 wrote Kingu hooks into a Codex profile file; runtime CODEX_HOME supersedes it, so remove only Kingu's marked block.
   if (next.trim().length === 0) {
     unlinkSync(profilePath)
   } else {

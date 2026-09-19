@@ -1,7 +1,7 @@
 import { afterEach, vi } from 'vitest'
-import './orca-runtime-test-lifecycle.spec'
-import { OrcaRuntimeService } from './orca-runtime'
-import { store, syncSinglePty } from './orca-runtime-test-fixtures.spec'
+import './kingu-runtime-test-lifecycle.spec'
+import { KinguRuntimeService } from './kingu-runtime'
+import { store, syncSinglePty } from './kingu-runtime-test-fixtures.spec'
 
 export const PTY_ID = 'pty-hydration-owner'
 export const SIZE = { cols: 80, rows: 24 }
@@ -11,7 +11,7 @@ export const RETIRED_SNAPSHOT = {
   ...SIZE
 }
 
-export class HydrationRuntime extends OrcaRuntimeService {
+export class HydrationRuntime extends KinguRuntimeService {
   model() {
     const state = this.headlessTerminals.get(PTY_ID)
     if (!state) {

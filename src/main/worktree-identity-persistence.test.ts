@@ -26,7 +26,7 @@ describe('host-qualified worktree metadata', () => {
   }
 
   beforeEach(() => {
-    testState.dir = mkdtempSync(join(tmpdir(), 'orca-worktree-identity-'))
+    testState.dir = mkdtempSync(join(tmpdir(), 'kingu-worktree-identity-'))
   })
 
   afterEach(() => {

@@ -1,6 +1,6 @@
 // One pane builder for every suite that replays a captured agent transcript through the runtime.
 import { vi } from 'vitest'
-import { OrcaRuntimeService } from './orca-runtime'
+import { KinguRuntimeService } from './kingu-runtime'
 
 const TRANSCRIPT_PANE_LEAF_ID = '11111111-1111-4111-8111-111111111111'
 const TRANSCRIPT_PANE_TAB_ID = 'tab-1'
@@ -20,9 +20,9 @@ export type TranscriptPaneOptions = {
 
 export async function createTranscriptPane(
   options: TranscriptPaneOptions,
-  runtimeDeps?: ConstructorParameters<typeof OrcaRuntimeService>[2]
-): Promise<{ runtime: OrcaRuntimeService; handle: string }> {
-  const runtime = new OrcaRuntimeService(null, undefined, runtimeDeps)
+  runtimeDeps?: ConstructorParameters<typeof KinguRuntimeService>[2]
+): Promise<{ runtime: KinguRuntimeService; handle: string }> {
+  const runtime = new KinguRuntimeService(null, undefined, runtimeDeps)
   const internals = runtime as unknown as {
     resolveTerminalWorkspaceLaunchScope: (selector: string) => Promise<unknown>
   }

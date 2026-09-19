@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import * as ownership from '../../shared/own-retained-string'
-import { OrcaRuntimeWithScheduleWaitBlockedCheck } from './orca-runtime-schedule-wait-blocked-check'
-import { WAIT_BLOCKED_KEYWORD_CARRY_CHARS } from './orca-runtime-postlude'
+import { KinguRuntimeWithScheduleWaitBlockedCheck } from './kingu-runtime-schedule-wait-blocked-check'
+import { WAIT_BLOCKED_KEYWORD_CARRY_CHARS } from './kingu-runtime-postlude'
 import type { createWaitBlockedCheckState } from './wait-blocked-check-state'
 
 type ScheduleHost = {
@@ -11,7 +11,7 @@ type ScheduleHost = {
 }
 
 function createScheduleHost(): ScheduleHost {
-  const prototype = OrcaRuntimeWithScheduleWaitBlockedCheck.prototype as unknown as ScheduleHost
+  const prototype = KinguRuntimeWithScheduleWaitBlockedCheck.prototype as unknown as ScheduleHost
   return {
     waitBlockedCheckStateByPtyId: new Map(),
     runWaitBlockedCheck: () => {},

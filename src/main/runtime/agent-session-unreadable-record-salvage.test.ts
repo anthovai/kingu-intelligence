@@ -88,7 +88,7 @@ async function corruptPrimaryRecord(): Promise<string> {
 }
 
 beforeEach(async () => {
-  directory = await mkdtemp(join(tmpdir(), 'orca-agent-session-salvage-'))
+  directory = await mkdtemp(join(tmpdir(), 'kingu-agent-session-salvage-'))
 })
 
 afterEach(async () => {
