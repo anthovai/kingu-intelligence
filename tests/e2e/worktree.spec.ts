@@ -1,6 +1,6 @@
 import { openSidebarWorkspaceComposer } from './helpers/sidebar-project-dialog'
 /**
- * E2E tests for the "Create Workspace" flow in Orca.
+ * E2E tests for the "Create Workspace" flow in Kingu.
  *
  * Why: the old 'create-worktree' modal was replaced by the composer modal
  * (`activeModal === 'new-workspace-composer'`) in #710. A prior version of
@@ -20,8 +20,8 @@ import { openSidebarWorkspaceComposer } from './helpers/sidebar-project-dialog'
  * crash in whatever replaces it.
  */
 
-import type { ConsoleMessage } from '@stablyai/playwright-test'
-import { test, expect } from './helpers/orca-app'
+import type { ConsoleMessage } from '@anthovai/playwright-test'
+import { test, expect } from './helpers/kingu-app'
 import {
   waitForSessionReady,
   waitForActiveWorktree,
@@ -31,20 +31,20 @@ import {
 } from './helpers/store'
 
 test.describe('Create Workspace', () => {
-  test.beforeEach(async ({ orcaPage }) => {
-    await waitForSessionReady(orcaPage)
-    await waitForActiveWorktree(orcaPage)
+  test.beforeEach(async ({ kinguPage }) => {
+    await waitForSessionReady(kinguPage)
+    await waitForActiveWorktree(kinguPage)
   })
 
-  test('creates a worktree through the composer UI and activates it', async ({ orcaPage }) => {
-    const worktreeIdBefore = await getActiveWorktreeId(orcaPage)
+  test('creates a worktree through the composer UI and activates it', async ({ kinguPage }) => {
+    const worktreeIdBefore = await getActiveWorktreeId(kinguPage)
 
     // Capture render errors for the #1186 guard. React logs "Objects are not
     // valid as a React child" via console.error before throwing the
     // minified-production error #31; capture both paths so the test fails
     // loudly whether the build is dev or prod.
     const pageErrors: Error[] = []
-    orcaPage.on('pageerror', (err) => {
+    kinguPage.on('pageerror', (err) => {
       pageErrors.push(err)
     })
     const consoleErrors: string[] = []
@@ -53,16 +53,16 @@ test.describe('Create Workspace', () => {
         consoleErrors.push(msg.text())
       }
     }
-    orcaPage.on('console', onConsole)
+    kinguPage.on('console', onConsole)
 
     const workspaceName = `e2e-create-${Date.now()}`
 
     try {
       // 1. Open the composer through the visible affordance so the lazy modal
       // mount path stays covered along with the composer body.
-      await openSidebarWorkspaceComposer(orcaPage)
+      await openSidebarWorkspaceComposer(kinguPage)
 
-      const dialog = orcaPage.getByRole('dialog', { name: /Create (Workspace|Worktree)/i })
+      const dialog = kinguPage.getByRole('dialog', { name: /Create (Workspace|Worktree)/i })
       await expect(dialog).toBeVisible()
 
       // Wait for the composer to settle. The card fires several async effects
@@ -76,14 +76,14 @@ test.describe('Create Workspace', () => {
       // inside the open modal's React tree — the console/pageerror sweep
       // below is what catches #1186-class regressions now that the
       // StartFromField trigger no longer exists (#1191).
-      await orcaPage.evaluate(async () => {
+      await kinguPage.evaluate(async () => {
         const repoId = Object.values(window.__store!.getState().worktreesByRepo).flat()[0]?.repoId
         if (!repoId) {
           return
         }
         await window.api.repos.getBaseRefDefault({ repoId })
       })
-      await orcaPage.waitForTimeout(100)
+      await kinguPage.waitForTimeout(100)
 
       // 3. Type the workspace name into the unified smart-name input.
       // The composer's default mode is 'smart'; its placeholder advertises
@@ -108,7 +108,7 @@ test.describe('Create Workspace', () => {
 
       // 6. The new worktree must actually exist on disk and in the store.
       await expect
-        .poll(async () => worktreeExists(orcaPage, workspaceName), {
+        .poll(async () => worktreeExists(kinguPage, workspaceName), {
           timeout: 10_000,
           message: `Worktree "${workspaceName}" did not appear in the store`
         })
@@ -119,7 +119,7 @@ test.describe('Create Workspace', () => {
       await expect
         .poll(
           async () => {
-            const id = await getActiveWorktreeId(orcaPage)
+            const id = await getActiveWorktreeId(kinguPage)
             return id !== null && id !== worktreeIdBefore
           },
           { timeout: 10_000, message: 'New worktree did not become the active worktree' }
@@ -129,7 +129,7 @@ test.describe('Create Workspace', () => {
       // 8. A terminal tab must auto-create for the new worktree. This is
       // the downstream signal that `activateAndRevealWorktree` actually
       // fired, not just that the store row exists.
-      await ensureTerminalVisible(orcaPage)
+      await ensureTerminalVisible(kinguPage)
 
       // Final render-error sweep. Any render crash during the flow (whether
       // it tore down the modal or bubbled past it) shows up here.
@@ -141,9 +141,9 @@ test.describe('Create Workspace', () => {
       )
       expect(reactChildErrors, `React render error: ${reactChildErrors.join(', ')}`).toEqual([])
     } finally {
-      orcaPage.off('console', onConsole)
+      kinguPage.off('console', onConsole)
       // Best-effort close if the test failed mid-flow and left the modal open.
-      await orcaPage
+      await kinguPage
         .evaluate(() => {
           window.__store?.getState().closeModal()
         })
@@ -153,13 +153,13 @@ test.describe('Create Workspace', () => {
     }
   })
 
-  test('creates an emoji-named worktree with a safe git branch', async ({ orcaPage }) => {
+  test('creates an emoji-named worktree with a safe git branch', async ({ kinguPage }) => {
     const workspaceName = '🚀🧪✨'
 
     try {
-      await openSidebarWorkspaceComposer(orcaPage)
+      await openSidebarWorkspaceComposer(kinguPage)
 
-      const dialog = orcaPage.getByRole('dialog', { name: /Create (Workspace|Worktree)/i })
+      const dialog = kinguPage.getByRole('dialog', { name: /Create (Workspace|Worktree)/i })
       await expect(dialog).toBeVisible()
       await expect(dialog.locator('[data-workspace-name-input="true"]')).toBeVisible()
 
@@ -171,17 +171,17 @@ test.describe('Create Workspace', () => {
       await createButton.click()
 
       await expect(dialog).toBeHidden({ timeout: 15_000 })
-      await expect(orcaPage.getByRole('option', { name: new RegExp(workspaceName) })).toBeVisible({
+      await expect(kinguPage.getByRole('option', { name: new RegExp(workspaceName) })).toBeVisible({
         timeout: 10_000
       })
 
-      const branch = await orcaPage.evaluate((displayName) => {
+      const branch = await kinguPage.evaluate((displayName) => {
         const worktrees = Object.values(window.__store!.getState().worktreesByRepo).flat()
         return worktrees.find((worktree) => worktree.displayName === displayName)?.branch ?? null
       }, workspaceName)
       expect(branch).toBe('refs/heads/rocket-test-tube-sparkles')
     } finally {
-      await orcaPage
+      await kinguPage
         .evaluate(() => {
           window.__store?.getState().closeModal()
         })
@@ -191,34 +191,34 @@ test.describe('Create Workspace', () => {
     }
   })
 
-  test('enters the Korean flag with the flag_kr shortcode suggestion', async ({ orcaPage }) => {
+  test('enters the Korean flag with the flag_kr shortcode suggestion', async ({ kinguPage }) => {
     try {
-      await openSidebarWorkspaceComposer(orcaPage)
+      await openSidebarWorkspaceComposer(kinguPage)
 
-      const dialog = orcaPage.getByRole('dialog', { name: /Create (Workspace|Worktree)/i })
+      const dialog = kinguPage.getByRole('dialog', { name: /Create (Workspace|Worktree)/i })
       const nameInput = dialog.getByPlaceholder(/Type a name/i)
       await expect(nameInput).toBeVisible()
 
       await nameInput.pressSequentially('Launch :flag_kr', { delay: 100 })
-      const emojiSuggestions = orcaPage.locator('[data-workspace-emoji-suggestions="true"]')
-      const sourceSuggestions = orcaPage.locator('[data-workspace-source-suggestions="true"]')
+      const emojiSuggestions = kinguPage.locator('[data-workspace-emoji-suggestions="true"]')
+      const sourceSuggestions = kinguPage.locator('[data-workspace-source-suggestions="true"]')
       await expect(emojiSuggestions).toBeVisible()
       await expect(emojiSuggestions.getByRole('option', { name: ':flag_kr:' })).toBeVisible()
       await expect(emojiSuggestions).toHaveAttribute('data-side', 'top')
       await expect(sourceSuggestions).toBeVisible()
       await expect(sourceSuggestions).toHaveAttribute('data-side', 'bottom')
       // Keep both independently positioned suggestion surfaces visible in proof recordings.
-      await orcaPage.waitForTimeout(750)
+      await kinguPage.waitForTimeout(750)
 
       await nameInput.pressSequentially(':')
       await expect(nameInput).toHaveValue('Launch 🇰🇷')
-      await expect(orcaPage.getByRole('option', { name: /:flag_kr:/i })).toHaveCount(0)
+      await expect(kinguPage.getByRole('option', { name: /:flag_kr:/i })).toHaveCount(0)
       await nameInput.pressSequentially(' experiment')
       await expect(nameInput).toHaveValue('Launch 🇰🇷 experiment')
       // Keep the asserted result visible in retained proof recordings.
-      await orcaPage.waitForTimeout(750)
+      await kinguPage.waitForTimeout(750)
     } finally {
-      await orcaPage
+      await kinguPage
         .evaluate(() => {
           window.__store?.getState().closeModal()
         })
@@ -228,8 +228,8 @@ test.describe('Create Workspace', () => {
     }
   })
 
-  test('shows a failed workspace entry when worktree creation fails', async ({ orcaPage }) => {
-    await orcaPage.evaluate(() => {
+  test('shows a failed workspace entry when worktree creation fails', async ({ kinguPage }) => {
+    await kinguPage.evaluate(() => {
       const store = window.__store
       if (!store) {
         throw new Error('window.__store is not available')
@@ -252,9 +252,9 @@ test.describe('Create Workspace', () => {
     try {
       const workspaceName = `e2e-create-failure-${Date.now()}`
 
-      await openSidebarWorkspaceComposer(orcaPage)
+      await openSidebarWorkspaceComposer(kinguPage)
 
-      const dialog = orcaPage.getByRole('dialog', { name: /Create (Workspace|Worktree)/i })
+      const dialog = kinguPage.getByRole('dialog', { name: /Create (Workspace|Worktree)/i })
       await expect(dialog).toBeVisible()
       await expect(dialog.locator('[data-workspace-name-input="true"]')).toBeVisible()
 
@@ -267,15 +267,15 @@ test.describe('Create Workspace', () => {
       await createButton.click()
 
       await expect(dialog).toBeHidden()
-      const failedWorkspace = orcaPage.getByRole('button', {
+      const failedWorkspace = kinguPage.getByRole('button', {
         name: new RegExp(`${workspaceName} No base branch found`)
       })
       await expect(failedWorkspace).toBeVisible()
-      await expect(orcaPage.getByText('Couldn’t create worktree')).toBeVisible()
+      await expect(kinguPage.getByText('Couldn’t create worktree')).toBeVisible()
       await expect(failedWorkspace).toContainText('No base branch found')
-      await expect(orcaPage.getByRole('button', { name: 'Retry' })).toBeVisible()
+      await expect(kinguPage.getByRole('button', { name: 'Retry' })).toBeVisible()
     } finally {
-      await orcaPage
+      await kinguPage
         .evaluate(() => {
           ;(
             window as unknown as {
@@ -292,16 +292,16 @@ test.describe('Create Workspace', () => {
 
   test('reuses a resolved pasted GitHub URL when quick create submits', async ({
     electronApp,
-    orcaPage
+    kinguPage
   }) => {
     const title = `E2E smart URL resolution ${Date.now()}`
-    const url = 'https://github.com/stablyai/orca/pull/2049'
+    const url = 'https://github.com/anthovai/kingu-intelligence/pull/2049'
     const linkedWorkspacePattern = new RegExp(title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
 
     try {
-      await openSidebarWorkspaceComposer(orcaPage)
+      await openSidebarWorkspaceComposer(kinguPage)
 
-      const dialog = orcaPage.getByRole('dialog', { name: /Create (Workspace|Worktree)/i })
+      const dialog = kinguPage.getByRole('dialog', { name: /Create (Workspace|Worktree)/i })
       await expect(dialog).toBeVisible()
       await expect(dialog.locator('[data-workspace-name-input="true"]')).toBeVisible()
 
@@ -373,11 +373,11 @@ test.describe('Create Workspace', () => {
       await createButton.click()
 
       await expect(dialog).toBeHidden({ timeout: 15_000 })
-      await expect(orcaPage.getByRole('option', { name: linkedWorkspacePattern })).toBeVisible({
+      await expect(kinguPage.getByRole('option', { name: linkedWorkspacePattern })).toBeVisible({
         timeout: 10_000
       })
-      await expect(orcaPage.getByRole('option', { name: url })).toHaveCount(0)
-      await expect(orcaPage.getByText('Linked PR #2049')).toBeVisible()
+      await expect(kinguPage.getByRole('option', { name: url })).toHaveCount(0)
+      await expect(kinguPage.getByText('Linked PR #2049')).toBeVisible()
       // Why: quick create reuses the single GitHub lookup from typing (no
       // redundant re-fetch), and since #5733 ("Create PR worktrees from the PR
       // head") it resolves the PR start point exactly once at submit time — so
@@ -397,7 +397,7 @@ test.describe('Create Workspace', () => {
         )
         .toEqual({ githubLookupCount: 1, resolvePrBaseCount: 1 })
     } finally {
-      await orcaPage
+      await kinguPage
         .evaluate(() => {
           window.__store?.getState().closeModal()
         })
@@ -409,16 +409,16 @@ test.describe('Create Workspace', () => {
 
   test('names the workspace after the PR title when the pasted URL suggestion is selected', async ({
     electronApp,
-    orcaPage
+    kinguPage
   }) => {
     const title = `E2E selected URL resolution ${Date.now()}`
-    const url = 'https://github.com/stablyai/orca/pull/2050'
+    const url = 'https://github.com/anthovai/kingu-intelligence/pull/2050'
     const linkedWorkspacePattern = new RegExp(title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
 
     try {
-      await openSidebarWorkspaceComposer(orcaPage)
+      await openSidebarWorkspaceComposer(kinguPage)
 
-      const dialog = orcaPage.getByRole('dialog', { name: /Create (Workspace|Worktree)/i })
+      const dialog = kinguPage.getByRole('dialog', { name: /Create (Workspace|Worktree)/i })
       await expect(dialog).toBeVisible()
       await expect(dialog.locator('[data-workspace-name-input="true"]')).toBeVisible()
 
@@ -457,22 +457,22 @@ test.describe('Create Workspace', () => {
       // suggestion row (instead of submitting the raw URL) must not leave the
       // pasted URL behind as the workspace name. The suggestion popover is
       // portaled outside the dialog element, so locate it page-wide.
-      const suggestion = orcaPage.getByRole('option', { name: linkedWorkspacePattern })
+      const suggestion = kinguPage.getByRole('option', { name: linkedWorkspacePattern })
       await expect(suggestion).toBeVisible()
-      await orcaPage.keyboard.press('Enter')
+      await kinguPage.keyboard.press('Enter')
 
       const createButton = dialog.getByRole('button', { name: /Create (Workspace|Worktree)/i })
       await expect(createButton).toBeEnabled()
       await createButton.click()
 
       await expect(dialog).toBeHidden({ timeout: 15_000 })
-      await expect(orcaPage.getByRole('option', { name: linkedWorkspacePattern })).toBeVisible({
+      await expect(kinguPage.getByRole('option', { name: linkedWorkspacePattern })).toBeVisible({
         timeout: 10_000
       })
-      await expect(orcaPage.getByRole('option', { name: /https-github/i })).toHaveCount(0)
-      await expect(orcaPage.getByText('Linked PR #2050')).toBeVisible()
+      await expect(kinguPage.getByRole('option', { name: /https-github/i })).toHaveCount(0)
+      await expect(kinguPage.getByText('Linked PR #2050')).toBeVisible()
     } finally {
-      await orcaPage
+      await kinguPage
         .evaluate(() => {
           window.__store?.getState().closeModal()
         })

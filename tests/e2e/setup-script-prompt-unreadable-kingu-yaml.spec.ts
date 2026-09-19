@@ -1,13 +1,13 @@
 import { execFileSync } from 'node:child_process'
 import { mkdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import type { ElectronApplication, Page } from '@stablyai/playwright-test'
-import { test, expect } from './helpers/orca-app'
+import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import { test, expect } from './helpers/kingu-app'
 import { waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import { worktreeRow, worktreeRowSurface } from './worktree-row-locators'
 
 const INSPECTION_ERROR_TEXT = "Couldn't verify this repo's setup script right now."
-const SETUP_SCRIPT_COMMAND = 'echo orca-e2e-setup'
+const SETUP_SCRIPT_COMMAND = 'echo kingu-e2e-setup'
 const RECORDING_DWELL_MS = 1200
 
 type WorktreeIds = {
@@ -20,7 +20,7 @@ function runGit(cwd: string, args: string[]): void {
   execFileSync('git', args, { cwd, stdio: 'pipe' })
 }
 
-/** Repo whose shared orca.yaml carries a real setup script, plus a second worktree. */
+/** Repo whose shared kingu.yaml carries a real setup script, plus a second worktree. */
 function createRepoWithSharedSetupScript(repoPath: string, featureWorktreePath: string): void {
   rmSync(repoPath, { recursive: true, force: true })
   rmSync(featureWorktreePath, { recursive: true, force: true })
@@ -28,33 +28,33 @@ function createRepoWithSharedSetupScript(repoPath: string, featureWorktreePath: 
   runGit(repoPath, ['init'])
   runGit(repoPath, ['config', 'user.email', 'e2e@test.local'])
   runGit(repoPath, ['config', 'user.name', 'E2E Test'])
-  writeFileSync(path.join(repoPath, 'README.md'), '# Unreadable orca.yaml E2E\n')
-  writeFileSync(path.join(repoPath, 'orca.yaml'), `scripts:\n  setup: ${SETUP_SCRIPT_COMMAND}\n`)
+  writeFileSync(path.join(repoPath, 'README.md'), '# Unreadable kingu.yaml E2E\n')
+  writeFileSync(path.join(repoPath, 'kingu.yaml'), `scripts:\n  setup: ${SETUP_SCRIPT_COMMAND}\n`)
   runGit(repoPath, ['add', '-A'])
   runGit(repoPath, ['commit', '-m', 'Initial commit'])
   runGit(repoPath, ['worktree', 'add', '-b', 'setup-prompt-proof', featureWorktreePath])
 }
 
 /**
- * Makes the main process report the failure the fix now surfaces: orca.yaml could
+ * Makes the main process report the failure the fix now surfaces: kingu.yaml could
  * not be read (SSH filesystem provider gone), so the hook check fails closed with
  * `status: 'error'` instead of an authoritative "no setup script".
  * The real handler stays captured so healing restores production behavior.
  */
-async function installUnreadableOrcaYamlFault(electronApp: ElectronApplication): Promise<void> {
+async function installUnreadableKinguYamlFault(electronApp: ElectronApplication): Promise<void> {
   await electronApp.evaluate(({ ipcMain }) => {
     type InvokeHandler = (event: unknown, ...args: unknown[]) => unknown
-    const faultState = globalThis as typeof globalThis & { __orcaE2eOrcaYamlUnreadable?: boolean }
+    const faultState = globalThis as typeof globalThis & { __kinguE2eKinguYamlUnreadable?: boolean }
     const registry = (ipcMain as unknown as { _invokeHandlers?: Map<string, InvokeHandler> })
       ._invokeHandlers
     const productionHandler = registry?.get('hooks:check')
     if (!productionHandler) {
       throw new Error('hooks:check handler was not registered in the main process')
     }
-    faultState.__orcaE2eOrcaYamlUnreadable = true
+    faultState.__kinguE2eKinguYamlUnreadable = true
     ipcMain.removeHandler('hooks:check')
     ipcMain.handle('hooks:check', async (event, ...args) => {
-      if (faultState.__orcaE2eOrcaYamlUnreadable) {
+      if (faultState.__kinguE2eKinguYamlUnreadable) {
         return { status: 'error', hasHooks: false, hooks: null, mayNeedUpdate: false }
       }
       return productionHandler(event, ...args)
@@ -62,12 +62,12 @@ async function installUnreadableOrcaYamlFault(electronApp: ElectronApplication):
   })
 }
 
-/** orca.yaml becomes readable again — every later check runs the production handler. */
-async function healOrcaYamlRead(electronApp: ElectronApplication): Promise<void> {
+/** kingu.yaml becomes readable again — every later check runs the production handler. */
+async function healKinguYamlRead(electronApp: ElectronApplication): Promise<void> {
   await electronApp.evaluate(() => {
     ;(
-      globalThis as typeof globalThis & { __orcaE2eOrcaYamlUnreadable?: boolean }
-    ).__orcaE2eOrcaYamlUnreadable = false
+      globalThis as typeof globalThis & { __kinguE2eKinguYamlUnreadable?: boolean }
+    ).__kinguE2eKinguYamlUnreadable = false
   })
 }
 
@@ -147,33 +147,33 @@ async function addRepoAndActivateMainWorktree(
 }
 
 test.describe('Setup script prompt', () => {
-  test.beforeEach(async ({ orcaPage }) => {
-    await waitForSessionReady(orcaPage)
-    await waitForActiveWorktree(orcaPage)
+  test.beforeEach(async ({ kinguPage }) => {
+    await waitForSessionReady(kinguPage)
+    await waitForActiveWorktree(kinguPage)
   })
 
-  test('recovers from an unreadable orca.yaml instead of pinning the failed verdict', async ({
+  test('recovers from an unreadable kingu.yaml instead of pinning the failed verdict', async ({
     electronApp,
-    orcaPage
+    kinguPage
   }, testInfo) => {
-    const repoPath = testInfo.outputPath('unreadable-orca-yaml-repo')
-    const featureWorktreePath = testInfo.outputPath('unreadable-orca-yaml-feature')
+    const repoPath = testInfo.outputPath('unreadable-kingu-yaml-repo')
+    const featureWorktreePath = testInfo.outputPath('unreadable-kingu-yaml-feature')
     createRepoWithSharedSetupScript(repoPath, featureWorktreePath)
 
-    await installUnreadableOrcaYamlFault(electronApp)
+    await installUnreadableKinguYamlFault(electronApp)
     const { repoId, featureWorktreeId } = await addRepoAndActivateMainWorktree(
-      orcaPage,
+      kinguPage,
       repoPath,
       featureWorktreePath
     )
 
-    const promptCard = orcaPage.locator('[data-setup-script-prompt-layer]')
+    const promptCard = kinguPage.locator('[data-setup-script-prompt-layer]')
     const inspectionError = promptCard.getByText(INSPECTION_ERROR_TEXT)
     await expect(inspectionError).toBeVisible({ timeout: 20_000 })
 
-    // orca.yaml is readable again; the card is still pinned to the failed verdict.
-    await healOrcaYamlRead(electronApp)
-    const healthyCheck = await orcaPage.evaluate(
+    // kingu.yaml is readable again; the card is still pinned to the failed verdict.
+    await healKinguYamlRead(electronApp)
+    const healthyCheck = await kinguPage.evaluate(
       (targetRepoId) => window.api.hooks.check({ repoId: targetRepoId }),
       repoId
     )
@@ -184,17 +184,17 @@ test.describe('Setup script prompt', () => {
     await expect(inspectionError).toBeVisible()
     await expect(promptCard.getByRole('button', { name: 'Retry' })).toBeVisible()
     // Not a wait for state: holds the pinned card on screen for the proof recording.
-    await orcaPage.waitForTimeout(RECORDING_DWELL_MS)
+    await kinguPage.waitForTimeout(RECORDING_DWELL_MS)
 
     // Activating another worktree in the same repo must re-inspect.
-    const featureRow = worktreeRow(orcaPage, featureWorktreeId)
+    const featureRow = worktreeRow(kinguPage, featureWorktreeId)
     await expect(featureRow).toBeVisible()
-    await worktreeRowSurface(orcaPage, featureWorktreeId).click()
+    await worktreeRowSurface(kinguPage, featureWorktreeId).click()
     await expect(featureRow).toHaveAttribute('aria-current', 'page')
 
-    // The repo has a valid orca.yaml scripts.setup, so no prompt may remain.
+    // The repo has a valid kingu.yaml scripts.setup, so no prompt may remain.
     await expect(inspectionError).toBeHidden({ timeout: 20_000 })
     await expect(promptCard).toHaveCount(0)
-    await orcaPage.waitForTimeout(RECORDING_DWELL_MS)
+    await kinguPage.waitForTimeout(RECORDING_DWELL_MS)
   })
 })

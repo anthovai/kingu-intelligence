@@ -66,18 +66,18 @@ export async function collectMobileWebAppRouteKeys(appDir, routeRoot = MOBILE_WE
 export const ROUTE_CONTEXT_SOURCE = `const keys = Object.keys(modules)
 function routeContext(id) {
   if (!Object.prototype.hasOwnProperty.call(modules, id)) {
-    throw new Error('[orca-mobile-web-app] no route module for ' + id)
+    throw new Error('[kingu-mobile-web-app] no route module for ' + id)
   }
   return modules[id]
 }
 routeContext.keys = () => keys.slice()
 routeContext.resolve = (id) => {
   if (!Object.prototype.hasOwnProperty.call(modules, id)) {
-    throw new Error('[orca-mobile-web-app] cannot resolve route ' + id)
+    throw new Error('[kingu-mobile-web-app] cannot resolve route ' + id)
   }
   return id
 }
-routeContext.id = 'orca-mobile-web-app-routes'`
+routeContext.id = 'kingu-mobile-web-app-routes'`
 
 /**
  * esbuild has no `require.context`, so the builder synthesizes the RequireContext expo-router's

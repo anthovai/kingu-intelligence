@@ -22,7 +22,7 @@ const runtime = readRuntimeArg()
 const NATIVE_MODULES = [
   'node-pty',
   ...(process.platform === 'win32'
-    ? ['@orca/windows-registry', '@vscode/windows-process-tree']
+    ? ['@kingu/windows-registry', '@vscode/windows-process-tree']
     : [])
 ]
 const NODE_PTY_CONPTY_RUNTIME_FILES = ['conpty.dll', 'OpenConsole.exe']
@@ -275,7 +275,7 @@ function loadNativeModule(moduleName) {
     }
     return
   }
-  if (moduleName === '@orca/windows-registry') {
+  if (moduleName === '@kingu/windows-registry') {
     const registry = require(moduleName)
     // Why: the package defers loading its .node addon until the first registry call.
     registry.getRegistryKey(registry.HK.CU, 'Environment')
@@ -305,7 +305,7 @@ function loadNodePtyNativeModule() {
   })
   if (requiresPatchedNodePtySourceBuild() && !isNodePtyReleaseBuildDir(native?.dir)) {
     throw new Error(
-      `node-pty resolved to ${native.dir}; expected build/Release so Orca's node-pty patch is active`
+      `node-pty resolved to ${native.dir}; expected build/Release so Kingu's node-pty patch is active`
     )
   }
 }
@@ -336,7 +336,7 @@ function getPatchedNodePtyRebuildReason() {
     return null
   }
 
-  // Why: a loadable upstream node-pty prebuild is not enough; Orca's Unix and
+  // Why: a loadable upstream node-pty prebuild is not enough; Kingu's Unix and
   // Windows patches only land in the source-built build/Release artifacts.
   const nodePtyDir = resolve(projectDir, 'node_modules', 'node-pty')
   const artifactPaths = patchedNodePtyArtifactPaths(nodePtyDir)

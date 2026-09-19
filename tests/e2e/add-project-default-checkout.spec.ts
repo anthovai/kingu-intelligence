@@ -4,7 +4,7 @@ import { mkdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { mkdtemp } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
-import { test, expect } from './helpers/orca-app'
+import { test, expect } from './helpers/kingu-app'
 import { waitForSessionReady } from './helpers/store'
 
 const tempRoots: string[] = []
@@ -17,7 +17,7 @@ async function createCloneFixture(): Promise<{
   // repo.path on macOS, where os.tmpdir() (/var/...) symlinks to /private/var/...
   // and the app canonicalizes repo.path via `git rev-parse --show-toplevel`.
   const rootPath = realpathSync(
-    await mkdtemp(path.join(os.tmpdir(), 'orca-e2e-add-project-clone-'))
+    await mkdtemp(path.join(os.tmpdir(), 'kingu-e2e-add-project-clone-'))
   )
   tempRoots.push(rootPath)
 
@@ -48,7 +48,7 @@ async function createLinkedWorktreeFixture(): Promise<{
   // os.tmpdir() (/var/...) symlinks to /private/var/... and the app canonicalizes
   // repo.path via `git rev-parse --show-toplevel` on add.
   const rootPath = realpathSync(
-    await mkdtemp(path.join(os.tmpdir(), 'orca-e2e-add-project-linked-'))
+    await mkdtemp(path.join(os.tmpdir(), 'kingu-e2e-add-project-linked-'))
   )
   tempRoots.push(rootPath)
 
@@ -82,30 +82,30 @@ test.afterEach(() => {
 
 test.describe('Add project default checkout', () => {
   test('clones a repo and opens the default checkout without the setup-choice modal', async ({
-    orcaPage
+    kinguPage
   }) => {
-    await waitForSessionReady(orcaPage)
+    await waitForSessionReady(kinguPage)
     const fixture = await createCloneFixture()
 
-    await openSidebarProjectDialog(orcaPage)
-    const addDialog = orcaPage.getByRole('dialog', { name: /Add a project/i })
+    await openSidebarProjectDialog(kinguPage)
+    const addDialog = kinguPage.getByRole('dialog', { name: /Add a project/i })
     await expect(addDialog).toBeVisible()
     await addDialog.getByRole('button', { name: /Clone from URL/i }).click()
 
-    const cloneDialog = orcaPage.getByRole('dialog', { name: /Clone from URL/i })
+    const cloneDialog = kinguPage.getByRole('dialog', { name: /Clone from URL/i })
     await expect(cloneDialog).toBeVisible()
     await cloneDialog.getByPlaceholder('https://github.com/user/repo.git').fill(fixture.sourcePath)
     await cloneDialog.getByPlaceholder('/path/to/destination').fill(fixture.destinationParent)
     await cloneDialog.getByRole('button', { name: /^Clone$/ }).click()
 
-    await expect(orcaPage.getByRole('dialog', { name: /Repo added/i })).toBeHidden()
-    await expect(orcaPage.getByText('Use existing worktrees')).toBeHidden()
-    await expect(orcaPage.getByText('Create a new worktree')).toBeHidden()
+    await expect(kinguPage.getByRole('dialog', { name: /Repo added/i })).toBeHidden()
+    await expect(kinguPage.getByText('Use existing worktrees')).toBeHidden()
+    await expect(kinguPage.getByText('Create a new worktree')).toBeHidden()
 
     await expect
       .poll(
         () =>
-          orcaPage.evaluate((cloneName) => {
+          kinguPage.evaluate((cloneName) => {
             const state = window.__store?.getState()
             if (!state) {
               return null
@@ -137,26 +137,26 @@ test.describe('Add project default checkout', () => {
   })
 
   test('reveals sibling git worktrees before opening the default checkout', async ({
-    orcaPage
+    kinguPage
   }) => {
-    await waitForSessionReady(orcaPage)
+    await waitForSessionReady(kinguPage)
     const fixture = await createLinkedWorktreeFixture()
 
-    await orcaPage.evaluate((folderPath) => {
+    await kinguPage.evaluate((folderPath) => {
       window.__store?.getState().openModal('confirm-add-project-from-folder', { folderPath })
     }, fixture.mainPath)
-    const addProjectDialog = orcaPage.getByRole('dialog', { name: /^Add Project$/i })
+    const addProjectDialog = kinguPage.getByRole('dialog', { name: /^Add Project$/i })
     await expect(addProjectDialog).toBeVisible()
     await addProjectDialog.getByRole('button', { name: /^Add Project$/ }).click()
 
     await expect(addProjectDialog).toBeHidden()
-    await expect(orcaPage.getByRole('dialog', { name: /Repo added/i })).toBeHidden()
-    await expect(orcaPage.getByText('Use existing worktrees')).toBeHidden()
+    await expect(kinguPage.getByRole('dialog', { name: /Repo added/i })).toBeHidden()
+    await expect(kinguPage.getByText('Use existing worktrees')).toBeHidden()
 
     await expect
       .poll(
         () =>
-          orcaPage.evaluate((mainPath) => {
+          kinguPage.evaluate((mainPath) => {
             const state = window.__store?.getState()
             if (!state) {
               return null

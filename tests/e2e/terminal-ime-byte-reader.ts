@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto'
 import { rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import type { Page } from '@stablyai/playwright-test'
-import { expect } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
+import { expect } from '@anthovai/playwright-test'
 import { getTerminalContent, sendToTerminal, waitForTerminalOutput } from './helpers/terminal'
 
 export type TerminalImeByteReader = {
@@ -17,9 +17,9 @@ export function createTerminalImeByteReader(
   expectedLineCount: number
 ): TerminalImeByteReader {
   const runId = randomUUID().replaceAll('-', '')
-  const readyMarker = `ORCA_IME_READER_READY_${runId}`
-  const resultPrefix = `ORCA_IME_BYTES_${runId}`
-  const scriptPath = path.join(testRepoPath, `.orca-ime-byte-reader-${runId}.cjs`)
+  const readyMarker = `KINGU_IME_READER_READY_${runId}`
+  const resultPrefix = `KINGU_IME_BYTES_${runId}`
+  const scriptPath = path.join(testRepoPath, `.kingu-ime-byte-reader-${runId}.cjs`)
   const source = `
 const expectedLineCount = ${expectedLineCount}
 const readyMarker = ${JSON.stringify(readyMarker)}

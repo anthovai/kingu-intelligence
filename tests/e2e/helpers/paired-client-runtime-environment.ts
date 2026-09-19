@@ -1,4 +1,4 @@
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 import type { PairedElectronClient, RuntimeDesktopPairingOffer } from './paired-electron-client'
 import { revealPairedClientWindow } from './paired-client-window-reveal'
 
@@ -81,7 +81,7 @@ export async function rePairPairedElectronClient(
     process.env.GITHUB_ACTIONS === 'true' &&
     process.platform === 'linux' &&
     process.env.DISPLAY &&
-    process.env.ORCA_BACKGROUND_LAUNCH !== '1'
+    process.env.KINGU_BACKGROUND_LAUNCH !== '1'
   ) {
     await revealPairedClientWindow(client)
   }

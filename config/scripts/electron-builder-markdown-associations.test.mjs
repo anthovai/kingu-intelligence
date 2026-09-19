@@ -57,20 +57,20 @@ describe('electron-builder markdown file associations', () => {
   it('points the single NSIS include at the installer hooks file on disk', () => {
     const includePath = electronBuilderConfig.nsis.include
     expect(existsSync(includePath)).toBe(true)
-    expect(basename(includePath)).toBe('orca-installer-hooks.nsh')
+    expect(basename(includePath)).toBe('kingu-installer-hooks.nsh')
   })
 
   // Guard for the guard: proves DEFAULT_HANDLER_WRITE really matches a takeover line, so
   // the assertion below is a live check rather than a regex that can never fire.
   it('recognizes an APP_ASSOCIATE-style default-handler write', () => {
     for (const takeover of [
-      '  WriteRegStr SHELL_CONTEXT "Software\\Classes\\.md" "" "Orca.Markdown"',
+      '  WriteRegStr SHELL_CONTEXT "Software\\Classes\\.md" "" "Kingu.Markdown"',
       'WriteRegStr  SHELL_CONTEXT  "Software\\Classes\\.markdown"  ""  "$0"'
     ]) {
       expect(takeover).toMatch(DEFAULT_HANDLER_WRITE)
     }
     expect(
-      'WriteRegNone SHELL_CONTEXT "Software\\Classes\\.md\\OpenWithProgids" "Orca.Markdown"'
+      'WriteRegNone SHELL_CONTEXT "Software\\Classes\\.md\\OpenWithProgids" "Kingu.Markdown"'
     ).not.toMatch(DEFAULT_HANDLER_WRITE)
     // Comment stripping must drop prose that quotes the bad line without swallowing a real
     // one that happens to carry a trailing comment.
@@ -88,14 +88,14 @@ describe('electron-builder markdown file associations', () => {
     const hooks = await readInstallerHooks()
 
     expect(stripNsisCommentLines(hooks)).not.toMatch(DEFAULT_HANDLER_WRITE)
-    // The additive hint that puts Orca in Explorer's "Open with" list.
+    // The additive hint that puts Kingu in Explorer's "Open with" list.
     expect(hooks).toMatch(
       /WriteRegNone\s+SHELL_CONTEXT\s+"Software\\Classes\\\$\{EXT\}\\OpenWithProgids"/
     )
-    expect(hooks).toMatch(/!macro\s+ORCA_REGISTER_MARKDOWN_OPEN_WITH\s+EXT/)
+    expect(hooks).toMatch(/!macro\s+KINGU_REGISTER_MARKDOWN_OPEN_WITH\s+EXT/)
     for (const ext of MARKDOWN_EXTENSIONS) {
-      expect(hooks).toContain(`ORCA_REGISTER_MARKDOWN_OPEN_WITH ".${ext}"`)
-      expect(hooks).toContain(`ORCA_UNREGISTER_MARKDOWN_OPEN_WITH ".${ext}"`)
+      expect(hooks).toContain(`KINGU_REGISTER_MARKDOWN_OPEN_WITH ".${ext}"`)
+      expect(hooks).toContain(`KINGU_UNREGISTER_MARKDOWN_OPEN_WITH ".${ext}"`)
     }
     expect(hooks).toMatch(/!macro\s+customInstall\b/)
     expect(hooks).toMatch(/!macro\s+customUnInstall\b/)
@@ -107,18 +107,18 @@ describe('electron-builder markdown file associations', () => {
   //
   // Asserted against comment-stripped script, and on the app exe name first: the relocated
   // host is a verbatim copy of the app exe (daemonHostExeName, daemon-host-relocation.ts),
-  // so a macro that kills only orca-terminal-daemon.exe matches no running process. The
+  // so a macro that kills only kingu-terminal-daemon.exe matches no running process. The
   // prose above the macro names both, so a toContain over the raw file proves nothing.
   it('keeps the daemon-host uninstall sweep across the include rename', async () => {
     const script = stripNsisCommentLines(await readInstallerHooks())
 
     expect(script).toMatch(/taskkill[^\n]*\/IM\s+"?\$\{APP_EXECUTABLE_FILENAME\}"?/)
     // Legacy name, so hosts left by builds that renamed the copy still get reaped.
-    expect(script).toMatch(/taskkill[^\n]*\/IM\s+"?orca-terminal-daemon\.exe"?/)
+    expect(script).toMatch(/taskkill[^\n]*\/IM\s+"?kingu-terminal-daemon\.exe"?/)
     // Scopes both kills to the uninstalling user: an elevated machine-wide uninstall must
     // not reach another logged-on user's session.
     expect(script).toMatch(/\/FI\s+"USERNAME eq /)
-    expect(script).toContain('$LOCALAPPDATA\\Orca\\daemon-host')
+    expect(script).toContain('$LOCALAPPDATA\\Kingu\\daemon-host')
     // Without this guard, uninstallOldVersion would kill the daemon on every update —
     // defeating the relocation that keeps terminals alive across updates.
     expect(script).toMatch(/\$\{ifNot\}\s+\$\{isUpdated\}/)

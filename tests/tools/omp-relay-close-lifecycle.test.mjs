@@ -12,7 +12,7 @@ import {
 } from '../../src/main/pty-descendant-termination.ts'
 import { runProcess } from '../../src/shared/child-process/run-process.ts'
 
-const binary = process.env.ORCA_OMP_PROBE_BINARY
+const binary = process.env.KINGU_OMP_PROBE_BINARY
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 const quote = (value) => `'${value.replaceAll("'", "'\\''")}'`
 
@@ -22,7 +22,7 @@ it.skipIf(!binary || process.platform === 'win32')(
     const fixtures = join(process.cwd(), '.bench-fixtures')
     mkdirSync(fixtures, { recursive: true })
     const output = mkdtempSync(join(fixtures, 'omp-relay-close-'))
-    const home = mkdtempSync(join(tmpdir(), 'orca-omp-relay-close-home-'))
+    const home = mkdtempSync(join(tmpdir(), 'kingu-omp-relay-close-home-'))
     const agentHome = join(home, 'agent')
     mkdirSync(agentHome)
     const config = join(home, 'probe.yml')
@@ -49,9 +49,9 @@ it.skipIf(!binary || process.platform === 'win32')(
           HOME: home,
           USERPROFILE: home,
           ZDOTDIR: home,
-          ORCA_ORIG_ZDOTDIR: home,
+          KINGU_ORIG_ZDOTDIR: home,
           SHELL:
-            process.env.ORCA_OMP_PROBE_SHELL ??
+            process.env.KINGU_OMP_PROBE_SHELL ??
             (process.platform === 'darwin' ? '/bin/zsh' : '/bin/bash'),
           XDG_CONFIG_HOME: join(home, 'config'),
           XDG_DATA_HOME: join(home, 'data'),
@@ -63,11 +63,11 @@ it.skipIf(!binary || process.platform === 'win32')(
           PI_PROFILE: '',
           PI_CONFIG_DIR: '.omp',
           PI_CONFIG_FILES: '',
-          ORCA_BACKGROUND_LAUNCH: '1',
-          ORCA_PANE_KEY: 'omp-relay-probe:owned-leaf',
-          ORCA_TAB_ID: 'omp-relay-probe'
+          KINGU_BACKGROUND_LAUNCH: '1',
+          KINGU_PANE_KEY: 'omp-relay-probe:owned-leaf',
+          KINGU_TAB_ID: 'omp-relay-probe'
         },
-        envToDelete: ['BASH_ENV', 'ENV', 'ORCA_OMP_STATUS_EXTENSION', 'ORCA_PI_STATUS_EXTENSION']
+        envToDelete: ['BASH_ENV', 'ENV', 'KINGU_OMP_STATUS_EXTENSION', 'KINGU_PI_STATUS_EXTENSION']
       })
       id = spawned.id
       const [entry] = JSON.parse(await dispatcher.callRequest('pty.serialize', { ids: [id] }))

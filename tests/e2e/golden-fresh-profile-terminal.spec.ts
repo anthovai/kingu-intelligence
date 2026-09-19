@@ -3,8 +3,8 @@ import { mkdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { mkdtemp } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
-import type { ElectronApplication, Page } from '@stablyai/playwright-test'
-import { test, expect } from './helpers/orca-app'
+import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import { test, expect } from './helpers/kingu-app'
 import { ensureTerminalVisible, waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import {
   focusActiveTerminalInput,
@@ -16,7 +16,7 @@ import {
 test.use({ dismissOnboarding: false, seedTestRepo: false })
 
 async function createGitRepo(): Promise<string> {
-  const root = realpathSync.native(await mkdtemp(path.join(os.tmpdir(), 'orca-e2e-golden-fresh-')))
+  const root = realpathSync.native(await mkdtemp(path.join(os.tmpdir(), 'kingu-e2e-golden-fresh-')))
   const repoPath = path.join(root, 'golden-fresh-project')
   mkdirSync(repoPath)
   execFileSync('git', ['init'], { cwd: repoPath, stdio: 'pipe' })
@@ -54,47 +54,47 @@ async function selectCodexAndSkipToProject(page: Page): Promise<void> {
 
 test('fresh profile opens a live project terminal @golden', async ({
   electronApp,
-  orcaPage,
+  kinguPage,
   registerPostElectronShutdownCleanup
 }) => {
-  await waitForSessionReady(orcaPage)
-  await expect(orcaPage.locator('#root')).toBeVisible()
-  await expect(orcaPage.getByRole('heading', { name: /Pick your default agent/i })).toBeVisible()
+  await waitForSessionReady(kinguPage)
+  await expect(kinguPage.locator('#root')).toBeVisible()
+  await expect(kinguPage.getByRole('heading', { name: /Pick your default agent/i })).toBeVisible()
 
-  await selectCodexAndSkipToProject(orcaPage)
+  await selectCodexAndSkipToProject(kinguPage)
   const repoPath = await createGitRepo()
   registerPostElectronShutdownCleanup(async () =>
     rmSync(path.dirname(repoPath), { recursive: true, force: true })
   )
   await stubFolderPicker(electronApp, repoPath)
-  await orcaPage
+  await kinguPage
     .getByRole('button', { name: /Browse for a folder|Open a folder|Browse folder/i })
     .click()
 
-  await expect(orcaPage.getByText(path.basename(repoPath), { exact: true }).first()).toBeVisible({
+  await expect(kinguPage.getByText(path.basename(repoPath), { exact: true }).first()).toBeVisible({
     timeout: 30_000
   })
-  await waitForActiveWorktree(orcaPage)
-  await ensureTerminalVisible(orcaPage, 30_000)
-  await waitForActiveTerminalManager(orcaPage, 30_000)
-  const ptyId = await waitForActivePanePtyId(orcaPage, 30_000)
-  await expect.poll(() => orcaPage.evaluate((id) => window.api.pty.hasPty(id), ptyId)).toBe(true)
+  await waitForActiveWorktree(kinguPage)
+  await ensureTerminalVisible(kinguPage, 30_000)
+  await waitForActiveTerminalManager(kinguPage, 30_000)
+  const ptyId = await waitForActivePanePtyId(kinguPage, 30_000)
+  await expect.poll(() => kinguPage.evaluate((id) => window.api.pty.hasPty(id), ptyId)).toBe(true)
 
-  const marker = `orca-e2e-fresh-${Date.now()}`
-  await focusActiveTerminalInput(orcaPage)
-  await orcaPage.keyboard.type(`echo ${marker}`)
-  await orcaPage.keyboard.press('Enter')
+  const marker = `kingu-e2e-fresh-${Date.now()}`
+  await focusActiveTerminalInput(kinguPage)
+  await kinguPage.keyboard.type(`echo ${marker}`)
+  await kinguPage.keyboard.press('Enter')
   await expect
-    .poll(async () => (await getTerminalContent(orcaPage)).split(marker).length - 1, {
+    .poll(async () => (await getTerminalContent(kinguPage)).split(marker).length - 1, {
       message: 'marker should appear in both the echoed command and command output'
     })
     .toBeGreaterThanOrEqual(2)
 
-  await focusActiveTerminalInput(orcaPage)
-  await orcaPage.keyboard.type('git rev-parse --show-toplevel')
-  await orcaPage.keyboard.press('Enter')
+  await focusActiveTerminalInput(kinguPage)
+  await kinguPage.keyboard.type('git rev-parse --show-toplevel')
+  await kinguPage.keyboard.press('Enter')
   await expect
-    .poll(async () => (await getTerminalContent(orcaPage)).replaceAll('\\', '/'), {
+    .poll(async () => (await getTerminalContent(kinguPage)).replaceAll('\\', '/'), {
       message: 'fresh project terminal should start in the selected repository'
     })
     .toContain(repoPath.replaceAll('\\', '/'))

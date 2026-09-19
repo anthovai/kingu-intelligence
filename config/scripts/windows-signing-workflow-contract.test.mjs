@@ -201,7 +201,7 @@ describe('Windows signing workflow contract', () => {
     // Why fail-open: unsigned inner binaries must warn, not block, until the
     // flow is proven on a real release (issue #7785). Flip this to 'true'
     // together with the workflow env to make the gate required.
-    expect(steps[innerVerifyIndex].env.ORCA_WINDOWS_INNER_SIGNATURE_REQUIRED).toBe('false')
+    expect(steps[innerVerifyIndex].env.KINGU_WINDOWS_INNER_SIGNATURE_REQUIRED).toBe('false')
 
     // Why: every step in the inner-signing chain must be unable to fail the
     // release — a SignPath outage or timeout falls through to today's
@@ -228,19 +228,19 @@ describe('Windows signing workflow contract', () => {
 // Why these exist: the NSIS uninstaller is generated inside electron-builder's
 // uninstaller pass and deleted immediately after being embedded, so the only way
 // CI can sign it is the export/import relay through win.signtoolOptions.sign.
-// Every link is asserted here the way Orca.exe and conpty_console_list.node are.
+// Every link is asserted here the way Kingu.exe and conpty_console_list.node are.
 describe('Windows NSIS uninstaller signing', () => {
   const releaseSteps = () => readWorkflow('.github/workflows/release-cut.yml').jobs.build.steps
   const stepNamed = (steps, name) => steps.find((step) => step.name === name)
 
-  const EXPORT_ENV = 'ORCA_WIN_UNINSTALLER_EXPORT_PATH'
-  const SIGNED_ENV = 'ORCA_WIN_UNINSTALLER_SIGNED_PATH'
+  const EXPORT_ENV = 'KINGU_WIN_UNINSTALLER_EXPORT_PATH'
+  const SIGNED_ENV = 'KINGU_WIN_UNINSTALLER_SIGNED_PATH'
 
   it('exports the uninstaller from the first Windows build', () => {
     const build = stepNamed(releaseSteps(), 'Build Windows release artifacts')
 
     expect(build.env[EXPORT_ENV]).toContain('uninstaller-signing')
-    expect(build.env[EXPORT_ENV]).toContain('orca-uninstaller.exe')
+    expect(build.env[EXPORT_ENV]).toContain('kingu-uninstaller.exe')
   })
 
   // Why this is a test and not a comment: `files` in the electron-builder config
@@ -284,8 +284,8 @@ describe('Windows NSIS uninstaller signing', () => {
   it('stages the uninstaller into the same request as the inner binaries', () => {
     const stage = stepNamed(releaseSteps(), 'Stage unsigned inner PE files for signing')
 
-    expect(stage.run).toContain('uninstaller-signing\\unsigned\\orca-uninstaller.exe')
-    expect(stage.run).toContain('uninstaller\\orca-uninstaller.exe')
+    expect(stage.run).toContain('uninstaller-signing\\unsigned\\kingu-uninstaller.exe')
+    expect(stage.run).toContain('uninstaller\\kingu-uninstaller.exe')
     // No third SignPath request: exactly two submissions, as budgeted for the
     // 1h + 4h approval waits inside the 360-minute job cap.
     const submissions = releaseSteps().filter(
@@ -304,7 +304,7 @@ describe('Windows NSIS uninstaller signing', () => {
     )
 
     expect(stage.run).not.toMatch(/\$list\.Add\(['"]uninstaller/)
-    expect(restoreInner.run).not.toContain('orca-uninstaller.exe')
+    expect(restoreInner.run).not.toContain('kingu-uninstaller.exe')
   })
 
   // This step's outcome gates the upload of every inner binary, so a filesystem
@@ -337,7 +337,7 @@ describe('Windows NSIS uninstaller signing', () => {
 
     expect(restore.if).toContain('github.run_attempt == 1')
     expect(restore.if).toContain("steps.restore-signed-inner.outcome == 'success'")
-    expect(restore.run).toContain('orca-uninstaller.exe')
+    expect(restore.run).toContain('kingu-uninstaller.exe')
     expect(names.indexOf(restore.name)).toBeLessThan(names.indexOf(rebuild.name))
     expect(rebuild.env[SIGNED_ENV]).toContain('uninstaller-signing')
     // The rebuild must not depend on the uninstaller leg: a missing signed
@@ -356,9 +356,9 @@ describe('Windows NSIS uninstaller signing', () => {
     )
     expect(gate.run).toContain('.embedded-sha256')
     expect(gate.run).toContain("$env:UNINSTALLER_SIGNING_COMPLETED -eq 'true'")
-    expect(gate.run).toContain('not signed by SignPath Foundation: Uninstall Orca.exe')
+    expect(gate.run).toContain('not signed by SignPath Foundation: Uninstall Kingu.exe')
     // The uninstaller must not join the 7z payload loop, which cannot see it.
-    expect(gate.run).not.toContain("$targets += 'Uninstall Orca.exe'")
+    expect(gate.run).not.toContain("$targets += 'Uninstall Kingu.exe'")
   })
 
   it('rehearses the uninstaller leg end to end', () => {
@@ -373,14 +373,14 @@ describe('Windows NSIS uninstaller signing', () => {
     // installer the way release-cut's first Windows pass does.
     expect(pack.run).toContain('--win --publish never')
     expect(pack.run).not.toContain('--dir')
-    expect(pack.env[EXPORT_ENV]).toContain('orca-uninstaller.exe')
+    expect(pack.env[EXPORT_ENV]).toContain('kingu-uninstaller.exe')
     expect(names).toContain('Restore signed uninstaller for the installer rebuild')
-    expect(rebuild.env[SIGNED_ENV]).toContain('orca-uninstaller.exe')
+    expect(rebuild.env[SIGNED_ENV]).toContain('kingu-uninstaller.exe')
     expect(verify.run).toContain('.embedded-sha256')
     // The receipt only proves the import leg ran. The rehearsal is where the
     // shipped uninstaller itself gets checked — the release job cannot install
     // onto the runner it publishes from.
-    expect(verify.run).toContain('shipped: Uninstall Orca.exe')
+    expect(verify.run).toContain('shipped: Uninstall Kingu.exe')
     expect(verify.run).toContain('-tnsis')
     expect(verify.run).toContain("-ArgumentList '/S'")
   })
@@ -411,7 +411,7 @@ describe('Windows NSIS uninstaller signing', () => {
     expect(verify.run).toContain('$installerProcess.WaitForExit(300000)')
     expect(verify.run).toContain('the silent install did not exit within 5 minutes')
     expect(verify.run).toMatch(/for \(\$attempt = 0; \$attempt -lt 20; \$attempt\+\+\)/)
-    expect(verify.run).toContain("Get-Process -Name 'orca-terminal-daemon'")
+    expect(verify.run).toContain("Get-Process -Name 'kingu-terminal-daemon'")
   })
 
   // resources\elevate.exe is downgraded to advisory because app-builder-lib's
@@ -432,7 +432,7 @@ describe('Windows NSIS uninstaller signing', () => {
     expect(verify.run).toContain("if ($relative -eq 'resources\\elevate.exe')")
 
     // Both uninstaller verdicts stay fatal — the whole point of the gate.
-    for (const call of ['relayed: orca-uninstaller.exe', 'shipped: Uninstall Orca.exe']) {
+    for (const call of ['relayed: kingu-uninstaller.exe', 'shipped: Uninstall Kingu.exe']) {
       const line = verify.run
         .split('\n')
         .find((it) => it.includes(`Test-Signature`) && it.includes(call))

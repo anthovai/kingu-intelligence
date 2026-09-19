@@ -1,4 +1,4 @@
-export async function connectOrcaMainInspector(expectedPid, rendererId = 1) {
+export async function connectKinguMainInspector(expectedPid, rendererId = 1) {
   const [target] = await (await fetch('http://127.0.0.1:9229/json/list')).json()
   const socket = new WebSocket(target.webSocketDebuggerUrl)
   await new Promise((resolve, reject) => {

@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process'
-import type { ElectronApplication, Page } from '@stablyai/playwright-test'
-import { test, expect } from './helpers/orca-app'
+import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import { test, expect } from './helpers/kingu-app'
 import { waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import { waitForActivePanePtyId, waitForActiveTerminalManager } from './helpers/terminal'
 import { createRemoteTerminalTab } from './helpers/docker-ssh-relay-terminal-tabs'
@@ -12,12 +12,12 @@ import {
   type DockerSshRelayTarget
 } from './helpers/docker-ssh-relay-target'
 import { connectDockerSshRelayTarget } from './helpers/docker-ssh-relay-connection'
-import { createRestartSession } from './helpers/orca-restart'
+import { createRestartSession } from './helpers/kingu-restart'
 
-const RUN_DOCKER_SSH = process.env.ORCA_E2E_SSH_DOCKER === '1'
+const RUN_DOCKER_SSH = process.env.KINGU_E2E_SSH_DOCKER === '1'
 const BASELINE_TAB_COUNT = 3
 /** Where the relay persists a target's workspace snapshot inside the fixture container. */
-const REMOTE_SNAPSHOT_DIR = '/root/.orca/sessions'
+const REMOTE_SNAPSHOT_DIR = '/root/.kingu/sessions'
 
 test.use({ seedTestRepo: false })
 
@@ -180,7 +180,7 @@ async function flushSessionBeforeQuit(page: Page, targetId: string): Promise<voi
 }
 
 test.describe('SSH cold hydration gap tab seeding', () => {
-  test.skip(!RUN_DOCKER_SSH, 'Set ORCA_E2E_SSH_DOCKER=1 to run Docker-backed SSH tests.')
+  test.skip(!RUN_DOCKER_SSH, 'Set KINGU_E2E_SSH_DOCKER=1 to run Docker-backed SSH tests.')
   test.skip(process.platform === 'win32', 'Docker SSH restore uses POSIX SSH tooling.')
 
   // Why this shape: worktree activation seeds an initial terminal from a predicate that knows

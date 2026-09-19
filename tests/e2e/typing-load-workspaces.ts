@@ -1,4 +1,4 @@
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 import { switchToWorktree } from './helpers/store'
 import {
   ensureActiveWorktreePaneLoad,

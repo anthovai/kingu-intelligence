@@ -38,9 +38,9 @@ describe('timing-weighted shard selection', () => {
   })
 
   it('uses the post-filter Vitest discovery unchanged across eight shards and retains default sort', async () => {
-    const directory = mkdtempSync(join(tmpdir(), 'orca-unit-shards-'))
+    const directory = mkdtempSync(join(tmpdir(), 'kingu-unit-shards-'))
     directories.push(directory)
-    vi.stubEnv('ORCA_SHARD_MANIFEST', join(directory, 'assignment.json'))
+    vi.stubEnv('KINGU_SHARD_MANIFEST', join(directory, 'assignment.json'))
     const specs = Array.from({ length: 37 }, (_, i) => ({
       moduleId: resolve(`src/fixture-${i}.test.ts`)
     }))
@@ -61,7 +61,7 @@ describe('timing-weighted shard selection', () => {
   })
 
   it('wires a constructor into the opt-in Vitest config', async () => {
-    vi.stubEnv('ORCA_BALANCE_UNIT_SHARDS', '1')
+    vi.stubEnv('KINGU_BALANCE_UNIT_SHARDS', '1')
     const { default: config } = await import('../vitest.config')
     expect(config.test.sequence.sequencer).toBe(TimingSequencer)
   })

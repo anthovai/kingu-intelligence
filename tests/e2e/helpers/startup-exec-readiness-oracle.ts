@@ -1,13 +1,13 @@
 import { rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 import type {
   RuntimeTerminalListResult,
   RuntimeTerminalRead,
   RuntimeTerminalShow
 } from '../../../src/shared/runtime-types'
 import { toWebTerminalSurfaceTabId } from '../../../src/shared/terminal-surface-id'
-import { expect } from './orca-app'
+import { expect } from './kingu-app'
 import { getTerminalContent, waitForActivePanePtyId } from './terminal'
 import { readFreshTerminalInventory } from './terminal-inventory-observation'
 
@@ -36,7 +36,7 @@ function execProfileContents(
   execLine: string,
   barrier?: BashExecProfileBarrier
 ): string {
-  const guard = `ORCA_STA4067_EXEC_${runId.replaceAll(/[^A-Za-z0-9_]/g, '_')}`
+  const guard = `KINGU_STA4067_EXEC_${runId.replaceAll(/[^A-Za-z0-9_]/g, '_')}`
   const barrierScript = barrier
     ? [
         `: > ${shellQuote(barrier.startedPath)}`,

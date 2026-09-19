@@ -1,4 +1,4 @@
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 import type { PairedElectronClient } from './paired-electron-client'
 import type { DockerSshRelayTarget } from './docker-ssh-relay-target'
 import {
@@ -12,7 +12,7 @@ import {
   type DockerSshRelayProcessSnapshot
 } from './docker-ssh-relay-processes'
 import { assertRuntimeSshStatus } from './nested-runtime-ssh-state'
-import { expect } from './orca-app'
+import { expect } from './kingu-app'
 
 type NestedRelayRoute = {
   label: string

@@ -20,8 +20,8 @@
  * place, so pinning its absence stays true under a forwarder rewrite as well as under a
  * structural one.
  */
-import type { CDPSession } from '@stablyai/playwright-test'
-import { expect, test } from './helpers/orca-app'
+import type { CDPSession } from '@anthovai/playwright-test'
+import { expect, test } from './helpers/kingu-app'
 import { closeTerminalImePaneArena, openTerminalImePaneArena } from './terminal-ime-pane-arena'
 import { readTerminalImeBoundaryTrace } from './terminal-ime-boundary-probe'
 import {
@@ -130,21 +130,21 @@ const FULL_WIDTH_SESSION_PUNCTUATION = [
 
 test.describe('Terminal CJK IME committed text', () => {
   test('shows a growing Japanese phrase preedit and commits the converted kanji', async ({
-    orcaPage,
+    kinguPage,
     testRepoPath
   }, testInfo) => {
-    const arena = await openTerminalImePaneArena(orcaPage)
+    const arena = await openTerminalImePaneArena(kinguPage)
     const reader = createTerminalImeByteReader(testRepoPath, 1)
     let completed = false
     try {
-      await startTerminalImeByteReader(orcaPage, arena.ptyId, reader)
-      await expectPreeditHidden(orcaPage, 'before composing')
+      await startTerminalImeByteReader(kinguPage, arena.ptyId, reader)
+      await expectPreeditHidden(kinguPage, 'before composing')
       await dispatchImeProcessKey(arena.session, { key: 'Process', code: 'KeyN' })
 
       const widthByFrame = new Map<string, number>()
       for (const frame of JAPANESE_FRAMES) {
         await setImeComposition(arena.session, frame)
-        const sample = await expectPreeditRendered(orcaPage, frame, `composing ${frame}`)
+        const sample = await expectPreeditRendered(kinguPage, frame, `composing ${frame}`)
         widthByFrame.set(frame, sample.rect.width)
       }
       // A phrase-level preedit must widen as it grows. An overlay pinned to one cell renders only
@@ -153,10 +153,10 @@ test.describe('Terminal CJK IME committed text', () => {
       expect(widthByFrame.get('日本語')!).toBeGreaterThan(widthByFrame.get('に')!)
 
       await commitImeText(arena.session, '日本語')
-      await expectPreeditHidden(orcaPage, 'after committing 日本語')
+      await expectPreeditHidden(kinguPage, 'after committing 日本語')
       await dispatchPlainEnter(arena.session)
 
-      const received = await waitForTerminalImeBytes(orcaPage, reader)
+      const received = await waitForTerminalImeBytes(kinguPage, reader)
       expect(received).toEqual([Buffer.from('日本語\n').toString('hex')])
       completed = true
     } finally {
@@ -168,23 +168,23 @@ test.describe('Terminal CJK IME committed text', () => {
   for (const route of SUBSTITUTION_ROUTES) {
     for (const group of SUBSTITUTION_GROUPS) {
       test(`sends full-width ${group.label} and never their ASCII form when ${route.name}`, async ({
-        orcaPage,
+        kinguPage,
         testRepoPath
       }, testInfo) => {
-        await applyImePlatformPolicy(orcaPage, 'mac')
-        const arena = await openTerminalImePaneArena(orcaPage)
+        await applyImePlatformPolicy(kinguPage, 'mac')
+        const arena = await openTerminalImePaneArena(kinguPage)
         const reader = createTerminalImeByteReader(testRepoPath, 1)
         const expected = group.keystrokes.map((keystroke) => keystroke.glyph).join('')
         let completed = false
         try {
-          await startTerminalImeByteReader(orcaPage, arena.ptyId, reader)
+          await startTerminalImeByteReader(kinguPage, arena.ptyId, reader)
           for (const keystroke of group.keystrokes) {
             await route.dispatch(arena.session, keystroke)
-            await orcaPage.waitForTimeout(60)
+            await kinguPage.waitForTimeout(60)
           }
           await dispatchPlainEnter(arena.session)
 
-          const sent = (await readTerminalImeBoundaryTrace(orcaPage)).onData.join('')
+          const sent = (await readTerminalImeBoundaryTrace(kinguPage)).onData.join('')
           for (const keystroke of group.keystrokes) {
             expect(
               sent,
@@ -193,7 +193,7 @@ test.describe('Terminal CJK IME committed text', () => {
           }
           expect(sent).toBe(`${expected}\r`)
 
-          const received = await waitForTerminalImeBytes(orcaPage, reader)
+          const received = await waitForTerminalImeBytes(kinguPage, reader)
           expect(received).toEqual([Buffer.from(`${expected}\n`).toString('hex')])
           completed = true
         } finally {
@@ -210,20 +210,20 @@ test.describe('Terminal CJK IME committed text', () => {
   }
 
   test('forwards Chinese pinyin conversions and their trailing full-width stop together', async ({
-    orcaPage,
+    kinguPage,
     testRepoPath
   }, testInfo) => {
-    await applyImePlatformPolicy(orcaPage, 'mac')
-    const arena = await openTerminalImePaneArena(orcaPage)
+    await applyImePlatformPolicy(kinguPage, 'mac')
+    const arena = await openTerminalImePaneArena(kinguPage)
     const reader = createTerminalImeByteReader(testRepoPath, 1)
     let completed = false
     try {
-      await startTerminalImeByteReader(orcaPage, arena.ptyId, reader)
+      await startTerminalImeByteReader(kinguPage, arena.ptyId, reader)
       await dispatchImeProcessKey(arena.session, { key: 'Process', code: 'KeyN' })
       const widthByFrame = new Map<string, number>()
       for (const frame of ['n', 'ni', 'niha', 'nihao', '你好']) {
         await setImeComposition(arena.session, frame)
-        const sample = await expectPreeditRendered(orcaPage, frame, `composing ${frame}`)
+        const sample = await expectPreeditRendered(kinguPage, frame, `composing ${frame}`)
         widthByFrame.set(frame, sample.rect.width)
       }
       // Pinyin spends most of its life as a multi-letter romanisation before any Chinese appears,
@@ -233,7 +233,7 @@ test.describe('Terminal CJK IME committed text', () => {
       expect(widthByFrame.get('你好')!).toBeGreaterThan(widthByFrame.get('n')!)
 
       await commitImeText(arena.session, '你好')
-      await expectPreeditHidden(orcaPage, 'after committing 你好')
+      await expectPreeditHidden(kinguPage, 'after committing 你好')
 
       // The distinct risk here is the adjacency, not the substitution: the stop arrives with no
       // composition session immediately after one closed, so a tracker that still believes a
@@ -244,13 +244,13 @@ test.describe('Terminal CJK IME committed text', () => {
         code: 'Period',
         keyCode: 190
       })
-      await orcaPage.waitForTimeout(60)
+      await kinguPage.waitForTimeout(60)
       await dispatchPlainEnter(arena.session)
 
-      const trace = await readTerminalImeBoundaryTrace(orcaPage)
+      const trace = await readTerminalImeBoundaryTrace(kinguPage)
       expect(trace.onData.join('')).toBe('你好。\r')
 
-      const received = await waitForTerminalImeBytes(orcaPage, reader)
+      const received = await waitForTerminalImeBytes(kinguPage, reader)
       expect(received).toEqual([Buffer.from('你好。\n').toString('hex')])
       completed = true
     } finally {
@@ -261,7 +261,7 @@ test.describe('Terminal CJK IME committed text', () => {
 
   for (const policy of ['windows', 'linux'] as const satisfies readonly ImePlatformPolicy[]) {
     test(`sends full-width punctuation committed through a composition session on ${policy}`, async ({
-      orcaPage,
+      kinguPage,
       testRepoPath
     }, testInfo) => {
       // SYNTHESISED, and the reason is worth stating: the recorded corpus contains no Windows or
@@ -271,23 +271,23 @@ test.describe('Terminal CJK IME committed text', () => {
       // what `Input.imeSetComposition` opens, rather than through the macOS insertText path the
       // tests above cover. The ASCII form is asserted absent rather than the substitution asserted
       // present, so this stays true of any design that never manufactures the ASCII byte.
-      await applyImePlatformPolicy(orcaPage, policy)
-      const arena = await openTerminalImePaneArena(orcaPage)
+      await applyImePlatformPolicy(kinguPage, policy)
+      const arena = await openTerminalImePaneArena(kinguPage)
       const reader = createTerminalImeByteReader(testRepoPath, 1)
       const expected = FULL_WIDTH_SESSION_PUNCTUATION.map((entry) => entry.glyph).join('')
       let completed = false
       try {
-        await startTerminalImeByteReader(orcaPage, arena.ptyId, reader)
+        await startTerminalImeByteReader(kinguPage, arena.ptyId, reader)
         for (const entry of FULL_WIDTH_SESSION_PUNCTUATION) {
           await dispatchImeProcessKey(arena.session, { key: 'Process', code: entry.code })
           await setImeComposition(arena.session, entry.glyph)
-          await expectPreeditRendered(orcaPage, entry.glyph, `composing ${entry.glyph}`)
+          await expectPreeditRendered(kinguPage, entry.glyph, `composing ${entry.glyph}`)
           await commitImeText(arena.session, entry.glyph)
-          await expectPreeditHidden(orcaPage, `after committing ${entry.glyph}`)
+          await expectPreeditHidden(kinguPage, `after committing ${entry.glyph}`)
         }
         await dispatchPlainEnter(arena.session)
 
-        const sent = (await readTerminalImeBoundaryTrace(orcaPage)).onData.join('')
+        const sent = (await readTerminalImeBoundaryTrace(kinguPage)).onData.join('')
         for (const entry of FULL_WIDTH_SESSION_PUNCTUATION) {
           expect(sent, `${entry.glyph} reached the PTY as ASCII ${entry.ascii}`).not.toContain(
             entry.ascii
@@ -295,7 +295,7 @@ test.describe('Terminal CJK IME committed text', () => {
         }
         expect(sent).toBe(`${expected}\r`)
 
-        const received = await waitForTerminalImeBytes(orcaPage, reader)
+        const received = await waitForTerminalImeBytes(kinguPage, reader)
         expect(received).toEqual([Buffer.from(`${expected}\n`).toString('hex')])
         completed = true
       } finally {

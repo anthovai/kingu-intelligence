@@ -37,7 +37,7 @@ export async function createRelayExecutionProcess() {
     program: process.execPath,
     args: ['-e', executionProgram, marker],
     cwd: folder,
-    env: { ...process.env, ORCA_BACKGROUND_LAUNCH: '1' }
+    env: { ...process.env, KINGU_BACKGROUND_LAUNCH: '1' }
   })
   const fail = (error: Error) => {
     failure = error

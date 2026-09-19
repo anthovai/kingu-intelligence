@@ -1,4 +1,4 @@
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 import type { RuntimeTerminalRead } from '../../../src/shared/runtime-types'
 import { TERMINAL_PAIRED_PARKING_RUNTIME_CAPABILITY } from '../../../src/shared/protocol-version'
 import {
@@ -9,7 +9,7 @@ import {
   readPairedRetentionSample,
   startRendererLagProbe
 } from '../paired-runtime-retention-metrics'
-import { expect } from './orca-app'
+import { expect } from './kingu-app'
 import { verifyHiddenPairedTerminalOutputSuppression } from './paired-terminal-hidden-output-oracle'
 import { createPairedTerminalParkingFixture } from './paired-terminal-parking-fixture'
 import { verifyPairedTerminalTitleFanout } from './paired-terminal-title-fanout-oracle'

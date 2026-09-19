@@ -287,7 +287,7 @@ describe('agent-status hot path benchmark', () => {
     }
 
     const outputPath =
-      process.env.ORCA_AGENT_STATUS_BENCH_OUTPUT ?? '/tmp/agent-status-hot-path-benchmark.json'
+      process.env.KINGU_AGENT_STATUS_BENCH_OUTPUT ?? '/tmp/agent-status-hot-path-benchmark.json'
     writeFileSync(
       outputPath,
       `${JSON.stringify({ worktrees: WORKTREES, events: EVENTS, report }, null, 2)}\n`

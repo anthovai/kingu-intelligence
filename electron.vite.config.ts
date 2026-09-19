@@ -39,31 +39,31 @@ function isExternalMainModule(source: string): boolean {
 // shell export.
 //
 // CI injects real values via GitHub Actions secrets
-// (ORCA_BUILD_IDENTITY='stable' | 'rc', ORCA_POSTHOG_WRITE_KEY=phc_...);
+// (KINGU_BUILD_IDENTITY='stable' | 'rc', KINGU_POSTHOG_WRITE_KEY=phc_...);
 // every other build path resolves these env vars to undefined, which the
 // JSON.stringify below folds to the literal `null`. Ambient declarations
 // for the two constants live in `src/types/build-constants.d.ts`.
-const orcaBuildIdentity = process.env.ORCA_BUILD_IDENTITY
-const ORCA_BUILD_IDENTITY_LITERAL =
-  orcaBuildIdentity === 'stable' || orcaBuildIdentity === 'rc'
-    ? JSON.stringify(orcaBuildIdentity)
+const kinguBuildIdentity = process.env.KINGU_BUILD_IDENTITY
+const KINGU_BUILD_IDENTITY_LITERAL =
+  kinguBuildIdentity === 'stable' || kinguBuildIdentity === 'rc'
+    ? JSON.stringify(kinguBuildIdentity)
     : 'null'
-const orcaPostHogWriteKey = process.env.ORCA_POSTHOG_WRITE_KEY
-const ORCA_POSTHOG_WRITE_KEY_LITERAL =
-  typeof orcaPostHogWriteKey === 'string' && orcaPostHogWriteKey.length > 0
-    ? JSON.stringify(orcaPostHogWriteKey)
+const kinguPostHogWriteKey = process.env.KINGU_POSTHOG_WRITE_KEY
+const KINGU_POSTHOG_WRITE_KEY_LITERAL =
+  typeof kinguPostHogWriteKey === 'string' && kinguPostHogWriteKey.length > 0
+    ? JSON.stringify(kinguPostHogWriteKey)
     : 'null'
-const orcaDiagnosticsTokenUrl = process.env.ORCA_DIAGNOSTICS_TOKEN_URL
-const ORCA_DIAGNOSTICS_TOKEN_URL_LITERAL =
-  typeof orcaDiagnosticsTokenUrl === 'string' && orcaDiagnosticsTokenUrl.length > 0
-    ? JSON.stringify(orcaDiagnosticsTokenUrl)
+const kinguDiagnosticsTokenUrl = process.env.KINGU_DIAGNOSTICS_TOKEN_URL
+const KINGU_DIAGNOSTICS_TOKEN_URL_LITERAL =
+  typeof kinguDiagnosticsTokenUrl === 'string' && kinguDiagnosticsTokenUrl.length > 0
+    ? JSON.stringify(kinguDiagnosticsTokenUrl)
     : 'null'
 
 function createStartupDiagnosticsBanner(chunkName: string): string {
   return `
 ;(() => {
   const env = typeof process !== 'undefined' ? process.env : undefined
-  const mode = env?.ORCA_STARTUP_DIAGNOSTICS
+  const mode = env?.KINGU_STARTUP_DIAGNOSTICS
   if (mode !== '1' && mode !== 'trace') {
     return
   }
@@ -88,7 +88,7 @@ function createStartupDiagnosticsBanner(chunkName: string): string {
     openSync = undefined
     writeSync = undefined
   }
-  const diagnosticFile = env?.ORCA_STARTUP_DIAGNOSTICS_FILE
+  const diagnosticFile = env?.KINGU_STARTUP_DIAGNOSTICS_FILE
   if (typeof diagnosticFile === 'string' && diagnosticFile.length > 0 && typeof openSync === 'function') {
     try {
       diagnosticFileDescriptor = openSync(diagnosticFile, 'a', 0o600)
@@ -111,8 +111,8 @@ function createStartupDiagnosticsBanner(chunkName: string): string {
   }
   const chunkName = ${JSON.stringify(chunkName)}
   writeLine('[bootstrap] bundle-enter chunk=' + safeJson(chunkName) + ' pid=' + process.pid + ' ppid=' + process.ppid + ' execPath=' + safeJson(process.execPath) + ' argv=' + safeJson(process.argv) + ' electronRunAsNode=' + safeJson(env?.ELECTRON_RUN_AS_NODE ?? null))
-  if (!globalThis.__ORCA_BOOTSTRAP_EXIT_LOG_INSTALLED__) {
-    globalThis.__ORCA_BOOTSTRAP_EXIT_LOG_INSTALLED__ = true
+  if (!globalThis.__KINGU_BOOTSTRAP_EXIT_LOG_INSTALLED__) {
+    globalThis.__KINGU_BOOTSTRAP_EXIT_LOG_INSTALLED__ = true
     process.once('exit', (code) => {
       writeLine('[bootstrap] process-exit code=' + code)
       if (typeof closeSync === 'function' && typeof diagnosticFileDescriptor === 'number') {
@@ -132,12 +132,12 @@ function createStartupDiagnosticsBanner(chunkName: string): string {
       writeLine('[bootstrap] unhandled-rejection error=' + safeJson(String(message)))
     })
   }
-  if (mode === 'trace' && !globalThis.__ORCA_BOOTSTRAP_REQUIRE_TRACE_INSTALLED__) {
-    globalThis.__ORCA_BOOTSTRAP_REQUIRE_TRACE_INSTALLED__ = true
+  if (mode === 'trace' && !globalThis.__KINGU_BOOTSTRAP_REQUIRE_TRACE_INSTALLED__) {
+    globalThis.__KINGU_BOOTSTRAP_REQUIRE_TRACE_INSTALLED__ = true
     try {
       const Module = require('node:module')
       const originalLoad = Module._load
-      const parsedTraceLimit = Number(env?.ORCA_STARTUP_DIAGNOSTICS_TRACE_LIMIT ?? 20000)
+      const parsedTraceLimit = Number(env?.KINGU_STARTUP_DIAGNOSTICS_TRACE_LIMIT ?? 20000)
       const traceLimit = Number.isFinite(parsedTraceLimit) && parsedTraceLimit > 0 ? parsedTraceLimit : 20000
       let traceLineCount = 0
       let traceLimitReported = false
@@ -175,7 +175,7 @@ function createStartupDiagnosticsBanner(chunkName: string): string {
 
 function createMainBootstrapPlugin() {
   return {
-    name: 'orca-main-bootstrap',
+    name: 'kingu-main-bootstrap',
     generateBundle(_options, bundle) {
       const mainChunk = bundle['index.js']
       if (!mainChunk || mainChunk.type !== 'chunk') {
@@ -254,7 +254,7 @@ export const electronViteConfig: UserConfig = {
             'src/main/hang-watchdog/main-thread-hang-watchdog-entry.ts'
           ),
           // Why: electron-vite cleans out/main in dev. The dev CLI imports
-          // this path for `orca agent hooks ...`, so it must survive rebuilds.
+          // this path for `kingu agent hooks ...`, so it must survive rebuilds.
           'agent-hooks/managed-agent-hook-controls': resolve(
             'src/main/agent-hooks/managed-agent-hook-controls.ts'
           ),
@@ -277,9 +277,9 @@ export const electronViteConfig: UserConfig = {
     // Why: compile-time substitution for the telemetry gate. See the block
     // above for the full rationale.
     define: {
-      ORCA_BUILD_IDENTITY: ORCA_BUILD_IDENTITY_LITERAL,
-      ORCA_POSTHOG_WRITE_KEY: ORCA_POSTHOG_WRITE_KEY_LITERAL,
-      ORCA_DIAGNOSTICS_TOKEN_URL: ORCA_DIAGNOSTICS_TOKEN_URL_LITERAL
+      KINGU_BUILD_IDENTITY: KINGU_BUILD_IDENTITY_LITERAL,
+      KINGU_POSTHOG_WRITE_KEY: KINGU_POSTHOG_WRITE_KEY_LITERAL,
+      KINGU_DIAGNOSTICS_TOKEN_URL: KINGU_DIAGNOSTICS_TOKEN_URL_LITERAL
     },
     // Why: @xterm/headless declares "exports": null in package.json, which
     // prevents Vite's default resolver from finding the CJS entry. Point

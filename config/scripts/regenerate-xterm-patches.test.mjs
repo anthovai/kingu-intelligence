@@ -51,7 +51,7 @@ afterEach(async () => {
 })
 
 async function createDirectory() {
-  const directory = await mkdtemp(path.join(tmpdir(), 'orca-xterm-patch-'))
+  const directory = await mkdtemp(path.join(tmpdir(), 'kingu-xterm-patch-'))
   temporaryDirectories.push(directory)
   return directory
 }
@@ -465,7 +465,7 @@ describe('committed xterm patch artifacts', () => {
     for (const file of ['src/TextureAtlas.ts', 'lib/addon-webgl.js', 'lib/addon-webgl.mjs']) {
       const stanza = selectPatchEntries(patch, (candidate) => candidate === file)
       expect(stanza, file).not.toBe('')
-      expect(stanza, file).toContain('__orcaAtlasFontProbe')
+      expect(stanza, file).toContain('__kinguAtlasFontProbe')
     }
     // The probe must compare the rasterized weight against the requested one; comparing
     // against a literal '400' would call every non-default weight a mismatch.

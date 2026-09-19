@@ -3,8 +3,8 @@
  * Drives the shipping sleep path (sidebar context menu) and reads both the
  * renderer's live PTY model and host truth.
  */
-import type { Locator, Page } from '@stablyai/playwright-test'
-import { expect } from '@stablyai/playwright-test'
+import type { Locator, Page } from '@anthovai/playwright-test'
+import { expect } from '@anthovai/playwright-test'
 import { ensureTerminalVisible } from './store'
 import { waitForActivePanePtyId, waitForActiveTerminalManager } from './terminal'
 

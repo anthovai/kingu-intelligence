@@ -1,7 +1,7 @@
-import type { Locator, Page } from '@stablyai/playwright-test'
+import type { Locator, Page } from '@anthovai/playwright-test'
 import { mkdirSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { test, expect } from './helpers/orca-app'
+import { test, expect } from './helpers/kingu-app'
 import { waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import {
   markWorkspaceTerminalSlept,
@@ -16,7 +16,7 @@ function worktreeOption(page: Page, worktreeId: string) {
 }
 
 async function captureEvidence(page: Page, name: string, locator?: Locator): Promise<void> {
-  if (process.env.ORCA_CAPTURE_EVIDENCE !== '1') {
+  if (process.env.KINGU_CAPTURE_EVIDENCE !== '1') {
     return
   }
   const outputDir = resolve(process.cwd(), 'pr-evidence')
@@ -36,15 +36,15 @@ async function captureSidebarEvidence(page: Page, name: string): Promise<void> {
 test.describe('Worktree Lineage', () => {
   test.describe.configure({ mode: 'serial' })
 
-  test.beforeEach(async ({ orcaPage }) => {
-    await waitForSessionReady(orcaPage)
-    await waitForActiveWorktree(orcaPage)
+  test.beforeEach(async ({ kinguPage }) => {
+    await waitForSessionReady(kinguPage)
+    await waitForActiveWorktree(kinguPage)
   })
 
-  test('renders existing child lineage in the sidebar', async ({ orcaPage }) => {
-    const { parentId, childId } = await seedLineageScenario(orcaPage)
-    const parentRow = worktreeOption(orcaPage, parentId)
-    const childRow = worktreeOption(orcaPage, childId)
+  test('renders existing child lineage in the sidebar', async ({ kinguPage }) => {
+    const { parentId, childId } = await seedLineageScenario(kinguPage)
+    const parentRow = worktreeOption(kinguPage, parentId)
+    const childRow = worktreeOption(kinguPage, childId)
 
     await expect(parentRow).toBeVisible()
     await parentRow.click()
@@ -55,7 +55,7 @@ test.describe('Worktree Lineage', () => {
     await expect(childToggle).toBeVisible({ timeout: 10_000 })
     await expect(childRow).toBeVisible()
 
-    const positions = await orcaPage.evaluate(
+    const positions = await kinguPage.evaluate(
       ({ parentId, childId }) => {
         const rowFor = (worktreeId: string) =>
           [...document.querySelectorAll<HTMLElement>('[data-worktree-id]')].find(
@@ -81,7 +81,7 @@ test.describe('Worktree Lineage', () => {
     await expect(childRow).toBeHidden()
 
     await parentRow.getByRole('button', { name: 'Show 1 child workspace' }).click()
-    await orcaPage.evaluate(async (childId) => {
+    await kinguPage.evaluate(async (childId) => {
       const store = window.__store
       if (!store) {
         throw new Error('window.__store is not available')
@@ -94,7 +94,7 @@ test.describe('Worktree Lineage', () => {
     await expect
       .poll(
         () =>
-          orcaPage.evaluate((childId) => {
+          kinguPage.evaluate((childId) => {
             const store = window.__store
             return Boolean(store?.getState().worktreeLineageById[childId])
           }, childId),
@@ -108,11 +108,11 @@ test.describe('Worktree Lineage', () => {
   })
 
   test('renders legacy-only inline lineage when side-map hydration is absent', async ({
-    orcaPage
+    kinguPage
   }) => {
-    const { parentId, childId } = await seedLineageScenario(orcaPage, { inlineOnly: true })
-    const parentRow = worktreeOption(orcaPage, parentId)
-    const childRow = worktreeOption(orcaPage, childId)
+    const { parentId, childId } = await seedLineageScenario(kinguPage, { inlineOnly: true })
+    const parentRow = worktreeOption(kinguPage, parentId)
+    const childRow = worktreeOption(kinguPage, childId)
 
     await expect(parentRow.getByRole('button', { name: 'Hide 1 child workspace' })).toBeVisible()
     await expect(childRow).toBeVisible()
@@ -125,15 +125,15 @@ test.describe('Worktree Lineage', () => {
         return parentBox && childBox ? childBox.y > parentBox.y : false
       })
       .toBe(true)
-    await captureSidebarEvidence(orcaPage, 'legacy-inline-lineage-nested.png')
+    await captureSidebarEvidence(kinguPage, 'legacy-inline-lineage-nested.png')
   })
 
   test('injects filtered parents structurally without showing a parent badge', async ({
-    orcaPage
+    kinguPage
   }) => {
-    const { parentId, childId } = await seedLineageScenario(orcaPage)
+    const { parentId, childId } = await seedLineageScenario(kinguPage)
 
-    await orcaPage.evaluate(
+    await kinguPage.evaluate(
       ({ parentId, childId }) => {
         const store = window.__store
         if (!store) {
@@ -163,14 +163,14 @@ test.describe('Worktree Lineage', () => {
       { parentId, childId }
     )
 
-    const parentRow = worktreeOption(orcaPage, parentId)
-    const childRow = worktreeOption(orcaPage, childId)
+    const parentRow = worktreeOption(kinguPage, parentId)
+    const childRow = worktreeOption(kinguPage, childId)
 
     await expect(parentRow).toBeVisible()
     await expect(childRow).toBeVisible()
     await expect(childRow).not.toContainText(/\bfrom\b/)
 
-    const positions = await orcaPage.evaluate(
+    const positions = await kinguPage.evaluate(
       ({ parentId, childId }) => {
         const rowFor = (worktreeId: string) =>
           [...document.querySelectorAll<HTMLElement>('[data-worktree-id]')].find(
@@ -193,27 +193,27 @@ test.describe('Worktree Lineage', () => {
   })
 
   test('updates nested child preview status when the child terminal sleeps', async ({
-    orcaPage
+    kinguPage
   }) => {
-    const { parentId, childId } = await seedLineageScenario(orcaPage)
-    const parentRow = worktreeOption(orcaPage, parentId)
-    const childRow = worktreeOption(orcaPage, childId)
+    const { parentId, childId } = await seedLineageScenario(kinguPage)
+    const parentRow = worktreeOption(kinguPage, parentId)
+    const childRow = worktreeOption(kinguPage, childId)
 
     await expect(parentRow).toBeVisible()
     await expect(childRow).toBeVisible()
 
-    const childTabId = await seedWorkspaceLiveTerminal(orcaPage, childId)
+    const childTabId = await seedWorkspaceLiveTerminal(kinguPage, childId)
     await expect(childRow).toContainText('Active')
 
-    await markWorkspaceTerminalSlept(orcaPage, { worktreeId: childId, tabId: childTabId })
+    await markWorkspaceTerminalSlept(kinguPage, { worktreeId: childId, tabId: childTabId })
     await expect(childRow).toContainText('Inactive')
   })
 
   test('sleeps a workspace and every descendant from the parent context menu', async ({
-    orcaPage
+    kinguPage
   }) => {
-    const { parentId, childId } = await seedLineageScenario(orcaPage)
-    await orcaPage.evaluate((parentId) => {
+    const { parentId, childId } = await seedLineageScenario(kinguPage)
+    await kinguPage.evaluate((parentId) => {
       const store = window.__store
       if (!store) {
         throw new Error('window.__store is not available')
@@ -229,10 +229,10 @@ test.describe('Worktree Lineage', () => {
         )
       }))
     }, parentId)
-    const parentTabId = await seedWorkspaceLiveTerminal(orcaPage, parentId)
-    const childTabId = await seedWorkspaceLiveTerminal(orcaPage, childId)
+    const parentTabId = await seedWorkspaceLiveTerminal(kinguPage, parentId)
+    const childTabId = await seedWorkspaceLiveTerminal(kinguPage, childId)
 
-    await orcaPage.evaluate(() => {
+    await kinguPage.evaluate(() => {
       const store = window.__store
       if (!store) {
         throw new Error('window.__store is not available')
@@ -256,19 +256,21 @@ test.describe('Worktree Lineage', () => {
       window.api.ephemeralVm.suspendWorkspace = async () => null
     })
 
-    await worktreeOption(orcaPage, parentId).click({ button: 'right' })
-    const sleepSubtree = orcaPage.getByRole('menuitem', {
+    await worktreeOption(kinguPage, parentId).click({ button: 'right' })
+    const sleepSubtree = kinguPage.getByRole('menuitem', {
       name: 'Sleep with Descendants (1)'
     })
     await expect(sleepSubtree).toBeVisible()
     await expect(sleepSubtree).toBeEnabled()
-    await expect(orcaPage.getByRole('menuitem', { name: 'Delete with Descendants…' })).toBeVisible()
-    await captureEvidence(orcaPage, 'workspace-descendant-actions.png')
+    await expect(
+      kinguPage.getByRole('menuitem', { name: 'Delete with Descendants…' })
+    ).toBeVisible()
+    await captureEvidence(kinguPage, 'workspace-descendant-actions.png')
     await sleepSubtree.click()
 
     await expect
       .poll(() =>
-        orcaPage.evaluate(
+        kinguPage.evaluate(
           ({ parentTabId, childTabId }) => {
             const state = window.__store?.getState()
             return {
@@ -283,18 +285,18 @@ test.describe('Worktree Lineage', () => {
   })
 
   test('shows parent and child agent rows while the parent workspace is active', async ({
-    orcaPage
+    kinguPage
   }) => {
-    const { parentId, childId } = await seedLineageScenario(orcaPage)
-    const parentRow = worktreeOption(orcaPage, parentId)
-    const childRow = worktreeOption(orcaPage, childId)
+    const { parentId, childId } = await seedLineageScenario(kinguPage)
+    const parentRow = worktreeOption(kinguPage, parentId)
+    const childRow = worktreeOption(kinguPage, childId)
 
     await parentRow.click()
     await expect(parentRow).toHaveAttribute('aria-current', 'page')
     await expect(childRow).toBeVisible()
 
-    const parentAgentPrompt = await seedWorkspaceAgentStatus(orcaPage, parentId, 'PARENT')
-    const childAgentPrompt = await seedWorkspaceAgentStatus(orcaPage, childId, 'CHILD')
+    const parentAgentPrompt = await seedWorkspaceAgentStatus(kinguPage, parentId, 'PARENT')
+    const childAgentPrompt = await seedWorkspaceAgentStatus(kinguPage, childId, 'CHILD')
 
     await expect(
       parentRow.getByRole('treeitem').filter({ hasText: parentAgentPrompt })

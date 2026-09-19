@@ -1,6 +1,6 @@
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http'
 import type { AddressInfo } from 'node:net'
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 import { LOCAL_EXECUTION_HOST_ID } from '../../src/shared/execution-host'
 import { readOwnedPageUrls } from './helpers/client-hosted-browser-observer'
 import {
@@ -8,7 +8,7 @@ import {
   type HeadlessPairedRuntimeHost
 } from './helpers/headless-paired-runtime-host'
 import { readHostBrowserPageUrls } from './helpers/host-session-tabs'
-import { expect, test } from './helpers/orca-app'
+import { expect, test } from './helpers/kingu-app'
 import {
   launchPairedElectronClient,
   type PairedElectronClient
@@ -216,9 +216,9 @@ async function openLinkFromRemotePaneContextMenu(page: Page): Promise<void> {
   await expect(page.getByTestId('remote-browser-context-menu')).toBeVisible({ timeout: 30_000 })
   // The item only renders once the remote hit-test resolves an anchor, so this wait is the
   // wait for the link lookup itself.
-  const openInOrca = page.getByRole('menuitem', { name: 'Open Link In Orca Browser' })
-  await expect(openInOrca).toBeVisible({ timeout: 30_000 })
-  await openInOrca.click()
+  const openInKingu = page.getByRole('menuitem', { name: 'Open Link In Kingu Browser' })
+  await expect(openInKingu).toBeVisible({ timeout: 30_000 })
+  await openInKingu.click()
 }
 
 test('opens a remote pane link on the pane runtime and refuses to fall back to the client', async ({

@@ -1,4 +1,4 @@
-import { _electron as electron, expect } from '@stablyai/playwright-test'
+import { _electron as electron, expect } from '@anthovai/playwright-test'
 import { build as buildMain } from 'esbuild'
 import { build as buildRenderer } from 'vite'
 import react from '@vitejs/plugin-react'
@@ -6,8 +6,8 @@ import tailwindcss from '@tailwindcss/vite'
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-if (process.env.ORCA_BACKGROUND_LAUNCH !== '1') {
-  throw new Error('Requires ORCA_BACKGROUND_LAUNCH=1')
+if (process.env.KINGU_BACKGROUND_LAUNCH !== '1') {
+  throw new Error('Requires KINGU_BACKGROUND_LAUNCH=1')
 }
 const root = fileURLToPath(new URL('../../../', import.meta.url))
 const parent = path.join(root, '.bench-fixtures')
@@ -32,7 +32,7 @@ await buildRenderer({
   build: { outDir: path.join(output, 'renderer'), emptyOutDir: true }
 })
 const { ELECTRON_RUN_AS_NODE: _runAsNode, ...env } = process.env
-const app = await electron.launch({ args: [main], env: { ...env, ORCA_BACKGROUND_LAUNCH: '1' } })
+const app = await electron.launch({ args: [main], env: { ...env, KINGU_BACKGROUND_LAUNCH: '1' } })
 const report = {
   scope:
     'Production AgentCombobox and agent catalog in hidden Electron; supplied available agents, no PATH detection or terminal launch.'
@@ -44,7 +44,7 @@ try {
     errors.push(error.message)
     console.error(error)
   })
-  const baseline = process.env.ORCA_OMP_PICKER_BASELINE === '1'
+  const baseline = process.env.KINGU_OMP_PICKER_BASELINE === '1'
   const fixtureUrl = pathToFileURL(path.join(output, 'renderer/index.html'))
   if (baseline) {
     fixtureUrl.searchParams.set('baseline', '1')

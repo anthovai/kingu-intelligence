@@ -1,4 +1,4 @@
-import type { ElectronApplication, Page } from '@stablyai/playwright-test'
+import type { ElectronApplication, Page } from '@anthovai/playwright-test'
 
 /**
  * Reveals a paired client's window so its renderer unparks runtime subscriptions. Leave the client
@@ -36,8 +36,8 @@ export async function focusPairedClientWindow(
   { timeoutMs = 15_000 }: { timeoutMs?: number } = {}
 ): Promise<PairedClientWindowFocusReport> {
   await client.app.evaluate(() => {
-    if (process.env.ORCA_BACKGROUND_LAUNCH === '1') {
-      throw new Error('Native focus is forbidden by ORCA_BACKGROUND_LAUNCH')
+    if (process.env.KINGU_BACKGROUND_LAUNCH === '1') {
+      throw new Error('Native focus is forbidden by KINGU_BACKGROUND_LAUNCH')
     }
   })
   const revealed = await revealPairedClientWindow(client)
@@ -63,8 +63,8 @@ export async function revealPairedClientWindow(
   client: RevealablePairedClient
 ): Promise<PairedClientWindowRevealReport> {
   const report = await client.app.evaluate(({ BrowserWindow }) => {
-    if (process.env.ORCA_BACKGROUND_LAUNCH === '1') {
-      throw new Error('Window reveal is forbidden by ORCA_BACKGROUND_LAUNCH')
+    if (process.env.KINGU_BACKGROUND_LAUNCH === '1') {
+      throw new Error('Window reveal is forbidden by KINGU_BACKGROUND_LAUNCH')
     }
     const windows = BrowserWindow.getAllWindows()
     const window = windows[0]

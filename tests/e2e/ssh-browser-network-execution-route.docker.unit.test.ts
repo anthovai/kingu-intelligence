@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { Client } from 'ssh2'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-import type { TestInfo } from '@stablyai/playwright-test'
+import type { TestInfo } from '@anthovai/playwright-test'
 import type { SshConnection } from '../../src/main/ssh/ssh-connection'
 import type { SshProviderEpoch } from '../../src/shared/ssh-types'
 import { ensureDockerSshRelayImage } from './helpers/docker-ssh-relay-image'
@@ -16,7 +16,7 @@ import {
 } from './helpers/docker-ssh-relay-target'
 import { resolveSshBrowserNetworkExecutionRoute } from '../../src/main/browser/ssh-browser-network-execution-route'
 
-const runDocker = process.env.ORCA_RUN_DOCKER_SSH_BROWSER_E2E === '1'
+const runDocker = process.env.KINGU_RUN_DOCKER_SSH_BROWSER_E2E === '1'
 const executionHost = {
   kind: 'ssh' as const,
   targetId: 'target-a',

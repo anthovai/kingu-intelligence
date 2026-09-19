@@ -2,7 +2,7 @@ import { spawnSync } from 'node:child_process'
 import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { test as base, expect } from './helpers/orca-app'
+import { test as base, expect } from './helpers/kingu-app'
 import { waitForActivePaneHookDescriptor, waitForActivePanePtyId } from './helpers/terminal'
 import { ensureTerminalVisible, waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import { RuntimeClient } from '../../src/cli/runtime-client'
@@ -14,7 +14,7 @@ import {
 } from './helpers/fake-agent-command-override'
 import { FAKE_AGENT_PASTE_END_SCANNER_SOURCE } from './helpers/fake-agent-paste-end-scanner'
 
-const fakeCliDir = mkdtempSync(path.join(os.tmpdir(), 'orca-e2e-settlement-release-'))
+const fakeCliDir = mkdtempSync(path.join(os.tmpdir(), 'kingu-e2e-settlement-release-'))
 const cliLedgerPath = path.join(fakeCliDir, 'cli.jsonl')
 const cliEntry = path.join(process.cwd(), 'out', 'cli', 'index.js')
 const fakeCodexCommand = buildFakeAgentCommandOverride(
@@ -47,12 +47,12 @@ process.stdin.on('data', (chunk) => {
       setTimeout(() => process.stdout.write('\\u001b]0;Codex Ready\\u0007'), 10)
     })
   }
-  const encoded = input.match(/ORCA_E2E_WORKER_DONE:([A-Za-z0-9+/=]+)/)?.[1]
+  const encoded = input.match(/KINGU_E2E_WORKER_DONE:([A-Za-z0-9+/=]+)/)?.[1]
   if (!encoded || !capability) return
   const request = JSON.parse(Buffer.from(encoded, 'base64').toString('utf8'))
   const args = [
     'orchestration', 'send',
-    '--from', request.mismatch ? 'term_foreign' : process.env.ORCA_TERMINAL_HANDLE,
+    '--from', request.mismatch ? 'term_foreign' : process.env.KINGU_TERMINAL_HANDLE,
     '--dispatch-capability', capability,
     '--to', request.coordinator,
     '--type', 'worker_done',
@@ -63,12 +63,12 @@ process.stdin.on('data', (chunk) => {
     '--outcome', 'succeeded',
     '--json'
   ]
-  const result = spawnSync(process.execPath, [process.env.ORCA_E2E_CLI_ENTRY, ...args], {
+  const result = spawnSync(process.execPath, [process.env.KINGU_E2E_CLI_ENTRY, ...args], {
     env: process.env,
     encoding: 'utf8'
   })
   appendFileSync(
-    process.env.ORCA_E2E_CLI_LEDGER,
+    process.env.KINGU_E2E_CLI_LEDGER,
     JSON.stringify({ mismatch: request.mismatch, args, status: result.status, stdout: result.stdout, stderr: result.stderr }) + '\\n'
   )
 })
@@ -93,8 +93,8 @@ const test = base.extend({
   launchEnv: [
     {
       PATH: `${fakeCliDir}${path.delimiter}${process.env.PATH ?? ''}`,
-      ORCA_E2E_CLI_ENTRY: cliEntry,
-      ORCA_E2E_CLI_LEDGER: cliLedgerPath
+      KINGU_E2E_CLI_ENTRY: cliEntry,
+      KINGU_E2E_CLI_LEDGER: cliLedgerPath
     },
     { option: true }
   ]
@@ -119,7 +119,7 @@ function readCliLedger(): CliLedgerEntry[] {
 
 function invokeCompiledCli(userDataDir: string, args: string[]) {
   return spawnSync(process.execPath, [cliEntry, ...args], {
-    env: { ...process.env, ORCA_USER_DATA_PATH: userDataDir, ORCA_DEV_CLI_INVOCATION: '1' },
+    env: { ...process.env, KINGU_USER_DATA_PATH: userDataDir, KINGU_DEV_CLI_INVOCATION: '1' },
     encoding: 'utf8'
   })
 }
@@ -138,13 +138,13 @@ test.afterAll(() => {
 })
 
 test('compiled CLI rejects false completion then reconciles the dead retained worker', async ({
-  orcaPage,
+  kinguPage,
   electronApp
 }) => {
   test.setTimeout(180_000)
   rmSync(cliLedgerPath, { force: true })
-  await waitForSessionReady(orcaPage)
-  await orcaPage.evaluate(
+  await waitForSessionReady(kinguPage)
+  await kinguPage.evaluate(
     async ({ agentCommand, terminalWindowsShell }) => {
       await window.__store?.getState().updateSettings({
         agentCmdOverrides: { codex: agentCommand },
@@ -153,10 +153,10 @@ test('compiled CLI rejects false completion then reconciles the dead retained wo
     },
     { agentCommand: fakeCodexCommand, terminalWindowsShell: FAKE_AGENT_WINDOWS_SHELL }
   )
-  const worktreeId = await waitForActiveWorktree(orcaPage)
-  await ensureTerminalVisible(orcaPage)
-  await waitForActivePanePtyId(orcaPage)
-  const coordinatorPane = await waitForActivePaneHookDescriptor(orcaPage)
+  const worktreeId = await waitForActiveWorktree(kinguPage)
+  await ensureTerminalVisible(kinguPage)
+  await waitForActivePanePtyId(kinguPage)
+  const coordinatorPane = await waitForActivePaneHookDescriptor(kinguPage)
   const userDataDir = await electronApp.evaluate(({ app }) => app.getPath('userData'))
   const client = new RuntimeClient(userDataDir, 30_000, null, null)
   const coordinator = await client.call<{ terminal: { handle: string } }>('terminal.resolvePane', {
@@ -227,7 +227,7 @@ test('compiled CLI rejects false completion then reconciles the dead retained wo
   }
   await client.call('terminal.send', {
     terminal: workerHandle,
-    text: `ORCA_E2E_WORKER_DONE:${encodeWorkerDone({ ...baseMarker, mismatch: true })}`,
+    text: `KINGU_E2E_WORKER_DONE:${encodeWorkerDone({ ...baseMarker, mismatch: true })}`,
     enter: true
   })
   await expect.poll(() => readCliLedger()).toHaveLength(1)
@@ -245,7 +245,7 @@ test('compiled CLI rejects false completion then reconciles the dead retained wo
 
   await client.call('terminal.send', {
     terminal: workerHandle,
-    text: `ORCA_E2E_WORKER_DONE:${encodeWorkerDone({ ...baseMarker, mismatch: false })}`,
+    text: `KINGU_E2E_WORKER_DONE:${encodeWorkerDone({ ...baseMarker, mismatch: false })}`,
     enter: true
   })
   await expect.poll(() => readCliLedger()).toHaveLength(2)

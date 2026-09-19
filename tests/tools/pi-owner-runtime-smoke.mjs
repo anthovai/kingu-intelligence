@@ -11,7 +11,7 @@ import { build } from 'esbuild'
 
 const piRoot = resolve(process.argv[2] || '')
 assert.ok(process.argv[2], 'Pass an installed pi-coding-agent package directory')
-const scratch = await mkdtemp(join(tmpdir(), 'orca-pi-owner-'))
+const scratch = await mkdtemp(join(tmpdir(), 'kingu-pi-owner-'))
 const received = []
 const server = createServer(async (request, response) => {
   let body = ''
@@ -22,7 +22,7 @@ const server = createServer(async (request, response) => {
   response.end('{}')
 })
 try {
-  const bundle = join(scratch, 'orca.cjs')
+  const bundle = join(scratch, 'kingu.cjs')
   await build({
     stdin: {
       contents: [
@@ -70,7 +70,7 @@ try {
   const results = []
   for (const kind of ['pi', 'omp', 'prime-agent']) {
     const ownerKey =
-      kind === 'prime-agent' ? 'ORCA_PRIME_AGENT_STATUS_OWNED' : 'ORCA_PI_STATUS_OWNED'
+      kind === 'prime-agent' ? 'KINGU_PRIME_AGENT_STATUS_OWNED' : 'KINGU_PI_STATUS_OWNED'
     for (const scenario of ['baseline-dead', 'fixed-dead', 'fixed-live']) {
       let source = getPiAgentStatusExtensionSource(kind)
       if (scenario === 'baseline-dead') {
@@ -91,14 +91,14 @@ try {
         cwd: scratch,
         env: {
           ...process.env,
-          ORCA_BACKGROUND_LAUNCH: '1',
-          ORCA_PANE_KEY: 'owner-proof',
-          ORCA_AGENT_HOOK_PORT: String(server.address().port),
-          ORCA_AGENT_HOOK_TOKEN: 'isolated-proof-token',
-          ORCA_AGENT_HOOK_ENV: 'proof',
-          ORCA_AGENT_HOOK_ENDPOINT: '',
-          ORCA_PI_STATUS_OWNED: '',
-          ORCA_PRIME_AGENT_STATUS_OWNED: '',
+          KINGU_BACKGROUND_LAUNCH: '1',
+          KINGU_PANE_KEY: 'owner-proof',
+          KINGU_AGENT_HOOK_PORT: String(server.address().port),
+          KINGU_AGENT_HOOK_TOKEN: 'isolated-proof-token',
+          KINGU_AGENT_HOOK_ENV: 'proof',
+          KINGU_AGENT_HOOK_ENDPOINT: '',
+          KINGU_PI_STATUS_OWNED: '',
+          KINGU_PRIME_AGENT_STATUS_OWNED: '',
           PRIME_AGENT_INTERNAL_DAEMON_WORKER: kind === 'prime-agent' ? '1' : '',
           [ownerKey]: String(owner)
         },

@@ -15,10 +15,10 @@
  */
 
 import { existsSync, readFileSync } from 'node:fs'
-import type { ElectronApplication } from '@stablyai/playwright-test'
-import { test, expect } from './helpers/orca-app'
+import type { ElectronApplication } from '@anthovai/playwright-test'
+import { test, expect } from './helpers/kingu-app'
 import { getStoreState, waitForSessionReady } from './helpers/store'
-import { attachRepoAndOpenTerminal, createRestartSession } from './helpers/orca-restart'
+import { attachRepoAndOpenTerminal, createRestartSession } from './helpers/kingu-restart'
 import { TEST_REPO_PATH_FILE } from './global-setup'
 
 function seededRepoPathOrSkip(): string {

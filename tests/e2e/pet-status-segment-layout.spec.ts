@@ -1,5 +1,5 @@
-import type { Page, TestInfo } from '@stablyai/playwright-test'
-import { expect, test } from './helpers/orca-app'
+import type { Page, TestInfo } from '@anthovai/playwright-test'
+import { expect, test } from './helpers/kingu-app'
 import { waitForSessionReady } from './helpers/store'
 
 // Why: post-fix trailing overhang is ~0px; 16px is subpixel headroom that still
@@ -70,14 +70,14 @@ async function attachTriggerScreenshot(
 }
 
 test.describe('Pet status segment layout', () => {
-  test('does not reserve empty space after its label', async ({ orcaPage }, testInfo) => {
-    await waitForSessionReady(orcaPage)
-    await enableExperimentalPet(orcaPage)
+  test('does not reserve empty space after its label', async ({ kinguPage }, testInfo) => {
+    await waitForSessionReady(kinguPage)
+    await enableExperimentalPet(kinguPage)
 
     for (const { name, size } of VIEWPORTS) {
-      await orcaPage.setViewportSize(size)
-      await assertPetTriggerFitsLabel(orcaPage)
-      await attachTriggerScreenshot(orcaPage, testInfo, name)
+      await kinguPage.setViewportSize(size)
+      await assertPetTriggerFitsLabel(kinguPage)
+      await attachTriggerScreenshot(kinguPage, testInfo, name)
     }
   })
 })

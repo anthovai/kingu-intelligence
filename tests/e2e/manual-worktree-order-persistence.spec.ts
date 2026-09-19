@@ -1,6 +1,6 @@
-import { expect, test } from './helpers/orca-app'
-import type { Page } from '@stablyai/playwright-test'
-import { attachRepoAndOpenTerminal, createRestartSession } from './helpers/orca-restart'
+import { expect, test } from './helpers/kingu-app'
+import type { Page } from '@anthovai/playwright-test'
+import { attachRepoAndOpenTerminal, createRestartSession } from './helpers/kingu-restart'
 import { waitForSessionReady } from './helpers/store'
 
 async function visibleWorktreeIds(page: Page): Promise<string[]> {

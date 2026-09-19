@@ -51,7 +51,7 @@ const DESKTOP_HUNKS = {
     // so un-applying still yields published; the relay asset needs no counterpart.
     [
       [
-        '                // Orca: dispose unconditionally, as the non-DLL branch above does.',
+        '                // Kingu: dispose unconditionally, as the non-DLL branch above does.',
         "                // Waiting for another 'data' event leaks the conout worker on every",
         '                // self-exiting shell, because no more data ever arrives (F24).',
         '                this._conoutSocketWorker.dispose();',
@@ -128,7 +128,7 @@ describe('Windows SSH relay node-pty ConPTY teardown patch', () => {
     patchNodePtyWindowsTeardown(fixture.root)
     const once = PATCHED_FILES.map((file) => readFileSync(join(fixture.libDir, file), 'utf8'))
     for (const file of PATCHED_FILES) {
-      expect(existsSync(`${join(fixture.libDir, file)}.orca-patch-${process.pid}`)).toBe(false)
+      expect(existsSync(`${join(fixture.libDir, file)}.kingu-patch-${process.pid}`)).toBe(false)
     }
     expect(() => assertPatchedNodePtyWindowsTeardown(fixture.root)).not.toThrow()
 

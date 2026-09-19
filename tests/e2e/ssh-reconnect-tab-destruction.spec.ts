@@ -1,4 +1,4 @@
-import { test, expect } from './helpers/orca-app'
+import { test, expect } from './helpers/kingu-app'
 import { ensureTerminalVisible, waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import { waitForActivePanePtyId, waitForActiveTerminalManager } from './helpers/terminal'
 import {
@@ -12,7 +12,7 @@ import {
 } from './helpers/docker-ssh-relay-connection'
 import { openTerminalTabInActiveGroup } from './helpers/terminal-tab-open'
 
-const RUN_DOCKER_SSH = process.env.ORCA_E2E_SSH_DOCKER === '1'
+const RUN_DOCKER_SSH = process.env.KINGU_E2E_SSH_DOCKER === '1'
 
 /**
  * An SSH reconnect destroys the terminal state behind a tab whose creation has not yet reached the
@@ -57,35 +57,35 @@ const RUN_DOCKER_SSH = process.env.ORCA_E2E_SSH_DOCKER === '1'
  * run here as evidence the bug is gone.
  */
 test.describe('SSH reconnect tab destruction', () => {
-  test.skip(!RUN_DOCKER_SSH, 'Set ORCA_E2E_SSH_DOCKER=1 to run the dockerized SSH relay tests')
+  test.skip(!RUN_DOCKER_SSH, 'Set KINGU_E2E_SSH_DOCKER=1 to run the dockerized SSH relay tests')
 
   test('keeps a tab created right after a reconnect alive across the next one', async ({
-    orcaPage
+    kinguPage
   }, testInfo) => {
     test.slow()
     let target: DockerSshRelayTarget | null = null
     try {
       target = startDockerSshRelayTarget(testInfo)
-      await waitForSessionReady(orcaPage)
-      await waitForActiveWorktree(orcaPage)
-      const remote = await connectDockerSshRelayTarget(orcaPage, target)
-      await ensureTerminalVisible(orcaPage, 45_000)
-      await waitForActiveTerminalManager(orcaPage, 60_000)
+      await waitForSessionReady(kinguPage)
+      await waitForActiveWorktree(kinguPage)
+      const remote = await connectDockerSshRelayTarget(kinguPage, target)
+      await ensureTerminalVisible(kinguPage, 45_000)
+      await waitForActiveTerminalManager(kinguPage, 60_000)
       // Awaited, not captured: the pane must be bound before the first reconnect, but the id itself
       // is not what this spec asserts on — tab survival is.
-      await waitForActivePanePtyId(orcaPage, 60_000)
+      await waitForActivePanePtyId(kinguPage, 60_000)
 
-      await reconnectDockerSshRelayTarget(orcaPage, remote.targetId)
-      await waitForActiveTerminalManager(orcaPage, 60_000)
-      await waitForActivePanePtyId(orcaPage, 60_000)
+      await reconnectDockerSshRelayTarget(kinguPage, remote.targetId)
+      await waitForActiveTerminalManager(kinguPage, 60_000)
+      await waitForActivePanePtyId(kinguPage, 60_000)
 
       // Immediately after the apply, i.e. inside the 1s suppression window, so the tab's creation
       // is dropped from the session write rather than deferred. This is the ordinary thing a user
       // does; the timing is not contrived.
-      await openTerminalTabInActiveGroup(orcaPage)
+      await openTerminalTabInActiveGroup(kinguPage)
       // Only that the tab exists in the store — no waiting for its manager or PTY. Every wait here
       // is time the debounced upload can use to land, which is what made this spec miss the bug.
-      const tabIdsBefore = await orcaPage.evaluate(() => {
+      const tabIdsBefore = await kinguPage.evaluate(() => {
         const state = window.__store?.getState()
         const worktreeId = state?.activeWorktreeId
         return worktreeId ? (state?.tabsByWorktree?.[worktreeId] ?? []).map((tab) => tab.id) : []
@@ -96,12 +96,12 @@ test.describe('SSH reconnect tab destruction', () => {
       // while the tab's creation is still unuploaded, so idling here — as waiting for a TUI to draw
       // did — lets the debounced write land and the bug evaporate. That is exactly why an earlier
       // version of this spec passed with the bug still present, and why it was worthless as a guard.
-      await reconnectDockerSshRelayTarget(orcaPage, remote.targetId)
-      await waitForActiveTerminalManager(orcaPage, 60_000)
+      await reconnectDockerSshRelayTarget(kinguPage, remote.targetId)
+      await waitForActiveTerminalManager(kinguPage, 60_000)
 
       // Checked BEFORE any paint assertion: survival and repaint are different failures, and this
       // order names which one broke instead of collapsing both into "no output".
-      const tabState = await orcaPage.evaluate(() => {
+      const tabState = await kinguPage.evaluate(() => {
         const state = window.__store?.getState()
         const worktreeId = state?.activeWorktreeId
         return {

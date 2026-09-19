@@ -9,28 +9,29 @@ const scriptPath = realpathSync(import.meta.filename)
 const scriptDir = path.dirname(scriptPath)
 const repoRoot = path.resolve(scriptDir, '..', '..')
 const cliEntry =
-  process.env.ORCA_DEV_CLI_ENTRY_PATH ?? path.join(repoRoot, 'out', 'cli', 'index.js')
+  process.env.KINGU_DEV_CLI_ENTRY_PATH ?? path.join(repoRoot, 'out', 'cli', 'index.js')
 
 if (!existsSync(cliEntry)) {
-  console.error("orca-dev: CLI not built yet. Run 'pnpm run build:cli' first.")
+  console.error("kingu-dev: CLI not built yet. Run 'pnpm run build:cli' first.")
   process.exit(1)
 }
 
-process.env.ORCA_USER_DATA_PATH = process.env.ORCA_DEV_USER_DATA_PATH ?? getDefaultDevUserDataPath()
-// Why: custom dev profiles do not necessarily contain "orca-dev" in their path; carry explicit provenance into the CLI.
-process.env.ORCA_DEV_CLI_INVOCATION = '1'
+process.env.KINGU_USER_DATA_PATH =
+  process.env.KINGU_DEV_USER_DATA_PATH ?? getDefaultDevUserDataPath()
+// Why: custom dev profiles do not necessarily contain "kingu-dev" in their path; carry explicit provenance into the CLI.
+process.env.KINGU_DEV_CLI_INVOCATION = '1'
 
 const electronExecutable = getElectronExecutable()
-if (!process.env.ORCA_APP_EXECUTABLE && isRunnableFile(electronExecutable)) {
-  process.env.ORCA_APP_EXECUTABLE = electronExecutable
-  process.env.ORCA_APP_EXECUTABLE_NEEDS_APP_ROOT = '1'
+if (!process.env.KINGU_APP_EXECUTABLE && isRunnableFile(electronExecutable)) {
+  process.env.KINGU_APP_EXECUTABLE = electronExecutable
+  process.env.KINGU_APP_EXECUTABLE_NEEDS_APP_ROOT = '1'
 }
 
-// Why: headless `orca-dev serve` skips the Electron dev runner that normally installs terminal CLI shims.
+// Why: headless `kingu-dev serve` skips the Electron dev runner that normally installs terminal CLI shims.
 prepareDevCliTerminalWrappers({
   repoRoot,
-  userDataPath: process.env.ORCA_USER_DATA_PATH,
-  electronExecutable: process.env.ORCA_APP_EXECUTABLE ?? electronExecutable
+  userDataPath: process.env.KINGU_USER_DATA_PATH,
+  electronExecutable: process.env.KINGU_APP_EXECUTABLE ?? electronExecutable
 })
 
 const result = spawnSync(process.execPath, [cliEntry, ...process.argv.slice(2)], {
@@ -45,17 +46,17 @@ process.exit(result.status ?? (result.error ? 1 : 0))
 
 function getDefaultDevUserDataPath() {
   if (process.platform === 'darwin') {
-    return path.join(process.env.HOME ?? '', 'Library', 'Application Support', 'orca-dev')
+    return path.join(process.env.HOME ?? '', 'Library', 'Application Support', 'kingu-dev')
   }
   if (process.platform === 'win32') {
     return path.join(
       process.env.APPDATA ?? path.join(process.env.USERPROFILE ?? '', 'AppData', 'Roaming'),
-      'orca-dev'
+      'kingu-dev'
     )
   }
   return path.join(
     process.env.XDG_CONFIG_HOME ?? path.join(process.env.HOME ?? '', '.config'),
-    'orca-dev'
+    'kingu-dev'
   )
 }
 

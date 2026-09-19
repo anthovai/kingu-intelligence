@@ -1,7 +1,7 @@
 /**
  * Two-launch Electron helper for restart-persistence tests.
  *
- * Why: the default `orcaPage` fixture creates a fresh `userDataDir` per test
+ * Why: the default `kinguPage` fixture creates a fresh `userDataDir` per test
  * and deletes it on close, which is incompatible with a test that needs to
  * quit the app and relaunch against the *same* on-disk state. This helper
  * owns the shared userDataDir and gives each caller an `app`+`page` pair
@@ -14,14 +14,14 @@ import {
   type ElectronApplication,
   type Page,
   type TestInfo
-} from '@stablyai/playwright-test'
+} from '@anthovai/playwright-test'
 import { execSync } from 'node:child_process'
 import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:net'
 import os from 'node:os'
 import path from 'node:path'
 import { getE2ECompletedOnboardingProfile } from './e2e-completed-onboarding-profile'
-import { getOrcaElectronLaunchArgs } from './electron-launch-args'
+import { getKinguElectronLaunchArgs } from './electron-launch-args'
 import { retryTransientMainEvaluate } from './electron-main-evaluate-retry'
 import { cleanupE2EDaemons, closeElectronAppForE2E } from './electron-process-shutdown'
 import {
@@ -30,7 +30,7 @@ import {
   type ElectronHomeIsolation
 } from './electron-home-isolation'
 
-type LaunchedOrca = {
+type LaunchedKingu = {
   app: ElectronApplication
   page: Page
 }
@@ -50,7 +50,7 @@ type LaunchOptions = {
 type RestartSession = {
   userDataDir: string
   seedCodexResumeRollout: (sessionId: string, cwd: string) => string
-  launch: (options?: LaunchOptions) => Promise<LaunchedOrca>
+  launch: (options?: LaunchOptions) => Promise<LaunchedKingu>
   /** Gracefully close a launch, letting beforeunload flush session state. */
   close: (app: ElectronApplication) => Promise<void>
   /** Remove the shared userDataDir after the test is done. */
@@ -97,7 +97,7 @@ async function removeProfileDir(userDataDir: string): Promise<void> {
 }
 
 function shouldLaunchHeadful(testInfo: TestInfo): boolean {
-  return testInfo.project.metadata.orcaHeadful === true
+  return testInfo.project.metadata.kinguHeadful === true
 }
 
 function createRestartLaunchIsolation(
@@ -111,14 +111,14 @@ function createRestartLaunchIsolation(
     inheritedEnv: cleanEnv,
     launchEnv: {
       NODE_ENV: 'development',
-      ...((process.env.ORCA_E2E_SSH_LOCALHOST === '1' ||
-        process.env.ORCA_E2E_SSH_DOCKER === '1' ||
-        process.env.ORCA_E2E_NESTED_RUNTIME_SSH === '1') &&
-      !cleanEnv.ORCA_RELAY_PATH
-        ? { ORCA_RELAY_PATH: path.join(process.cwd(), 'out', 'relay') }
+      ...((process.env.KINGU_E2E_SSH_LOCALHOST === '1' ||
+        process.env.KINGU_E2E_SSH_DOCKER === '1' ||
+        process.env.KINGU_E2E_NESTED_RUNTIME_SSH === '1') &&
+      !cleanEnv.KINGU_RELAY_PATH
+        ? { KINGU_RELAY_PATH: path.join(process.cwd(), 'out', 'relay') }
         : {}),
       ...extraEnv,
-      ...(headful ? { ORCA_E2E_HEADFUL: '1' } : { ORCA_E2E_HEADLESS: '1' })
+      ...(headful ? { KINGU_E2E_HEADFUL: '1' } : { KINGU_E2E_HEADLESS: '1' })
     },
     extraEnv: {},
     userDataDir
@@ -137,7 +137,7 @@ export function createRestartSession(
   extraEnv: Record<string, string> = {}
 ): RestartSession {
   const mainPath = path.join(process.cwd(), 'out', 'main', 'index.js')
-  const userDataDir = mkdtempSync(path.join(os.tmpdir(), 'orca-e2e-restart-'))
+  const userDataDir = mkdtempSync(path.join(os.tmpdir(), 'kingu-e2e-restart-'))
   const headful = shouldLaunchHeadful(testInfo)
   const homeIsolation = createRestartLaunchIsolation(userDataDir, headful, extraEnv)
   let runtimeWsPort: number | null = null
@@ -146,7 +146,7 @@ export function createRestartSession(
   // seed the same completed onboarding profile or first-run overlays cover
   // both launches and obscure restart failures.
   writeFileSync(
-    path.join(userDataDir, 'orca-data.json'),
+    path.join(userDataDir, 'kingu-data.json'),
     `${JSON.stringify(getE2ECompletedOnboardingProfile(), null, 2)}\n`
   )
 
@@ -172,14 +172,14 @@ export function createRestartSession(
     return transcriptPath
   }
 
-  const launch = async (options?: LaunchOptions): Promise<LaunchedOrca> => {
+  const launch = async (options?: LaunchOptions): Promise<LaunchedKingu> => {
     runtimeWsPort ??= await reserveRestartRuntimeWsPort()
     const app = await electron.launch({
-      args: getOrcaElectronLaunchArgs(mainPath, headful),
+      args: getKinguElectronLaunchArgs(mainPath, headful),
       env: {
         ...homeIsolation.env,
         ...options?.extraEnv,
-        ORCA_E2E_RUNTIME_WS_PORT: String(runtimeWsPort)
+        KINGU_E2E_RUNTIME_WS_PORT: String(runtimeWsPort)
       }
     })
     // Why: attach before firstWindow — the main-process daemon guard and the
@@ -209,7 +209,7 @@ export function createRestartSession(
 
   const dispose = async (): Promise<void> => {
     await cleanupE2EDaemons(userDataDir)
-    if (process.env.ORCA_E2E_PRESERVE_RESTART_PROFILE === '1') {
+    if (process.env.KINGU_E2E_PRESERVE_RESTART_PROFILE === '1') {
       console.log(`[e2e] Preserved restart profile at ${userDataDir}`)
       return
     }
@@ -256,7 +256,7 @@ export async function attachRepoAndOpenTerminal(page: Page, repoPath: string): P
               return false
             }
             // Why: this restart fixture uses the global e2e repo, whose seeded Git
-            // worktree is external to Orca's workspace root after the visibility rollout.
+            // worktree is external to Kingu's workspace root after the visibility rollout.
             await store.getState().updateRepo(repo.id, { externalWorktreeVisibility: 'show' })
             return true
           }, repoId)

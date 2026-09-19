@@ -22,7 +22,7 @@ const expensiveJobs = [
   'xterm_patch_sync',
   'shell_contracts',
   'test',
-  'orcad_browser',
+  'kingud_browser',
   'cross-version-wire',
   'managed_hook_node18',
   'package',
@@ -73,7 +73,7 @@ describe('docs-only path classification', () => {
 
   it('still runs PR Checks for product markdown and CI', () => {
     expect(isDocsOnlyPath('skills/computer-use/SKILL.md')).toBe(false)
-    expect(isDocsOnlyPath('skill-guides/orca-cli.md')).toBe(false)
+    expect(isDocsOnlyPath('skill-guides/kingu-cli.md')).toBe(false)
     expect(isDocsOnlyPath('.github/workflows/pr.yml')).toBe(false)
     expect(isDocsOnlyPath('src/main/index.ts')).toBe(false)
     expect(isDocsOnlyPath('config/scripts/pr-code-change-scope.mjs')).toBe(false)
@@ -184,7 +184,7 @@ describe('per-job path classification', () => {
   })
 
   it('runs native package jobs only for the platform that ships the changed native', () => {
-    expectClassification(['native/windows-cli-launcher/OrcaCliLauncher.cs'], {
+    expectClassification(['native/windows-cli-launcher/KinguCliLauncher.cs'], {
       package_windows: true
     })
     expectClassification(['native/computer-use-linux/runtime.py'], {
@@ -236,20 +236,20 @@ describe('per-job path classification', () => {
     })
   })
 
-  it('runs orcad browser when Chrome launch, session, or tab modules change', () => {
+  it('runs kingud browser when Chrome launch, session, or tab modules change', () => {
     for (const file of [
-      'src/main/orcad/external-chromium-browser-session.ts',
-      'src/main/orcad/external-chromium-command-arguments.ts',
-      'src/main/orcad/external-chromium-tab-registry.ts',
-      'src/main/orcad/external-chromium-tab-projection.ts'
+      'src/main/kingud/external-chromium-browser-session.ts',
+      'src/main/kingud/external-chromium-command-arguments.ts',
+      'src/main/kingud/external-chromium-tab-registry.ts',
+      'src/main/kingud/external-chromium-tab-projection.ts'
     ]) {
       expectClassification([file], {
-        orcad_browser: true,
+        kingud_browser: true,
         package: true,
         package_windows: true
       })
     }
-    expectClassification(['src/main/orcad/orcad-native-preflight.ts'], {
+    expectClassification(['src/main/kingud/kingud-native-preflight.ts'], {
       package: true,
       package_windows: true
     })
@@ -262,7 +262,7 @@ describe('per-job path classification', () => {
       'mobile/web-entry/index.tsx',
       'mobile/app/h/[hostId]/index.tsx',
       'mobile/src/transport/client-context.web.tsx',
-      'mobile/modules/orca-mobile-web-shell/ios/MobileWebShellCsp.swift',
+      'mobile/modules/kingu-mobile-web-shell/ios/MobileWebShellCsp.swift',
       // The vendored Expo module the page resolves a .web.ts out of.
       'mobile/packages/expo-two-way-audio/src/ExpoTwoWayAudioModule.web.ts'
     ]) {
@@ -283,7 +283,7 @@ describe('per-job path classification', () => {
   })
 
   it('leaves it off for changes that cannot reach the page', () => {
-    for (const file of ['docs/reference/x.md', 'src/main/orcad/orcad-native-preflight.ts']) {
+    for (const file of ['docs/reference/x.md', 'src/main/kingud/kingud-native-preflight.ts']) {
       expect(classifyPrJobs([file]).mobile_web_app, file).toBe(false)
     }
   })

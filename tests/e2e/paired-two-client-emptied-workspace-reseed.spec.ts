@@ -1,9 +1,9 @@
 /**
- * JOURNEY: two desktop clients paired to one Orca server, working in the same workspace.
+ * JOURNEY: two desktop clients paired to one Kingu server, working in the same workspace.
  *
- * TOPOLOGY: the `orcaPage` app is the host (orca server). Two separate real Orca desktop
+ * TOPOLOGY: the `kinguPage` app is the host (kingu server). Two separate real Kingu desktop
  * clients pair to it, exactly as two of the user's machines would. Nothing is faulted — this
- * is the ordinary shape of using Orca from a laptop and a desktop at the same time.
+ * is the ordinary shape of using Kingu from a laptop and a desktop at the same time.
  *
  * The emptied-workspace tombstone is an explicit `tabsByWorktree[worktreeId] = []` row and it
  * is client-local on the runtime path: it never crosses the wire, so the second client cannot
@@ -40,8 +40,8 @@
  *     tests/e2e/paired-two-client-emptied-workspace-reseed.spec.ts \
  *     --config tests/playwright.config.ts --project electron-headless --workers=1
  */
-import type { Page } from '@stablyai/playwright-test'
-import { expect, test } from './helpers/orca-app'
+import type { Page } from '@anthovai/playwright-test'
+import { expect, test } from './helpers/kingu-app'
 import {
   createRuntimeDesktopPairingOffer,
   launchPairedElectronClient,
@@ -159,12 +159,12 @@ async function waitForClientWorkspace(page: Page, worktreeId: string): Promise<v
 }
 
 test('two paired clients stay in step with the host across an emptied workspace', async ({
-  orcaPage
+  kinguPage
 }, testInfo) => {
   test.setTimeout(600_000)
-  await waitForSessionReady(orcaPage)
-  await waitForActiveWorktree(orcaPage)
-  const worktreeId = await orcaPage.evaluate(() => {
+  await waitForSessionReady(kinguPage)
+  await waitForActiveWorktree(kinguPage)
+  const worktreeId = await kinguPage.evaluate(() => {
     const id = window.__store?.getState().activeWorktreeId
     if (!id) {
       throw new Error('host has no active worktree')
@@ -177,12 +177,12 @@ test('two paired clients stay in step with the host across an emptied workspace'
   const failures: string[] = []
   try {
     clientA = await launchPairedElectronClient(
-      await createRuntimeDesktopPairingOffer(orcaPage),
+      await createRuntimeDesktopPairingOffer(kinguPage),
       testInfo,
       'emptied-workspace-client-a'
     )
     clientB = await launchPairedElectronClient(
-      await createRuntimeDesktopPairingOffer(orcaPage),
+      await createRuntimeDesktopPairingOffer(kinguPage),
       testInfo,
       'emptied-workspace-client-b'
     )
@@ -276,7 +276,7 @@ test('two paired clients stay in step with the host across an emptied workspace'
     // user will click.
     const emptyA = await waitForClientToMatchHost(clientA, 0, worktreeId, RETRACTION_BUDGET_MS)
     const emptyB = await waitForClientToMatchHost(clientB, 0, worktreeId, RETRACTION_BUDGET_MS)
-    const hostOwnView = await readMirroredTabCount(orcaPage, worktreeId)
+    const hostOwnView = await readMirroredTabCount(kinguPage, worktreeId)
     console.error(
       `[two-client] phase1b host=0 hostOwnView=${hostOwnView}` +
         ` A=${emptyA}ms(${await readWorkspaceRowState(clientA.page, worktreeId)})` +
@@ -290,7 +290,7 @@ test('two paired clients stay in step with the host across an emptied workspace'
 
     // Neither client may seed a replacement into a workspace the user deliberately emptied:
     // both hold a row for it, so both know it was emptied rather than never initialized.
-    await orcaPage.waitForTimeout(10_000)
+    await kinguPage.waitForTimeout(10_000)
     const hostAfterSettle = (await readHostTerminalTabIds(clientA, worktreeId)).length
     console.error(`[two-client] phase1b-settled host=${hostAfterSettle}`)
     if (hostAfterSettle !== 0) {
@@ -343,12 +343,12 @@ test('two paired clients stay in step with the host across an emptied workspace'
  * the host had closed, sometimes stuck empty afterwards — with the link demonstrably alive.
  */
 test('a client that works immediately after pairing stays in step with the host', async ({
-  orcaPage
+  kinguPage
 }, testInfo) => {
   test.setTimeout(600_000)
-  await waitForSessionReady(orcaPage)
-  await waitForActiveWorktree(orcaPage)
-  const worktreeId = await orcaPage.evaluate(() => {
+  await waitForSessionReady(kinguPage)
+  await waitForActiveWorktree(kinguPage)
+  const worktreeId = await kinguPage.evaluate(() => {
     const id = window.__store?.getState().activeWorktreeId
     if (!id) {
       throw new Error('host has no active worktree')
@@ -360,7 +360,7 @@ test('a client that works immediately after pairing stays in step with the host'
   const failures: string[] = []
   try {
     client = await launchPairedElectronClient(
-      await createRuntimeDesktopPairingOffer(orcaPage),
+      await createRuntimeDesktopPairingOffer(kinguPage),
       testInfo,
       'fresh-pairing-immediate-work'
     )

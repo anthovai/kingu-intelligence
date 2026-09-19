@@ -231,7 +231,7 @@ export function createPlainNodeEntryGuardPlugin(
   let daemonOutputDir: string | undefined
 
   return {
-    name: 'orca-plain-node-entry-guard',
+    name: 'kingu-plain-node-entry-guard',
     buildStart(options: NormalizedInputOptions) {
       assertEntryNamesAreRollupInputs(options.input)
     },

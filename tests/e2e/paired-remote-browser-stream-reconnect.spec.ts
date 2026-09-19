@@ -1,4 +1,4 @@
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 import {
   launchHeadlessPairedRuntimeHost,
   type HeadlessPairedRuntimeHost
@@ -7,7 +7,7 @@ import {
   focusMaterializedRemoteBrowserPane,
   waitForMaterializedRemoteBrowserPane
 } from './helpers/materialized-remote-browser-pane'
-import { expect, test } from './helpers/orca-app'
+import { expect, test } from './helpers/kingu-app'
 import {
   launchPairedElectronClient,
   type PairedElectronClient
@@ -102,7 +102,7 @@ test('bounds remote browser stream retries, then offers reconnect', async ({
     const remotePane = page
       .getByTestId('remote-browser-pane')
       .filter({ has: page.getByTestId('remote-browser-frame') })
-    const addressBar = remotePane.locator('[data-orca-browser-address-bar="true"]')
+    const addressBar = remotePane.locator('[data-kingu-browser-address-bar="true"]')
     await addressBar.click()
     await addressBar.fill('about:config')
     await addressBar.press('Enter')

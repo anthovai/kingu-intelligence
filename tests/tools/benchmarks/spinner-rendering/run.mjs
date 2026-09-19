@@ -1,4 +1,4 @@
-import { _electron as electron } from '@stablyai/playwright-test'
+import { _electron as electron } from '@anthovai/playwright-test'
 import { build as buildMain } from 'esbuild'
 import { build as buildRenderer } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
@@ -50,7 +50,7 @@ const scaleArgs = values['scale-factor']
   : []
 const app = await electron.launch({
   args: [...scaleArgs, main],
-  env: { ...env, ORCA_BACKGROUND_LAUNCH: '1' }
+  env: { ...env, KINGU_BACKGROUND_LAUNCH: '1' }
 })
 const report = { samples: [] }
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms))

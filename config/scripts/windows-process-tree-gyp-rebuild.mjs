@@ -173,7 +173,7 @@ export function ensureWindowsProcessTreeCommandLinePatch(
           // everything that does not match -- and still exits 0. The package
           // dir is always under the project root, so without this the repair
           // reports success and changes nothing.
-          env: { ...process.env, GIT_DIR: join(packageDir, '.orca-no-such-git-dir') }
+          env: { ...process.env, GIT_DIR: join(packageDir, '.kingu-no-such-git-dir') }
         }
       )
     } catch (error) {

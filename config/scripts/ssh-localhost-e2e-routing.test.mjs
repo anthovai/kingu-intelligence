@@ -20,12 +20,12 @@ it('gives the localhost SSH journey its same-filesystem server and agent prerequ
   expect(setup.run).toContain('PasswordAuthentication no')
   expect(setup.run).toContain('UsePAM yes')
   expect(setup.run).toContain('mkdir -p "$HOME/.pi/agent"')
-  for (const key of ['ORCA_E2E_SSH_PORT', 'ORCA_E2E_SSH_USER', 'ORCA_E2E_SSH_IDENTITY_FILE']) {
+  for (const key of ['KINGU_E2E_SSH_PORT', 'KINGU_E2E_SSH_USER', 'KINGU_E2E_SSH_IDENTITY_FILE']) {
     expect(setup.run).toContain(key)
   }
   const run = job.steps.find((step) => step.name === 'Run localhost SSH terminal and hook journey')
-  expect(run.env.ORCA_E2E_SSH_LOCALHOST).toBe('1')
-  expect(run.env.ORCA_FEATURE_REMOTE_AGENT_HOOKS).toBe('1')
+  expect(run.env.KINGU_E2E_SSH_LOCALHOST).toBe('1')
+  expect(run.env.KINGU_FEATURE_REMOTE_AGENT_HOOKS).toBe('1')
   expect(run.run).toContain(spec)
   expect(run.run).toContain('--project=electron-headless')
   expect(run.run).not.toContain('--retries')

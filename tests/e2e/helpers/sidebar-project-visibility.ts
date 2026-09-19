@@ -1,4 +1,4 @@
-import { expect, type Page } from '@stablyai/playwright-test'
+import { expect, type Page } from '@anthovai/playwright-test'
 
 export async function expectSidebarProjectVisible(page: Page, projectName: string): Promise<void> {
   const sidebar = page.getByRole('listbox', { name: 'Worktrees', exact: true })

@@ -1,4 +1,4 @@
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 import {
   normalizeAccumulatedWorkspaceFixtureOptions,
   type AccumulatedWorkspaceFixtureOptions
@@ -22,7 +22,7 @@ export type AccumulatedWorkspaceFixtureSummary = {
 
 type FixtureWindow = Window & {
   __accumulatedFixtureCleanup?: () => void
-  __orcaBenchmarkInstrumentation?: {
+  __kinguBenchmarkInstrumentation?: {
     reset: () => void
     start: () => void
     stop: () => void
@@ -172,7 +172,7 @@ export async function seedAccumulatedWorkspaceFixture(
 export async function startAccumulatedBenchmarkInstrumentation(page: Page): Promise<boolean> {
   return page.evaluate(() => {
     const target: FixtureWindow = window
-    const instrumentation = target.__orcaBenchmarkInstrumentation
+    const instrumentation = target.__kinguBenchmarkInstrumentation
     if (!instrumentation) {
       return false
     }
@@ -190,7 +190,7 @@ export async function stopAccumulatedBenchmarkInstrumentation(
 > {
   return page.evaluate(() => {
     const target: FixtureWindow = window
-    const instrumentation = target.__orcaBenchmarkInstrumentation
+    const instrumentation = target.__kinguBenchmarkInstrumentation
     if (!instrumentation) {
       return { available: false as const, reason: 'not-installed' as const, snapshot: null }
     }

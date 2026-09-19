@@ -1,9 +1,9 @@
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 import type {
   TerminalLayoutSnapshot,
   TerminalPaneLayoutNode
 } from '../../src/shared/terminal-tab-types'
-import { expect, test } from './helpers/orca-app'
+import { expect, test } from './helpers/kingu-app'
 import {
   callPairedRuntime,
   waitForPairedClientWorktree
@@ -36,10 +36,10 @@ const LEGACY_LEAF_ID = 'pane:9'
 
 /**
  * Shrinks both the cold-park delay and the hot-retain window. Set at module scope because the
- * `orcaPage` fixture launches the app before any test body runs.
+ * `kinguPage` fixture launches the app before any test body runs.
  */
 const PARK_DELAY_MS = 2_000
-process.env.ORCA_E2E_TERMINAL_PARKING_DELAY_MS ??= String(PARK_DELAY_MS)
+process.env.KINGU_E2E_TERMINAL_PARKING_DELAY_MS ??= String(PARK_DELAY_MS)
 
 function collectLeafIds(node: TerminalPaneLayoutNode | null | undefined): string[] {
   if (!node) {
@@ -99,26 +99,26 @@ async function readPublishedTerminalSurfaces(
 }
 
 test('publishes an unmounted split with its real orientation when a legacy leaf lingers in the saved tree', async ({
-  orcaPage
+  kinguPage
 }, testInfo) => {
   test.setTimeout(360_000)
-  const worktreeId = await orcaPage.evaluate(() => window.__store?.getState().activeWorktreeId)
+  const worktreeId = await kinguPage.evaluate(() => window.__store?.getState().activeWorktreeId)
   if (!worktreeId) {
     throw new Error('Headed host has no active seeded workspace')
   }
   let client: PairedElectronClient | null = null
 
   try {
-    await waitForActiveTerminalManager(orcaPage, 60_000)
-    const hostTabId = await resolveActiveTabId(orcaPage)
+    await waitForActiveTerminalManager(kinguPage, 60_000)
+    const hostTabId = await resolveActiveTabId(kinguPage)
     if (!hostTabId) {
       throw new Error('Headed host has no active terminal tab')
     }
 
     // Split right: two panes side by side, the orientation the report is about.
-    await splitActiveTerminalPane(orcaPage, 'vertical')
-    await waitForPaneCount(orcaPage, 2, 60_000)
-    const panes = await readPaneIdentitySnapshot(orcaPage)
+    await splitActiveTerminalPane(kinguPage, 'vertical')
+    await waitForPaneCount(kinguPage, 2, 60_000)
+    const panes = await readPaneIdentitySnapshot(kinguPage)
     const leafIds = (panes?.panes ?? []).map((pane) => pane.leafId)
     const [firstLeafId, secondLeafId] = leafIds
     if (leafIds.length !== 2 || !firstLeafId || !secondLeafId) {
@@ -129,7 +129,7 @@ test('publishes an unmounted split with its real orientation when a legacy leaf 
       .poll(
         async () =>
           splitDirectionSeparating(
-            (await readSavedLayout(orcaPage, hostTabId))?.root,
+            (await readSavedLayout(kinguPage, hostTabId))?.root,
             firstLeafId,
             secondLeafId
           ),
@@ -138,12 +138,12 @@ test('publishes an unmounted split with its real orientation when a legacy leaf 
       .toBe('vertical')
 
     // Park the tab: a parked tab is republished from the saved tree, not the live DOM.
-    await parkHiddenTabBehindDecoy(orcaPage, worktreeId, hostTabId, {
+    await parkHiddenTabBehindDecoy(kinguPage, worktreeId, hostTabId, {
       parkDelayMs: PARK_DELAY_MS
     })
 
     // The drift under test: the saved tree keeps a leaf the stable-id leaf set cannot carry.
-    await orcaPage.evaluate(
+    await kinguPage.evaluate(
       ({ tabId, firstLeafId, secondLeafId, legacyLeafId }) => {
         const state = window.__store?.getState()
         const saved = state?.terminalLayoutsByTabId[tabId]
@@ -169,11 +169,11 @@ test('publishes an unmounted split with its real orientation when a legacy leaf 
     )
     // Control: with no lingering leaf the saved tree covers the leaf set and the publisher
     // never reaches the fallback at all, so the assertions below pass for free.
-    expect(collectLeafIds((await readSavedLayout(orcaPage, hostTabId))?.root)).toContain(
+    expect(collectLeafIds((await readSavedLayout(kinguPage, hostTabId))?.root)).toContain(
       LEGACY_LEAF_ID
     )
 
-    const offer = await createRuntimeDesktopPairingOffer(orcaPage)
+    const offer = await createRuntimeDesktopPairingOffer(kinguPage)
     client = await launchPairedElectronClient(offer, testInfo, 'legacy-leaf-orientation-observer')
     await waitForPairedClientWorktree(client.page, worktreeId)
 

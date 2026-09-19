@@ -1,11 +1,11 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import type { ElectronApplication, Page } from '@stablyai/playwright-test'
-import { DEFAULT_LOCAL_ORCA_PROFILE_ID } from '../../src/shared/orca-profiles'
+import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import { DEFAULT_LOCAL_KINGU_PROFILE_ID } from '../../src/shared/kingu-profiles'
 import { PTY_SESSION_ID_SEPARATOR } from '../../src/shared/pty-session-id-format'
-import { test, expect } from './helpers/orca-app'
+import { test, expect } from './helpers/kingu-app'
 import { TEST_REPO_PATH_FILE } from './global-setup'
-import { attachRepoAndOpenTerminal, createRestartSession } from './helpers/orca-restart'
+import { attachRepoAndOpenTerminal, createRestartSession } from './helpers/kingu-restart'
 import { ensureTerminalVisible, waitForSessionReady } from './helpers/store'
 import {
   discoverActivePtyId,
@@ -46,8 +46,8 @@ function installProductionSessionFixture(
   const profilePath = path.join(
     userDataDir,
     'profiles',
-    DEFAULT_LOCAL_ORCA_PROFILE_ID,
-    'orca-data.json'
+    DEFAULT_LOCAL_KINGU_PROFILE_ID,
+    'kingu-data.json'
   )
   const profile = JSON.parse(readFileSync(profilePath, 'utf8')) as Record<string, unknown>
   const fixture = JSON.parse(readFileSync(FIXTURE_PATH, 'utf8')) as FixtureSession

@@ -1,6 +1,6 @@
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 import path from 'node:path'
-import { test, expect } from './helpers/orca-app'
+import { test, expect } from './helpers/kingu-app'
 import { ensureTerminalVisible, waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import {
   execInTerminal,
@@ -286,17 +286,17 @@ async function dispatchTuiWheel(
 
 test.describe('terminal TUI wheel reports', () => {
   test('notched mouse wheel ticks produce immediate mouse-reporting TUI scroll reports', async ({
-    orcaPage
+    kinguPage
   }) => {
-    await waitForSessionReady(orcaPage)
-    await waitForActiveWorktree(orcaPage)
-    await ensureTerminalVisible(orcaPage)
-    await waitForActiveTerminalManager(orcaPage, 30_000)
-    await orcaPage.evaluate(() =>
+    await waitForSessionReady(kinguPage)
+    await waitForActiveWorktree(kinguPage)
+    await ensureTerminalVisible(kinguPage)
+    await waitForActiveTerminalManager(kinguPage, 30_000)
+    await kinguPage.evaluate(() =>
       window.__store?.getState().updateSettings({ terminalTuiScrollSensitivity: 1 })
     )
 
-    const samples = await probeSmallMouseWheelReports(orcaPage, 4)
+    const samples = await probeSmallMouseWheelReports(kinguPage, 4)
 
     expect(
       samples.map((sample) => sample.reportDelta),
@@ -307,7 +307,7 @@ test.describe('terminal TUI wheel reports', () => {
 
   test('fullscreen mouse-reporting TUI scroll distance follows wheel magnitude @headful', async ({
     electronApp,
-    orcaPage
+    kinguPage
   }) => {
     await electronApp.evaluate(({ BrowserWindow }) => {
       const win = BrowserWindow.getAllWindows()[0]
@@ -328,38 +328,38 @@ test.describe('terminal TUI wheel reports', () => {
         )
       )
       .toBe(true)
-    await orcaPage.waitForTimeout(1200)
+    await kinguPage.waitForTimeout(1200)
 
-    await waitForSessionReady(orcaPage)
-    await waitForActiveWorktree(orcaPage)
-    await ensureTerminalVisible(orcaPage)
-    await waitForActiveTerminalManager(orcaPage, 30_000)
-    await orcaPage.evaluate(() =>
+    await waitForSessionReady(kinguPage)
+    await waitForActiveWorktree(kinguPage)
+    await ensureTerminalVisible(kinguPage)
+    await waitForActiveTerminalManager(kinguPage, 30_000)
+    await kinguPage.evaluate(() =>
       window.__store?.getState().updateSettings({ terminalTuiScrollSensitivity: 1 })
     )
 
-    const ptyId = await waitForActivePanePtyId(orcaPage)
-    await execInTerminal(orcaPage, ptyId, `node ${JSON.stringify(VISIBLE_TUI_FIXTURE_PATH)}`)
+    const ptyId = await waitForActivePanePtyId(kinguPage)
+    await execInTerminal(kinguPage, ptyId, `node ${JSON.stringify(VISIBLE_TUI_FIXTURE_PATH)}`)
 
     await expect
-      .poll(() => readVisibleTuiOffset(orcaPage), {
+      .poll(() => readVisibleTuiOffset(kinguPage), {
         timeout: 10_000,
         message: 'visible fullscreen TUI did not render numbered rows'
       })
       .toBe(0)
 
-    await dispatchTuiWheel(orcaPage, {
+    await dispatchTuiWheel(kinguPage, {
       deltaY: 10,
       wheelDeltaY: PHYSICAL_MOUSE_WHEEL_DELTA
     })
     await expect
-      .poll(() => readVisibleTuiOffset(orcaPage), {
+      .poll(() => readVisibleTuiOffset(kinguPage), {
         timeout: 5_000,
         message: 'single notched wheel tick did not visibly scroll the TUI'
       })
       .toBe(1)
 
-    const cellHeight = await orcaPage.evaluate(() => {
+    const cellHeight = await kinguPage.evaluate(() => {
       const state = window.__store?.getState()
       const worktreeId = state?.activeWorktreeId
       const tabId =
@@ -377,35 +377,35 @@ test.describe('terminal TUI wheel reports', () => {
       return screen.getBoundingClientRect().height / pane.terminal.rows
     })
 
-    await dispatchTuiWheel(orcaPage, {
+    await dispatchTuiWheel(kinguPage, {
       deltaY: cellHeight * 12,
       wheelDeltaY: PHYSICAL_MOUSE_WHEEL_DELTA * 12
     })
 
     await expect
-      .poll(() => readVisibleTuiOffset(orcaPage), {
+      .poll(() => readVisibleTuiOffset(kinguPage), {
         timeout: 5_000,
         message: 'larger wheel movement did not visibly move the TUI farther'
       })
       .toBe(7)
   })
 
-  test('TUI scroll setting scales notched mouse wheel reports', async ({ orcaPage }) => {
-    await waitForSessionReady(orcaPage)
-    await waitForActiveWorktree(orcaPage)
-    await ensureTerminalVisible(orcaPage)
-    await waitForActiveTerminalManager(orcaPage, 30_000)
-    await orcaPage.evaluate(() =>
+  test('TUI scroll setting scales notched mouse wheel reports', async ({ kinguPage }) => {
+    await waitForSessionReady(kinguPage)
+    await waitForActiveWorktree(kinguPage)
+    await ensureTerminalVisible(kinguPage)
+    await waitForActiveTerminalManager(kinguPage, 30_000)
+    await kinguPage.evaluate(() =>
       window.__store?.getState().updateSettings({ terminalTuiScrollSensitivity: 5 })
     )
 
-    const slow = await probeTimedSmallMouseWheelReports(orcaPage, {
+    const slow = await probeTimedSmallMouseWheelReports(kinguPage, {
       drainWaitMs: 120,
       intervalMs: 220,
       ticks: 5
     })
-    await orcaPage.waitForTimeout(220)
-    const paced = await probeTimedSmallMouseWheelReports(orcaPage, {
+    await kinguPage.waitForTimeout(220)
+    const paced = await probeTimedSmallMouseWheelReports(kinguPage, {
       drainWaitMs: 220,
       intervalMs: 80,
       ticks: 5

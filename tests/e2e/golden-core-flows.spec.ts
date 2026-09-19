@@ -7,8 +7,8 @@ import { mkdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { mkdtemp } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
-import type { ElectronApplication, Page } from '@stablyai/playwright-test'
-import { test, expect } from './helpers/orca-app'
+import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import { test, expect } from './helpers/kingu-app'
 import { ensureTerminalVisible, waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import {
   countVisibleTerminalPanes,
@@ -405,22 +405,22 @@ async function completeWorkspaceCreationTour(page: Page, workspaceName: string):
 test.describe('Existing-user golden core flow', () => {
   test('adds project, creates workspace, opens a terminal tab, and splits a pane', async ({
     electronApp,
-    orcaPage
+    kinguPage
   }) => {
-    await waitForSessionReady(orcaPage)
-    await waitForActiveWorktree(orcaPage)
-    const repoPath = await createGitRepo('orca-e2e-golden-existing-', 'golden-existing-project')
+    await waitForSessionReady(kinguPage)
+    await waitForActiveWorktree(kinguPage)
+    const repoPath = await createGitRepo('kingu-e2e-golden-existing-', 'golden-existing-project')
 
-    await addProjectFromSidebar(orcaPage, electronApp, repoPath)
+    await addProjectFromSidebar(kinguPage, electronApp, repoPath)
     const workspaceName = `golden-existing-${Date.now()}`
-    await createWorkspace(orcaPage, workspaceName)
-    await expectActiveWorkspaceBelongsToRepo(orcaPage, workspaceName, repoPath)
-    await ensureTerminalVisible(orcaPage)
-    await expectTerminalSurface(orcaPage)
-    await waitForTerminalPaneManager(orcaPage)
+    await createWorkspace(kinguPage, workspaceName)
+    await expectActiveWorkspaceBelongsToRepo(kinguPage, workspaceName, repoPath)
+    await ensureTerminalVisible(kinguPage)
+    await expectTerminalSurface(kinguPage)
+    await waitForTerminalPaneManager(kinguPage)
 
-    await createTerminalTabThroughMenu(orcaPage)
-    await splitTerminalPaneAndAssertIdentity(orcaPage)
+    await createTerminalTabThroughMenu(kinguPage)
+    await splitTerminalPaneAndAssertIdentity(kinguPage)
   })
 })
 
@@ -429,45 +429,45 @@ test.describe('New-user golden core flow', () => {
 
   test('completes onboarding, adds a project, and follows the workspace tour handoff', async ({
     electronApp,
-    orcaPage
+    kinguPage
   }) => {
-    await waitForSessionReady(orcaPage)
-    await expect(orcaPage.getByRole('heading', { name: /Pick your default agent/i })).toBeVisible({
+    await waitForSessionReady(kinguPage)
+    await expect(kinguPage.getByRole('heading', { name: /Pick your default agent/i })).toBeVisible({
       timeout: 15_000
     })
 
-    await selectCodexAgent(orcaPage)
-    await continueOnboarding(orcaPage)
-    await expect(orcaPage.getByRole('heading', { name: /Make it feel like home/i })).toBeVisible()
-    await chooseOppositeTheme(orcaPage)
-    await continueOnboarding(orcaPage)
-    await continueThroughOptionalSetupToNotifications(orcaPage)
-    await expect(orcaPage.getByRole('button', { name: /Send Test Notification/i })).toBeVisible()
-    await chooseNotificationSound(orcaPage)
-    await continueFromNotificationsToAddProject(orcaPage)
+    await selectCodexAgent(kinguPage)
+    await continueOnboarding(kinguPage)
+    await expect(kinguPage.getByRole('heading', { name: /Make it feel like home/i })).toBeVisible()
+    await chooseOppositeTheme(kinguPage)
+    await continueOnboarding(kinguPage)
+    await continueThroughOptionalSetupToNotifications(kinguPage)
+    await expect(kinguPage.getByRole('button', { name: /Send Test Notification/i })).toBeVisible()
+    await chooseNotificationSound(kinguPage)
+    await continueFromNotificationsToAddProject(kinguPage)
 
-    const repoPath = await createGitRepo('orca-e2e-golden-new-', 'golden-new-project')
+    const repoPath = await createGitRepo('kingu-e2e-golden-new-', 'golden-new-project')
     await chooseFolderInNativeDialog(electronApp, repoPath)
-    await orcaPage
+    await kinguPage
       .getByRole('button', { name: /Browse for a folder|Open a folder|Browse folder/i })
       .click()
-    await waitForRepoLoaded(orcaPage, repoPath)
-    await expectProjectVisible(orcaPage, repoPath)
-    await waitForActiveWorktree(orcaPage)
-    await ensureTerminalVisible(orcaPage)
-    await expectTerminalSurface(orcaPage)
-    await waitForTerminalPaneManager(orcaPage)
+    await waitForRepoLoaded(kinguPage, repoPath)
+    await expectProjectVisible(kinguPage, repoPath)
+    await waitForActiveWorktree(kinguPage)
+    await ensureTerminalVisible(kinguPage)
+    await expectTerminalSurface(kinguPage)
+    await waitForTerminalPaneManager(kinguPage)
 
-    await requestAgentSessionsTour(orcaPage)
-    const paneCountBeforeTourSplit = await countVisibleTerminalPanes(orcaPage)
-    await orcaPage.getByRole('button', { name: /^Split terminal$/ }).click()
-    await waitForPaneCount(orcaPage, paneCountBeforeTourSplit + 1)
-    await waitForPaneIdentitySnapshot(orcaPage, paneCountBeforeTourSplit + 1)
+    await requestAgentSessionsTour(kinguPage)
+    const paneCountBeforeTourSplit = await countVisibleTerminalPanes(kinguPage)
+    await kinguPage.getByRole('button', { name: /^Split terminal$/ }).click()
+    await waitForPaneCount(kinguPage, paneCountBeforeTourSplit + 1)
+    await waitForPaneIdentitySnapshot(kinguPage, paneCountBeforeTourSplit + 1)
 
     await expect(
-      orcaPage.getByRole('dialog', { name: /Start another task in parallel/i })
+      kinguPage.getByRole('dialog', { name: /Start another task in parallel/i })
     ).toBeVisible()
-    const createControl = orcaPage
+    const createControl = kinguPage
       .locator('[data-contextual-tour-target="workspace-create-control"]')
       .first()
     await expect(createControl).toBeVisible()
@@ -478,7 +478,7 @@ test.describe('New-user golden core flow', () => {
     await createControl.click()
 
     const workspaceName = `golden-new-${Date.now()}`
-    await completeWorkspaceCreationTour(orcaPage, workspaceName)
-    await expectActiveWorkspaceBelongsToRepo(orcaPage, workspaceName, repoPath)
+    await completeWorkspaceCreationTour(kinguPage, workspaceName)
+    await expectActiveWorkspaceBelongsToRepo(kinguPage, workspaceName, repoPath)
   })
 })

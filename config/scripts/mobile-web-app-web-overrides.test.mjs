@@ -12,7 +12,7 @@ const allowlistPath = join(mobileDir, 'web-entry', 'web-overrides.json')
 // Every tree the app entry can resolve a .web.* sibling out of: src and web-entry and packages
 // through the builder's resolveExtensions, app through the route manifest's own sibling
 // preference. packages is in the list because the dictation hook imports the vendored
-// @orca/expo-two-way-audio, whose web module then reaches the page.
+// @kingu/expo-two-way-audio, whose web module then reaches the page.
 const SCANNED = ['src', 'app', 'web-entry', 'packages']
 const WEB_SIBLING = /\.web\.(tsx|ts|jsx|js)$/
 
@@ -61,7 +61,7 @@ async function exists(path) {
 }
 
 async function withScratch(run) {
-  const scratch = await mkdtemp(join(tmpdir(), 'orca-mobile-web-overrides-'))
+  const scratch = await mkdtemp(join(tmpdir(), 'kingu-mobile-web-overrides-'))
   try {
     return await run(scratch)
   } finally {

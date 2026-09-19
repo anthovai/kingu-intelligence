@@ -40,7 +40,7 @@ let root: string
 
 beforeEach(async () => {
   vi.resetAllMocks()
-  root = await mkdtemp(join(tmpdir(), 'orca-cursor-body-'))
+  root = await mkdtemp(join(tmpdir(), 'kingu-cursor-body-'))
 })
 afterEach(async () => {
   resetStructuredAgentSessionReadOwnersForTests()
@@ -61,7 +61,7 @@ async function fixture() {
   })
   async function appendOutput(index: number) {
     await journal.appendItem(
-      { provider: 'orca', clientMessageId: `output-${index}` },
+      { provider: 'kingu', clientMessageId: `output-${index}` },
       { kind: 'status', text: `Tool output ${index}` },
       { fence: 1 }
     )
@@ -220,7 +220,7 @@ describe('structured session cursor/body regression', () => {
       }
 
       await journal.appendItem(
-        { provider: 'orca', clientMessageId: 'completed-turn' },
+        { provider: 'kingu', clientMessageId: 'completed-turn' },
         { kind: 'turn', turnId: 'turn-1', state: 'completed' },
         { fence: 1 }
       )

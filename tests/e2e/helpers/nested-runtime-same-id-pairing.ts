@@ -1,4 +1,4 @@
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 
 import { updateEnvironmentFromPairingCode } from '../../../src/shared/runtime-environment-store'
 

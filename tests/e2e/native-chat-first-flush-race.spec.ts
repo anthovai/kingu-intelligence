@@ -2,8 +2,8 @@ import { randomUUID } from 'node:crypto'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import type { Page } from '@stablyai/playwright-test'
-import { test, expect } from './helpers/orca-app'
+import type { Page } from '@anthovai/playwright-test'
+import { test, expect } from './helpers/kingu-app'
 import { ensureTerminalVisible, waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import { waitForActivePaneHookDescriptor, waitForActiveTerminalManager } from './helpers/terminal'
 import type { GlobalSettings } from '../../src/shared/global-settings-types'
@@ -94,21 +94,21 @@ function claudeTranscriptLines(args: {
 
 test.describe('Native chat first-flush transcript race (#8401)', () => {
   test('stays in loading (never errors) until a not-yet-flushed transcript appears, then hydrates live', async ({
-    orcaPage
+    kinguPage
   }, testInfo) => {
-    await waitForSessionReady(orcaPage)
-    await waitForActiveWorktree(orcaPage)
-    await ensureTerminalVisible(orcaPage)
-    await waitForActiveTerminalManager(orcaPage, 30_000)
+    await waitForSessionReady(kinguPage)
+    await waitForActiveWorktree(kinguPage)
+    await ensureTerminalVisible(kinguPage)
+    await waitForActiveTerminalManager(kinguPage, 30_000)
 
-    const descriptor = await waitForActivePaneHookDescriptor(orcaPage)
+    const descriptor = await waitForActivePaneHookDescriptor(kinguPage)
     const [tabId] = descriptor.paneKey.split(':')
     const sessionId = `e2e-first-flush-${randomUUID()}`
 
     // Why: a real Claude Code session flushes its first JSONL line up to
     // minutes after launch (#8401) — this directory intentionally has no file
     // yet when the pane resolves its providerSession.
-    const scratchDir = mkdtempSync(path.join(os.tmpdir(), 'orca-e2e-native-chat-'))
+    const scratchDir = mkdtempSync(path.join(os.tmpdir(), 'kingu-e2e-native-chat-'))
     const transcriptPath = path.join(scratchDir, `${sessionId}.jsonl`)
 
     const screenshotDir = path.join(
@@ -123,21 +123,21 @@ test.describe('Native chat first-flush transcript race (#8401)', () => {
     })
 
     try {
-      await enableNativeChatSetting(orcaPage)
-      await seedClaudeProviderSession(orcaPage, {
+      await enableNativeChatSetting(kinguPage)
+      await seedClaudeProviderSession(kinguPage, {
         paneKey: descriptor.paneKey,
         worktreeId: descriptor.worktreeId,
         sessionId,
         transcriptPath
       })
-      await toggleTerminalTabToChatView(orcaPage, { tabId, worktreeId: descriptor.worktreeId })
+      await toggleTerminalTabToChatView(kinguPage, { tabId, worktreeId: descriptor.worktreeId })
 
-      await expect(orcaPage.locator('[data-native-chat-root="true"]')).toBeVisible({
+      await expect(kinguPage.locator('[data-native-chat-root="true"]')).toBeVisible({
         timeout: 15_000
       })
-      await expect(orcaPage.getByText(LOADING_TITLE)).toBeVisible({ timeout: 10_000 })
-      await expect(orcaPage.getByText(ERROR_TITLE)).toHaveCount(0)
-      await orcaPage.screenshot({
+      await expect(kinguPage.getByText(LOADING_TITLE)).toBeVisible({ timeout: 10_000 })
+      await expect(kinguPage.getByText(ERROR_TITLE)).toHaveCount(0)
+      await kinguPage.screenshot({
         path: path.join(screenshotDir, '01-loading-no-error.png')
       })
 
@@ -149,7 +149,7 @@ test.describe('Native chat first-flush transcript race (#8401)', () => {
       await expect
         .poll(
           () =>
-            orcaPage.evaluate(
+            kinguPage.evaluate(
               ({ id, file }) =>
                 window.api.nativeChat
                   .readSession('claude', id, 50, file)
@@ -159,7 +159,7 @@ test.describe('Native chat first-flush transcript race (#8401)', () => {
           { timeout: 10_000, message: 'transcript resolved before the first flush' }
         )
         .toBe(true)
-      await expect(orcaPage.getByText(ERROR_TITLE)).toHaveCount(0)
+      await expect(kinguPage.getByText(ERROR_TITLE)).toHaveCount(0)
 
       const userText = 'Explain the native chat first-flush race fix for #8401'
       const assistantText =
@@ -168,11 +168,11 @@ test.describe('Native chat first-flush transcript race (#8401)', () => {
 
       // Why: the user text also surfaces as chrome (worktree row, tab
       // title), so scope hydration assertions to the transcript subtree.
-      const transcript = orcaPage.locator('[data-native-chat-root="true"]')
+      const transcript = kinguPage.locator('[data-native-chat-root="true"]')
       await expect(transcript.getByText(userText)).toBeVisible({ timeout: 30_000 })
       await expect(transcript.getByText(assistantText)).toBeVisible({ timeout: 30_000 })
-      await expect(orcaPage.getByText(ERROR_TITLE)).toHaveCount(0)
-      await orcaPage.screenshot({
+      await expect(kinguPage.getByText(ERROR_TITLE)).toHaveCount(0)
+      await kinguPage.screenshot({
         path: path.join(screenshotDir, '02-hydrated.png')
       })
     } finally {

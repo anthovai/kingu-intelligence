@@ -1,5 +1,5 @@
 /**
- * TOPOLOGY (b): isolated windowless `orca serve` host, paired to a separate
+ * TOPOLOGY (b): isolated windowless `kingu serve` host, paired to a separate
  * real desktop client. Parity arm for
  * paired-cli-terminal-graph-sync-tab-retention.spec.ts, which covers the
  * attached-window desktop host; both import the same oracle unchanged so
@@ -21,12 +21,12 @@
  */
 import { rmSync } from 'node:fs'
 import path from 'node:path'
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 import {
   toWebTerminalSurfaceTabId,
   WEB_TERMINAL_SURFACE_TAB_PREFIX
 } from '../../src/shared/terminal-surface-id'
-import { expect, test } from './helpers/orca-app'
+import { expect, test } from './helpers/kingu-app'
 import { launchHeadlessPairedRuntimeHost } from './helpers/headless-paired-runtime-host'
 import { launchPairedElectronClient } from './helpers/paired-electron-client'
 import {

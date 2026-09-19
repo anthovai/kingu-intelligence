@@ -4,15 +4,15 @@ import { describe, expect, it } from 'vitest'
 import { LINEAR_COMMAND_SPECS } from '../../src/cli/specs/linear'
 
 const projectDir = resolve(import.meta.dirname, '../..')
-// Why: orca-linear and its legacy linear-tickets alias now ship hybrid discovery stubs, so
+// Why: kingu-linear and its legacy linear-tickets alias now ship hybrid discovery stubs, so
 // their version-sensitive command guidance lives in the authoritative guide sources — assert
 // that content there. The installable stub projections are checked separately below.
-const canonicalGuidePath = join(projectDir, 'skill-guides', 'orca-linear.md')
+const canonicalGuidePath = join(projectDir, 'skill-guides', 'kingu-linear.md')
 const legacyGuidePath = join(projectDir, 'skill-guides', 'linear-tickets.md')
-const canonicalStubPath = join(projectDir, 'skills', 'orca-linear', 'SKILL.md')
+const canonicalStubPath = join(projectDir, 'skills', 'kingu-linear', 'SKILL.md')
 const legacyStubPath = join(projectDir, 'skills', 'linear-tickets', 'SKILL.md')
 const legacyIntro =
-  '`linear-tickets` is the legacy bundled name for `orca-linear`. This copy remains complete; its CLI commands are identical to `orca-linear` and always use `ORCA linear ...`.'
+  '`linear-tickets` is the legacy bundled name for `kingu-linear`. This copy remains complete; its CLI commands are identical to `kingu-linear` and always use `KINGU linear ...`.'
 
 function skillBody(skill) {
   return skill.replace(/^---\n[\s\S]*?\n---\n\n/, '')
@@ -21,16 +21,16 @@ function skillBody(skill) {
 function normalizeLegacyBody(skill) {
   return skillBody(skill).replace(
     `# Linear Tickets (Legacy Name)\n\n${legacyIntro}\n\n`,
-    '# Orca Linear\n\n'
+    '# Kingu Linear\n\n'
   )
 }
 
-describe('orca-linear skill guidance', () => {
+describe('kingu-linear skill guidance', () => {
   it('keeps canonical and legacy Linear guide bodies from drifting', () => {
     const canonical = readFileSync(canonicalGuidePath, 'utf8')
     const legacy = readFileSync(legacyGuidePath, 'utf8')
 
-    expect(canonical).toContain('name: orca-linear')
+    expect(canonical).toContain('name: kingu-linear')
     expect(legacy).toContain('name: linear-tickets')
     expect(legacy).toContain('Legacy bundled name for')
     expect(normalizeLegacyBody(legacy)).toBe(skillBody(canonical))
@@ -58,23 +58,23 @@ describe('orca-linear skill guidance', () => {
     const legacy = readFileSync(legacyGuidePath, 'utf8')
 
     for (const skill of [canonical, legacy]) {
-      expect(skill).toContain('ORCA linear project list --query <project-name>')
+      expect(skill).toContain('KINGU linear project list --query <project-name>')
       expect(skill).toContain('Run only the command for the metadata you need')
     }
   })
 
-  // Why: a bare `orca` at line start resolves to the GNOME Orca screen reader on Linux and
+  // Why: a bare `kingu` at line start resolves to the GNOME Kingu screen reader on Linux and
   // starts speech on the user's machine, so guide examples use the resolved-executable
   // placeholder instead.
-  it('keeps Linear guide examples off a bare orca command name', () => {
+  it('keeps Linear guide examples off a bare kingu command name', () => {
     for (const guidePath of [canonicalGuidePath, legacyGuidePath]) {
       const skill = readFileSync(guidePath, 'utf8')
 
       expect(skill, guidePath).toContain(
-        '`ORCA` is a placeholder for the executable you resolved in the stub'
+        '`KINGU` is a placeholder for the executable you resolved in the stub'
       )
-      expect(skill, guidePath).not.toMatch(/^orca /mu)
-      expect(skill, guidePath).not.toMatch(/\$ORCA(?:_|\b)/u)
+      expect(skill, guidePath).not.toMatch(/^kingu /mu)
+      expect(skill, guidePath).not.toMatch(/\$KINGU(?:_|\b)/u)
     }
   })
 
@@ -90,9 +90,9 @@ describe('orca-linear skill guidance', () => {
   })
 })
 
-describe('orca-linear install stubs', () => {
+describe('kingu-linear install stubs', () => {
   const cases = [
-    { name: 'orca-linear', stubPath: canonicalStubPath, guidePath: canonicalGuidePath },
+    { name: 'kingu-linear', stubPath: canonicalStubPath, guidePath: canonicalGuidePath },
     { name: 'linear-tickets', stubPath: legacyStubPath, guidePath: legacyGuidePath }
   ]
 
@@ -101,13 +101,13 @@ describe('orca-linear install stubs', () => {
       const stub = readFileSync(stubPath, 'utf8')
 
       expect(stub).toContain('discovery stub')
-      expect(stub).toContain(`ORCA skills get ${name}`)
-      // The safe CLI-resolution contract must survive in the stub, never a bare `orca`.
-      expect(stub).toContain('ORCA_CLI_COMMAND')
-      expect(stub).toContain('orca-dev')
-      expect(stub).toContain('orca-ide')
-      expect(stub).toContain('GNOME Orca screen reader')
-      expect(stub).not.toMatch(/^orca /mu)
+      expect(stub).toContain(`KINGU skills get ${name}`)
+      // The safe CLI-resolution contract must survive in the stub, never a bare `kingu`.
+      expect(stub).toContain('KINGU_CLI_COMMAND')
+      expect(stub).toContain('kingu-dev')
+      expect(stub).toContain('kingu-ide')
+      expect(stub).toContain('GNOME Kingu screen reader')
+      expect(stub).not.toMatch(/^kingu /mu)
     })
 
     it(`keeps the Linear untrusted-source boundary in the ${name} stub`, () => {
@@ -124,8 +124,8 @@ describe('orca-linear install stubs', () => {
 
       // Version-sensitive command detail lives in the binary-served guide now, not here.
       // (The frontmatter description still names some commands; assert on body-only surface.)
-      expect(stub).not.toMatch(/\borca linear search\b/iu)
-      expect(stub).not.toMatch(/\borca linear comment\b/iu)
+      expect(stub).not.toMatch(/\bkingu linear search\b/iu)
+      expect(stub).not.toMatch(/\bkingu linear comment\b/iu)
       expect(stub.length).toBeLessThan(readFileSync(guidePath, 'utf8').length)
     })
 

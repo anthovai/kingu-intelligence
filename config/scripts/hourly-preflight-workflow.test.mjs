@@ -33,9 +33,9 @@ async function checkFreshness(overrides = {}) {
       env: {
         ...process.env,
         GITHUB_OUTPUT: output,
-        GITHUB_REPOSITORY: 'stablyai/orca',
+        GITHUB_REPOSITORY: 'anthovai/kingu-intelligence',
         MAIN_REPO_TOKEN: 'main-token',
-        HOURLY_REPO: 'stablyai/orca-hourly',
+        HOURLY_REPO: 'anthovai/kingu-intelligence-hourly',
         HEAD_SHA: head,
         LAST_TAG: 'previous-hourly',
         LAST_SHA: head.slice(0, 12),

@@ -6,16 +6,16 @@ import { describe, expect, it } from 'vitest'
 
 const projectDir = path.resolve(import.meta.dirname, '../..')
 const packageJson = JSON.parse(readFileSync(path.join(projectDir, 'package.json'), 'utf8'))
-const wrapperPath = path.join(projectDir, 'config', 'scripts', 'orca-dev.mjs')
+const wrapperPath = path.join(projectDir, 'config', 'scripts', 'kingu-dev.mjs')
 
-describe('orca-dev package bin', () => {
+describe('kingu-dev package bin', () => {
   it('uses a Node entrypoint for cross-platform package installs', () => {
-    expect(packageJson.bin['orca-dev']).toBe('./config/scripts/orca-dev.mjs')
+    expect(packageJson.bin['kingu-dev']).toBe('./config/scripts/kingu-dev.mjs')
     expect(readFileSync(wrapperPath, 'utf8')).toMatch(/^#!\/usr\/bin\/env node\n/)
   })
 
   it('runs the dev CLI through Node without requiring Bash', () => {
-    const root = mkdtempSync(path.join(tmpdir(), 'orca-dev-bin-'))
+    const root = mkdtempSync(path.join(tmpdir(), 'kingu-dev-bin-'))
     const cliEntry = path.join(root, 'cli-entry.cjs')
     const outputPath = path.join(root, 'output.json')
     writeFileSync(
@@ -24,9 +24,9 @@ describe('orca-dev package bin', () => {
         'const fs = require("node:fs");',
         `fs.writeFileSync(${JSON.stringify(outputPath)}, JSON.stringify({`,
         '  argv: process.argv.slice(2),',
-        '  userDataPath: process.env.ORCA_USER_DATA_PATH,',
-        '  devCliInvocation: process.env.ORCA_DEV_CLI_INVOCATION,',
-        '  appExecutable: process.env.ORCA_APP_EXECUTABLE',
+        '  userDataPath: process.env.KINGU_USER_DATA_PATH,',
+        '  devCliInvocation: process.env.KINGU_DEV_CLI_INVOCATION,',
+        '  appExecutable: process.env.KINGU_APP_EXECUTABLE',
         '}));'
       ].join('\n'),
       'utf8'
@@ -38,9 +38,9 @@ describe('orca-dev package bin', () => {
     execFileSync(process.execPath, [wrapperPath, '--help'], {
       env: {
         ...process.env,
-        ORCA_DEV_CLI_ENTRY_PATH: cliEntry,
-        ORCA_DEV_USER_DATA_PATH: path.join(root, 'user-data'),
-        ORCA_APP_EXECUTABLE: path.join(root, 'Electron')
+        KINGU_DEV_CLI_ENTRY_PATH: cliEntry,
+        KINGU_DEV_USER_DATA_PATH: path.join(root, 'user-data'),
+        KINGU_APP_EXECUTABLE: path.join(root, 'Electron')
       },
       stdio: 'ignore'
     })

@@ -44,7 +44,7 @@ describe('orchestration skill routing', () => {
       '"another worktree"',
       'lightweight terminal prompts',
       'shell commands',
-      'Orca worktree management',
+      'Kingu worktree management',
       'reading or waiting on terminals'
     ]) {
       expect(description).toContain(trigger)
@@ -94,7 +94,7 @@ describe('orchestration kernel', () => {
     expect(kernel).toContain('Compatibility operator')
     expect(kernel).toContain('Ordinary terminal agent')
     expect(kernel).toContain('Model or effort selection does not make a handoff supervised')
-    expect(squash(kernel)).toContain('Never substitute a non-Orca subagent tool')
+    expect(squash(kernel)).toContain('Never substitute a non-Kingu subagent tool')
   })
 
   it('makes Dispatch identity, remote uncertainty, folders, and mixed versions a safety floor', () => {
@@ -144,7 +144,7 @@ describe('orchestration kernel', () => {
       "If `worker-start` exits non-zero, do not relaunch. Read the receipt's `failedStage` and `residualResources`"
     )
     expect(kernel).toContain('operator-created process unsupervised')
-    expect(kernel).not.toMatch(/^ORCA terminal create/mu)
+    expect(kernel).not.toMatch(/^KINGU terminal create/mu)
   })
 
   it('makes worker-start --spec the default and keeps task-create for planned fan-out', () => {
@@ -160,7 +160,7 @@ describe('orchestration kernel', () => {
     expect(kernel).toContain("`worker-list`'s `projection.liveness` is the fleet verdict")
     expect(kernel).toContain("`worker-show`'s `observation.status` is PTY liveness only")
     expect(kernel).toContain('After three consecutive empty waits')
-    expect(kernel).toContain('`ORCA orchestration worker-list --include-remote --json`')
+    expect(kernel).toContain('`KINGU orchestration worker-list --include-remote --json`')
     expect(kernel).toContain('defaults to the bound Run; `--run <run_id>` overrides')
     expect(kernel).toContain(
       '`projection.attention` categories, `projection.attention.requiresAction`, and literal `projection.nextAction` argv'
@@ -196,7 +196,7 @@ describe('orchestration kernel', () => {
 
     expect(kernel).toContain('Read coordinator follow-ups at each natural checkpoint')
     expect(kernel).toContain('once more immediately before `worker_done`')
-    expect(kernel).toContain('`ORCA orchestration check --terminal <your_handle> --json`')
+    expect(kernel).toContain('`KINGU orchestration check --terminal <your_handle> --json`')
   })
 
   it('requires full Delivery processing and settled-terminal accounting before ack', () => {
@@ -269,14 +269,14 @@ describe('owned orchestration references', () => {
     expect([...new Set(routed)].sort()).toEqual(shipped)
     // Why the table and not every mention: prose may cite a reference the gate table already routes.
     expect(tableRoutes.sort()).toEqual(shipped)
-    expect(kernel).toContain('ORCA skills get orchestration --full')
+    expect(kernel).toContain('KINGU skills get orchestration --full')
     // Why: the selector is the cheap path, so the kernel must teach it first and keep
     // `--full` only as the fallback for a CLI build that predates it.
     expect(squash(kernel)).toContain(
-      'run `ORCA skills get orchestration --reference references/<file>.md`'
+      'run `KINGU skills get orchestration --reference references/<file>.md`'
     )
     expect(squash(kernel)).toContain(
-      'If the CLI rejects `--reference`, run `ORCA skills get orchestration --full`'
+      'If the CLI rejects `--reference`, run `KINGU skills get orchestration --full`'
     )
     expect(squash(kernel)).toContain('If an older CLI rejects `--full`')
   })
@@ -308,7 +308,7 @@ describe('owned orchestration references', () => {
     expect(reference).toContain('Use `--outcome failed`')
     expect(reference).toContain('After `worker_done`, end the dispatched turn and idle')
     expect(squash(reference)).toContain(
-      'ORCA orchestration check --terminal <worker_handle> --json'
+      'KINGU orchestration check --terminal <worker_handle> --json'
     )
     expect(squash(reference)).toContain('once more immediately before `worker_done`')
     expect(squash(reference)).toContain(
@@ -340,7 +340,7 @@ describe('owned orchestration references', () => {
 
     expect(reference).toContain('--worktree current --agent codex')
     expect(squash(reference)).toContain(
-      'A worktree selector needs the full `<repo-id>::<path>` value Orca returned, passed as `id:<newFullWorktreeId>`; a bare repo id is not a worktree id'
+      'A worktree selector needs the full `<repo-id>::<path>` value Kingu returned, passed as `id:<newFullWorktreeId>`; a bare repo id is not a worktree id'
     )
     expect(reference).toContain('--worktree new-child')
     expect(reference).toContain('--worktree new-top-level')
@@ -352,13 +352,13 @@ describe('owned orchestration references', () => {
     )
     expect(reference).toContain('`live`, `unverifiable`, or `exited`')
     expect(squash(reference)).toContain('unknown stream opcodes can be silently dropped')
-    expect(reference).toContain('printed `orca-ide`')
+    expect(reference).toContain('printed `kingu-ide`')
     expect(squash(reference)).toContain(
-      'ORCA project setup-existing-folder --project <project_id> --host <host_id> --path <abs_path> --kind folder --json'
+      'KINGU project setup-existing-folder --project <project_id> --host <host_id> --path <abs_path> --kind folder --json'
     )
     expect(squash(reference)).toContain('and rejects a plain directory')
     expect(reference).toContain(
-      'ORCA orchestration worker-list --run <run_id> --include-remote --json'
+      'KINGU orchestration worker-list --run <run_id> --include-remote --json'
     )
     expect(squash(reference)).toContain(
       'enumerate remote workers with `--include-remote` or every one of them reads `unverifiable`'
@@ -419,7 +419,7 @@ describe('owned orchestration references', () => {
   it('names worker-list as the enumerating command and the agent-liveness authority', () => {
     const reference = squash(readReference('recovery-and-cleanup.md'))
 
-    expect(reference).toContain('ORCA orchestration worker-list --run <run_id> --json')
+    expect(reference).toContain('KINGU orchestration worker-list --run <run_id> --json')
     expect(reference).toContain("`worker-show`'s `observation.status` is PTY liveness only")
     expect(reference).toContain(
       '`projection.attention.categories`, `projection.attention.requiresAction`'
@@ -427,7 +427,7 @@ describe('owned orchestration references', () => {
     expect(reference).toContain('`projection.nextAction` argv')
     expect(reference).toContain('the fleet verdict decides')
     expect(reference).toContain(
-      'ORCA orchestration worker-list --run <run_id> --include-remote --json'
+      'KINGU orchestration worker-list --run <run_id> --include-remote --json'
     )
     expect(reference).toContain('reads `unverifiable` until you enumerate with `--include-remote`')
     expect(reference).toContain('follow `page.nextCursor` with `--cursor <value>`')
@@ -483,12 +483,12 @@ describe('orchestration install stub', () => {
     const stub = readFileSync(stubPath, 'utf8')
 
     expect(stub).toContain('discovery stub')
-    expect(stub).toContain('ORCA skills get orchestration')
-    expect(stub).toContain('ORCA_CLI_COMMAND')
-    expect(stub).toContain('orca-dev')
-    expect(stub).toContain('orca-ide')
-    expect(stub).toContain('GNOME Orca screen reader')
-    expect(stub).not.toMatch(/^orca /mu)
+    expect(stub).toContain('KINGU skills get orchestration')
+    expect(stub).toContain('KINGU_CLI_COMMAND')
+    expect(stub).toContain('kingu-dev')
+    expect(stub).toContain('kingu-ide')
+    expect(stub).toContain('GNOME Kingu screen reader')
+    expect(stub).not.toMatch(/^kingu /mu)
   })
 
   it('performs no orchestration mutation before loading the guide', () => {

@@ -1,15 +1,15 @@
 import { writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { captureLiveInputLag } from './capture-live-input-lag.mjs'
-import { connectOrcaMainInspector } from './orca-main-inspector-connection.mjs'
+import { connectKinguMainInspector } from './kingu-main-inspector-connection.mjs'
 
 // Diagnostic-only adapter: Electron CDP on the verified existing renderer; no window actions.
 const expectedPid = Number(process.argv[2])
 const rendererId = Number(process.argv[3])
 if (!expectedPid || !rendererId) {
-  throw new Error('Usage: node capture-running-orca-lag.mjs MAIN_PID WEB_CONTENTS_ID')
+  throw new Error('Usage: node capture-running-kingu-lag.mjs MAIN_PID WEB_CONTENTS_ID')
 }
-const connection = await connectOrcaMainInspector(expectedPid, rendererId)
+const connection = await connectKinguMainInspector(expectedPid, rendererId)
 const { send, evaluateMain, evaluateRenderer, contents } = connection
 let attached = false
 let echoStarted = false
@@ -21,7 +21,7 @@ try {
   if (identity.pid !== expectedPid || identity.type !== 'window' || identity.attached) {
     throw new Error(`Unexpected or already-debugged target: ${JSON.stringify(identity)}`)
   }
-  const before = await evaluateRenderer('window.__orcaTypingDiagnostic.report()')
+  const before = await evaluateRenderer('window.__kinguTypingDiagnostic.report()')
   if (before.sampling.running) {
     throw new Error('An existing typing diagnostic is running')
   }
@@ -36,7 +36,7 @@ try {
       })
     })
   }
-  await evaluateRenderer('window.__orcaTypingDiagnostic.start()')
+  await evaluateRenderer('window.__kinguTypingDiagnostic.start()')
   echoStarted = true
   await send('Profiler.enable')
   await send('Profiler.start')
@@ -47,9 +47,9 @@ try {
   const result = await captureLiveInputLag(page, 30_000)
   const { profile } = await send('Profiler.stop')
   mainProfiling = false
-  await evaluateRenderer('window.__orcaTypingDiagnostic.stop()')
+  await evaluateRenderer('window.__kinguTypingDiagnostic.stop()')
   echoStarted = false
-  const echo = await evaluateRenderer('window.__orcaTypingDiagnostic.report()')
+  const echo = await evaluateRenderer('window.__kinguTypingDiagnostic.report()')
   await writeFile(join(result.directory, 'main.cpuprofile'), JSON.stringify(profile), {
     mode: 0o600
   })
@@ -59,7 +59,7 @@ try {
   console.log(JSON.stringify({ ...result, echo }, null, 2))
 } finally {
   if (echoStarted) {
-    await evaluateRenderer('window.__orcaTypingDiagnostic.stop()').catch(() => {})
+    await evaluateRenderer('window.__kinguTypingDiagnostic.stop()').catch(() => {})
   }
   if (mainProfiling) {
     await send('Profiler.stop').catch(() => {})

@@ -1,5 +1,5 @@
-import { expect } from '@stablyai/playwright-test'
-import type { Locator, Page } from '@stablyai/playwright-test'
+import { expect } from '@anthovai/playwright-test'
+import type { Locator, Page } from '@anthovai/playwright-test'
 import { getActiveTabId } from './store'
 
 export const SORTABLE_TAB = '[data-testid="sortable-tab"]'

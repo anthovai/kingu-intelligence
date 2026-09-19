@@ -17,7 +17,7 @@ import {
 } from './verify-mobile-web-bundle.mjs'
 
 async function buildIntoScratch() {
-  const scratch = await mkdtemp(join(tmpdir(), 'orca-mobile-web-build-'))
+  const scratch = await mkdtemp(join(tmpdir(), 'kingu-mobile-web-build-'))
   const bundleDir = join(scratch, 'mobile-web')
   const { manifest } = await buildMobileWebBundle({ outDir: bundleDir })
   return { scratch, bundleDir, manifest }
@@ -42,7 +42,7 @@ describe('buildMobileWebBundle', () => {
           expect(html).toContain(asset.path)
         }
       }
-      expect(html).not.toContain('__ORCA_')
+      expect(html).not.toContain('__KINGU_')
     } finally {
       await rm(scratch, { recursive: true, force: true })
     }
@@ -180,8 +180,8 @@ describe('isDirectInvocation', () => {
   const toWin32FileUrl = (windowsPath) => new URL(`file:///${windowsPath.replaceAll('\\', '/')}`)
 
   it('matches a Windows entry path, which the file:// template form never does', () => {
-    const scriptPath = 'C:\\orca\\config\\scripts\\build-mobile-web-bundle.mjs'
-    const moduleUrl = 'file:///C:/orca/config/scripts/build-mobile-web-bundle.mjs'
+    const scriptPath = 'C:\\kingu\\config\\scripts\\build-mobile-web-bundle.mjs'
+    const moduleUrl = 'file:///C:/kingu/config/scripts/build-mobile-web-bundle.mjs'
     const keepAsIs = (path) => path
     expect(
       isDirectInvocation(moduleUrl, scriptPath, {
@@ -189,7 +189,7 @@ describe('isDirectInvocation', () => {
         realpath: keepAsIs
       })
     ).toBe(true)
-    // The regression this guards: `file://${argv[1]}` yields file://C:\orca\... on Windows,
+    // The regression this guards: `file://${argv[1]}` yields file://C:\kingu\... on Windows,
     // so the builder exited 0 having written nothing and packaging failed downstream.
     expect(`file://${scriptPath}`).not.toBe(moduleUrl)
   })
@@ -207,7 +207,7 @@ describe('mobile web source line endings', () => {
   })
 
   it('rejects a CRLF source file, because CRLF changes every asset hash and the buildId', async () => {
-    const scratch = await mkdtemp(join(tmpdir(), 'orca-mobile-web-eol-'))
+    const scratch = await mkdtemp(join(tmpdir(), 'kingu-mobile-web-eol-'))
     try {
       await writeFile(join(scratch, 'bootstrap.ts'), 'const a = 1\r\nconst b = 2\r\n', 'utf8')
       await expect(assertNoCarriageReturnsInSource(scratch)).rejects.toThrow(
@@ -241,7 +241,7 @@ describe('running the builder through a symlink', () => {
   // entry path, `node /tmp/<link>` compared /tmp against /private/tmp and the builder exited 0
   // having written nothing — a green packaging job with no bundle in it.
   it('still recognises the entry module', async () => {
-    const scratch = await mkdtemp(join(tmpdir(), 'orca-mobile-web-link-'))
+    const scratch = await mkdtemp(join(tmpdir(), 'kingu-mobile-web-link-'))
     try {
       const builderUrl = new URL('./build-mobile-web-bundle.mjs', import.meta.url).href
       const real = join(scratch, 'entry.mjs')

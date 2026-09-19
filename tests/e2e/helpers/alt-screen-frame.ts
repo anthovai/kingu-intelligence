@@ -1,4 +1,4 @@
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 
 // Boxed alt-screen TUI frame: enters the alternate buffer, clears it, and paints
 // a marker line carrying a zero-padded frame number.

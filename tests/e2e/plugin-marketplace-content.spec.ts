@@ -10,9 +10,9 @@ import { tmpdir } from 'node:os'
 import { join, sep } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { promisify } from 'node:util'
-import type { Page, TestInfo } from '@stablyai/playwright-test'
-import { expect, test } from '@stablyai/playwright-test'
-import { createRestartSession } from './helpers/orca-restart'
+import type { Page, TestInfo } from '@anthovai/playwright-test'
+import { expect, test } from '@anthovai/playwright-test'
+import { createRestartSession } from './helpers/kingu-restart'
 
 const execFileAsync = promisify(execFile)
 
@@ -48,9 +48,9 @@ async function commitRepository(
     repository,
     [
       '-c',
-      'user.name=Orca Test',
+      'user.name=Kingu Test',
       '-c',
-      'user.email=orca-test@example.invalid',
+      'user.email=kingu-test@example.invalid',
       'commit',
       '--quiet',
       '-m',
@@ -85,7 +85,7 @@ async function configureFixtureGit(home: string, repositories: string): Promise<
   }
   const repositoryBaseUrl = pathToFileURL(`${repositories}${sep}`).href
   const entries = [
-    [`url.${repositoryBaseUrl}.insteadOf`, 'https://github.com/stablyai/'],
+    [`url.${repositoryBaseUrl}.insteadOf`, 'https://github.com/anthovai/'],
     ['protocol.file.allow', 'always'],
     ['commit.gpgSign', 'false'],
     ['tag.gpgSign', 'false'],
@@ -98,7 +98,7 @@ async function configureFixtureGit(home: string, repositories: string): Promise<
 }
 
 async function createMarketplaceFixture(): Promise<MarketplaceFixture> {
-  const root = await mkdtemp(join(tmpdir(), 'orca-marketplace-e2e-'))
+  const root = await mkdtemp(join(tmpdir(), 'kingu-marketplace-e2e-'))
   const repositories = join(root, 'repositories')
   const home = join(root, 'home')
   await mkdir(repositories, { recursive: true })
@@ -106,40 +106,40 @@ async function createMarketplaceFixture(): Promise<MarketplaceFixture> {
   const gitEnvironment = await configureFixtureGit(home, repositories)
   await copyLaunchPlugin(
     repositories,
-    'orca-portuguese',
-    'stablyai.orca-portuguese',
+    'kingu-portuguese',
+    'anthovai.kingu-portuguese',
     gitEnvironment
   )
   await copyLaunchPlugin(
     repositories,
-    'orca-multipass-recipes',
-    'stablyai.orca-multipass-recipes',
+    'kingu-multipass-recipes',
+    'anthovai.kingu-multipass-recipes',
     gitEnvironment
   )
   await copyLaunchPlugin(
     repositories,
-    'orca-navigation-shortcuts',
-    'stablyai.orca-navigation-shortcuts',
+    'kingu-navigation-shortcuts',
+    'anthovai.kingu-navigation-shortcuts',
     gitEnvironment
   )
 
-  const marketplaceRepository = join(repositories, 'orca-plugins.git')
+  const marketplaceRepository = join(repositories, 'kingu-plugins.git')
   await mkdir(marketplaceRepository, { recursive: true })
   await writeFile(
-    join(marketplaceRepository, 'orca-marketplace.json'),
+    join(marketplaceRepository, 'kingu-marketplace.json'),
     `${JSON.stringify(
       {
-        name: 'Orca Plugins',
-        owner: 'stablyai',
+        name: 'Kingu Plugins',
+        owner: 'anthovai',
         plugins: [
-          ['stablyai.orca-portuguese', 'orca-portuguese', 'languages'],
-          ['stablyai.orca-multipass-recipes', 'orca-multipass-recipes', 'vm-recipes'],
-          ['stablyai.orca-navigation-shortcuts', 'orca-navigation-shortcuts', 'keybindings']
+          ['anthovai.kingu-portuguese', 'kingu-portuguese', 'languages'],
+          ['anthovai.kingu-multipass-recipes', 'kingu-multipass-recipes', 'vm-recipes'],
+          ['anthovai.kingu-navigation-shortcuts', 'kingu-navigation-shortcuts', 'keybindings']
         ].map(([id, repository, category]) => ({
           id,
           source: {
             kind: 'git',
-            url: `https://github.com/stablyai/${repository}.git`,
+            url: `https://github.com/anthovai/${repository}.git`,
             ref: 'v1.0.0'
           },
           categories: [category]
@@ -180,7 +180,7 @@ async function installMarketplacePluginThroughUi(
   await expect(listing).toBeVisible()
   await listing.getByRole('button', { name: 'Install' }).click()
   const preview = page.getByRole('dialog', { name: pluginName })
-  await expect(preview).toContainText('Official · stablyai')
+  await expect(preview).toContainText('Official · anthovai')
   await preview.getByRole('button', { name: 'Install plugin' }).click()
   const consent = page.getByRole('dialog', { name: consentDialogName })
   await expect(consent).toBeVisible()
@@ -204,7 +204,7 @@ async function enableInstalledPluginThroughUi(
 }
 
 async function applyInstalledLanguage(page: Page): Promise<void> {
-  const languageId = 'plugin:stablyai.orca-portuguese/pt-BR'
+  const languageId = 'plugin:anthovai.kingu-portuguese/pt-BR'
   await page.evaluate(() => {
     const state = window.__store?.getState()
     if (!state) {
@@ -215,7 +215,7 @@ async function applyInstalledLanguage(page: Page): Promise<void> {
   await expect(page.locator('[data-settings-section="appearance"]')).toBeVisible()
   await page.evaluate(() => window.__store?.setState({ settingsSearchQuery: 'Language' }))
   await page.getByRole('combobox', { name: 'Language' }).click()
-  await page.getByRole('option', { name: 'pt-BR — stablyai.orca-portuguese', exact: true }).click()
+  await page.getByRole('option', { name: 'pt-BR — anthovai.kingu-portuguese', exact: true }).click()
   await expect
     .poll(() => page.evaluate(() => window.__store?.getState().settings?.uiLanguage))
     .toBe(languageId)
@@ -239,10 +239,10 @@ async function runMarketplaceJourney(page: Page): Promise<void> {
     .toMatchObject({
       sources: [expect.objectContaining({ official: true, stale: false })],
       listings: expect.arrayContaining([
-        expect.objectContaining({ pluginKey: 'stablyai.orca-portuguese', official: true }),
-        expect.objectContaining({ pluginKey: 'stablyai.orca-multipass-recipes', official: true }),
+        expect.objectContaining({ pluginKey: 'anthovai.kingu-portuguese', official: true }),
+        expect.objectContaining({ pluginKey: 'anthovai.kingu-multipass-recipes', official: true }),
         expect.objectContaining({
-          pluginKey: 'stablyai.orca-navigation-shortcuts',
+          pluginKey: 'anthovai.kingu-navigation-shortcuts',
           official: true
         })
       ])
@@ -250,19 +250,19 @@ async function runMarketplaceJourney(page: Page): Promise<void> {
 
   await installMarketplacePluginThroughUi(
     page,
-    'stablyai.orca-portuguese',
+    'anthovai.kingu-portuguese',
     'Português do Brasil',
     'Review plugin'
   )
   await installMarketplacePluginThroughUi(
     page,
-    'stablyai.orca-multipass-recipes',
+    'anthovai.kingu-multipass-recipes',
     'Multipass VM Recipes',
     'Review plugin content'
   )
   await enableInstalledPluginThroughUi(
     page,
-    'stablyai.orca-navigation-shortcuts',
+    'anthovai.kingu-navigation-shortcuts',
     'Review plugin content'
   )
 

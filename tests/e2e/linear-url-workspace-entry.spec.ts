@@ -1,6 +1,6 @@
 import { openSidebarWorkspaceComposer } from './helpers/sidebar-project-dialog'
-import type { ElectronApplication, Page } from '@stablyai/playwright-test'
-import { test, expect } from './helpers/orca-app'
+import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import { test, expect } from './helpers/kingu-app'
 import { waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import type { LinearIssue } from '../../src/shared/linear/issue-types'
 
@@ -29,7 +29,7 @@ declare global {
   // oxlint-disable-next-line typescript-eslint/consistent-type-definitions -- declaration merging requires interface
   interface Window {
     // Set by the fixture below while a Linear lookup is deliberately held open.
-    __orcaTestReleaseLinearLookup?: () => void
+    __kinguTestReleaseLinearLookup?: () => void
   }
 }
 
@@ -44,7 +44,7 @@ async function installLinearFixture(
 ): Promise<void> {
   await page.evaluate(
     ({ resolvedIssue, lookupDelayMs }) => {
-      Reflect.deleteProperty(window, '__orcaTestReleaseLinearLookup')
+      Reflect.deleteProperty(window, '__kinguTestReleaseLinearLookup')
       const store = window.__store
       if (!store) {
         throw new Error('window.__store is not available')
@@ -81,7 +81,7 @@ async function installLinearFixture(
         fetchLinearIssue: async (_identifier: string, workspaceId?: string | null) => {
           await (lookupDelayMs === null
             ? new Promise<void>((resolve) => {
-                Reflect.set(window, '__orcaTestReleaseLinearLookup', resolve)
+                Reflect.set(window, '__kinguTestReleaseLinearLookup', resolve)
               })
             : new Promise<void>((resolve) => window.setTimeout(resolve, lookupDelayMs)))
           return resolvedIssue && workspaceId === resolvedIssue.workspaceId ? resolvedIssue : null
@@ -94,11 +94,11 @@ async function installLinearFixture(
 
 async function releaseHeldLinearLookup(page: Page): Promise<void> {
   await page.evaluate(() => {
-    const release = window.__orcaTestReleaseLinearLookup
+    const release = window.__kinguTestReleaseLinearLookup
     if (typeof release !== 'function') {
       throw new Error('Linear lookup is not held')
     }
-    Reflect.deleteProperty(window, '__orcaTestReleaseLinearLookup')
+    Reflect.deleteProperty(window, '__kinguTestReleaseLinearLookup')
     release()
   })
 }
@@ -121,37 +121,37 @@ async function openJumpPalette(electronApp: ElectronApplication): Promise<void> 
 }
 
 test.describe('Linear URL workspace entry', () => {
-  test.beforeEach(async ({ orcaPage }) => {
-    await waitForSessionReady(orcaPage)
-    await waitForActiveWorktree(orcaPage)
-    await installLinearFixture(orcaPage)
+  test.beforeEach(async ({ kinguPage }) => {
+    await waitForSessionReady(kinguPage)
+    await waitForActiveWorktree(kinguPage)
+    await installLinearFixture(kinguPage)
   })
 
   test('pasting into the composer selects the Linear issue without ArrowDown', async ({
-    orcaPage
+    kinguPage
   }, testInfo) => {
-    await installLinearFixture(orcaPage, LINEAR_ISSUE, null)
-    await openSidebarWorkspaceComposer(orcaPage)
-    const dialog = orcaPage.getByRole('dialog', { name: /Create (Workspace|Worktree)/i })
+    await installLinearFixture(kinguPage, LINEAR_ISSUE, null)
+    await openSidebarWorkspaceComposer(kinguPage)
+    const dialog = kinguPage.getByRole('dialog', { name: /Create (Workspace|Worktree)/i })
     const input = dialog.locator('[data-workspace-name-input="true"]')
     await expect(input).toBeVisible()
 
-    await pasteLinearUrl(orcaPage, input)
+    await pasteLinearUrl(kinguPage, input)
     await expect
       .poll(() =>
-        orcaPage.evaluate(() => typeof window.__orcaTestReleaseLinearLookup === 'function')
+        kinguPage.evaluate(() => typeof window.__kinguTestReleaseLinearLookup === 'function')
       )
       .toBe(true)
     await input.press('Enter')
     await expect(input).toHaveValue(LINEAR_URL)
     await expect(dialog.locator('[data-workspace-source-pill="true"]')).toHaveCount(0)
-    await releaseHeldLinearLookup(orcaPage)
+    await releaseHeldLinearLookup(kinguPage)
 
-    const issueRow = orcaPage.getByRole('option', {
+    const issueRow = kinguPage.getByRole('option', {
       name: `${LINEAR_ISSUE.identifier} ${LINEAR_ISSUE.title}`,
       exact: true
     })
-    const useNameRow = orcaPage.getByRole('option', {
+    const useNameRow = kinguPage.getByRole('option', {
       name: `Use "${LINEAR_URL}" as workspace name`,
       exact: true
     })
@@ -176,15 +176,15 @@ test.describe('Linear URL workspace entry', () => {
   })
 
   test('a Linear URL lookup miss falls back to an arbitrary workspace name', async ({
-    orcaPage
+    kinguPage
   }) => {
-    await installLinearFixture(orcaPage, null)
-    await openSidebarWorkspaceComposer(orcaPage)
-    const dialog = orcaPage.getByRole('dialog', { name: /Create (Workspace|Worktree)/i })
+    await installLinearFixture(kinguPage, null)
+    await openSidebarWorkspaceComposer(kinguPage)
+    const dialog = kinguPage.getByRole('dialog', { name: /Create (Workspace|Worktree)/i })
     const input = dialog.locator('[data-workspace-name-input="true"]')
 
-    await pasteLinearUrl(orcaPage, input)
-    const useNameRow = orcaPage.getByRole('option', {
+    await pasteLinearUrl(kinguPage, input)
+    const useNameRow = kinguPage.getByRole('option', {
       name: `Use "${LINEAR_URL}" as workspace name`,
       exact: true
     })
@@ -205,16 +205,16 @@ test.describe('Linear URL workspace entry', () => {
 
   test('pasting into Cmd+J previews the Linear issue and opens the linked composer', async ({
     electronApp,
-    orcaPage
+    kinguPage
   }, testInfo) => {
     await openJumpPalette(electronApp)
-    const palette = orcaPage.getByRole('dialog', { name: 'Jump to...' })
+    const palette = kinguPage.getByRole('dialog', { name: 'Jump to...' })
     const input = palette.getByPlaceholder(
       'Search chats, terminals, worktrees, settings, and actions...'
     )
     await expect(input).toBeVisible()
 
-    await pasteLinearUrl(orcaPage, input)
+    await pasteLinearUrl(kinguPage, input)
 
     const preview = palette.locator(
       '[data-cmd-j-linear-issue-preview="true"][data-cmd-j-linear-issue-state="resolved"]'
@@ -228,7 +228,7 @@ test.describe('Linear URL workspace entry', () => {
     })
 
     await input.press('Enter')
-    const dialog = orcaPage.getByRole('dialog', { name: /Create (Workspace|Worktree)/i })
+    const dialog = kinguPage.getByRole('dialog', { name: /Create (Workspace|Worktree)/i })
     const sourcePill = dialog.locator('[data-workspace-source-pill="true"]')
     await expect(sourcePill).toContainText(LINEAR_ISSUE.title)
     await expect(dialog.getByPlaceholder('Workspace name')).toHaveValue(EXPECTED_WORKSPACE_NAME)

@@ -1,7 +1,7 @@
 import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { test, expect } from './helpers/orca-app'
+import { test, expect } from './helpers/kingu-app'
 import { waitForSessionReady } from './helpers/store'
 import { runProcess } from '../../src/shared/child-process/run-process'
 
@@ -14,12 +14,12 @@ declare global {
 
 for (const delayCreateResponse of [false, true]) {
   test(`created groups survive sidebar expansion (${delayCreateResponse ? 'refresh first' : 'ordinary timing'})`, async ({
-    orcaPage,
+    kinguPage,
     electronApp,
     registerPostElectronShutdownCleanup
   }, testInfo) => {
-    await waitForSessionReady(orcaPage)
-    const root = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'orca-group-visibility-')))
+    await waitForSessionReady(kinguPage)
+    const root = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'kingu-group-visibility-')))
     registerPostElectronShutdownCleanup(async () => {
       rmSync(root, { recursive: true, force: true })
     })
@@ -48,7 +48,7 @@ for (const delayCreateResponse of [false, true]) {
         expect(result.code, result.stderr).toBe(0)
       }
     }
-    const repoIds = await orcaPage.evaluate(async (paths) => {
+    const repoIds = await kinguPage.evaluate(async (paths) => {
       const store = window.__store!
       for (const repoPath of paths) {
         await window.api.repos.add({ path: repoPath })
@@ -86,14 +86,14 @@ for (const delayCreateResponse of [false, true]) {
         })
       })
     }
-    const creation = orcaPage.evaluate(() =>
+    const creation = kinguPage.evaluate(() =>
       window.__store!.getState().createProjectGroup('Crowded group')
     )
     if (delayCreateResponse) {
       try {
         await expect
           .poll(() =>
-            orcaPage.evaluate(() =>
+            kinguPage.evaluate(() =>
               window
                 .__store!.getState()
                 .projectGroups.some((group) => group.name === 'Crowded group')
@@ -115,7 +115,7 @@ for (const delayCreateResponse of [false, true]) {
     if (!createdGroup) {
       throw new Error('Group creation failed')
     }
-    await orcaPage.evaluate(
+    await kinguPage.evaluate(
       async ({ repoIds, groupId }) => {
         const store = window.__store!
         for (const repoId of repoIds.slice(0, 2)) {
@@ -130,7 +130,7 @@ for (const delayCreateResponse of [false, true]) {
       { repoIds, groupId: createdGroup.id }
     )
 
-    const scroller = orcaPage.locator('[data-worktree-sidebar]')
+    const scroller = kinguPage.locator('[data-worktree-sidebar]')
     const group = scroller.locator(`[data-project-group-header-id="${createdGroup.id}"]`)
     const groupedRepos = repoIds
       .slice(0, 2)
@@ -138,7 +138,7 @@ for (const delayCreateResponse of [false, true]) {
     for (const repo of groupedRepos) {
       await expect(repo).toBeVisible()
     }
-    await orcaPage.screenshot({ path: testInfo.outputPath('before-expansion.png') })
+    await kinguPage.screenshot({ path: testInfo.outputPath('before-expansion.png') })
     for (const repoId of repoIds.slice(2, 12)) {
       const repo = scroller.locator(`[data-repo-header-id="${repoId}"]`)
       await expect
@@ -163,7 +163,7 @@ for (const delayCreateResponse of [false, true]) {
       }
     }
     await expect(group).toHaveCount(1)
-    await orcaPage.evaluate(() => window.__store!.getState().fetchProjectGroups())
+    await kinguPage.evaluate(() => window.__store!.getState().fetchProjectGroups())
     await expect(group).toHaveCount(1)
     await group.click()
     for (const repo of groupedRepos) {
@@ -173,6 +173,6 @@ for (const delayCreateResponse of [false, true]) {
     for (const repo of groupedRepos) {
       await expect(repo).toBeVisible()
     }
-    await orcaPage.screenshot({ path: testInfo.outputPath('after-expansion.png') })
+    await kinguPage.screenshot({ path: testInfo.outputPath('after-expansion.png') })
   })
 }

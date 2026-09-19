@@ -1,4 +1,4 @@
-import type { ElectronApplication } from '@stablyai/playwright-test'
+import type { ElectronApplication } from '@anthovai/playwright-test'
 import { describe, expect, it, vi } from 'vitest'
 import {
   hasCapturedGitStatusRetry,

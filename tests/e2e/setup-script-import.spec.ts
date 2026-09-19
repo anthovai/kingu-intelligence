@@ -1,8 +1,8 @@
 import { execFileSync } from 'node:child_process'
 import { mkdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import type { Locator, Page } from '@stablyai/playwright-test'
-import { test, expect } from './helpers/orca-app'
+import type { Locator, Page } from '@anthovai/playwright-test'
+import { test, expect } from './helpers/kingu-app'
 import { waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 
 function runGit(repoPath: string, args: string[]): void {
@@ -147,28 +147,28 @@ async function expectSettingsCommandValue(
 }
 
 test.describe('Setup script import prompt', () => {
-  test.beforeEach(async ({ orcaPage }) => {
-    await waitForSessionReady(orcaPage)
-    await waitForActiveWorktree(orcaPage)
+  test.beforeEach(async ({ kinguPage }) => {
+    await waitForSessionReady(kinguPage)
+    await waitForActiveWorktree(kinguPage)
   })
 
-  test('imports Superset local overlays through the prompt UI', async ({ orcaPage }, testInfo) => {
+  test('imports Superset local overlays through the prompt UI', async ({ kinguPage }, testInfo) => {
     const repoPath = createSupersetSetupRepo(testInfo.outputPath('superset-setup-repo'))
-    const repoId = await addAndActivateRepo(orcaPage, repoPath)
+    const repoId = await addAndActivateRepo(kinguPage, repoPath)
 
     await expect(
-      orcaPage.getByText(
+      kinguPage.getByText(
         /Found a setup command in\s*Superset \(\.superset\/config\.json \+1\)\. Save it to run for new worktrees\./
       )
     ).toBeVisible({ timeout: 15_000 })
 
-    await orcaPage.getByRole('button', { name: 'Save local setup' }).click()
+    await kinguPage.getByRole('button', { name: 'Save local setup' }).click()
 
     await expect(
-      orcaPage.getByText('2 unsupported fields skipped. Saved the setup command.')
+      kinguPage.getByText('2 unsupported fields skipped. Saved the setup command.')
     ).toBeVisible()
 
-    const localCommands = await openImportedSetupSettingsFromToast(orcaPage, repoId)
+    const localCommands = await openImportedSetupSettingsFromToast(kinguPage, repoId)
     await expectSettingsCommandValue(
       localCommands,
       'Setup Script',
@@ -181,23 +181,23 @@ test.describe('Setup script import prompt', () => {
     )
   })
 
-  test('imports cmux setup commands through the prompt UI', async ({ orcaPage }, testInfo) => {
+  test('imports cmux setup commands through the prompt UI', async ({ kinguPage }, testInfo) => {
     const repoPath = createCmuxSetupRepo(testInfo.outputPath('cmux-setup-repo'))
-    const repoId = await addAndActivateRepo(orcaPage, repoPath)
+    const repoId = await addAndActivateRepo(kinguPage, repoPath)
 
     await expect(
-      orcaPage.getByText(
+      kinguPage.getByText(
         /Found a setup command in\s*cmux \(\.cmux\/cmux\.json\)\. Save it to run for new worktrees\./
       )
     ).toBeVisible({ timeout: 15_000 })
 
-    await orcaPage.getByRole('button', { name: 'Save local setup' }).click()
+    await kinguPage.getByRole('button', { name: 'Save local setup' }).click()
 
     await expect(
-      orcaPage.getByRole('button', { name: "project's settings", exact: true })
+      kinguPage.getByRole('button', { name: "project's settings", exact: true })
     ).toBeVisible()
 
-    const repoSettings = await openRepoSettings(orcaPage, repoId)
+    const repoSettings = await openRepoSettings(kinguPage, repoId)
     await expectSettingsCommandValue(repoSettings, 'Setup Script', './scripts/setup.sh')
     await expectSettingsCommandValue(repoSettings, 'Archive Script', '')
   })

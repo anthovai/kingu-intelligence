@@ -16,8 +16,8 @@ import { execFileSync } from 'node:child_process'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import type { Page } from '@stablyai/playwright-test'
-import { test, expect } from './helpers/orca-app'
+import type { Page } from '@anthovai/playwright-test'
+import { test, expect } from './helpers/kingu-app'
 import { waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import type { LinkedWorkItemSummary } from '../../src/renderer/src/lib/new-workspace'
 import type { TaskSourceContext } from '../../src/shared/task-source-context'
@@ -113,23 +113,23 @@ test.describe('New workspace composer linked item across project switches', () =
   let tempRoot: string
   let secondRepoPath: string
 
-  test.beforeEach(async ({ orcaPage }) => {
-    await waitForSessionReady(orcaPage)
-    await waitForActiveWorktree(orcaPage)
-    tempRoot = mkdtempSync(path.join(os.tmpdir(), 'orca-e2e-linked-item-'))
+  test.beforeEach(async ({ kinguPage }) => {
+    await waitForSessionReady(kinguPage)
+    await waitForActiveWorktree(kinguPage)
+    tempRoot = mkdtempSync(path.join(os.tmpdir(), 'kingu-e2e-linked-item-'))
     secondRepoPath = path.join(tempRoot, SECOND_PROJECT_NAME)
     createGitRepo(secondRepoPath)
-    await addSecondProject(orcaPage, secondRepoPath)
+    await addSecondProject(kinguPage, secondRepoPath)
   })
 
   test.afterEach(() => {
     rmSync(tempRoot, { recursive: true, force: true })
   })
 
-  test('keeps a Jira issue linked when the project changes', async ({ orcaPage }) => {
-    const jiraSourceContext = await getJiraSourceContext(orcaPage)
+  test('keeps a Jira issue linked when the project changes', async ({ kinguPage }) => {
+    const jiraSourceContext = await getJiraSourceContext(kinguPage)
     await openComposerWithLinkedWorkItem(
-      orcaPage,
+      kinguPage,
       {
         type: 'issue',
         provider: 'jira',
@@ -142,19 +142,19 @@ test.describe('New workspace composer linked item across project switches', () =
       jiraSourceContext
     )
 
-    const composer = orcaPage.getByRole('dialog')
+    const composer = kinguPage.getByRole('dialog')
     await expect(composer).toBeVisible()
     const sourcePill = composer.locator('[data-workspace-source-pill="true"]')
     await expect(sourcePill).toContainText('RDG-344 Migrate homepage from NuxtJS to NextJS')
 
-    await switchComposerProject(orcaPage, SECOND_PROJECT_NAME)
+    await switchComposerProject(kinguPage, SECOND_PROJECT_NAME)
 
     await expect(sourcePill).toContainText('RDG-344 Migrate homepage from NuxtJS to NextJS')
   })
 
-  test('clears a repo-scoped GitHub issue when the project changes', async ({ orcaPage }) => {
+  test('clears a repo-scoped GitHub issue when the project changes', async ({ kinguPage }) => {
     await openComposerWithLinkedWorkItem(
-      orcaPage,
+      kinguPage,
       {
         type: 'issue',
         provider: 'github',
@@ -165,12 +165,12 @@ test.describe('New workspace composer linked item across project switches', () =
       'fix-crash-on-launch'
     )
 
-    const composer = orcaPage.getByRole('dialog')
+    const composer = kinguPage.getByRole('dialog')
     await expect(composer).toBeVisible()
     const sourcePill = composer.locator('[data-workspace-source-pill="true"]')
     await expect(sourcePill).toContainText('#41 Fix crash on launch')
 
-    await switchComposerProject(orcaPage, SECOND_PROJECT_NAME)
+    await switchComposerProject(kinguPage, SECOND_PROJECT_NAME)
 
     await expect(sourcePill).toHaveCount(0)
   })

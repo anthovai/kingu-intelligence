@@ -1,20 +1,20 @@
 // Throwaway interactive preview (untracked): shows the SSH-routing error cards
 // in a headed app and holds it open for review. The prepare IPC is stubbed at
 // the window level; everything else (gate, settings writes, escape hatch) is real.
-// Run: ORCA_SSH_CARD_PREVIEW=1 pnpm exec playwright test --config tests/playwright.config.ts \
+// Run: KINGU_SSH_CARD_PREVIEW=1 pnpm exec playwright test --config tests/playwright.config.ts \
 //   --project electron-headless --workers=1 tests/e2e/ssh-route-error-card-preview.spec.ts
-import { expect, test } from './helpers/orca-app'
+import { expect, test } from './helpers/kingu-app'
 
 test.skip(
-  process.env.ORCA_SSH_CARD_PREVIEW !== '1',
-  'Preview only; run with ORCA_SSH_CARD_PREVIEW=1'
+  process.env.KINGU_SSH_CARD_PREVIEW !== '1',
+  'Preview only; run with KINGU_SSH_CARD_PREVIEW=1'
 )
 
 const HOLD_MINUTES = 20
 
 test('shows the SSH routing error cards and holds for review', async ({
   electronApp,
-  orcaPage,
+  kinguPage,
   testRepoPath
 }) => {
   test.setTimeout((HOLD_MINUTES + 10) * 60_000)
@@ -30,7 +30,7 @@ test('shows the SSH routing error cards and holds for review', async ({
   await expect
     .poll(
       () =>
-        orcaPage.evaluate(
+        kinguPage.evaluate(
           (path) =>
             window.__store
               ?.getState()
@@ -41,7 +41,7 @@ test('shows the SSH routing error cards and holds for review', async ({
       { timeout: 60_000, message: 'test repo worktree never appeared' }
     )
     .not.toBeNull()
-  await orcaPage.evaluate((path) => {
+  await kinguPage.evaluate((path) => {
     const state = window.__store?.getState()
     const worktree = state?.allWorktrees().find((candidate) => candidate.path === path)
     if (!worktree) {
@@ -53,7 +53,7 @@ test('shows the SSH routing error cards and holds for review', async ({
   // Stage with a REAL registered SSH target (a dead address) — no stubbing:
   // prepare runs the true main-process path and fails as 'ssh-unavailable',
   // rendering the classified card exactly as a user would see it.
-  const targetId = await orcaPage.evaluate(async () => {
+  const targetId = await kinguPage.evaluate(async () => {
     const added = (await window.api.ssh.addTarget({
       target: {
         label: 'preview-dead-host',
@@ -68,7 +68,7 @@ test('shows the SSH routing error cards and holds for review', async ({
     }
     return id
   })
-  await orcaPage.evaluate((id) => {
+  await kinguPage.evaluate((id) => {
     // Why: the active-workspace host id wins resolution precedence and was
     // stamped 'local' at activation; the gate consults it first.
     window.__store?.setState({
@@ -76,11 +76,11 @@ test('shows the SSH routing error cards and holds for review', async ({
     })
   }, targetId)
 
-  await orcaPage.evaluate(async () => {
+  await kinguPage.evaluate(async () => {
     await window.__store?.getState().openNewBrowserTabInActiveWorkspace()
   })
 
-  await expect(orcaPage.getByText('SSH connection unavailable')).toBeVisible({
+  await expect(kinguPage.getByText('SSH connection unavailable')).toBeVisible({
     timeout: 30_000
   })
   console.log(`\n=== SSH ERROR CARD PREVIEW READY — window stays up ${HOLD_MINUTES} minutes ===`)

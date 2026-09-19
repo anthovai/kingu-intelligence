@@ -264,22 +264,22 @@ async function runInsideSession(evidenceDir) {
           ...process.env,
           ...(nestedWayland
             ? {
-                ORCA_E2E_IME_INJECTOR: 'nested',
-                ORCA_E2E_NESTED_FOCUS_CMD: path.join(
+                KINGU_E2E_IME_INJECTOR: 'nested',
+                KINGU_E2E_NESTED_FOCUS_CMD: path.join(
                   projectDir,
                   'config/scripts/focus-nested-wayland-terminal.sh'
                 ),
-                ORCA_E2E_EXTRA_APP_ARGS:
+                KINGU_E2E_EXTRA_APP_ARGS:
                   '--ozone-platform=wayland --enable-wayland-ime --wayland-text-input-version=3 --password-store=basic --use-mock-keychain --disable-gpu-sandbox',
                 PLAYWRIGHT_JSON_OUTPUT_FILE: path.join(evidenceDir, 'playwright.json')
               }
             : {}),
-          ORCA_E2E_FORWARD_APP_LOGS: '1',
-          ORCA_E2E_NATIVE_IBUS_HANGUL: '1',
+          KINGU_E2E_FORWARD_APP_LOGS: '1',
+          KINGU_E2E_NATIVE_IBUS_HANGUL: '1',
           [IME_ENGAGEMENT_RECEIPT_ENV]: receiptPath,
           // Why: native IBus key injection only reaches a window the window manager
           // has focused, so this run opts out of the background-launch policy.
-          ORCA_E2E_FOREGROUND: '1'
+          KINGU_E2E_FOREGROUND: '1'
         },
         stdio: 'inherit'
       }
@@ -387,7 +387,7 @@ async function runOuter() {
     throw new Error('The native IBus Hangul E2E runner requires Linux')
   }
 
-  const evidenceDir = mkdtempSync(path.join(os.tmpdir(), 'orca-terminal-ime-e2e-'))
+  const evidenceDir = mkdtempSync(path.join(os.tmpdir(), 'kingu-terminal-ime-e2e-'))
   const runtimeDir = path.join(evidenceDir, 'runtime')
   mkdirSync(runtimeDir, { mode: 0o700 })
   mkdirSync(path.join(evidenceDir, 'config'))
@@ -414,7 +414,7 @@ async function runOuter() {
         ...process.env,
         ...(nestedWayland
           ? {
-              WAYLAND_DISPLAY: 'wayland-orca-ime',
+              WAYLAND_DISPLAY: 'wayland-kingu-ime',
               XDG_SESSION_TYPE: 'wayland',
               XDG_CURRENT_DESKTOP: 'GNOME',
               LIBGL_ALWAYS_SOFTWARE: '1',

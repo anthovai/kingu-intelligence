@@ -1,5 +1,5 @@
 /**
- * A provider session id names a transcript in ONE machine's agent state directory. Orca issued one
+ * A provider session id names a transcript in ONE machine's agent state directory. Kingu issued one
  * against the wrong machine and the agent answered
  * `No conversation found with session ID: <id>` in the user's remote terminal.
  *
@@ -9,20 +9,20 @@
  * host A reaches a `--resume` executed on host B.
  *
  * This lane proves it at the only altitude that settles the question: the argv that actually lands
- * on the remote machine. Both tests restart the app across a relay kill (the shape of an Orca
+ * on the remote machine. Both tests restart the app across a relay kill (the shape of an Kingu
  * update, which is what the user did) and read the stub agent's argv ledger out of the container.
  *
  *  - foreign stamp  → the ledger must hold no `--resume`, and the record must survive so the user
- *                     can still resume by hand. It must still hold Orca's ordinary `--version`
+ *                     can still resume by hand. It must still hold Kingu's ordinary `--version`
  *                     probe, or the lane would pass on an app that never reached the host at all.
  *  - matching stamp → the ledger must contain `--resume <id>`.
  *
  * The second is not a nicety. Without it the first passes on any app that resumes nothing at all,
  * which is exactly the failure mode a refuse-everything gate would ship.
  */
-import type { ElectronApplication, TestInfo } from '@stablyai/playwright-test'
-import { test, expect } from './helpers/orca-app'
-import { createRestartSession } from './helpers/orca-restart'
+import type { ElectronApplication, TestInfo } from '@anthovai/playwright-test'
+import { test, expect } from './helpers/kingu-app'
+import { createRestartSession } from './helpers/kingu-restart'
 import { connectDockerSshRelayTarget } from './helpers/docker-ssh-relay-connection'
 import { killDockerSshRelayDaemon } from './helpers/docker-ssh-relay-faults'
 import {
@@ -39,13 +39,13 @@ import {
   waitForActiveTerminalManager
 } from './helpers/terminal'
 
-const RUN_DOCKER_SSH = process.env.ORCA_E2E_SSH_DOCKER === '1'
+const RUN_DOCKER_SSH = process.env.KINGU_E2E_SSH_DOCKER === '1'
 
 const SESSION_ID = 'e2e-stale-resume-87987465'
-const ARGV_LEDGER = '/tmp/orca-e2e-claude-argv.log'
+const ARGV_LEDGER = '/tmp/kingu-e2e-claude-argv.log'
 /** Stands in for a record the user carried over from another machine: its transcript is not on this
  *  host under this id. Any value that is not the connected target's works. */
-const FOREIGN_CONNECTION_ID = 'orca-e2e-some-other-host'
+const FOREIGN_CONNECTION_ID = 'kingu-e2e-some-other-host'
 /** Resolve the stamp to the connected target's own id, which is only minted during connect. */
 const STAMP_OWNING_HOST = Symbol('stamp-owning-host')
 /** How long a `--resume` gets to reach the host once the relaunched pane holds its PTY. The resume
@@ -186,7 +186,7 @@ async function resumeAcrossRestart(
 
     await restart.close(firstApp)
     firstApp = null
-    // The shape of an Orca update: the relay and every PTY under it are gone, so nothing is
+    // The shape of an Kingu update: the relay and every PTY under it are gone, so nothing is
     // reclaimable and the sleeping record is the only way the agent comes back.
     killDockerSshRelayDaemon(target)
     const ledgerAfterQuit = readRemoteArgvLedger(target)
@@ -202,7 +202,7 @@ async function resumeAcrossRestart(
     // means the gate has already ruled on this record — after this, waiting is only for the
     // typed command to travel.
     await waitForActivePanePtyId(secondLaunch.page, 90_000)
-    // Orca's per-launch `claude --version` probe proves the relaunch reached the host at all; the
+    // Kingu's per-launch `claude --version` probe proves the relaunch reached the host at all; the
     // negative case is vacuous without it.
     await settleRemoteArgvLedger(target, ledgerAfterQuit, 90_000, (fresh) =>
       fresh.includes('--version')
@@ -242,7 +242,7 @@ async function resumeAcrossRestart(
 }
 
 test.describe('SSH sleeping-agent resume execution-host scope', () => {
-  test.skip(!RUN_DOCKER_SSH, 'Set ORCA_E2E_SSH_DOCKER=1 to run Docker-backed SSH tests.')
+  test.skip(!RUN_DOCKER_SSH, 'Set KINGU_E2E_SSH_DOCKER=1 to run Docker-backed SSH tests.')
   test.skip(process.platform === 'win32', 'Docker SSH tests use POSIX ssh tooling.')
   test.describe.configure({ mode: 'serial' })
 
@@ -261,13 +261,13 @@ test.describe('SSH sleeping-agent resume execution-host scope', () => {
         RESUME_GRACE_MS
       )
 
-      // Why not an empty ledger: Orca legitimately probes `claude --version` on the remote to
+      // Why not an empty ledger: Kingu legitimately probes `claude --version` on the remote to
       // detect installed agents, once per launch. That is not a resume. The defect is `--resume`
       // carrying an id this machine never wrote, so that is what must be absent. `result.ledger`
       // is only what the relaunch appended, so the first launch's probe cannot satisfy this.
       expect(
         result.ledger,
-        `Orca ran the agent on the SSH host with a session id captured on another machine.\nrecord stamp: ${result.diagnostics.recordStamp}\nlive entry stamp: ${result.diagnostics.entryStamp}\nledger before quit: ${JSON.stringify(result.diagnostics.ledgerBeforeQuit)}\nledger after quit+relay kill: ${JSON.stringify(result.diagnostics.ledgerAfterQuit)}`
+        `Kingu ran the agent on the SSH host with a session id captured on another machine.\nrecord stamp: ${result.diagnostics.recordStamp}\nlive entry stamp: ${result.diagnostics.entryStamp}\nledger before quit: ${JSON.stringify(result.diagnostics.ledgerBeforeQuit)}\nledger after quit+relay kill: ${JSON.stringify(result.diagnostics.ledgerAfterQuit)}`
       ).not.toContain('--resume')
       expect(result.ledger).not.toContain(SESSION_ID)
       // The relaunch's lines must not be empty either, or this proves only that the agent never

@@ -11,7 +11,7 @@ import {
 import os from 'node:os'
 import path from 'node:path'
 import type { RuntimeClient } from '../../../src/cli/runtime-client'
-import { DEFAULT_LOCAL_ORCA_PROFILE_ID } from '../../../src/shared/orca-profiles'
+import { DEFAULT_LOCAL_KINGU_PROFILE_ID } from '../../../src/shared/kingu-profiles'
 import type {
   RuntimeTerminalListResult,
   RuntimeTerminalSummary
@@ -19,14 +19,14 @@ import type {
 import { buildFakeAgentCommandOverride } from './fake-agent-command-override'
 import { FAKE_AGENT_PASTE_END_SCANNER_SOURCE } from './fake-agent-paste-end-scanner'
 
-const fakeCliDir = mkdtempSync(path.join(os.tmpdir(), 'orca-e2e-retired-worker-'))
+const fakeCliDir = mkdtempSync(path.join(os.tmpdir(), 'kingu-e2e-retired-worker-'))
 const lifecycleLedgerPath = path.join(fakeCliDir, 'codex-lifecycle.jsonl')
 export const completedWorkerFakeCodexCommand = buildFakeAgentCommandOverride(
   path.join(fakeCliDir, process.platform === 'win32' ? 'codex.cmd' : 'codex')
 )
 const fakeCodexSource = `
 const { appendFileSync } = require('node:fs')
-const ledger = process.env.ORCA_E2E_CODEX_LIFECYCLE_LEDGER
+const ledger = process.env.KINGU_E2E_CODEX_LIFECYCLE_LEDGER
 const append = (event) => appendFileSync(ledger, JSON.stringify({ pid: process.pid, ...event }) + '\\n')
 const args = process.argv.slice(2)
 if (args.includes('app-server')) {
@@ -44,7 +44,7 @@ process.stdin.on('data', (chunk) => {
     process.stdout.write('\\x1b[?25h')
   }
   append({ event: 'input', input })
-  if (input.includes('ORCA_E2E_EXIT_AFTER_DONE')) {
+  if (input.includes('KINGU_E2E_EXIT_AFTER_DONE')) {
     append({ event: 'normal-exit' })
     process.exit(0)
   }
@@ -79,7 +79,7 @@ installCompletedWorkerFakeCodex()
 
 export const completedWorkerLaunchEnv = {
   PATH: `${fakeCliDir}${path.delimiter}${process.env.PATH ?? ''}`,
-  ORCA_E2E_CODEX_LIFECYCLE_LEDGER: lifecycleLedgerPath
+  KINGU_E2E_CODEX_LIFECYCLE_LEDGER: lifecycleLedgerPath
 }
 
 export type LifecycleEvent = {
@@ -129,14 +129,14 @@ export function readCompletedWorkerDispatchCapability(): string | null {
   return input.match(/--dispatch-capability\s+(\S+)/)?.[1] ?? null
 }
 
-export function runBuiltOrcaCli(
+export function runBuiltKinguCli(
   args: string[],
   options: { userDataDir: string; cwd: string }
 ): unknown {
   const {
-    ORCA_ENVIRONMENT: _environment,
-    ORCA_PAIRING_CODE: _pairingCode,
-    ORCA_USER_DATA_PATH: _userDataPath,
+    KINGU_ENVIRONMENT: _environment,
+    KINGU_PAIRING_CODE: _pairingCode,
+    KINGU_USER_DATA_PATH: _userDataPath,
     ...cleanEnv
   } = process.env
   void _environment
@@ -147,7 +147,7 @@ export function runBuiltOrcaCli(
     [path.join(process.cwd(), 'out', 'cli', 'index.js'), ...args],
     {
       cwd: options.cwd,
-      env: { ...cleanEnv, ORCA_USER_DATA_PATH: options.userDataDir },
+      env: { ...cleanEnv, KINGU_USER_DATA_PATH: options.userDataDir },
       encoding: 'utf8',
       timeout: 30_000
     }
@@ -197,8 +197,8 @@ export function readPersistedWorkerRecoveryRecord(userDataDir: string, paneKey: 
   const dataPath = path.join(
     userDataDir,
     'profiles',
-    DEFAULT_LOCAL_ORCA_PROFILE_ID,
-    'orca-data.json'
+    DEFAULT_LOCAL_KINGU_PROFILE_ID,
+    'kingu-data.json'
   )
   if (!existsSync(dataPath)) {
     return null

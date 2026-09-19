@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { expect, test } from './helpers/orca-app'
+import { expect, test } from './helpers/kingu-app'
 import {
   cleanupDockerSshRelayTarget,
   DOCKER_SSH_RELAY_REMOTE_REPO_PATH,
@@ -33,57 +33,57 @@ function floodWithInputAcknowledgements(marker: string): string {
 }
 
 test.describe('five SSH panes under simultaneous output', () => {
-  test.skip(process.env.ORCA_E2E_SSH_DOCKER !== '1', 'Requires the Docker SSH target')
+  test.skip(process.env.KINGU_E2E_SSH_DOCKER !== '1', 'Requires the Docker SSH target')
 
   test('each pane acknowledges keyboard input after hiding and reopening the flooding workspace', async ({
-    orcaPage,
+    kinguPage,
     registerPostElectronShutdownCleanup
   }, testInfo) => {
     test.setTimeout(420_000)
     const target = startDockerSshRelayTarget(testInfo)
     registerPostElectronShutdownCleanup(async () => cleanupDockerSshRelayTarget(target))
-    await waitForSessionReady(orcaPage)
-    await waitForActiveWorktree(orcaPage)
-    await connectDockerSshRelayTarget(orcaPage, target, {
+    await waitForSessionReady(kinguPage)
+    await waitForActiveWorktree(kinguPage)
+    await connectDockerSshRelayTarget(kinguPage, target, {
       remotePath: DOCKER_SSH_RELAY_REMOTE_REPO_PATH
     })
-    await ensureTerminalVisible(orcaPage, 45_000)
-    await waitForActiveTerminalManager(orcaPage, 60_000)
+    await ensureTerminalVisible(kinguPage, 45_000)
+    await waitForActiveTerminalManager(kinguPage, 60_000)
     const runId = randomUUID()
     const owners: { leafId: string; ptyId: string; marker: string }[] = []
     for (let index = 0; index < 5; index++) {
       if (index > 0) {
-        await splitActiveTerminalPane(orcaPage, 'vertical')
-        await focusLastTerminalPane(orcaPage)
+        await splitActiveTerminalPane(kinguPage, 'vertical')
+        await focusLastTerminalPane(kinguPage)
       }
-      const ptyId = await waitForActivePanePtyId(orcaPage, 30_000)
-      const identity = await readPaneIdentitySnapshot(orcaPage)
+      const ptyId = await waitForActivePanePtyId(kinguPage, 30_000)
+      const identity = await readPaneIdentitySnapshot(kinguPage)
       expect(identity?.activeLeafId).toBeTruthy()
       const marker = `FLOOD_${runId}_${index}`
       owners.push({ leafId: identity!.activeLeafId!, ptyId, marker })
-      await execInTerminal(orcaPage, ptyId, floodWithInputAcknowledgements(marker))
+      await execInTerminal(kinguPage, ptyId, floodWithInputAcknowledgements(marker))
       await expect
-        .poll(() => getTerminalContent(orcaPage, 80_000), { timeout: 60_000 })
+        .poll(() => getTerminalContent(kinguPage, 80_000), { timeout: 60_000 })
         .toMatch(new RegExp(`${marker}:[1-9][0-9]*:ACK=:`))
     }
     expect(new Set(owners.map((owner) => owner.ptyId)).size).toBe(5)
-    const identity = await readPaneIdentitySnapshot(orcaPage)
+    const identity = await readPaneIdentitySnapshot(kinguPage)
     expect(identity?.panes).toHaveLength(5)
     const tabId = identity!.tabId
-    const visibleTerminals = orcaPage.locator('.xterm:visible')
+    const visibleTerminals = kinguPage.locator('.xterm:visible')
     await expect(visibleTerminals).toHaveCount(5)
 
     for (let round = 0; round < 2; round++) {
-      await orcaPage.evaluate(() => window.__store!.getState().setActiveView('tasks'))
+      await kinguPage.evaluate(() => window.__store!.getState().setActiveView('tasks'))
       await expect
-        .poll(() => orcaPage.evaluate(() => window.__store!.getState().activeView))
+        .poll(() => kinguPage.evaluate(() => window.__store!.getState().activeView))
         .toBe('tasks')
       await expect(visibleTerminals).toHaveCount(0)
-      await orcaPage.evaluate(() => window.__store!.getState().setActiveView('terminal'))
+      await kinguPage.evaluate(() => window.__store!.getState().setActiveView('terminal'))
       await expect(visibleTerminals).toHaveCount(5)
-      await waitForActiveTerminalManager(orcaPage, 60_000)
+      await waitForActiveTerminalManager(kinguPage, 60_000)
       for (const [index, owner] of owners.entries()) {
-        await orcaPage.evaluate(
+        await kinguPage.evaluate(
           ({ tabId, leafId }) => {
             const manager = window.__paneManagers!.get(tabId)!
             const paneId = manager.getNumericIdForLeaf(leafId)
@@ -94,10 +94,10 @@ test.describe('five SSH panes under simultaneous output', () => {
           },
           { tabId, leafId: owner.leafId }
         )
-        expect(await waitForActivePanePtyId(orcaPage)).toBe(owner.ptyId)
-        await focusActiveTerminalInput(orcaPage)
+        expect(await waitForActivePanePtyId(kinguPage)).toBe(owner.ptyId)
+        await focusActiveTerminalInput(kinguPage)
         const input = `input_${runId}_${round}_${index}`
-        const inputTrace = await orcaPage.evaluateHandle((tabId) => {
+        const inputTrace = await kinguPage.evaluateHandle((tabId) => {
           const manager = window.__paneManagers!.get(tabId)!
           const entries = manager.getPanes().map((pane) => ({
             ptyId: pane.container.dataset.ptyId,
@@ -116,13 +116,13 @@ test.describe('five SSH panes under simultaneous output', () => {
         }, tabId)
         // The remote process repeats its latest ACK, so flood eviction cannot hide it.
         try {
-          await orcaPage.keyboard.type(input)
-          await orcaPage.keyboard.press('Enter')
+          await kinguPage.keyboard.type(input)
+          await kinguPage.keyboard.press('Enter')
           await expect
-            .poll(() => getTerminalContent(orcaPage, 80_000), { timeout: 30_000 })
+            .poll(() => getTerminalContent(kinguPage, 80_000), { timeout: 30_000 })
             .toMatch(new RegExp(`${owner.marker}:[1-9][0-9]*:ACK=${input}:`))
         } catch (error) {
-          const panes = await orcaPage.evaluate((tabId) => {
+          const panes = await kinguPage.evaluate((tabId) => {
             const manager = window.__paneManagers!.get(tabId)!
             return manager.getPanes().map((pane) => ({
               active: pane === manager.getActivePane(),

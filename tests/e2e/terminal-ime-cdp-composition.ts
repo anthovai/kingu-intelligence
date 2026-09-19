@@ -1,4 +1,4 @@
-import type { CDPSession, Page } from '@stablyai/playwright-test'
+import type { CDPSession, Page } from '@anthovai/playwright-test'
 
 /**
  * Dispatches the key shapes an input source or a system text substitution produces, through CDP.

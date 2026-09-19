@@ -15,8 +15,8 @@
  * main saw did-finish-load while every window handle stayed dead).
  */
 
-import type { ElectronApplication } from '@stablyai/playwright-test'
-import { test, expect } from './helpers/orca-app'
+import type { ElectronApplication } from '@anthovai/playwright-test'
+import { test, expect } from './helpers/kingu-app'
 import { ensureTerminalVisible, waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import {
   discoverActivePtyId,
@@ -98,23 +98,23 @@ async function waitForRendererRecovery(electronApp: ElectronApplication): Promis
 
 test.describe('Renderer crash recovery keeps terminal input alive', () => {
   test('typing still reaches the PTY after forced renderer crash + auto-reload', async ({
-    orcaPage,
+    kinguPage,
     electronApp
   }) => {
     test.setTimeout(300_000)
 
-    await waitForSessionReady(orcaPage)
-    await waitForActiveWorktree(orcaPage)
-    await ensureTerminalVisible(orcaPage)
-    await waitForActiveTerminalManager(orcaPage, 30_000)
-    await waitForPaneCount(orcaPage, 1, 30_000)
+    await waitForSessionReady(kinguPage)
+    await waitForActiveWorktree(kinguPage)
+    await ensureTerminalVisible(kinguPage)
+    await waitForActiveTerminalManager(kinguPage, 30_000)
+    await waitForPaneCount(kinguPage, 1, 30_000)
 
     // Baseline: both the DOM keyboard layer (Playwright-driven, only possible
     // pre-crash) and the PTY roundtrip must work before we crash anything,
     // otherwise a post-crash failure would be uninterpretable.
-    const baselinePtyId = await discoverActivePtyId(orcaPage)
+    const baselinePtyId = await discoverActivePtyId(kinguPage)
     expect(
-      await probeKeyboardType(orcaPage, 'KB_BASELINE_OK'),
+      await probeKeyboardType(kinguPage, 'KB_BASELINE_OK'),
       'baseline keyboard input must reach the PTY before any crash is forced'
     ).toBe(true)
 

@@ -1,8 +1,8 @@
-import type { ElectronApplication } from '@stablyai/playwright-test'
+import type { ElectronApplication } from '@anthovai/playwright-test'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { installSshReplayReplyProbe, readSshReplayReplies } from './ssh-codex-replay-reply-probe'
 
-beforeEach(() => vi.stubGlobal('__orcaSshCodexReplayReplies', undefined))
+beforeEach(() => vi.stubGlobal('__kinguSshCodexReplayReplies', undefined))
 afterEach(() => vi.unstubAllGlobals())
 
 function harness(result: unknown) {

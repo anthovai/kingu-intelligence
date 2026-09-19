@@ -1,11 +1,11 @@
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { waitForRestoredTerminalInputReady } from './helpers/restored-terminal-input-readiness'
 
 type TestPane = {
   container: {
     dataset: { ptyId: string }
-    __orcaE2eTerminalInputReadinessInstanceId?: string
+    __kinguE2eTerminalInputReadinessInstanceId?: string
   }
   serializeAddon: { serialize: () => string }
   terminal: { input: (data: string, wasUserInput: boolean) => void }

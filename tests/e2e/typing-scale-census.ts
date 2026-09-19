@@ -1,4 +1,4 @@
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 import type {
   TypingDiagnosticBridge,
   TypingLatencyReport
@@ -9,7 +9,7 @@ export async function readTypingScaleCensus(
   page: Page
 ): Promise<TypingLatencyReport['census'] | null> {
   return page.evaluate(() => {
-    const target: Window & { __orcaTypingDiagnostic?: TypingDiagnosticBridge } = window
-    return target.__orcaTypingDiagnostic?.report().census ?? null
+    const target: Window & { __kinguTypingDiagnostic?: TypingDiagnosticBridge } = window
+    return target.__kinguTypingDiagnostic?.report().census ?? null
   })
 }

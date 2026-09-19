@@ -2,16 +2,16 @@
 set -euo pipefail
 
 signal_name=${1:?signal name is required}
-app_root=${ORCA_TEST_APP_ROOT:-/artifacts/root}
-signal_target_kind=${ORCA_SIGNAL_TARGET:-app}
-entrypoint_kind=${ORCA_TEST_ENTRYPOINT:-app}
-int_delivery=${ORCA_INT_DELIVERY:-foreground-process-group}
+app_root=${KINGU_TEST_APP_ROOT:-/artifacts/root}
+signal_target_kind=${KINGU_SIGNAL_TARGET:-app}
+entrypoint_kind=${KINGU_TEST_ENTRYPOINT:-app}
+int_delivery=${KINGU_INT_DELIVERY:-foreground-process-group}
 # Packaged Electron startup can approach 90s on a cold CI runner; leave room
 # for the readiness line to reach the log before the observer deadline.
-startup_timeout_seconds=${ORCA_STARTUP_TIMEOUT_SECONDS:-180}
+startup_timeout_seconds=${KINGU_STARTUP_TIMEOUT_SECONDS:-180}
 
 if ((EUID == 0)); then
-  exec runuser --user orca --preserve-environment -- "$0" "$@"
+  exec runuser --user kingu --preserve-environment -- "$0" "$@"
 fi
 
 case "$signal_name" in
@@ -19,7 +19,7 @@ case "$signal_name" in
   *) echo "unsupported signal: $signal_name" >&2; exit 64 ;;
 esac
 
-state_dir=$(mktemp -d "/tmp/orca-shutdown-${signal_name}.XXXXXX")
+state_dir=$(mktemp -d "/tmp/kingu-shutdown-${signal_name}.XXXXXX")
 stdout_log="$state_dir/stdout.log"
 stderr_log="$state_dir/stderr.log"
 ulimit -c 0
@@ -43,9 +43,9 @@ chmod 700 "$XDG_RUNTIME_DIR"
 
 case "$entrypoint_kind" in
   app) entrypoint=("$app_root/AppRun" --no-sandbox) ;;
-  appimage) entrypoint=(/input/orca.AppImage --appimage-extract-and-run --no-sandbox) ;;
+  appimage) entrypoint=(/input/kingu.AppImage --appimage-extract-and-run --no-sandbox) ;;
   launcher)
-    entrypoint=("$app_root/resources/bin/orca-ide")
+    entrypoint=("$app_root/resources/bin/kingu-ide")
     ;;
   *) echo "unsupported entrypoint: $entrypoint_kind" >&2; exit 64 ;;
 esac
@@ -60,7 +60,7 @@ app_start_ticks=$(awk '{print $22}' "/proc/$app_pid/stat")
 # finite snapshots instead; each parser invocation has a definite EOF.
 read_ready_line() {
   sed -u -n 's/^[^{]*//p' "$stdout_log" \
-    | jq --unbuffered -Rnc 'first(inputs | fromjson? | select(.type == "orca_server_ready" and .schemaVersion == 1))'
+    | jq --unbuffered -Rnc 'first(inputs | fromjson? | select(.type == "kingu_server_ready" and .schemaVersion == 1))'
 }
 
 ready_line=''
@@ -77,21 +77,21 @@ if [[ -z "$ready_line" ]]; then
 fi
 if [[ -z "$ready_line" ]]; then
   cat "$stdout_log" "$stderr_log" >&2
-  echo "FAIL: entrypoint exited or timed out before orca_server_ready" >&2
+  echo "FAIL: entrypoint exited or timed out before kingu_server_ready" >&2
   exit 1
 fi
 
 registered_cli_verified=false
 if [[ "$entrypoint_kind" == appimage ]]; then
-  registered_cli="$HOME/.local/bin/orca-ide"
-  expected_target="$XDG_CACHE_HOME/orca/appimage/launcher/orca-ide"
+  registered_cli="$HOME/.local/bin/kingu-ide"
+  expected_target="$XDG_CACHE_HOME/kingu/appimage/launcher/kingu-ide"
   actual_target=$(readlink "$registered_cli" 2>/dev/null || true)
   if [[ "$actual_target" != "$expected_target" ]]; then
     echo "FAIL: registered CLI target is ${actual_target:-missing}; expected $expected_target" >&2
     exit 1
   fi
   if ! registered_help=$("$registered_cli" --help 2>&1) \
-    || [[ "$registered_help" != *'Usage: orca <command>'* ]]; then
+    || [[ "$registered_help" != *'Usage: kingu <command>'* ]]; then
     echo "FAIL: registered CLI did not execute the packaged help command" >&2
     printf '%s\n' "$registered_help" >&2
     exit 1
@@ -192,7 +192,7 @@ for shutdown_poll in {0..50}; do
     fi
   done
   owned_residue=$(ps -eo pid=,ppid=,stat=,args= | awk -v state="$state_dir" \
-    '($0 ~ state || $0 ~ /\/artifacts\/root\/orca-ide/ || $0 ~ /[X]vfb :99 /) && $0 !~ /awk -v state=/ {print}' || true)
+    '($0 ~ state || $0 ~ /\/artifacts\/root\/kingu-ide/ || $0 ~ /[X]vfb :99 /) && $0 !~ /awk -v state=/ {print}' || true)
   if [[ -z "$listener_after" && -z "$owned_residue" ]] \
     && ((${#survivors[@]} == 0)); then
     break

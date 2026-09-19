@@ -6,7 +6,7 @@ const windowsTestWorkerOptions = process.platform === 'win32' ? { maxWorkers: 4 
 
 export default defineConfig({
   define: {
-    ORCA_FEATURE_WALL_ENABLED: 'true'
+    KINGU_FEATURE_WALL_ENABLED: 'true'
   },
   resolve: {
     alias: {
@@ -16,7 +16,7 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
-    ...(process.env.ORCA_BALANCE_UNIT_SHARDS === '1'
+    ...(process.env.KINGU_BALANCE_UNIT_SHARDS === '1'
       ? { sequence: { sequencer: TimingSequencer } }
       : {}),
     // Why: Node 26's undefined Web Storage globals prevent Vitest from installing happy-dom's.

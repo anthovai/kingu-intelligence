@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
-import { test, expect } from './helpers/orca-app'
+import { test, expect } from './helpers/kingu-app'
 import {
   activateGoldenWorktree,
   cleanupGoldenWorktree,
@@ -11,7 +11,7 @@ import { waitForSessionReady } from './helpers/store'
 const README_PATH = 'README.md'
 
 test('@golden opens, edits, saves, and reopens a tracked file', async ({
-  orcaPage,
+  kinguPage,
   testRepoPath,
   registerPostElectronShutdownCleanup
 }) => {
@@ -20,49 +20,49 @@ test('@golden opens, edits, saves, and reopens a tracked file', async ({
   const sentinel = `Golden file save ${Date.now()}`
   const readmePath = path.join(fixture.worktreePath, README_PATH)
 
-  await waitForSessionReady(orcaPage)
-  await activateGoldenWorktree(orcaPage, testRepoPath, fixture.worktreePath)
-  await orcaPage.evaluate(() => {
+  await waitForSessionReady(kinguPage)
+  await activateGoldenWorktree(kinguPage, testRepoPath, fixture.worktreePath)
+  await kinguPage.evaluate(() => {
     const state = window.__store?.getState()
     state?.setRightSidebarTab('source-control')
     state?.setRightSidebarOpen(true)
   })
-  await orcaPage.getByRole('button', { name: 'Explorer' }).click()
+  await kinguPage.getByRole('button', { name: 'Explorer' }).click()
 
-  const explorer = orcaPage.locator('[data-orca-explorer-shell]')
+  const explorer = kinguPage.locator('[data-kingu-explorer-shell]')
   // Why: after save the row's full text is "README.md M" from the git badge.
   const readmeRow = explorer.locator('[data-file-explorer-row]').filter({
-    has: orcaPage.locator('[data-file-explorer-row-name]').getByText(README_PATH, { exact: true })
+    has: kinguPage.locator('[data-file-explorer-row-name]').getByText(README_PATH, { exact: true })
   })
   await expect(readmeRow).toBeVisible({ timeout: 10_000 })
   await readmeRow.click()
 
-  await expect(orcaPage.locator('.editor-header-path').first()).toContainText(README_PATH, {
+  await expect(kinguPage.locator('.editor-header-path').first()).toContainText(README_PATH, {
     timeout: 20_000
   })
-  const editor = orcaPage.locator('.rich-markdown-editor')
+  const editor = kinguPage.locator('.rich-markdown-editor')
   await expect(editor).toBeVisible({ timeout: 25_000 })
-  await expect(editor).toContainText('Orca E2E Test Repo')
+  await expect(editor).toContainText('Kingu E2E Test Repo')
   await editor.click()
-  await orcaPage.keyboard.press('ControlOrMeta+End')
-  await orcaPage.keyboard.press('Enter')
-  await orcaPage.keyboard.type(sentinel)
-  await orcaPage.keyboard.press('ControlOrMeta+S')
+  await kinguPage.keyboard.press('ControlOrMeta+End')
+  await kinguPage.keyboard.press('Enter')
+  await kinguPage.keyboard.type(sentinel)
+  await kinguPage.keyboard.press('ControlOrMeta+S')
 
   await expect.poll(() => readFileSync(readmePath, 'utf8'), { timeout: 10_000 }).toContain(sentinel)
-  const readmeTab = orcaPage.locator('[data-tab-id]').filter({ hasText: README_PATH }).last()
+  const readmeTab = kinguPage.locator('[data-tab-id]').filter({ hasText: README_PATH }).last()
   await readmeTab.getByRole('button', { name: 'Close tab' }).click()
   await expect(
-    orcaPage.locator('.editor-header-path').filter({ hasText: README_PATH })
+    kinguPage.locator('.editor-header-path').filter({ hasText: README_PATH })
   ).toHaveCount(0)
 
   await readmeRow.click()
-  await expect(orcaPage.locator('.rich-markdown-editor')).toContainText(sentinel, {
+  await expect(kinguPage.locator('.rich-markdown-editor')).toContainText(sentinel, {
     timeout: 25_000
   })
   await expect(explorer).toBeVisible()
   await expect(readmeRow).toBeVisible()
   await expect(
-    orcaPage.getByText(path.basename(testRepoPath), { exact: true }).first()
+    kinguPage.getByText(path.basename(testRepoPath), { exact: true }).first()
   ).toBeVisible()
 })

@@ -5,7 +5,7 @@
  * - terminal panes retain state when switching tabs and when you make / close a pane / switch worktrees
  */
 
-import { test, expect } from './helpers/orca-app'
+import { test, expect } from './helpers/kingu-app'
 import {
   discoverActivePtyId,
   execInTerminal,
@@ -39,63 +39,63 @@ test.describe('Terminal Panes', () => {
    * User Prompt:
    * - terminal panes retain state when switching tabs and when you make / close a pane / switch worktrees
    */
-  test('terminal pane retains content when switching tabs and back', async ({ orcaPage }) => {
+  test('terminal pane retains content when switching tabs and back', async ({ kinguPage }) => {
     // Write a unique marker to the current terminal
-    const ptyId = await discoverActivePtyId(orcaPage)
+    const ptyId = await discoverActivePtyId(kinguPage)
     const marker = `RETAIN_TEST_${Date.now()}`
-    await execInTerminal(orcaPage, ptyId, `echo ${marker}`)
-    await waitForTerminalOutput(orcaPage, marker)
+    await execInTerminal(kinguPage, ptyId, `echo ${marker}`)
+    await waitForTerminalOutput(kinguPage, marker)
 
     // Create a new terminal tab (Cmd/Ctrl+T) to switch away
-    const worktreeId = (await getActiveWorktreeId(orcaPage))!
-    await pressShortcut(orcaPage, 't')
+    const worktreeId = (await getActiveWorktreeId(kinguPage))!
+    await pressShortcut(kinguPage, 't')
 
     // Wait for the new tab to appear
     await expect
-      .poll(async () => (await getWorktreeTabs(orcaPage, worktreeId)).length, { timeout: 5_000 })
+      .poll(async () => (await getWorktreeTabs(kinguPage, worktreeId)).length, { timeout: 5_000 })
       .toBeGreaterThanOrEqual(2)
 
     // Verify we're still on a terminal tab
-    const activeType = await getActiveTabType(orcaPage)
+    const activeType = await getActiveTabType(kinguPage)
     expect(activeType).toBe('terminal')
 
     // Switch back to the previous tab with Cmd/Ctrl+Shift+[
-    await pressShortcut(orcaPage, 'BracketLeft', { shift: true })
+    await pressShortcut(kinguPage, 'BracketLeft', { shift: true })
 
     // Verify the marker is still present
     await expect
-      .poll(async () => (await getTerminalContent(orcaPage)).includes(marker), { timeout: 5_000 })
+      .poll(async () => (await getTerminalContent(kinguPage)).includes(marker), { timeout: 5_000 })
       .toBe(true)
 
     // Clean up the extra tab
-    await pressShortcut(orcaPage, 'BracketRight', { shift: true })
-    await pressShortcut(orcaPage, 'w')
+    await pressShortcut(kinguPage, 'BracketRight', { shift: true })
+    await pressShortcut(kinguPage, 'w')
   })
 
   /**
    * User Prompt:
    * - terminal panes retain state when switching tabs and when you make / close a pane / switch worktrees
    */
-  test('terminal pane retains content when splitting and closing a pane', async ({ orcaPage }) => {
+  test('terminal pane retains content when splitting and closing a pane', async ({ kinguPage }) => {
     // Write a unique marker to the current terminal
-    const ptyId = await discoverActivePtyId(orcaPage)
+    const ptyId = await discoverActivePtyId(kinguPage)
     const marker = `SPLIT_RETAIN_${Date.now()}`
-    await execInTerminal(orcaPage, ptyId, `echo ${marker}`)
-    await waitForTerminalOutput(orcaPage, marker)
+    await execInTerminal(kinguPage, ptyId, `echo ${marker}`)
+    await waitForTerminalOutput(kinguPage, marker)
 
-    const panesBefore = await countVisibleTerminalPanes(orcaPage)
+    const panesBefore = await countVisibleTerminalPanes(kinguPage)
 
     // Split the terminal right
-    await splitActiveTerminalPane(orcaPage, 'vertical')
-    await waitForPaneCount(orcaPage, panesBefore + 1)
+    await splitActiveTerminalPane(kinguPage, 'vertical')
+    await waitForPaneCount(kinguPage, panesBefore + 1)
 
-    await focusLastTerminalPane(orcaPage)
-    await closeActiveTerminalPane(orcaPage)
-    await waitForPaneCount(orcaPage, panesBefore)
+    await focusLastTerminalPane(kinguPage)
+    await closeActiveTerminalPane(kinguPage)
+    await waitForPaneCount(kinguPage, panesBefore)
 
     // The original pane should still have our marker
     await expect
-      .poll(async () => (await getTerminalContent(orcaPage)).includes(marker), { timeout: 5_000 })
+      .poll(async () => (await getTerminalContent(kinguPage)).includes(marker), { timeout: 5_000 })
       .toBe(true)
   })
 
@@ -103,30 +103,30 @@ test.describe('Terminal Panes', () => {
    * User Prompt:
    * - terminal panes retain state when switching tabs and when you make / close a pane / switch worktrees
    */
-  test('terminal pane retains content when switching worktrees and back', async ({ orcaPage }) => {
-    const allWorktreeIds = await getAllWorktreeIds(orcaPage)
+  test('terminal pane retains content when switching worktrees and back', async ({ kinguPage }) => {
+    const allWorktreeIds = await getAllWorktreeIds(kinguPage)
     if (allWorktreeIds.length < 2) {
       test.skip(true, 'Need at least 2 worktrees to test worktree switching')
       return
     }
 
-    const worktreeId = (await getActiveWorktreeId(orcaPage))!
+    const worktreeId = (await getActiveWorktreeId(kinguPage))!
 
     // Write a unique marker to the current terminal
-    const ptyId = await discoverActivePtyId(orcaPage)
+    const ptyId = await discoverActivePtyId(kinguPage)
     const marker = `WT_RETAIN_${Date.now()}`
-    await execInTerminal(orcaPage, ptyId, `echo ${marker}`)
-    await waitForTerminalOutput(orcaPage, marker)
+    await execInTerminal(kinguPage, ptyId, `echo ${marker}`)
+    await waitForTerminalOutput(kinguPage, marker)
 
     // Switch to a different worktree via the store
-    const otherId = await switchToOtherWorktree(orcaPage, worktreeId)
+    const otherId = await switchToOtherWorktree(kinguPage, worktreeId)
     expect(otherId).not.toBeNull()
-    await expect.poll(async () => getActiveWorktreeId(orcaPage), { timeout: 5_000 }).toBe(otherId)
+    await expect.poll(async () => getActiveWorktreeId(kinguPage), { timeout: 5_000 }).toBe(otherId)
 
     // Switch back to the original worktree
-    await switchToWorktree(orcaPage, worktreeId)
+    await switchToWorktree(kinguPage, worktreeId)
     await expect
-      .poll(async () => getActiveWorktreeId(orcaPage), { timeout: 5_000 })
+      .poll(async () => getActiveWorktreeId(kinguPage), { timeout: 5_000 })
       .toBe(worktreeId)
 
     // Why: after a worktree round-trip, the split-group container transitions
@@ -135,11 +135,11 @@ test.describe('Terminal Panes', () => {
     // after the worktree activation cascade. Waiting directly for the retained
     // marker proves the user-visible behavior without failing early on the
     // intermediate manager-remount timing.
-    await ensureTerminalVisible(orcaPage)
+    await ensureTerminalVisible(kinguPage)
 
     // The terminal should still contain our marker
     await expect
-      .poll(async () => (await getTerminalContent(orcaPage)).includes(marker), { timeout: 20_000 })
+      .poll(async () => (await getTerminalContent(kinguPage)).includes(marker), { timeout: 20_000 })
       .toBe(true)
   })
 })

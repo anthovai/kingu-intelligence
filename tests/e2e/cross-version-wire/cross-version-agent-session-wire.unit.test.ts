@@ -390,7 +390,7 @@ describe('cross-version structured agent sessions', () => {
     let createMobileSessionTerminal: ReturnType<typeof vi.fn>
 
     beforeEach(async () => {
-      root = await mkdtemp(join(tmpdir(), 'orca-cross-version-ai-vault-'))
+      root = await mkdtemp(join(tmpdir(), 'kingu-cross-version-ai-vault-'))
       store = await AgentSessionRecordStore.open({
         directory: join(root, 'store'),
         hostId: 'local'
@@ -679,7 +679,7 @@ describe('cross-version structured agent sessions', () => {
 
     beforeEach(async () => {
       resetOperationIds()
-      root = await mkdtemp(join(tmpdir(), 'orca-cross-version-agent-session-'))
+      root = await mkdtemp(join(tmpdir(), 'kingu-cross-version-agent-session-'))
       runtime = runtimeStub()
       await bootHost('a')
     })

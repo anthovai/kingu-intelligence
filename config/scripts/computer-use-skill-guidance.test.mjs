@@ -24,7 +24,7 @@ describe('computer-use skill guidance', () => {
       'Use only when a visible window needs GUI control those cannot reach.'
     )
     expect(description).toContain('external browser windows')
-    expect(description).toContain("Do not use for Orca's embedded browser (`orca-cli`)")
+    expect(description).toContain("Do not use for Kingu's embedded browser (`kingu-cli`)")
     expect(description).not.toMatch(/Playwright/iu)
     expect(description).not.toContain('page-only')
     expect(description).not.toContain('OS/window-level')
@@ -36,7 +36,7 @@ describe('computer-use skill guidance', () => {
   it('keeps web-app targeting on the computer-use surface', () => {
     const skill = readFileSync(guidePath, 'utf8')
 
-    expect(skill).toContain('Use this skill to drive a visible app window through `orca computer`')
+    expect(skill).toContain('Use this skill to drive a visible app window through `kingu computer`')
     expect(skill).toContain(
       'Prefer a programmatic path (shell, filesystem, git, HTTP, existing CLIs) whenever it can complete the task'
     )
@@ -45,10 +45,10 @@ describe('computer-use skill guidance', () => {
     )
     expect(skill).toContain('browser windows (Chrome, Edge, Safari)')
     expect(skill).not.toMatch(/Playwright/iu)
-    expect(skill).not.toMatch(/\borca goto\b/iu)
-    expect(skill).not.toMatch(/\borca snapshot\b/iu)
-    expect(skill).not.toMatch(/\borca click\b/iu)
-    expect(skill).not.toMatch(/\borca fill\b/iu)
+    expect(skill).not.toMatch(/\bkingu goto\b/iu)
+    expect(skill).not.toMatch(/\bkingu snapshot\b/iu)
+    expect(skill).not.toMatch(/\bkingu click\b/iu)
+    expect(skill).not.toMatch(/\bkingu fill\b/iu)
   })
 
   it('warns agents to verify browser-hosted form focus before drafting text', () => {
@@ -101,13 +101,13 @@ describe('computer-use install stub', () => {
     const stub = readFileSync(stubPath, 'utf8')
 
     expect(stub).toContain('discovery stub')
-    expect(stub).toContain('ORCA skills get computer-use')
-    // The safe CLI-resolution contract must survive in the stub, never a bare `orca`.
-    expect(stub).toContain('ORCA_CLI_COMMAND')
-    expect(stub).toContain('orca-dev')
-    expect(stub).toContain('orca-ide')
-    expect(stub).toContain('GNOME Orca screen reader')
-    expect(stub).not.toMatch(/^orca /mu)
+    expect(stub).toContain('KINGU skills get computer-use')
+    // The safe CLI-resolution contract must survive in the stub, never a bare `kingu`.
+    expect(stub).toContain('KINGU_CLI_COMMAND')
+    expect(stub).toContain('kingu-dev')
+    expect(stub).toContain('kingu-ide')
+    expect(stub).toContain('GNOME Kingu screen reader')
+    expect(stub).not.toMatch(/^kingu /mu)
   })
 
   it('drops the changing command reference from the installable file', () => {

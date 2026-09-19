@@ -1,14 +1,14 @@
 import { rmSync } from 'node:fs'
 import { createServer } from 'node:http'
 import type { AddressInfo } from 'node:net'
-import type { ElectronApplication, Page, TestInfo } from '@stablyai/playwright-test'
+import type { ElectronApplication, Page, TestInfo } from '@anthovai/playwright-test'
 import {
   launchHeadlessPairedRuntimeHost,
   type HeadlessPairedRuntimeHost
 } from './helpers/headless-paired-runtime-host'
 import { forceQuitElectronAppForE2E } from './helpers/electron-process-shutdown'
 import { focusMaterializedRemoteBrowserPane } from './helpers/materialized-remote-browser-pane'
-import { expect, test } from './helpers/orca-app'
+import { expect, test } from './helpers/kingu-app'
 import {
   launchPairedElectronClient,
   type PairedElectronClient

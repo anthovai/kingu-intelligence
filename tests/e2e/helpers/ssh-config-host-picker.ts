@@ -6,8 +6,8 @@ import { openSidebarProjectDialog } from './sidebar-project-dialog'
 
 import { mkdirSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import type { ElectronApplication, Locator, Page } from '@stablyai/playwright-test'
-import { expect } from '@stablyai/playwright-test'
+import type { ElectronApplication, Locator, Page } from '@anthovai/playwright-test'
+import { expect } from '@anthovai/playwright-test'
 
 export function makeSshConfigHostPrefix(): string {
   return `e2e-ssh-cfg-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
@@ -232,7 +232,7 @@ export async function expectSshHostAbsentFromSettings(
     sshSection.getByText(new RegExp(escapeRegExp(hostEndpointSummary(host))))
   ).toHaveCount(0)
 }
-export async function seedOrcaSshTargetMatchingAlias(
+export async function seedKinguSshTargetMatchingAlias(
   page: Page,
   args: { alias: string; hostname: string; username?: string; port?: number }
 ): Promise<string> {

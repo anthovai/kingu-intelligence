@@ -1,5 +1,5 @@
 import { connectSshTestTarget } from './ssh-test-target-connection'
-import { expect, type Page } from '@stablyai/playwright-test'
+import { expect, type Page } from '@anthovai/playwright-test'
 
 import {
   DOCKER_SSH_PROXY_JUMP_REMOTE_REPO_PATH,
@@ -36,13 +36,13 @@ export async function connectDockerSshRelayTarget(
     page,
     {
       label: `${viaProxyJump ? 'Docker SSH ProxyJump' : 'Docker SSH Relay'} E2E ${Date.now()}`,
-      ...(viaProxyJump ? { configHost: 'orca-e2e-destination' } : {}),
+      ...(viaProxyJump ? { configHost: 'kingu-e2e-destination' } : {}),
       host: target.host,
       port: viaProxyJump ? 22 : target.port,
       username: 'root',
       identityFile: target.identityFile,
       identitiesOnly: true,
-      ...(viaProxyJump ? { jumpHost: 'orca-e2e-jump' } : {}),
+      ...(viaProxyJump ? { jumpHost: 'kingu-e2e-jump' } : {}),
       relayGracePeriodSeconds: options.relayGracePeriodSeconds ?? 1
     },
     {

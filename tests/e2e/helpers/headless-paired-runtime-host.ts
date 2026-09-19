@@ -3,10 +3,10 @@ import { createServer } from 'node:net'
 import type { AddressInfo } from 'node:net'
 import os from 'node:os'
 import path from 'node:path'
-import { _electron as electron, type ElectronApplication } from '@stablyai/playwright-test'
+import { _electron as electron, type ElectronApplication } from '@anthovai/playwright-test'
 import { RuntimeClient } from '../../../src/cli/runtime/client'
 import { getE2ECompletedOnboardingProfile } from './e2e-completed-onboarding-profile'
-import { getOrcaElectronLaunchArgs } from './electron-launch-args'
+import { getKinguElectronLaunchArgs } from './electron-launch-args'
 import { cleanupE2EDaemons, closeElectronAppForE2E } from './electron-process-shutdown'
 import {
   assertElectronResolvedIsolatedHome,
@@ -85,17 +85,17 @@ export async function launchHeadlessPairedRuntimeHost(
   } = {}
 ): Promise<HeadlessPairedRuntimeHost> {
   const userDataDir = mkdtempSync(
-    path.join(options.userDataParent ?? os.tmpdir(), 'orca-e2e-headless-paired-')
+    path.join(options.userDataParent ?? os.tmpdir(), 'kingu-e2e-headless-paired-')
   )
   const servePort = options.pinnedServePort === true ? await reserveFreeLoopbackPort() : 0
   let agentBrowserSocketDir: string | null = null
   let app: ElectronApplication | undefined
   try {
     agentBrowserSocketDir = options.agentBrowserSocketParent
-      ? mkdtempSync(path.join(options.agentBrowserSocketParent, 'orca-ab-'))
+      ? mkdtempSync(path.join(options.agentBrowserSocketParent, 'kingu-ab-'))
       : null
     writeFileSync(
-      path.join(userDataDir, 'orca-data.json'),
+      path.join(userDataDir, 'kingu-data.json'),
       `${JSON.stringify(getE2ECompletedOnboardingProfile(), null, 2)}\n`
     )
     const { ELECTRON_RUN_AS_NODE: _unused, ...cleanEnv } = process.env
@@ -104,8 +104,8 @@ export async function launchHeadlessPairedRuntimeHost(
       inheritedEnv: cleanEnv,
       launchEnv: {
         NODE_ENV: 'development',
-        ORCA_E2E_ENFORCE_SINGLE_INSTANCE_LOCK: '1',
-        ORCA_E2E_HEADLESS: '1'
+        KINGU_E2E_ENFORCE_SINGLE_INSTANCE_LOCK: '1',
+        KINGU_E2E_HEADLESS: '1'
       },
       extraEnv: {},
       userDataDir
@@ -118,7 +118,7 @@ export async function launchHeadlessPairedRuntimeHost(
       electron.launch({
         ...(options.executablePath ? { executablePath: options.executablePath } : {}),
         args: [
-          ...(options.executablePath ? [] : getOrcaElectronLaunchArgs(mainPath, false)),
+          ...(options.executablePath ? [] : getKinguElectronLaunchArgs(mainPath, false)),
           '--serve',
           '--serve-json',
           '--serve-port',

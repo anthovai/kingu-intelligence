@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-appimage=${1:-/input/orca.AppImage}
+appimage=${1:-/input/kingu.AppImage}
 startup_timeout_seconds=90
 if [[ $# -gt 1 ]]; then
   echo "usage: run-appimage-desktop-startup-case.sh [appimage]" >&2
@@ -9,26 +9,26 @@ if [[ $# -gt 1 ]]; then
 fi
 
 if ((EUID == 0)); then
-  if ! state_dir=$(mktemp -d /tmp/orca-appimage-startup.XXXXXX); then
+  if ! state_dir=$(mktemp -d /tmp/kingu-appimage-startup.XXXXXX); then
     echo 'FAIL: unable to create the AppImage startup state directory' >&2
     exit 1
   fi
-  if ! chown orca:orca "$state_dir"; then
-    echo "FAIL: unable to hand the AppImage startup state directory to orca: $state_dir" >&2
+  if ! chown kingu:kingu "$state_dir"; then
+    echo "FAIL: unable to hand the AppImage startup state directory to kingu: $state_dir" >&2
     rm -rf -- "$state_dir" || true
     exit 1
   fi
-  exec runuser --user orca --preserve-environment -- env \
-    ORCA_STARTUP_STATE_DIR="$state_dir" \
-    ORCA_STARTUP_STATE_DIR_CLEANUP=1 \
+  exec runuser --user kingu --preserve-environment -- env \
+    KINGU_STARTUP_STATE_DIR="$state_dir" \
+    KINGU_STARTUP_STATE_DIR_CLEANUP=1 \
     "$0" "$@"
 fi
 
-remove_state_dir_on_exit=${ORCA_STARTUP_STATE_DIR_CLEANUP:-0}
-if [[ -n "${ORCA_STARTUP_STATE_DIR:-}" ]]; then
-  state_dir=$ORCA_STARTUP_STATE_DIR
+remove_state_dir_on_exit=${KINGU_STARTUP_STATE_DIR_CLEANUP:-0}
+if [[ -n "${KINGU_STARTUP_STATE_DIR:-}" ]]; then
+  state_dir=$KINGU_STARTUP_STATE_DIR
 else
-  if ! state_dir=$(mktemp -d /tmp/orca-appimage-startup.XXXXXX); then
+  if ! state_dir=$(mktemp -d /tmp/kingu-appimage-startup.XXXXXX); then
     echo 'FAIL: unable to create the AppImage startup state directory' >&2
     exit 1
   fi
@@ -145,7 +145,7 @@ dump_logs() {
 
 cleanup_state_dir() {
   [[ "$remove_state_dir_on_exit" == 1 ]] || return 0
-  [[ "$state_dir" =~ ^/tmp/orca-appimage-startup\.[^/]+$ ]] || return 0
+  [[ "$state_dir" =~ ^/tmp/kingu-appimage-startup\.[^/]+$ ]] || return 0
   [[ -d "$state_dir" && ! -L "$state_dir" && -O "$state_dir" ]] || return 0
   rm -rf -- "$state_dir"
 }
@@ -205,7 +205,7 @@ export XDG_CONFIG_HOME="$state_dir/config"
 export XDG_CACHE_HOME="$state_dir/cache"
 export XDG_RUNTIME_DIR="$state_dir/runtime"
 export LIBGL_ALWAYS_SOFTWARE=1
-export ORCA_STARTUP_DIAGNOSTICS=1
+export KINGU_STARTUP_DIAGNOSTICS=1
 ulimit -c 0
 
 [[ -r "$appimage" ]] || { echo "FAIL: AppImage is not readable: $appimage" >&2; exit 1; }

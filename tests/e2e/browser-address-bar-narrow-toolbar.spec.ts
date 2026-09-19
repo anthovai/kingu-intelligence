@@ -7,8 +7,8 @@
 
 import { createServer } from 'node:http'
 import type { AddressInfo } from 'node:net'
-import { expect, test } from './helpers/orca-app'
-import type { ElectronApplication, Locator, Page } from '@stablyai/playwright-test'
+import { expect, test } from './helpers/kingu-app'
+import type { ElectronApplication, Locator, Page } from '@anthovai/playwright-test'
 import {
   ensureTerminalVisible,
   getActiveTabType,
@@ -77,11 +77,11 @@ async function toolbarWidth(page: Page): Promise<number> {
 }
 
 function addressBarInput(page: Page): Locator {
-  return page.locator('[data-orca-browser-address-bar="true"]')
+  return page.locator('[data-kingu-browser-address-bar="true"]')
 }
 
 function addressBarOverlay(page: Page): Locator {
-  return page.locator('[data-orca-browser-address-bar-overlay="true"]')
+  return page.locator('[data-kingu-browser-address-bar-overlay="true"]')
 }
 
 async function addressBarInputWidth(page: Page): Promise<number> {
@@ -129,38 +129,38 @@ async function settleToSqueezedRestingState(
 }
 
 test.describe('Browser address bar in a narrow toolbar', () => {
-  test.beforeEach(async ({ orcaPage }) => {
-    await waitForSessionReady(orcaPage)
-    await waitForActiveWorktree(orcaPage)
-    await ensureTerminalVisible(orcaPage)
+  test.beforeEach(async ({ kinguPage }) => {
+    await waitForSessionReady(kinguPage)
+    await waitForActiveWorktree(kinguPage)
+    await ensureTerminalVisible(kinguPage)
   })
 
   test('focusing the squeezed address bar expands a typable field that navigates', async ({
-    orcaPage,
+    kinguPage,
     electronApp
   }) => {
     const destination = await startDestinationServer()
     try {
-      const worktreeId = (await getActiveWorktreeId(orcaPage))!
-      await createBlankBrowserTab(orcaPage, worktreeId)
-      await settleToSqueezedRestingState(orcaPage, electronApp)
+      const worktreeId = (await getActiveWorktreeId(kinguPage))!
+      await createBlankBrowserTab(kinguPage, worktreeId)
+      await settleToSqueezedRestingState(kinguPage, electronApp)
 
-      const overlay = addressBarOverlay(orcaPage)
+      const overlay = addressBarOverlay(kinguPage)
       // The bug: the inline field is squeezed away entirely.
-      await expect.poll(() => addressBarInputWidth(orcaPage), { timeout: 10_000 }).toBeLessThan(40)
+      await expect.poll(() => addressBarInputWidth(kinguPage), { timeout: 10_000 }).toBeLessThan(40)
 
-      await orcaPage.locator('form:has(> [data-orca-browser-address-bar="true"])').click()
+      await kinguPage.locator('form:has(> [data-kingu-browser-address-bar="true"])').click()
 
       await expect(overlay).toBeVisible()
       await expect
-        .poll(() => addressBarInputWidth(orcaPage), { timeout: 5_000 })
+        .poll(() => addressBarInputWidth(kinguPage), { timeout: 5_000 })
         .toBeGreaterThan(BROWSER_ADDRESS_BAR_MIN_INLINE_WIDTH / 2)
 
-      await addressBarInput(orcaPage).fill(destination.url)
-      await addressBarInput(orcaPage).press('Enter')
+      await addressBarInput(kinguPage).fill(destination.url)
+      await addressBarInput(kinguPage).press('Enter')
 
       await expect
-        .poll(async () => (await getBrowserTabs(orcaPage, worktreeId)).at(-1)?.url ?? null, {
+        .poll(async () => (await getBrowserTabs(kinguPage, worktreeId)).at(-1)?.url ?? null, {
           timeout: 15_000
         })
         .toContain('/typed')

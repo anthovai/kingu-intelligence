@@ -8,9 +8,9 @@ import {
   type ElectronApplication,
   type Page,
   type TestInfo
-} from '@stablyai/playwright-test'
+} from '@anthovai/playwright-test'
 
-import { expect, forwardElectronProcessLogs, test } from './helpers/orca-app'
+import { expect, forwardElectronProcessLogs, test } from './helpers/kingu-app'
 import { getE2ECompletedOnboardingProfile } from './helpers/e2e-completed-onboarding-profile'
 import { cleanupE2EDaemons, closeElectronAppForE2E } from './helpers/electron-process-shutdown'
 import {
@@ -24,7 +24,7 @@ import {
   type RuntimeDesktopPairingOffer
 } from './helpers/paired-electron-client'
 
-const PACKAGED_EXECUTABLE_ENV = 'ORCA_CROSS_VERSION_PACKAGED_EXECUTABLE'
+const PACKAGED_EXECUTABLE_ENV = 'KINGU_CROSS_VERSION_PACKAGED_EXECUTABLE'
 const CLIENT_HOST_CAPABILITY = 'browser.clientHost.v1'
 const TUNNEL_CAPABILITY = 'network.browserTunnel.v1'
 
@@ -142,11 +142,11 @@ async function launchPackagedPairedClient(args: {
   offer: RuntimeDesktopPairingOffer
   testInfo: TestInfo
 }): Promise<PackagedPairedClient> {
-  const userDataDir = mkdtempSync(path.join(os.tmpdir(), 'orca-e2e-packaged-client-'))
+  const userDataDir = mkdtempSync(path.join(os.tmpdir(), 'kingu-e2e-packaged-client-'))
   let app: ElectronApplication | undefined
   try {
     writeFileSync(
-      path.join(userDataDir, 'orca-data.json'),
+      path.join(userDataDir, 'kingu-data.json'),
       `${JSON.stringify(getE2ECompletedOnboardingProfile(), null, 2)}\n`
     )
     const { ELECTRON_RUN_AS_NODE: _unused, ...cleanEnv } = process.env
@@ -163,8 +163,8 @@ async function launchPackagedPairedClient(args: {
       env: {
         ...homeIsolation.env,
         NODE_ENV: 'production',
-        ORCA_BYPASS_SINGLE_INSTANCE_LOCK: '1',
-        ORCA_E2E_HEADLESS: '1'
+        KINGU_BYPASS_SINGLE_INSTANCE_LOCK: '1',
+        KINGU_E2E_HEADLESS: '1'
       }
     })
     forwardElectronProcessLogs(app, args.testInfo)
@@ -388,7 +388,7 @@ const packagedExecutable = process.env[PACKAGED_EXECUTABLE_ENV]
 test.describe('packaged mixed-version browser placement', () => {
   test.skip(
     !packagedExecutable || !existsSync(packagedExecutable),
-    `${PACKAGED_EXECUTABLE_ENV} must point at an older packaged Orca executable`
+    `${PACKAGED_EXECUTABLE_ENV} must point at an older packaged Kingu executable`
   )
 
   test('keeps an old packaged client on the current server-hosted path', async ({

@@ -1,7 +1,7 @@
 import { createServer } from 'node:http'
 import { writeFile } from 'node:fs/promises'
 import type { AddressInfo } from 'node:net'
-import { expect, type Page } from '@stablyai/playwright-test'
+import { expect, type Page } from '@anthovai/playwright-test'
 import { PNG } from 'pngjs'
 
 // Hold the response, not a timer: every screenshot precedes the first document commit.

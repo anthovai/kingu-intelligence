@@ -4,13 +4,13 @@ All UI work — layout, color, typography, spacing, component selection, UX beha
 
 ## Electron UI Validation
 
-Always run tests and agent-launched apps in the background with `ORCA_BACKGROUND_LAUNCH=1`.
+Always run tests and agent-launched apps in the background with `KINGU_BACKGROUND_LAUNCH=1`.
 Never steal monitor focus or reveal test windows: no `show()`, `showInactive()`, `bringToFront()`,
 `app.focus()`, or OS activation. Use CDP screenshots of hidden renderers. Keep native-focus and
 visible-window tests paused on the user's desktop; run them on an isolated display or CI.
 Rebuild modified launch-policy code before running an app; stale build wrappers are not safe.
 
-Use the `$electron` skill and Playwright CDP for rendered Orca UI checks. Do not use computer-use for Orca UI validation.
+Use the `$electron` skill and Playwright CDP for rendered Kingu UI checks. Do not use computer-use for Kingu UI validation.
 
 # Style
 
@@ -67,7 +67,7 @@ Always use the primary working directory (the worktree) for all file reads and e
 
 ## Cross-Platform Support
 
-Orca targets macOS, Linux, and Windows. Keep all platform-dependent behavior behind runtime checks:
+Kingu targets macOS, Linux, and Windows. Keep all platform-dependent behavior behind runtime checks:
 
 - **Keyboard shortcuts**: Never hardcode `e.metaKey`. Use a platform check (`navigator.userAgent.includes('Mac')`) to pick `metaKey` on Mac and `ctrlKey` on Linux/Windows. Electron menu accelerators should use `CmdOrCtrl`.
 - **Shortcut labels in UI**: Display `⌘` / `⇧` on Mac and `Ctrl+` / `Shift+` on other platforms.
@@ -104,11 +104,11 @@ A rule that reads what an agent CLI paints on a terminal — readiness, blocked 
 
 ## Remote Wire Compatibility
 
-Clients and remote Orca servers update independently, so mixed versions are the normal state. Before changing anything a paired client and host exchange — RPC params, stream frames, or the content either side publishes over them — follow [`docs/reference/remote-wire-compatibility.md`](./docs/reference/remote-wire-compatibility.md). A new optional field is safe; a new stream opcode must be capability-negotiated because decoders drop unknown opcodes silently; and changing what the host publishes reaches old clients even with no wire change.
+Clients and remote Kingu servers update independently, so mixed versions are the normal state. Before changing anything a paired client and host exchange — RPC params, stream frames, or the content either side publishes over them — follow [`docs/reference/remote-wire-compatibility.md`](./docs/reference/remote-wire-compatibility.md). A new optional field is safe; a new stream opcode must be capability-negotiated because decoders drop unknown opcodes silently; and changing what the host publishes reaches old clients even with no wire change.
 
 ## Git Binary Compatibility
 
-Orca runs the user's Git binary on native, WSL, and SSH hosts, which may all have different versions. Treat Git 2.25 as the core-workflow baseline and follow [`docs/reference/git-compatibility.md`](./docs/reference/git-compatibility.md).
+Kingu runs the user's Git binary on native, WSL, and SSH hosts, which may all have different versions. Treat Git 2.25 as the core-workflow baseline and follow [`docs/reference/git-compatibility.md`](./docs/reference/git-compatibility.md).
 
 When adding or changing a Git command:
 

@@ -1,6 +1,6 @@
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 import type { RuntimeTerminalFocus } from '../../../src/shared/runtime-types'
-import { expect } from './orca-app'
+import { expect } from './kingu-app'
 import { createRemoteSessionBulkOpenFixture } from './remote-session-bulk-open-fixture'
 import { closeStreamingTerminals } from './streaming-terminal-cleanup'
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { readRestartRendererState } from './helpers/orca-restart'
+import { readRestartRendererState } from './helpers/kingu-restart'
 
 describe('restart renderer state polling', () => {
   it('treats document replacement as pending state', async () => {

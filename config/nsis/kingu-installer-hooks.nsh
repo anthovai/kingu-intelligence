@@ -1,20 +1,20 @@
-; electron-builder NSIS hooks for the Orca Windows installer.
+; electron-builder NSIS hooks for the Kingu Windows installer.
 ;
 ; electron-builder accepts exactly ONE `nsis.include` file, so every customInstall /
-; customUnInstall hook Orca needs lives here.
+; customUnInstall hook Kingu needs lives here.
 
 ; ---------------------------------------------------------------------------
-; Markdown "Open with Orca" (issue #10138)
+; Markdown "Open with Kingu" (issue #10138)
 ;
 ; Why hand-rolled instead of electron-builder's `fileAssociations` on Windows:
 ; app-builder-lib emits !insertmacro APP_ASSOCIATE, whose first line is
 ;   WriteRegStr SHELL_CONTEXT "Software\Classes\.md" "" "<ProgID>"
 ; That overwrites whichever editor currently owns .md, with no backup, for every
 ; existing user on their next UPDATE - and APP_UNASSOCIATE never restores it, so
-; uninstalling Orca would leave .md pointing at a deleted ProgID.
+; uninstalling Kingu would leave .md pointing at a deleted ProgID.
 ;
 ; These writes are additive only. Registering a ProgID plus an OpenWithProgids
-; hint and an Applications\<exe>\SupportedTypes entry puts Orca in Explorer's
+; hint and an Applications\<exe>\SupportedTypes entry puts Kingu in Explorer's
 ; "Open with" list and in "Choose another app", while the default handler stays
 ; exactly where the user left it. Never add a `Software\Classes\.<ext>` default
 ; value here.
@@ -22,14 +22,14 @@
 ; MARKDOWN_PROGID must stay in sync with the extension list handled by
 ; isMarkdownDocumentName() in src/main/ipc/markdown-documents.ts.
 ; ---------------------------------------------------------------------------
-!define MARKDOWN_PROGID "Orca.Markdown"
+!define MARKDOWN_PROGID "Kingu.Markdown"
 
-!macro ORCA_REGISTER_MARKDOWN_OPEN_WITH EXT
+!macro KINGU_REGISTER_MARKDOWN_OPEN_WITH EXT
   WriteRegNone SHELL_CONTEXT "Software\Classes\${EXT}\OpenWithProgids" "${MARKDOWN_PROGID}"
   WriteRegStr SHELL_CONTEXT "Software\Classes\Applications\${APP_EXECUTABLE_FILENAME}\SupportedTypes" "${EXT}" ""
 !macroend
 
-!macro ORCA_UNREGISTER_MARKDOWN_OPEN_WITH EXT
+!macro KINGU_UNREGISTER_MARKDOWN_OPEN_WITH EXT
   DeleteRegValue SHELL_CONTEXT "Software\Classes\${EXT}\OpenWithProgids" "${MARKDOWN_PROGID}"
   DeleteRegValue SHELL_CONTEXT "Software\Classes\Applications\${APP_EXECUTABLE_FILENAME}\SupportedTypes" "${EXT}"
 !macroend
@@ -39,9 +39,9 @@
   WriteRegStr SHELL_CONTEXT "Software\Classes\${MARKDOWN_PROGID}\DefaultIcon" "" "$appExe,0"
   WriteRegStr SHELL_CONTEXT "Software\Classes\${MARKDOWN_PROGID}\shell\open" "" "Open with ${PRODUCT_NAME}"
   WriteRegStr SHELL_CONTEXT "Software\Classes\${MARKDOWN_PROGID}\shell\open\command" "" '"$appExe" "%1"'
-  !insertmacro ORCA_REGISTER_MARKDOWN_OPEN_WITH ".md"
-  !insertmacro ORCA_REGISTER_MARKDOWN_OPEN_WITH ".markdown"
-  !insertmacro ORCA_REGISTER_MARKDOWN_OPEN_WITH ".mdx"
+  !insertmacro KINGU_REGISTER_MARKDOWN_OPEN_WITH ".md"
+  !insertmacro KINGU_REGISTER_MARKDOWN_OPEN_WITH ".markdown"
+  !insertmacro KINGU_REGISTER_MARKDOWN_OPEN_WITH ".mdx"
   ; Why: Explorer caches the association list until told otherwise.
   System::Call "shell32::SHChangeNotify(i,i,i,i) (0x08000000, 0x1000, 0, 0)"
 !macroend
@@ -50,7 +50,7 @@
 ; Clean up the relocated terminal daemon on a REAL uninstall.
 ;
 ; Why: the daemon host is deliberately copied OUT of the install dir into
-; %LOCALAPPDATA%\Orca\daemon-host so that app UPDATES cannot kill it —
+; %LOCALAPPDATA%\Kingu\daemon-host so that app UPDATES cannot kill it —
 ; electron-builder's kill sweep selects processes whose image path is under
 ; $INSTDIR, and that relocation is what keeps terminals alive across updates.
 ; The same design means a normal uninstall's process sweep and file removal both
@@ -86,20 +86,20 @@
     ${endIf}
     nsExec::Exec 'taskkill /F /IM "${APP_EXECUTABLE_FILENAME}" $2'
     Pop $0
-    nsExec::Exec 'taskkill /F /IM "orca-terminal-daemon.exe" $2'
+    nsExec::Exec 'taskkill /F /IM "kingu-terminal-daemon.exe" $2'
     Pop $0
     Pop $2
     Pop $1
     Pop $0
     ; Give the OS a moment to release the image lock before removing the tree.
     Sleep 500
-    RMDir /r "$LOCALAPPDATA\Orca\daemon-host"
+    RMDir /r "$LOCALAPPDATA\Kingu\daemon-host"
   ${endIf}
   ; Why outside the ${isUpdated} guard: customInstall rewrites these on every update, so
   ; dropping them during uninstallOldVersion is correct and keeps the pair symmetric.
   DeleteRegKey SHELL_CONTEXT "Software\Classes\${MARKDOWN_PROGID}"
-  !insertmacro ORCA_UNREGISTER_MARKDOWN_OPEN_WITH ".md"
-  !insertmacro ORCA_UNREGISTER_MARKDOWN_OPEN_WITH ".markdown"
-  !insertmacro ORCA_UNREGISTER_MARKDOWN_OPEN_WITH ".mdx"
+  !insertmacro KINGU_UNREGISTER_MARKDOWN_OPEN_WITH ".md"
+  !insertmacro KINGU_UNREGISTER_MARKDOWN_OPEN_WITH ".markdown"
+  !insertmacro KINGU_UNREGISTER_MARKDOWN_OPEN_WITH ".mdx"
   System::Call "shell32::SHChangeNotify(i,i,i,i) (0x08000000, 0x1000, 0, 0)"
 !macroend

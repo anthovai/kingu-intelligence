@@ -1,5 +1,5 @@
-import type { ElectronApplication, Page } from '@stablyai/playwright-test'
-import { expect } from './helpers/orca-app'
+import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import { expect } from './helpers/kingu-app'
 import { switchToOtherWorktree, switchToWorktree } from './helpers/store'
 
 export type BrowserGuestState = {

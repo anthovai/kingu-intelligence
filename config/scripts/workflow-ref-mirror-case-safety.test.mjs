@@ -26,7 +26,7 @@ describe('ref-mirroring vet steps', () => {
     expect(checkout.with['fetch-depth']).toBe(1)
     expect(job.steps.some((step) => step.run?.includes('gh release list'))).toBe(true)
     expect(
-      job.steps.some((step) => step.run?.includes('ORCA_PUBLISHED_VERSIONS="$published"'))
+      job.steps.some((step) => step.run?.includes('KINGU_PUBLISHED_VERSIONS="$published"'))
     ).toBe(true)
   })
 
@@ -57,7 +57,7 @@ describe('ref-mirroring vet steps', () => {
   })
 
   it('resolves identical dev identities in full and depth-one checkouts without local tags', () => {
-    const directory = mkdtempSync(join(tmpdir(), 'orca-checkout-identity-'))
+    const directory = mkdtempSync(join(tmpdir(), 'kingu-checkout-identity-'))
     const source = join(directory, 'source')
     const shallow = join(directory, 'shallow')
     const run = (program, args, cwd) => {

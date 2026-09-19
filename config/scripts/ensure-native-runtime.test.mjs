@@ -39,8 +39,8 @@ describe('ensure-native-runtime', () => {
         cwd: projectDir,
         encoding: 'utf8',
         env: envWithPrependedPath(binDir, {
-          ORCA_NATIVE_TEST_LOG: logPath,
-          ORCA_NATIVE_TEST_MARKER: markerPath
+          KINGU_NATIVE_TEST_LOG: logPath,
+          KINGU_NATIVE_TEST_MARKER: markerPath
         })
       })
 
@@ -78,8 +78,8 @@ describe('ensure-native-runtime', () => {
           cwd: projectDir,
           encoding: 'utf8',
           env: envWithPrependedPath(binDir, {
-            ORCA_NATIVE_TEST_LOG: logPath,
-            ORCA_NATIVE_TEST_MARKER: markerPath
+            KINGU_NATIVE_TEST_LOG: logPath,
+            KINGU_NATIVE_TEST_MARKER: markerPath
           })
         })
 
@@ -87,7 +87,7 @@ describe('ensure-native-runtime', () => {
         const log = readFileSync(logPath, 'utf8')
         expect(log.match(/pnpm exec node-gyp rebuild\n/g)).toHaveLength(2)
         expect(log).toContain(join('node_modules', 'node-pty'))
-        expect(log).toContain(join('node_modules', '@orca', 'windows-registry'))
+        expect(log).toContain(join('node_modules', '@kingu', 'windows-registry'))
       } finally {
         rmSync(projectDir, { recursive: true, force: true })
       }
@@ -112,8 +112,8 @@ describe('ensure-native-runtime', () => {
           cwd: projectDir,
           encoding: 'utf8',
           env: envWithPrependedPath(binDir, {
-            ORCA_NATIVE_TEST_LOG: logPath,
-            ORCA_NATIVE_TEST_MARKER: markerPath
+            KINGU_NATIVE_TEST_LOG: logPath,
+            KINGU_NATIVE_TEST_MARKER: markerPath
           })
         })
 
@@ -147,13 +147,15 @@ describe('ensure-native-runtime', () => {
           cwd: projectDir,
           encoding: 'utf8',
           env: envWithPrependedPath(binDir, {
-            ORCA_NATIVE_TEST_LOG: logPath,
-            ORCA_NATIVE_TEST_MARKER: markerPath
+            KINGU_NATIVE_TEST_LOG: logPath,
+            KINGU_NATIVE_TEST_MARKER: markerPath
           })
         })
 
         expect(result.status, result.stderr).toBe(0)
-        expect(result.stderr).toContain("expected build/Release so Orca's node-pty patch is active")
+        expect(result.stderr).toContain(
+          "expected build/Release so Kingu's node-pty patch is active"
+        )
         expect(readFileSync(logPath, 'utf8')).toContain('pnpm exec node-gyp rebuild\n')
       } finally {
         rmSync(projectDir, { recursive: true, force: true })
@@ -180,8 +182,8 @@ describe('ensure-native-runtime', () => {
           cwd: projectDir,
           encoding: 'utf8',
           env: envWithPrependedPath(binDir, {
-            ORCA_NATIVE_TEST_LOG: logPath,
-            ORCA_NATIVE_TEST_MARKER: markerPath
+            KINGU_NATIVE_TEST_LOG: logPath,
+            KINGU_NATIVE_TEST_MARKER: markerPath
           })
         })
 
@@ -196,7 +198,7 @@ describe('ensure-native-runtime', () => {
 })
 
 function mkTempProject() {
-  const projectDir = mkdtempSync(join(tmpdir(), 'orca-native-runtime-'))
+  const projectDir = mkdtempSync(join(tmpdir(), 'kingu-native-runtime-'))
   // Walked, not listed: the script imports windows-process-tree-gyp-rebuild.mjs, and a fixture
   // missing it fails every case with a module-resolution error instead of the defect under test.
   copyScriptWithLocalModules(sourceScriptPath, join(projectDir, 'config', 'scripts'))
@@ -238,9 +240,9 @@ function writeFakeNativeModules(projectDir, { windowsRegistryRequiresMarker = fa
 const { appendFileSync, existsSync } = require('node:fs')
 
 exports.loadNativeModule = function loadNativeModule(nativeName) {
-  const markerExists = existsSync(process.env.ORCA_NATIVE_TEST_MARKER)
+  const markerExists = existsSync(process.env.KINGU_NATIVE_TEST_MARKER)
   appendFileSync(
-    process.env.ORCA_NATIVE_TEST_LOG,
+    process.env.KINGU_NATIVE_TEST_LOG,
     \`node-pty \${process.argv.includes('--check-only') ? 'child' : 'parent'} \${nativeName} marker=\${markerExists}\\n\`
   )
   if (!markerExists) {
@@ -277,10 +279,10 @@ function writeLoadableNativeModules(projectDir, { nativeDir = null } = {}) {
 const { appendFileSync, existsSync } = require('node:fs')
 
 exports.loadNativeModule = function loadNativeModule(nativeName) {
-  const rebuilt = existsSync(process.env.ORCA_NATIVE_TEST_MARKER)
+  const rebuilt = existsSync(process.env.KINGU_NATIVE_TEST_MARKER)
   const dir = ${JSON.stringify(nativeDir)} ??
     (rebuilt ? '../build/Release/' : '../prebuilds/' + process.platform + '-' + process.arch + '/')
-  appendFileSync(process.env.ORCA_NATIVE_TEST_LOG, \`node-pty load \${nativeName} dir=\${dir}\\n\`)
+  appendFileSync(process.env.KINGU_NATIVE_TEST_LOG, \`node-pty load \${nativeName} dir=\${dir}\\n\`)
   return {
     dir,
     module: {
@@ -299,14 +301,14 @@ function writeFakeWindowsRegistry(projectDir, { requiresMarker = false } = {}) {
   if (process.platform !== 'win32') {
     return
   }
-  const registryDir = join(projectDir, 'node_modules', '@orca', 'windows-registry')
+  const registryDir = join(projectDir, 'node_modules', '@kingu', 'windows-registry')
   mkdirSync(registryDir, { recursive: true })
   writeFileSync(
     join(registryDir, 'package.json'),
-    '{"name":"@orca/windows-registry","version":"1.0.0","main":"index.js"}\n'
+    '{"name":"@kingu/windows-registry","version":"1.0.0","main":"index.js"}\n'
   )
   const markerGate = requiresMarker
-    ? `if (!require('node:fs').existsSync(process.env.ORCA_NATIVE_TEST_MARKER)) { throw new Error('registry ABI mismatch sentinel') }`
+    ? `if (!require('node:fs').existsSync(process.env.KINGU_NATIVE_TEST_MARKER)) { throw new Error('registry ABI mismatch sentinel') }`
     : ''
   writeFileSync(
     join(registryDir, 'index.js'),
@@ -346,17 +348,17 @@ function writeFakePnpm(binDir) {
     `
 const { appendFileSync, writeFileSync } = require('node:fs')
 
-appendFileSync(process.env.ORCA_NATIVE_TEST_LOG, \`pnpm \${process.argv.slice(2).join(' ')}\\n\`)
-appendFileSync(process.env.ORCA_NATIVE_TEST_LOG, \`cwd=\${process.cwd()}\\n\`)
+appendFileSync(process.env.KINGU_NATIVE_TEST_LOG, \`pnpm \${process.argv.slice(2).join(' ')}\\n\`)
+appendFileSync(process.env.KINGU_NATIVE_TEST_LOG, \`cwd=\${process.cwd()}\\n\`)
 appendFileSync(
-  process.env.ORCA_NATIVE_TEST_LOG,
+  process.env.KINGU_NATIVE_TEST_LOG,
   \`npm_config_build_from_source=\${process.env.npm_config_build_from_source || ''}\\n\`
 )
 appendFileSync(
-  process.env.ORCA_NATIVE_TEST_LOG,
+  process.env.KINGU_NATIVE_TEST_LOG,
   \`cxxflags=\${process.env.CXXFLAGS || ''}\\n\`
 )
-writeFileSync(process.env.ORCA_NATIVE_TEST_MARKER, 'rebuilt')
+writeFileSync(process.env.KINGU_NATIVE_TEST_MARKER, 'rebuilt')
 `
   )
 

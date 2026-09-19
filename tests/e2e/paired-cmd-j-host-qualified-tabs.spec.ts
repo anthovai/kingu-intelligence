@@ -1,6 +1,6 @@
-import { errors } from '@stablyai/playwright-test'
+import { errors } from '@anthovai/playwright-test'
 import { encodePaletteIdentity } from '../../src/renderer/src/lib/palette-match/palette-ranking'
-import { expect, test } from './helpers/orca-app'
+import { expect, test } from './helpers/kingu-app'
 import {
   createRuntimeDesktopPairingOffer,
   launchPairedElectronClient,
@@ -13,12 +13,12 @@ import {
 } from './helpers/store'
 
 test('routes same-id browser and simulator Cmd-J rows to their owning paired host', async ({
-  orcaPage
+  kinguPage
 }, testInfo) => {
   test.setTimeout(240_000)
-  await waitForSessionReady(orcaPage)
-  await waitForActiveWorktree(orcaPage)
-  const hostBrowser = await orcaPage.evaluate(() => {
+  await waitForSessionReady(kinguPage)
+  await waitForActiveWorktree(kinguPage)
+  const hostBrowser = await kinguPage.evaluate(() => {
     const state = window.__store!.getState()
     const worktreeId = state.activeWorktreeId
     if (!worktreeId) {
@@ -32,13 +32,13 @@ test('routes same-id browser and simulator Cmd-J rows to their owning paired hos
     return { worktreeId, workspaceId: workspace.id }
   })
 
-  const offer = await createRuntimeDesktopPairingOffer(orcaPage)
+  const offer = await createRuntimeDesktopPairingOffer(kinguPage)
   let client: PairedElectronClient | null = null
   try {
     client = await launchPairedElectronClient(offer, testInfo, 'Cmd-J host-qualified tabs')
     const page = client.page
     await page.evaluate(() => {
-      window.localStorage.setItem('orca.browser.markup-draw-hint-seen', 'true')
+      window.localStorage.setItem('kingu.browser.markup-draw-hint-seen', 'true')
     })
     const drawHintDismiss = page.getByRole('button', { name: 'Got it', exact: true })
     const drawHintVisible = await drawHintDismiss

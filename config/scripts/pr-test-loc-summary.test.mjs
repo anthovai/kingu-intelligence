@@ -77,29 +77,31 @@ describe('PR test LoC summary', () => {
   it('reads the next page from a GitHub Link header', () => {
     expect(
       nextLink(
-        '<https://api.github.com/repos/stablyai/orca/pulls/1/files?page=2>; rel="next", <https://api.github.com/repos/stablyai/orca/pulls/1/files?page=3>; rel="last"'
+        '<https://api.github.com/repos/anthovai/kingu-intelligence/pulls/1/files?page=2>; rel="next", <https://api.github.com/repos/anthovai/kingu-intelligence/pulls/1/files?page=3>; rel="last"'
       )
-    ).toBe('https://api.github.com/repos/stablyai/orca/pulls/1/files?page=2')
+    ).toBe('https://api.github.com/repos/anthovai/kingu-intelligence/pulls/1/files?page=2')
     expect(
-      nextLink('<https://api.github.com/repos/stablyai/orca/pulls/1/files?page=1>; rel="prev"')
+      nextLink(
+        '<https://api.github.com/repos/anthovai/kingu-intelligence/pulls/1/files?page=1>; rel="prev"'
+      )
     ).toBe(undefined)
   })
 
   it('paginates pull files until Link rel=next is gone', async () => {
     const pages = {
-      'https://api.github.com/repos/stablyai/orca/pulls/9/files?per_page=100': {
+      'https://api.github.com/repos/anthovai/kingu-intelligence/pulls/9/files?per_page=100': {
         body: [{ filename: 'src/app.ts', additions: 2, deletions: 0 }],
-        link: '<https://api.github.com/repos/stablyai/orca/pulls/9/files?page=2>; rel="next"'
+        link: '<https://api.github.com/repos/anthovai/kingu-intelligence/pulls/9/files?page=2>; rel="next"'
       },
-      'https://api.github.com/repos/stablyai/orca/pulls/9/files?page=2': {
+      'https://api.github.com/repos/anthovai/kingu-intelligence/pulls/9/files?page=2': {
         body: [{ filename: 'src/app.test.ts', additions: 5, deletions: 1 }],
         link: null
       }
     }
 
     const files = await listPullFiles({
-      owner: 'stablyai',
-      repo: 'orca',
+      owner: 'anthovai',
+      repo: 'kingu',
       pullNumber: 9,
       token: 'test-token',
       fetchImpl: async (url) => {
@@ -128,8 +130,8 @@ describe('PR test LoC summary', () => {
     ]
     const requests = []
     const result = await updatePullRequest({
-      owner: 'stablyai',
-      repo: 'orca',
+      owner: 'anthovai',
+      repo: 'kingu',
       pullNumber: 14656,
       token: 'test-token',
       totals: {
@@ -189,14 +191,14 @@ describe('PR test LoC summary', () => {
     expect(mergeLocBlock(`${block}\n\n## ELI5\n`, totals)).toBe(`${block}\n\n## ELI5\n`)
     expect(
       mergeLocBlock(
-        '<!-- orca-pr-loc -->\n**LoC** · test **+1 / −0**\n<!-- /orca-pr-loc -->\n\n## ELI5\n',
+        '<!-- kingu-pr-loc -->\n**LoC** · test **+1 / −0**\n<!-- /kingu-pr-loc -->\n\n## ELI5\n',
         totals
       )
     ).toBe(`${block}\n\n## ELI5\n`)
   })
 
   it('counts and merges from a files JSON fixture', () => {
-    const root = mkdtempSync(join(tmpdir(), 'orca-pr-test-loc-'))
+    const root = mkdtempSync(join(tmpdir(), 'kingu-pr-test-loc-'))
     tempDirs.push(root)
     const filesPath = join(root, 'files.json')
     const bodyPath = join(root, 'body.md')
@@ -212,7 +214,7 @@ describe('PR test LoC summary', () => {
     const result = runLoc(['--files-json', filesPath, '--merge-body', bodyPath])
 
     expect(result.status).toBe(0)
-    expect(result.stdout.startsWith('<!-- orca-pr-loc -->')).toBe(true)
+    expect(result.stdout.startsWith('<!-- kingu-pr-loc -->')).toBe(true)
     expect(result.stdout).toContain(LOC_HANDS_OFF_COMMENT)
     expect(result.stdout).toContain(
       '| Test | 1 | $\\color{#1a7f37}{\\Huge{\\mathbf{+}}}$\u200b6 | $\\color{#cf222e}{\\Huge{\\mathbf{−}}}$\u200b1 | $\\color{#1a7f37}{\\Huge{\\mathbf{+}}}$\u200b5 |'
@@ -222,7 +224,7 @@ describe('PR test LoC summary', () => {
     )
     expect(result.stdout).not.toContain('| Total |')
     expect(result.stdout).toContain('## ELI5\n\nHello\n')
-    expect(result.stdout.match(/<!-- orca-pr-loc -->/g)).toHaveLength(1)
+    expect(result.stdout.match(/<!-- kingu-pr-loc -->/g)).toHaveLength(1)
   })
 
   it('exits 2 with usage when no PR or files JSON is supplied', () => {

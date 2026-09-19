@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest'
  * Why a floor and not just a pin: Electron 43.5.0/43.6.0 set and unset `GDK_GL`
  * around `gtk_init()` while FontConfig warmed up on a pool thread, and below
  * glibc 2.41 that frees `environ` under a concurrent `getenv()` — a launch-time
- * use-after-free on every Ubuntu we support (stablyai/orca#20081). 43.7.0 stops
+ * use-after-free on every Ubuntu we support (anthovai/kingu-intelligence#20081). 43.7.0 stops
  * freeing the published `environ`. A downgrade past it re-ships that crash, and
  * nothing else in the tree would notice.
  */

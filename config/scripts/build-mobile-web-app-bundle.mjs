@@ -65,8 +65,8 @@ export const MOBILE_WEB_APP_SHIMS = [
   }
 ]
 
-const ROUTE_MANIFEST_PLUGIN_NAME = 'orca-route-manifest'
-const LUCIDE_PLUGIN_NAME = 'orca-lucide-barrel-provider'
+const ROUTE_MANIFEST_PLUGIN_NAME = 'kingu-route-manifest'
+const LUCIDE_PLUGIN_NAME = 'kingu-lucide-barrel-provider'
 
 // mobile/web-entry/route-manifest.ts is a real typed file rather than a virtual specifier, so the
 // entry typechecks and Metro can still resolve it; only its body is replaced here.
@@ -198,7 +198,7 @@ export async function buildMobileWebAppBundle({ outDir = defaultOutDir } = {}) {
   const html =
     '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8" />\n' +
     '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />\n' +
-    '<title>Orca</title>\n</head>\n<body>\n<div id="root"></div>\n' +
+    '<title>Kingu</title>\n</head>\n<body>\n<div id="root"></div>\n' +
     `<script src="/${scriptAsset.path}"></script>\n</body>\n</html>\n`
   const indexBytes = Buffer.from(html, 'utf8')
   const indexAsset = {

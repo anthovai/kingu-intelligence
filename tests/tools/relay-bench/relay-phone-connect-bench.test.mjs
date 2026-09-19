@@ -9,24 +9,27 @@ const encode = (offer) => Buffer.from(JSON.stringify(offer), 'utf8').toString('b
 describe('decodeOffer', () => {
   it('decodes a well-formed pairing link', () => {
     const offer = { relay: { cellUrl: 'https://cell.example', relayHostId: 'A'.repeat(16) } }
-    expect(decodeOffer(`orca://pair?code=${encode(offer)}`)).toEqual(offer)
+    expect(decodeOffer(`kingu://pair?code=${encode(offer)}`)).toEqual(offer)
   })
 
   it('ignores parameters after the code', () => {
     const offer = { deviceToken: 'token' }
-    expect(decodeOffer(`orca://pair?code=${encode(offer)}&v=2`)).toEqual(offer)
+    expect(decodeOffer(`kingu://pair?code=${encode(offer)}&v=2`)).toEqual(offer)
   })
 
   it.each([
-    [undefined, /orca:\/\/pair/],
-    ['', /orca:\/\/pair/],
-    ['https://example.com/?code=abc', /orca:\/\/pair/],
-    ['orca://pair', /no code= parameter/],
-    ['orca://pair?code=', /not base64url/],
-    ['orca://pair?code=not base64', /not base64url/],
-    [`orca://pair?code=${Buffer.from('not json').toString('base64url')}`, /did not decode to JSON/],
-    [`orca://pair?code=${Buffer.from('[1,2]').toString('base64url')}`, /offer object/],
-    [`orca://pair?code=${Buffer.from('null').toString('base64url')}`, /offer object/]
+    [undefined, /kingu:\/\/pair/],
+    ['', /kingu:\/\/pair/],
+    ['https://example.com/?code=abc', /kingu:\/\/pair/],
+    ['kingu://pair', /no code= parameter/],
+    ['kingu://pair?code=', /not base64url/],
+    ['kingu://pair?code=not base64', /not base64url/],
+    [
+      `kingu://pair?code=${Buffer.from('not json').toString('base64url')}`,
+      /did not decode to JSON/
+    ],
+    [`kingu://pair?code=${Buffer.from('[1,2]').toString('base64url')}`, /offer object/],
+    [`kingu://pair?code=${Buffer.from('null').toString('base64url')}`, /offer object/]
   ])('refuses %j', (value, message) => {
     expect(() => decodeOffer(value)).toThrow(message)
   })

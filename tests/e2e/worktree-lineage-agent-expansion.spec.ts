@@ -1,14 +1,14 @@
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 import { mkdirSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { test, expect } from './helpers/orca-app'
+import { test, expect } from './helpers/kingu-app'
 import { waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import { seedLineageScenario } from './worktree-lineage-state'
 import { worktreeRow } from './worktree-row-locators'
 
-// Set ORCA_CAPTURE_EVIDENCE=1 to also write before/after screenshots to
+// Set KINGU_CAPTURE_EVIDENCE=1 to also write before/after screenshots to
 // pr-evidence/. Off by default so CI just runs the behavioral assertions.
-const CAPTURE_EVIDENCE = process.env.ORCA_CAPTURE_EVIDENCE === '1'
+const CAPTURE_EVIDENCE = process.env.KINGU_CAPTURE_EVIDENCE === '1'
 const SHOT_DIR = resolve(process.cwd(), 'pr-evidence')
 
 async function captureSidebar(page: Page, name: string): Promise<void> {
@@ -72,41 +72,41 @@ function childWorkspacesChip(page: Page, parentId: string) {
 test.describe('Worktree lineage agent-list expansion independence', () => {
   test.describe.configure({ mode: 'serial' })
 
-  test.beforeEach(async ({ orcaPage }) => {
-    await waitForSessionReady(orcaPage)
-    await waitForActiveWorktree(orcaPage)
+  test.beforeEach(async ({ kinguPage }) => {
+    await waitForSessionReady(kinguPage)
+    await waitForActiveWorktree(kinguPage)
   })
 
   test('toggling child worktrees does not collapse the expanded agent summary', async ({
-    orcaPage
+    kinguPage
   }) => {
-    const { parentId, childId } = await seedLineageScenario(orcaPage)
-    const parentRow = worktreeRow(orcaPage, parentId)
-    const childRow = worktreeRow(orcaPage, childId)
+    const { parentId, childId } = await seedLineageScenario(kinguPage)
+    const parentRow = worktreeRow(kinguPage, parentId)
+    const childRow = worktreeRow(kinguPage, childId)
 
     await parentRow.click()
     await expect(parentRow).toHaveAttribute('aria-current', 'page')
 
-    await seedTwoParentAgents(orcaPage, parentId)
+    await seedTwoParentAgents(kinguPage, parentId)
 
     // Both sections present: the "2 agents" summary and the child-workspaces chip.
-    await expect(compactSummary(orcaPage, parentId)).toBeVisible({ timeout: 10_000 })
-    await expect(childWorkspacesChip(orcaPage, parentId)).toBeVisible()
+    await expect(compactSummary(kinguPage, parentId)).toBeVisible({ timeout: 10_000 })
+    await expect(childWorkspacesChip(kinguPage, parentId)).toBeVisible()
     await expect(childRow).toBeVisible()
-    await expect(compactSummary(orcaPage, parentId)).toHaveAttribute('aria-expanded', 'false')
-    await captureSidebar(orcaPage, '1-before-both-collapsed.png')
+    await expect(compactSummary(kinguPage, parentId)).toHaveAttribute('aria-expanded', 'false')
+    await captureSidebar(kinguPage, '1-before-both-collapsed.png')
 
     // Expand the agent summary.
-    await compactSummary(orcaPage, parentId).click()
-    await expect(compactSummary(orcaPage, parentId)).toHaveAttribute('aria-expanded', 'true')
-    await captureSidebar(orcaPage, '2-agents-expanded.png')
+    await compactSummary(kinguPage, parentId).click()
+    await expect(compactSummary(kinguPage, parentId)).toHaveAttribute('aria-expanded', 'true')
+    await captureSidebar(kinguPage, '2-agents-expanded.png')
 
     // Collapse the child worktrees via the chip. This remounts the parent card.
-    await childWorkspacesChip(orcaPage, parentId).click()
+    await childWorkspacesChip(kinguPage, parentId).click()
     await expect(childRow).toBeHidden()
 
     // FIXED: the agent summary stays expanded despite the card remount.
-    await expect(compactSummary(orcaPage, parentId)).toHaveAttribute('aria-expanded', 'true')
-    await captureSidebar(orcaPage, '3-after-children-toggle-agents-still-expanded.png')
+    await expect(compactSummary(kinguPage, parentId)).toHaveAttribute('aria-expanded', 'true')
+    await captureSidebar(kinguPage, '3-after-children-toggle-agents-still-expanded.png')
   })
 })

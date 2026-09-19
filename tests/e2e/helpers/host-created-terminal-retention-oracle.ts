@@ -1,7 +1,7 @@
 /**
  * Shared oracle for "a host-created terminal stays the live terminal".
  *
- * Every retention spec (paired desktop host, windowless `orca serve`, local
+ * Every retention spec (paired desktop host, windowless `kingu serve`, local
  * unpaired CLI) imports this file unchanged, so the topologies are judged by
  * identical code and none can be claimed to prove another by accident.
  *
@@ -14,7 +14,7 @@
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { expect, type Page } from '@stablyai/playwright-test'
+import { expect, type Page } from '@anthovai/playwright-test'
 
 export type RuntimeRpcCall = <TResult>(method: string, params: unknown) => Promise<TResult>
 
@@ -58,7 +58,7 @@ function isDaemonPtyIdForm(ptyId: string, worktreeId: string): boolean {
 }
 
 export function createRetentionFixtureDirectory(): string {
-  return mkdtempSync(path.join(os.tmpdir(), 'orca-host-terminal-retention-'))
+  return mkdtempSync(path.join(os.tmpdir(), 'kingu-host-terminal-retention-'))
 }
 
 /** Long-lived stand-in for the agent a CLI dispatch spawns: it never exits, so
@@ -117,7 +117,7 @@ function readySignatures(sinkPath: string): string[] {
 }
 
 /**
- * `orca terminal create`: the host-initiated background create. Sibling paths
+ * `kingu terminal create`: the host-initiated background create. Sibling paths
  * are deliberately NOT used — `session.tabs.createTerminal` routes through
  * createRuntimeOwnedMobileSessionTerminal, which persists its binding on every
  * revision and would pass without exercising this seam at all.

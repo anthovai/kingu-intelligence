@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 import { buildFreshShellProbeInputSequence } from '../terminal-probe-input-sequence'
 
 type ReadinessAttempt = {
@@ -18,7 +18,7 @@ export async function waitForRestoredTerminalInputReady(
   let pendingAttempts: readonly ReadinessAttempt[] = []
 
   while (Date.now() < deadline) {
-    const marker = `ORCA_RESTORED_INPUT_READY_${randomUUID().replaceAll('-', '')}`
+    const marker = `KINGU_RESTORED_INPUT_READY_${randomUUID().replaceAll('-', '')}`
     const [input] = buildFreshShellProbeInputSequence(`echo ${marker}\r`)
     if (!input) {
       return false
@@ -32,10 +32,10 @@ export async function waitForRestoredTerminalInputReady(
               continue
             }
             const container = pane.container as HTMLElement & {
-              __orcaE2eTerminalInputReadinessInstanceId?: string
+              __kinguE2eTerminalInputReadinessInstanceId?: string
             }
-            container.__orcaE2eTerminalInputReadinessInstanceId ??= crypto.randomUUID()
-            const paneInstanceId = container.__orcaE2eTerminalInputReadinessInstanceId
+            container.__kinguE2eTerminalInputReadinessInstanceId ??= crypto.randomUUID()
+            const paneInstanceId = container.__kinguE2eTerminalInputReadinessInstanceId
             const output = pane.serializeAddon?.serialize?.() ?? ''
             if (
               pendingAttempts.some(

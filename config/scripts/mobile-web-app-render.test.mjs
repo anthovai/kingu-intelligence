@@ -56,7 +56,7 @@ async function readShellCsp() {
   const source = await readFile(
     join(
       projectDir,
-      'mobile/modules/orca-mobile-web-shell/android/src/main/java/expo/modules/orcamobilewebshell/MobileWebShellCsp.kt'
+      'mobile/modules/kingu-mobile-web-shell/android/src/main/java/expo/modules/kingumobilewebshell/MobileWebShellCsp.kt'
     ),
     'utf8'
   )
@@ -68,7 +68,7 @@ beforeAll(async () => {
   if (!bundles) {
     return
   }
-  scratch = await mkdtemp(join(tmpdir(), 'orca-mobile-web-app-render-'))
+  scratch = await mkdtemp(join(tmpdir(), 'kingu-mobile-web-app-render-'))
   const { outDir } = await buildMobileWebAppBundle({ outDir: join(scratch, 'bundle') })
   server = createServer((request, response) => {
     const path = new URL(request.url, 'http://localhost').pathname
@@ -107,8 +107,8 @@ beforeAll(async () => {
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve))
   origin = `http://127.0.0.1:${String(server.address().port)}`
   // CI runs this against the runner's Google Chrome rather than paying for a browser download,
-  // the same reason and the same override shape as the orcad browser-provider job.
-  const executablePath = process.env.ORCA_MOBILE_WEB_RENDER_BROWSER
+  // the same reason and the same override shape as the kingud browser-provider job.
+  const executablePath = process.env.KINGU_MOBILE_WEB_RENDER_BROWSER
   browser = await chromium.launch({ headless: true, ...(executablePath ? { executablePath } : {}) })
 }, 180_000)
 
@@ -150,7 +150,7 @@ async function render(route) {
   // Polled on a timer rather than Playwright's default animation frames, which a page that never
   // paints never delivers.
   const mounted = page.waitForFunction(
-    () => document.documentElement.dataset.orcaWebEntry === 'mounted',
+    () => document.documentElement.dataset.kinguWebEntry === 'mounted',
     {
       timeout: 30_000,
       polling: 250
@@ -165,7 +165,7 @@ async function render(route) {
   ])
   if (cause) {
     const state = await page.evaluate(
-      () => document.documentElement.dataset.orcaWebEntry ?? 'absent'
+      () => document.documentElement.dataset.kinguWebEntry ?? 'absent'
     )
     throw new Error(
       `${route} never mounted (entry ${state}): ${errors.join(' | ') || 'no page or console error'}`,
@@ -186,7 +186,7 @@ async function render(route) {
 describe('the shell policy this page is tested under', () => {
   it('is the same on both platforms, so one render check covers both', async () => {
     const swift = await readFile(
-      join(projectDir, 'mobile/modules/orca-mobile-web-shell/ios/MobileWebShellCsp.swift'),
+      join(projectDir, 'mobile/modules/kingu-mobile-web-shell/ios/MobileWebShellCsp.swift'),
       'utf8'
     )
     expect(parseCspDirectives(swift, 'static let header = [', '].joined')).toBe(cspHeader)

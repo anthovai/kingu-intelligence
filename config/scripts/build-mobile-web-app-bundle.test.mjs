@@ -45,7 +45,7 @@ const describeBundling = bundles ? describe : describe.skip
 const itBundling = bundles ? it : it.skip
 
 async function withScratch(run) {
-  const scratch = await mkdtemp(join(tmpdir(), 'orca-mobile-web-app-test-'))
+  const scratch = await mkdtemp(join(tmpdir(), 'kingu-mobile-web-app-test-'))
   try {
     return await run(scratch)
   } finally {
@@ -133,7 +133,7 @@ describe('the synthesized RequireContext', () => {
     expect(context.keys()).toEqual(['./h/index.tsx'])
     expect(context('./h/index.tsx')).toEqual({ default: 'screen' })
     expect(context.resolve('./h/index.tsx')).toBe('./h/index.tsx')
-    expect(context.id).toBe('orca-mobile-web-app-routes')
+    expect(context.id).toBe('kingu-mobile-web-app-routes')
   })
 
   it('hands out a copy of keys, so a caller cannot mutate the route tree', () => {

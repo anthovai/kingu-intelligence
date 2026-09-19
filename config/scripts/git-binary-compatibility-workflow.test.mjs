@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { parse } from 'yaml'
 import { describe, expect, it } from 'vitest'
 
-const BASELINE_DIR = '~/.cache/orca-git-compat/git-2.25.5'
+const BASELINE_DIR = '~/.cache/kingu-git-compat/git-2.25.5'
 
 const gateSteps = () =>
   parse(readFileSync('.github/workflows/pr.yml', 'utf8')).jobs.git_compatibility.steps
@@ -13,10 +13,10 @@ describe('Git binary compatibility PR gate', () => {
   it('runs the real-binary contract at each compatibility boundary', () => {
     const run = stepNamed('Verify Git binary compatibility matrix')?.run
 
-    expect(run).toContain('ORCA_GIT_COMPAT_BINARY="$HOME/.cache/orca-git-compat/git-2.25.5/git"')
+    expect(run).toContain('KINGU_GIT_COMPAT_BINARY="$HOME/.cache/kingu-git-compat/git-2.25.5/git"')
     expect(run).toContain('alpine/git:edge-2.38.1|2.38.1')
     expect(run).toContain('alpine/git:v2.49.1|2.49.1')
-    expect(run).toContain('ORCA_GIT_COMPAT_IMAGE="$image"')
+    expect(run).toContain('KINGU_GIT_COMPAT_IMAGE="$image"')
     expect(run).toContain('src/shared/git-binary-compatibility.test.ts')
     expect(run).toContain('pids+=("$!")')
     expect(run).toContain('wait "$pid" || status=1')
@@ -33,7 +33,7 @@ describe('Git binary compatibility PR gate', () => {
     expect(run).toContain('-j"$(nproc)"')
     // The cached path and the build path must be the same directory or the guard
     // above would rebuild on every run while still reporting a cache hit.
-    expect(run).toContain('source="$HOME/.cache/orca-git-compat/git-2.25.5"')
+    expect(run).toContain('source="$HOME/.cache/kingu-git-compat/git-2.25.5"')
   })
 
   it('finishes the baseline build before the timed lanes start', () => {

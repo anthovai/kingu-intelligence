@@ -3,7 +3,7 @@
  * remote-server workspace must not leave the other pane mounted as a blank,
  * dead ghost.
  *
- * Topology: a headless paired Orca runtime host + a paired Orca desktop client.
+ * Topology: a headless paired Kingu runtime host + a paired Kingu desktop client.
  * The host owns the pane layout; the client mirrors it. The host splits a
  * terminal (two leaves, two remote PTYs, each a login shell), then the user
  * quits the second shell with `exit`. The host retires that leaf and
@@ -20,9 +20,9 @@
  *   pnpm exec playwright test tests/e2e/paired-remote-split-pane-host-retired-ghost.spec.ts \
  *     --config tests/playwright.config.ts --project electron-headless --workers=1
  */
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 import { toWebTerminalSurfaceTabId } from '../../src/shared/terminal-surface-id'
-import { expect, test } from './helpers/orca-app'
+import { expect, test } from './helpers/kingu-app'
 import { launchHeadlessPairedRuntimeHost } from './helpers/headless-paired-runtime-host'
 import { launchPairedElectronClient } from './helpers/paired-electron-client'
 import { findPairedWorktreeId } from './helpers/paired-browser-placement-fixture'

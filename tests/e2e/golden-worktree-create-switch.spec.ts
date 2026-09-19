@@ -1,6 +1,6 @@
 import { openSidebarWorkspaceComposer } from './helpers/sidebar-project-dialog'
-import type { Page } from '@stablyai/playwright-test'
-import { expect, test } from './helpers/orca-app'
+import type { Page } from '@anthovai/playwright-test'
+import { expect, test } from './helpers/kingu-app'
 import { getActiveWorktreeId, waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import { createTerminalTabFromMenu } from './helpers/terminal-tab-menu'
 import {
@@ -28,51 +28,51 @@ async function removeCreatedWorktree(page: Page, worktreeId: string): Promise<vo
 }
 
 test('creates a worktree, keeps its terminal isolated, and switches back @golden', async ({
-  orcaPage
+  kinguPage
 }) => {
   test.setTimeout(180_000)
-  await waitForSessionReady(orcaPage)
-  const originalWorktreeId = await waitForActiveWorktree(orcaPage)
-  await waitForActiveTerminalManager(orcaPage, 30_000)
-  const parentPtyId = await waitForActivePanePtyId(orcaPage)
+  await waitForSessionReady(kinguPage)
+  const originalWorktreeId = await waitForActiveWorktree(kinguPage)
+  await waitForActiveTerminalManager(kinguPage, 30_000)
+  const parentPtyId = await waitForActivePanePtyId(kinguPage)
   const workspaceName = `golden-switch-${Date.now()}`
   let childWorktreeId: string | null = null
 
   try {
-    await createWorkspace(orcaPage, workspaceName)
+    await createWorkspace(kinguPage, workspaceName)
     await expect(
-      orcaPage.locator('[role="option"][aria-current="page"]').filter({ hasText: workspaceName })
+      kinguPage.locator('[role="option"][aria-current="page"]').filter({ hasText: workspaceName })
     ).toBeVisible({ timeout: 30_000 })
-    childWorktreeId = await waitForActiveWorktree(orcaPage)
+    childWorktreeId = await waitForActiveWorktree(kinguPage)
     // Why: the cleanup force-removes childWorktreeId, so it must never resolve to the original.
     expect(childWorktreeId).not.toBe(originalWorktreeId)
     await expect(
-      orcaPage.locator(`[role="option"][data-worktree-id="${childWorktreeId}"]`)
+      kinguPage.locator(`[role="option"][data-worktree-id="${childWorktreeId}"]`)
     ).toHaveAttribute('aria-current', 'page')
 
-    await createTerminalTabFromMenu(orcaPage)
-    await waitForActiveTerminalManager(orcaPage, 30_000)
-    const childPtyId = await waitForActivePanePtyId(orcaPage)
+    await createTerminalTabFromMenu(kinguPage)
+    await waitForActiveTerminalManager(kinguPage, 30_000)
+    const childPtyId = await waitForActivePanePtyId(kinguPage)
     expect(childPtyId).not.toBe(parentPtyId)
-    await waitForPtyShellEcho(orcaPage, childPtyId, 15_000)
-    await execInTerminal(orcaPage, childPtyId, splitMarkerEchoCommand('worktree', '-b'))
-    await waitForTerminalOutput(orcaPage, 'worktree-b')
+    await waitForPtyShellEcho(kinguPage, childPtyId, 15_000)
+    await execInTerminal(kinguPage, childPtyId, splitMarkerEchoCommand('worktree', '-b'))
+    await waitForTerminalOutput(kinguPage, 'worktree-b')
 
-    await orcaPage.locator(`[role="option"][data-worktree-id="${originalWorktreeId}"]`).click()
+    await kinguPage.locator(`[role="option"][data-worktree-id="${originalWorktreeId}"]`).click()
     await expect(
-      orcaPage.locator(`[role="option"][data-worktree-id="${originalWorktreeId}"]`)
+      kinguPage.locator(`[role="option"][data-worktree-id="${originalWorktreeId}"]`)
     ).toHaveAttribute('aria-current', 'page', { timeout: 20_000 })
-    await waitForActiveTerminalManager(orcaPage, 30_000)
-    expect(await waitForActivePanePtyId(orcaPage, 30_000)).toBe(parentPtyId)
+    await waitForActiveTerminalManager(kinguPage, 30_000)
+    expect(await waitForActivePanePtyId(kinguPage, 30_000)).toBe(parentPtyId)
   } finally {
     if (childWorktreeId) {
-      if ((await getActiveWorktreeId(orcaPage).catch(() => null)) !== originalWorktreeId) {
-        await orcaPage
+      if ((await getActiveWorktreeId(kinguPage).catch(() => null)) !== originalWorktreeId) {
+        await kinguPage
           .locator(`[role="option"][data-worktree-id="${originalWorktreeId}"]`)
           .click()
           .catch(() => undefined)
       }
-      await removeCreatedWorktree(orcaPage, childWorktreeId).catch(() => undefined)
+      await removeCreatedWorktree(kinguPage, childWorktreeId).catch(() => undefined)
     }
   }
 })

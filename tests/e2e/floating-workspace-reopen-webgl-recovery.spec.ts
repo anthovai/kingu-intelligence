@@ -1,5 +1,5 @@
-import type { Page } from '@stablyai/playwright-test'
-import { test, expect } from './helpers/orca-app'
+import type { Page } from '@anthovai/playwright-test'
+import { test, expect } from './helpers/kingu-app'
 import { waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import { sendToTerminal } from './helpers/terminal'
 
@@ -11,7 +11,7 @@ const PANEL_SELECTOR = '[data-floating-terminal-panel]'
 // Why: the floating panel toggles via this window event
 // (src/renderer/src/lib/floating-terminal.ts); dispatching it exercises the
 // same code path as the status bar button and the keyboard shortcut.
-const TOGGLE_EVENT = 'orca-toggle-floating-terminal'
+const TOGGLE_EVENT = 'kingu-toggle-floating-terminal'
 
 // Why: a silent foreground command blocks the shell so no prompt framework
 // (e.g. async p10k segments) repaints while screenshots are compared.
@@ -366,24 +366,24 @@ async function setUpCorruptedFloatingTerminal(
 
 test.describe('floating workspace reopen WebGL recovery @headful', () => {
   test('reopening the floating workspace recovers a corrupted glyph atlas', async ({
-    orcaPage
+    kinguPage
   }, testInfo) => {
     // Why: the floating panel hides via CSS visibility only. Gating the
     // terminal's isVisible on `open` suspends its WebGL renderer while
     // hidden, so a glyph atlas corrupted with no context-loss event is
     // discarded with the context and the resume on reopen repaints clean.
-    const shots = await setUpCorruptedFloatingTerminal(orcaPage, 'REOPEN')
+    const shots = await setUpCorruptedFloatingTerminal(kinguPage, 'REOPEN')
     test.skip(!shots, 'WebGL was not active or atlas corruption could not be injected')
     const { baseline, corrupted } = shots!
     expect(corrupted.equals(baseline)).toBe(false)
 
-    expect(await instrumentRecoveryCounters(orcaPage)).toBe(true)
+    expect(await instrumentRecoveryCounters(kinguPage)).toBe(true)
 
-    await toggleFloatingPanel(orcaPage, false)
+    await toggleFloatingPanel(kinguPage, false)
     // Why: the prevention invariant — closing the panel suspends rendering,
     // so no live WebGL context (or corruptible glyph atlas) exists while the
     // floating terminal is hidden.
-    const webglAttachedWhileClosed = await orcaPage.evaluate((worktreeId) => {
+    const webglAttachedWhileClosed = await kinguPage.evaluate((worktreeId) => {
       const state = window.__store?.getState()
       const tab = (state?.tabsByWorktree?.[worktreeId] ?? [])[0]
       const manager = tab ? window.__paneManagers?.get(tab.id) : null
@@ -392,11 +392,11 @@ test.describe('floating workspace reopen WebGL recovery @headful', () => {
     }, FLOATING_WORKTREE_ID)
     expect(webglAttachedWhileClosed, 'closing the panel should suspend WebGL rendering').toBe(false)
 
-    await toggleFloatingPanel(orcaPage, true)
-    await settleRecoveryWindows(orcaPage)
+    await toggleFloatingPanel(kinguPage, true)
+    await settleRecoveryWindows(kinguPage)
 
-    const counters = await readRecoveryCounters(orcaPage)
-    const afterReopen = await screenshotFloatingTerminal(orcaPage)
+    const counters = await readRecoveryCounters(kinguPage)
+    const afterReopen = await screenshotFloatingTerminal(kinguPage)
     await testInfo.attach('baseline', {
       body: baseline,
       contentType: 'image/png'
@@ -421,13 +421,13 @@ test.describe('floating workspace reopen WebGL recovery @headful', () => {
   })
 
   test('system resume recovers the corrupted atlas (harness control)', async ({
-    orcaPage,
+    kinguPage,
     electronApp
   }) => {
     // Why: control proving the injected corruption is exactly the class the
     // existing recovery machinery heals — isolating the reopen gap above as a
     // missing trigger rather than a broken harness or unrecoverable state.
-    const shots = await setUpCorruptedFloatingTerminal(orcaPage, 'CONTROL')
+    const shots = await setUpCorruptedFloatingTerminal(kinguPage, 'CONTROL')
     test.skip(!shots, 'WebGL was not active or atlas corruption could not be injected')
     const { baseline, corrupted } = shots!
     expect(corrupted.equals(baseline)).toBe(false)
@@ -435,13 +435,13 @@ test.describe('floating workspace reopen WebGL recovery @headful', () => {
     await electronApp.evaluate(({ BrowserWindow }) => {
       const mainWindow = BrowserWindow.getAllWindows()[0]
       if (!mainWindow) {
-        throw new Error('Orca window unavailable for system resume')
+        throw new Error('Kingu window unavailable for system resume')
       }
       mainWindow.webContents.send('system:resumed')
     })
-    await settleRecoveryWindows(orcaPage)
+    await settleRecoveryWindows(kinguPage)
 
-    const afterResume = await screenshotFloatingTerminal(orcaPage)
+    const afterResume = await screenshotFloatingTerminal(kinguPage)
     console.log(`[floating-control] healedByResume=${afterResume.equals(baseline)}`)
     expect(afterResume.equals(baseline), 'system resume should heal the atlas').toBe(true)
   })

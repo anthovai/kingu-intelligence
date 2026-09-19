@@ -313,7 +313,7 @@ function writeRelayFixture({
     prebuildsDir,
     buildPath:
       platform === 'darwin' ? join(prebuildsDir, `darwin-${arch}`, 'pty.node') : compiledPath,
-    backupDir: join(nodePtyDir, '.orca-cloexec-prepatch-release'),
+    backupDir: join(nodePtyDir, '.kingu-cloexec-prepatch-release'),
     skipMarkerPath: join(root, SKIP_MARKER_FILENAME)
   }
   if (build) {

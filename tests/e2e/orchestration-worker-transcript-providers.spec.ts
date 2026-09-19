@@ -10,7 +10,7 @@ import {
 } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { test as base, expect } from './helpers/orca-app'
+import { test as base, expect } from './helpers/kingu-app'
 import { ensureTerminalVisible, waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import { waitForActivePaneHookDescriptor, waitForActivePanePtyId } from './helpers/terminal'
 import { RuntimeClient } from '../../src/cli/runtime-client'
@@ -104,7 +104,7 @@ const PROVIDERS: readonly {
   }
 ]
 
-const fakeCliDir = mkdtempSync(path.join(os.tmpdir(), 'orca-e2e-worker-transcript-providers-'))
+const fakeCliDir = mkdtempSync(path.join(os.tmpdir(), 'kingu-e2e-worker-transcript-providers-'))
 const capabilityLedgerPath = path.join(fakeCliDir, 'capabilities.jsonl')
 const fakeGrokHome = path.join(fakeCliDir, 'grok-home')
 const fakeOmpHome = path.join(fakeCliDir, 'omp-home')
@@ -122,19 +122,19 @@ async function sendProviderHook() {
   hookSent = true
   const config = JSON.parse(readFileSync(configPath, 'utf8'))
   const payload = ${providerHookPayload(agent)}
-  await fetch('http://127.0.0.1:' + process.env.ORCA_AGENT_HOOK_PORT + '${hookPath}', {
+  await fetch('http://127.0.0.1:' + process.env.KINGU_AGENT_HOOK_PORT + '${hookPath}', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-Orca-Agent-Hook-Token': process.env.ORCA_AGENT_HOOK_TOKEN
+      'X-Kingu-Agent-Hook-Token': process.env.KINGU_AGENT_HOOK_TOKEN
     },
     body: JSON.stringify({
-      paneKey: process.env.ORCA_PANE_KEY,
-      tabId: process.env.ORCA_TAB_ID,
-      worktreeId: process.env.ORCA_WORKTREE_ID,
-      launchToken: process.env.ORCA_AGENT_LAUNCH_TOKEN,
-      env: process.env.ORCA_AGENT_HOOK_ENV,
-      version: process.env.ORCA_AGENT_HOOK_VERSION,
+      paneKey: process.env.KINGU_PANE_KEY,
+      tabId: process.env.KINGU_TAB_ID,
+      worktreeId: process.env.KINGU_WORKTREE_ID,
+      launchToken: process.env.KINGU_AGENT_LAUNCH_TOKEN,
+      env: process.env.KINGU_AGENT_HOOK_ENV,
+      version: process.env.KINGU_AGENT_HOOK_VERSION,
       payload
     })
   })
@@ -211,13 +211,13 @@ async function listWorker(client: RuntimeClient, handle: string): Promise<Runtim
 }
 
 test('worker-read uses provider transcripts across supported orchestration agents', async ({
-  orcaPage,
+  kinguPage,
   electronApp
 }) => {
   test.setTimeout(240_000)
   rmSync(capabilityLedgerPath, { force: true })
-  await waitForSessionReady(orcaPage)
-  await orcaPage.evaluate(
+  await waitForSessionReady(kinguPage)
+  await kinguPage.evaluate(
     async ({ commands, terminalWindowsShell }) => {
       await window.__store?.getState().updateSettings({
         agentCmdOverrides: commands,
@@ -228,10 +228,10 @@ test('worker-read uses provider transcripts across supported orchestration agent
     },
     { commands: agentCommands, terminalWindowsShell: FAKE_AGENT_WINDOWS_SHELL }
   )
-  await waitForActiveWorktree(orcaPage)
-  await ensureTerminalVisible(orcaPage)
-  await waitForActivePanePtyId(orcaPage)
-  const coordinatorPane = await waitForActivePaneHookDescriptor(orcaPage)
+  await waitForActiveWorktree(kinguPage)
+  await ensureTerminalVisible(kinguPage)
+  await waitForActivePanePtyId(kinguPage)
+  const coordinatorPane = await waitForActivePaneHookDescriptor(kinguPage)
   const userDataDir = await electronApp.evaluate(({ app }) => app.getPath('userData'))
   const client = new RuntimeClient(userDataDir, 30_000, null, null)
   const coordinator = await client.call<{ terminal: { handle: string } }>('terminal.resolvePane', {
@@ -271,7 +271,7 @@ test('worker-read uses provider transcripts across supported orchestration agent
       callerTerminalHandle: coordinatorHandle
     })
     const transcriptDir = mkdtempSync(
-      path.join(os.tmpdir(), `orca-e2e-${provider.agent}-transcript-`)
+      path.join(os.tmpdir(), `kingu-e2e-${provider.agent}-transcript-`)
     )
     const sessionId = `e2e-${provider.agent}-session`
     const transcriptPath =

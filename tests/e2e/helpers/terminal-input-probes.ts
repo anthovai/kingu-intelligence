@@ -23,7 +23,7 @@
  *     the app recovers, so the harness must drive the renderer from main.
  */
 
-import { expect, type ElectronApplication, type Page } from '@stablyai/playwright-test'
+import { expect, type ElectronApplication, type Page } from '@anthovai/playwright-test'
 import { sendToTerminal, waitForTerminalOutput } from './terminal'
 import { buildSettledShellProbeInputSequence } from '../terminal-probe-input-sequence'
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Bundle `orcad` — the Orca runtime served from plain Node, no Electron.
+ * Bundle `kingud` — the Kingu runtime served from plain Node, no Electron.
  *
  * Variant B (see docs/design/node-only-runtime-backend.html): the browser-pane and
  * speech clusters are excluded. That is not a size optimisation — those modules are
@@ -24,26 +24,26 @@ import { arch, platform, tmpdir } from 'node:os'
 import { join } from 'node:path'
 import process from 'node:process'
 import {
-  ORCAD_VERSION,
-  ORCAD_VERSION_FILENAME,
-  orcadArtifactFilenames
-} from '../../src/shared/orcad-artifacts.ts'
+  KINGUD_VERSION,
+  KINGUD_VERSION_FILENAME,
+  kingudArtifactFilenames
+} from '../../src/shared/kingud-artifacts.ts'
 
 const ROOT = join(import.meta.dirname, '..', '..')
-const OUT_DIR = join(ROOT, 'out', 'orcad')
-const ENTRY = join(ROOT, 'src/main/orcad/main.ts')
-// Why beside orcad.js: the watcher runs in a forked child so a native @parcel/watcher
+const OUT_DIR = join(ROOT, 'out', 'kingud')
+const ENTRY = join(ROOT, 'src/main/kingud/main.ts')
+// Why beside kingud.js: the watcher runs in a forked child so a native @parcel/watcher
 // fault crashes that child instead of the server, and `resolveWatcherProcessEntryPath`
 // looks for it in the app root. A deployment has no desktop out/main to fall back to.
 const WATCHER_ENTRY = join(ROOT, 'src/main/ipc/parcel-watcher-process-entry.ts')
 const WATCHER_OUT_FILE = join(OUT_DIR, 'parcel-watcher-process-entry.js')
-// Why beside orcad.js: orcad forks the terminal daemon so PTYs outlive the runtime process,
+// Why beside kingud.js: kingud forks the terminal daemon so PTYs outlive the runtime process,
 // and `getDaemonEntryPath()` probes the app root for this exact filename. Without it every
-// orcad restart would SIGKILL every running terminal.
+// kingud restart would SIGKILL every running terminal.
 const DAEMON_ENTRY = join(ROOT, 'src/main/daemon/daemon-entry.ts')
 const DAEMON_OUT_FILE = join(OUT_DIR, 'daemon-entry.js')
 const AGENT_BROWSER_NAME = `agent-browser-${platform()}-${arch()}${process.platform === 'win32' ? '.exe' : ''}`
-const OUT_FILE = join(OUT_DIR, 'orcad.js')
+const OUT_FILE = join(OUT_DIR, 'kingud.js')
 const AGENT_BROWSER_SOURCE = join(ROOT, 'node_modules', 'agent-browser', 'bin', AGENT_BROWSER_NAME)
 const AGENT_BROWSER_OUTPUT = join(OUT_DIR, AGENT_BROWSER_NAME)
 
@@ -51,7 +51,7 @@ const AGENT_BROWSER_OUTPUT = join(OUT_DIR, AGENT_BROWSER_NAME)
 // `electron` is external so a residual import fails loudly at require() time rather
 // than silently bundling the npm package's installer shim, which is what happened the
 // first time and made the bundle look clean while it was not.
-// Why only these: measured, not guessed. `node-pty` is a hard `require.resolve` — orcad
+// Why only these: measured, not guessed. `node-pty` is a hard `require.resolve` — kingud
 // exits at startup without it. `@parcel/watcher` is a guarded dynamic import, so the
 // server boots without it but every watch install fails. `fsevents` is macOS-only and
 // optional upstream. better-sqlite3 / keytar / cpu-features were externalized here
@@ -85,7 +85,7 @@ if (process.platform !== 'win32') {
 }
 
 /** Why one call per child and not one `outdir` build: esbuild mirrors each entry's source
- *  directory under `outdir`, and both children must land flat beside orcad.js — that is where
+ *  directory under `outdir`, and both children must land flat beside kingud.js — that is where
  *  their runtime resolvers look for them. */
 function buildForkedChild(entryPoint, outfile) {
   return build({
@@ -127,7 +127,7 @@ const result = await build({
 })
 
 const output = Object.values(result.metafile.outputs).find(
-  (o) => o.entryPoint === 'src/main/orcad/main.ts'
+  (o) => o.entryPoint === 'src/main/kingud/main.ts'
 )
 // Why check `original` and not just `path`: when electron is bundleable, esbuild
 // rewrites `path` to the resolved file under node_modules and the naive check passes
@@ -173,30 +173,30 @@ if (sqliteImporters.size > 0) {
 }
 
 if (graphErrors.length > 0) {
-  console.error(`[build-orcad] ${graphErrors.join('\n')}`)
+  console.error(`[build-kingud] ${graphErrors.join('\n')}`)
   // Why this can exceed the ratchet baseline: the ratchet measures the graph reachable
-  // from orca-runtime + runtime-rpc, but this entry also imports ipc/pty directly to
-  // install the PTY controller. Once orcad ships, it should become a ratchet entry
+  // from kingu-runtime + runtime-rpc, but this entry also imports ipc/pty directly to
+  // install the PTY controller. Once kingud ships, it should become a ratchet entry
   // point so the two numbers cannot drift.
   process.exitCode = 1
 } else {
   // Why smoke-load and not just read the metafile: the import scan proves no module
   // *names* electron, but a graph can still fail to resolve under plain Node — a
   // dynamic require, a missing native, a top-level throw. The plain-node-entry-guard
-  // smoke-loads its entries for exactly this reason, and orcad cannot join that guard
+  // smoke-loads its entries for exactly this reason, and kingud cannot join that guard
   // because it is an esbuild artifact rather than a rollup input.
   // Why an exit code and not a message match: these bundles are minified onto one line, so
   // Node's uncaught-exception report echoes that whole line — which contains every string
   // literal in the bundle. A crash therefore "matches" any expected message, and a textual
   // assertion passes against a bundle that never loaded.
-  const smoke = spawnSync(process.execPath, [OUT_FILE, '--orcad-smoke-load-check'], {
+  const smoke = spawnSync(process.execPath, [OUT_FILE, '--kingud-smoke-load-check'], {
     encoding: 'utf8',
     timeout: 60_000
   })
   const smokeOutput = `${smoke.stdout ?? ''}${smoke.stderr ?? ''}`
   if (smoke.error || smoke.signal || smoke.status !== 0) {
     console.error(
-      `[build-orcad] the bundle did not load under plain Node.\n` +
+      `[build-kingud] the bundle did not load under plain Node.\n` +
         `Expected a clean load-check exit, got status=${smoke.status ?? 'none'} ` +
         `signal=${smoke.signal ?? 'none'} ` +
         `error=${smoke.error?.message ?? 'none'}\n${smokeOutput.slice(0, 2000)}`
@@ -206,7 +206,7 @@ if (graphErrors.length > 0) {
   // Why require + parseArgs and not a real daemon: requiring the bundle evaluates every
   // top-level import, and calling its exported argv parser proves the entry's own code is
   // there rather than a graph that merely resolved. Booting one would need a socket, a
-  // token and a PTY — `smoke:orcad-terminal` does that end to end, through orcad.
+  // token and a PTY — `smoke:kingud-terminal` does that end to end, through kingud.
   // The verdict is carried by the exit code for the same minification reason as above.
   const daemonSmoke = spawnSync(
     process.execPath,
@@ -219,13 +219,13 @@ if (graphErrors.length > 0) {
     {
       encoding: 'utf8',
       timeout: 60_000,
-      env: { ...process.env, ORCA_DAEMON_ENTRY_LOAD_CHECK: '1' }
+      env: { ...process.env, KINGU_DAEMON_ENTRY_LOAD_CHECK: '1' }
     }
   )
   const daemonSmokeOutput = `${daemonSmoke.stdout ?? ''}${daemonSmoke.stderr ?? ''}`
   if (daemonSmoke.error || daemonSmoke.signal || daemonSmoke.status !== 0) {
     console.error(
-      `[build-orcad] the daemon child did not load under plain Node.\n` +
+      `[build-kingud] the daemon child did not load under plain Node.\n` +
         `Expected a clean load check, got status=${daemonSmoke.status ?? 'none'} ` +
         `signal=${daemonSmoke.signal ?? 'none'} ` +
         `error=${daemonSmoke.error?.message ?? 'none'}\n${daemonSmokeOutput.slice(0, 2000)}`
@@ -235,32 +235,32 @@ if (graphErrors.length > 0) {
   const watcherFailure = await smokeLoadWatcherChild()
   if (watcherFailure) {
     console.error(
-      `[build-orcad] the watcher child did not run under plain Node.\n${watcherFailure}`
+      `[build-kingud] the watcher child did not run under plain Node.\n${watcherFailure}`
     )
     process.exitCode = 1
   }
 }
 
-// Why a content hash and not ORCAD_VERSION alone: the remote install directory is keyed on
+// Why a content hash and not KINGUD_VERSION alone: the remote install directory is keyed on
 // this string, so two different builds carrying one version would share a directory — and an
 // already-`.install-complete` dir is never re-uploaded. The deploy would silently run stale
 // bytes while reporting the new version.
 if (process.exitCode !== 1) {
   const hash = createHash('sha256')
-  for (const filename of orcadArtifactFilenames()) {
+  for (const filename of kingudArtifactFilenames()) {
     const artifactPath = join(OUT_DIR, filename)
     if (!existsSync(artifactPath)) {
       throw new Error(
-        `orcad declares ${filename} in ORCAD_ARTIFACTS but never emitted it. Add the build ` +
-          'step, or drop it from src/shared/orcad-artifacts.ts.'
+        `kingud declares ${filename} in KINGUD_ARTIFACTS but never emitted it. Add the build ` +
+          'step, or drop it from src/shared/kingud-artifacts.ts.'
       )
     }
     hash.update(readFileSync(artifactPath))
   }
-  const fullVersion = `${ORCAD_VERSION}+${hash.digest('hex').slice(0, 12)}`
-  writeFileSync(join(OUT_DIR, ORCAD_VERSION_FILENAME), fullVersion)
+  const fullVersion = `${KINGUD_VERSION}+${hash.digest('hex').slice(0, 12)}`
+  writeFileSync(join(OUT_DIR, KINGUD_VERSION_FILENAME), fullVersion)
   console.log(
-    `[build-orcad] ok — ${fullVersion}, ${(output.bytes / 1024 / 1024).toFixed(2)} MB, ${Object.keys(output.inputs).length} modules, zero electron and node:sqlite imports.`
+    `[build-kingud] ok — ${fullVersion}, ${(output.bytes / 1024 / 1024).toFixed(2)} MB, ${Object.keys(output.inputs).length} modules, zero electron and node:sqlite imports.`
   )
 }
 
@@ -274,7 +274,7 @@ if (process.exitCode !== 1) {
  * build machine with no compiled @parcel/watcher.
  */
 async function smokeLoadWatcherChild() {
-  const probeDir = mkdtempSync(join(tmpdir(), 'orcad-watcher-smoke-'))
+  const probeDir = mkdtempSync(join(tmpdir(), 'kingud-watcher-smoke-'))
   const child = fork(WATCHER_OUT_FILE, [], { stdio: ['ignore', 'ignore', 'pipe', 'ipc'] })
   let stderr = ''
   child.stderr?.on('data', (chunk) => {

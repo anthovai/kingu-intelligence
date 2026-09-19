@@ -1,4 +1,4 @@
-import type { ElectronApplication } from '@stablyai/playwright-test'
+import type { ElectronApplication } from '@anthovai/playwright-test'
 import type { RuntimeDesktopPairingOffer } from './paired-electron-client'
 
 type ServeReady = {
@@ -11,7 +11,7 @@ type ServeReady = {
 }
 
 const STARTUP_DIAGNOSTIC_LIMIT = 8_000
-const PAIRING_URL_PATTERN = /orca:\/\/[^\s"\\]+/g
+const PAIRING_URL_PATTERN = /kingu:\/\/[^\s"\\]+/g
 const WEB_CLIENT_PAIRING_PATTERN = /([#&]pairing=)[^&\s"\\]+/g
 
 export class HeadlessPairedRuntimeStartupDiagnosticBuffer {
@@ -79,7 +79,7 @@ export function parseHeadlessPairedRuntimePairingOffer(
   const readiness = parsed as ServeReady
   const pairing = readiness.pairing
   if (
-    readiness.type !== 'orca_server_ready' ||
+    readiness.type !== 'kingu_server_ready' ||
     pairing?.available !== true ||
     typeof pairing.url !== 'string'
   ) {
@@ -91,10 +91,10 @@ export function parseHeadlessPairedRuntimePairingOffer(
   }
 }
 
-/** True for the `orca_server_ready` line, whether or not it carries a pairing offer. */
+/** True for the `kingu_server_ready` line, whether or not it carries a pairing offer. */
 export function isHeadlessPairedRuntimeServeReadyLine(line: string): boolean {
   try {
-    return (JSON.parse(line) as ServeReady | null)?.type === 'orca_server_ready'
+    return (JSON.parse(line) as ServeReady | null)?.type === 'kingu_server_ready'
   } catch {
     return false
   }
@@ -102,7 +102,7 @@ export function isHeadlessPairedRuntimeServeReadyLine(line: string): boolean {
 
 function redactPairingMaterial(value: string): string {
   return value
-    .replace(PAIRING_URL_PATTERN, 'orca://[redacted]')
+    .replace(PAIRING_URL_PATTERN, 'kingu://[redacted]')
     .replace(WEB_CLIENT_PAIRING_PATTERN, '$1[redacted]')
 }
 

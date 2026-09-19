@@ -2,8 +2,8 @@ import { randomUUID } from 'node:crypto'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import type { Page } from '@stablyai/playwright-test'
-import { test, expect } from './helpers/orca-app'
+import type { Page } from '@anthovai/playwright-test'
+import { test, expect } from './helpers/kingu-app'
 import { ensureTerminalVisible, waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import { waitForActivePaneHookDescriptor, waitForActiveTerminalManager } from './helpers/terminal'
 import type { GlobalSettings } from '../../src/shared/global-settings-types'
@@ -103,18 +103,18 @@ function pendingAskTranscript(args: { sessionId: string; userText: string }): st
 
 test.describe('Desktop chat AskUserQuestion card (#11761)', () => {
   test('renders the answerable question card from the transcript when live status carries no ask', async ({
-    orcaPage
+    kinguPage
   }) => {
-    await waitForSessionReady(orcaPage)
-    await waitForActiveWorktree(orcaPage)
-    await ensureTerminalVisible(orcaPage)
-    await waitForActiveTerminalManager(orcaPage, 30_000)
+    await waitForSessionReady(kinguPage)
+    await waitForActiveWorktree(kinguPage)
+    await ensureTerminalVisible(kinguPage)
+    await waitForActiveTerminalManager(kinguPage, 30_000)
 
-    const descriptor = await waitForActivePaneHookDescriptor(orcaPage)
+    const descriptor = await waitForActivePaneHookDescriptor(kinguPage)
     const [tabId] = descriptor.paneKey.split(':')
     const sessionId = `e2e-ask-card-${randomUUID()}`
 
-    const scratchDir = mkdtempSync(path.join(os.tmpdir(), 'orca-e2e-ask-card-'))
+    const scratchDir = mkdtempSync(path.join(os.tmpdir(), 'kingu-e2e-ask-card-'))
     const transcriptPath = path.join(scratchDir, `${sessionId}.jsonl`)
     const screenshotDir = path.join(process.cwd(), 'validation-screenshots', 'ask-user-question')
     mkdirSync(screenshotDir, { recursive: true })
@@ -123,45 +123,45 @@ test.describe('Desktop chat AskUserQuestion card (#11761)', () => {
       const userText = 'Reformat the config file for me'
       writeFileSync(transcriptPath, pendingAskTranscript({ sessionId, userText }))
 
-      await enableNativeChatSetting(orcaPage)
-      await seedStatusWithoutAskPayload(orcaPage, {
+      await enableNativeChatSetting(kinguPage)
+      await seedStatusWithoutAskPayload(kinguPage, {
         paneKey: descriptor.paneKey,
         worktreeId: descriptor.worktreeId,
         sessionId,
         transcriptPath
       })
-      await toggleTerminalTabToChatView(orcaPage, { tabId, worktreeId: descriptor.worktreeId })
+      await toggleTerminalTabToChatView(kinguPage, { tabId, worktreeId: descriptor.worktreeId })
 
-      await expect(orcaPage.locator('[data-native-chat-root="true"]')).toBeVisible({
+      await expect(kinguPage.locator('[data-native-chat-root="true"]')).toBeVisible({
         timeout: 15_000
       })
-      await expect(orcaPage.getByText(userText)).toBeVisible({ timeout: 30_000 })
+      await expect(kinguPage.getByText(userText)).toBeVisible({ timeout: 30_000 })
 
       // The pre-fix build leaves the composer mounted here and never renders a
       // card, so this assertion is what actually gates the regression.
       // Why (#20724): the transcript row renders the pending question in an
       // awaiting-input row as well as the card, so gate on the card's own
       // title node instead of any text match.
-      const cardQuestion = orcaPage
+      const cardQuestion = kinguPage
         .getByTestId('native-chat-question-card-title')
         .filter({ hasText: QUESTION })
       await expect(cardQuestion).toBeVisible({ timeout: 10_000 })
-      await expect(orcaPage.getByRole('button', { name: /Spaces/ })).toBeVisible()
-      await orcaPage.screenshot({ path: path.join(screenshotDir, '01-question-card.png') })
+      await expect(kinguPage.getByRole('button', { name: /Spaces/ })).toBeVisible()
+      await kinguPage.screenshot({ path: path.join(screenshotDir, '01-question-card.png') })
 
       // The submit button reads "Skip" until an option is chosen; picking one is
       // what proves the card is answerable rather than merely rendered.
-      await orcaPage.getByRole('button', { name: /Spaces/ }).click()
-      await expect(orcaPage.getByRole('button', { name: 'Submit' })).toBeVisible()
-      await orcaPage.screenshot({ path: path.join(screenshotDir, '02-option-selected.png') })
+      await kinguPage.getByRole('button', { name: /Spaces/ }).click()
+      await expect(kinguPage.getByRole('button', { name: 'Submit' })).toBeVisible()
+      await kinguPage.screenshot({ path: path.join(screenshotDir, '02-option-selected.png') })
 
-      await orcaPage.getByRole('button', { name: 'Submit' }).click()
+      await kinguPage.getByRole('button', { name: 'Submit' }).click()
       // The card owns the composer slot, so its disappearance is the visible
       // signal that the answer was accepted and chat input came back. The
       // resolution receipt keeps the question in the transcript row, so only
       // the card paragraph is expected to leave.
       await expect(cardQuestion).toHaveCount(0, { timeout: 20_000 })
-      await orcaPage.screenshot({ path: path.join(screenshotDir, '03-answered.png') })
+      await kinguPage.screenshot({ path: path.join(screenshotDir, '03-answered.png') })
     } finally {
       rmSync(scratchDir, { recursive: true, force: true })
     }

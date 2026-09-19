@@ -28,8 +28,8 @@
  */
 
 import { existsSync, readFileSync } from 'node:fs'
-import type { ElectronApplication } from '@stablyai/playwright-test'
-import { test, expect } from './helpers/orca-app'
+import type { ElectronApplication } from '@anthovai/playwright-test'
+import { test, expect } from './helpers/kingu-app'
 import { TEST_REPO_PATH_FILE } from './global-setup'
 import {
   discoverActivePtyId,
@@ -40,7 +40,7 @@ import {
   waitForTerminalOutput
 } from './helpers/terminal'
 import { ensureTerminalVisible, waitForActiveWorktree, waitForSessionReady } from './helpers/store'
-import { attachRepoAndOpenTerminal, createRestartSession } from './helpers/orca-restart'
+import { attachRepoAndOpenTerminal, createRestartSession } from './helpers/kingu-restart'
 
 // Why: quit→relaunch against the same userDataDir relies on the daemon
 // surviving the first close; serial keeps the shared profile from competing
@@ -88,10 +88,10 @@ test.describe('reattach mouse-mode leak', () => {
       // the expression, not `42`). Some sandboxed CI/dev runners spawn a PTY
       // that echoes input but never execs a shell; skip there rather than fail,
       // matching the pane-manager guard above — there is nothing to arm.
-      await execInTerminal(firstLaunch.page, ptyId, 'echo ORCA_MOUSE_READY_$((21+21))')
+      await execInTerminal(firstLaunch.page, ptyId, 'echo KINGU_MOUSE_READY_$((21+21))')
       const shellExecutes = await waitForTerminalOutput(
         firstLaunch.page,
-        'ORCA_MOUSE_READY_42',
+        'KINGU_MOUSE_READY_42',
         15_000
       )
         .then(() => true)
@@ -149,8 +149,8 @@ test.describe('reattach mouse-mode leak', () => {
       await waitForPaneCount(secondLaunch.page, 1, 30_000)
       // Live output is released only after reattach replay has finished.
       const reattachedPtyId = await waitForActivePanePtyId(secondLaunch.page)
-      await execInTerminal(secondLaunch.page, reattachedPtyId, 'echo ORCA_REATTACHED_$((21+21))')
-      await waitForTerminalOutput(secondLaunch.page, 'ORCA_REATTACHED_42', 15_000)
+      await execInTerminal(secondLaunch.page, reattachedPtyId, 'echo KINGU_REATTACHED_$((21+21))')
+      await waitForTerminalOutput(secondLaunch.page, 'KINGU_REATTACHED_42', 15_000)
 
       // The reattach replay re-arms mouse via rehydrate, then the reset must
       // clear it. Poll until it settles to 'none' (times out if the reset

@@ -6,10 +6,10 @@
  * answering. That is the wedge shape #17817 and #17838 are about: a link that
  * looks perfectly healthy to TCP and can only be judged by an application probe.
  *
- * Requires: ORCA_E2E_SSH_DOCKER=1 and Docker available.
+ * Requires: KINGU_E2E_SSH_DOCKER=1 and Docker available.
  */
 import { execFileSync } from 'node:child_process'
-import { expect, test } from './helpers/orca-app'
+import { expect, test } from './helpers/kingu-app'
 import {
   cleanupDockerSshRelayTarget,
   startDockerSshRelayTarget,
@@ -24,7 +24,7 @@ import {
   waitForTerminalOutput
 } from './helpers/terminal'
 
-const RUN_DOCKER_SSH = process.env.ORCA_E2E_SSH_DOCKER === '1'
+const RUN_DOCKER_SSH = process.env.KINGU_E2E_SSH_DOCKER === '1'
 /** Generous: the point is that a verdict arrives at all, not its exact latency. */
 const LOST_VERDICT_BUDGET_MS = 90_000
 
@@ -43,11 +43,11 @@ async function readSshStatus(
 }
 
 test.describe('Docker SSH half-open link', () => {
-  test.skip(!RUN_DOCKER_SSH, 'Set ORCA_E2E_SSH_DOCKER=1 to run Docker-backed SSH tests.')
+  test.skip(!RUN_DOCKER_SSH, 'Set KINGU_E2E_SSH_DOCKER=1 to run Docker-backed SSH tests.')
   test.skip(process.platform === 'win32', 'Uses docker pause against a Linux container.')
 
   test('declares a frozen host lost instead of wedging, and recovers @half-open', async ({
-    orcaPage,
+    kinguPage,
     registerPostElectronShutdownCleanup
   }, testInfo) => {
     test.setTimeout(420_000)
@@ -60,17 +60,17 @@ test.describe('Docker SSH half-open link', () => {
         cleanupDockerSshRelayTarget(captured)
       })
 
-      await waitForSessionReady(orcaPage)
-      await waitForActiveWorktree(orcaPage)
-      const remote = await connectDockerSshRelayTarget(orcaPage, target)
-      await ensureTerminalVisible(orcaPage, 45_000)
-      await waitForActiveTerminalManager(orcaPage, 60_000)
-      const ptyId = await waitForActivePanePtyId(orcaPage, 60_000)
+      await waitForSessionReady(kinguPage)
+      await waitForActiveWorktree(kinguPage)
+      const remote = await connectDockerSshRelayTarget(kinguPage, target)
+      await ensureTerminalVisible(kinguPage, 45_000)
+      await waitForActiveTerminalManager(kinguPage, 60_000)
+      const ptyId = await waitForActivePanePtyId(kinguPage, 60_000)
 
       const runId = String(Date.now())
-      await execInTerminal(orcaPage, ptyId, `printf 'LIVE_%s\\n' ${runId}`)
-      await waitForTerminalOutput(orcaPage, `LIVE_${runId}`, 60_000)
-      expect(await readSshStatus(orcaPage, remote.targetId)).toBe('connected')
+      await execInTerminal(kinguPage, ptyId, `printf 'LIVE_%s\\n' ${runId}`)
+      await waitForTerminalOutput(kinguPage, `LIVE_${runId}`, 60_000)
+      expect(await readSshStatus(kinguPage, remote.targetId)).toBe('connected')
 
       // Freeze the host: TCP keeps ACKing, the application stops answering.
       docker(['pause', target.containerName])
@@ -81,7 +81,7 @@ test.describe('Docker SSH half-open link', () => {
       await expect
         .poll(
           async () => {
-            verdict = await readSshStatus(orcaPage, remote.targetId)
+            verdict = await readSshStatus(kinguPage, remote.targetId)
             return verdict
           },
           { timeout: LOST_VERDICT_BUDGET_MS, message: 'frozen host remained connected' }
@@ -104,11 +104,11 @@ test.describe('Docker SSH half-open link', () => {
 
       // The link must be usable again once the host thaws.
       await expect
-        .poll(() => readSshStatus(orcaPage, remote.targetId), { timeout: 120_000 })
+        .poll(() => readSshStatus(kinguPage, remote.targetId), { timeout: 120_000 })
         .toBe('connected')
-      const recoveredPtyId = await waitForActivePanePtyId(orcaPage, 60_000)
-      await execInTerminal(orcaPage, recoveredPtyId, `printf 'RECOVERED_%s\\n' ${runId}`)
-      await waitForTerminalOutput(orcaPage, `RECOVERED_${runId}`, 90_000)
+      const recoveredPtyId = await waitForActivePanePtyId(kinguPage, 60_000)
+      await execInTerminal(kinguPage, recoveredPtyId, `printf 'RECOVERED_%s\\n' ${runId}`)
+      await waitForTerminalOutput(kinguPage, `RECOVERED_${runId}`, 90_000)
     } finally {
       if (target && paused) {
         try {

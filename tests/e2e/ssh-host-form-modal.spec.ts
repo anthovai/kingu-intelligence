@@ -4,8 +4,8 @@
  * the list).
  */
 
-import type { Page } from '@stablyai/playwright-test'
-import { expect, test } from './helpers/orca-app'
+import type { Page } from '@anthovai/playwright-test'
+import { expect, test } from './helpers/kingu-app'
 import { waitForSessionReady } from './helpers/store'
 
 // Why: afterEach deletes every target carrying this prefix, so two workers loading
@@ -97,24 +97,24 @@ async function listTargetIdsByLabelPrefix(page: Page, prefix: string): Promise<s
 }
 
 test.describe('SSH host add/edit modal', () => {
-  test.beforeEach(async ({ orcaPage }) => {
-    await waitForSessionReady(orcaPage)
+  test.beforeEach(async ({ kinguPage }) => {
+    await waitForSessionReady(kinguPage)
   })
 
-  test.afterEach(async ({ orcaPage }) => {
-    const ids = await listTargetIdsByLabelPrefix(orcaPage, HOST_PREFIX)
+  test.afterEach(async ({ kinguPage }) => {
+    const ids = await listTargetIdsByLabelPrefix(kinguPage, HOST_PREFIX)
     if (ids.length > 0) {
-      await removeSshTargets(orcaPage, ids)
+      await removeSshTargets(kinguPage, ids)
     }
   })
 
   test('opens add/edit form in a viewport-stable dialog over a long host list', async ({
-    orcaPage
+    kinguPage
   }) => {
-    const seeded = await seedSshTargets(orcaPage, 10)
-    await openSshHostSettings(orcaPage)
+    const seeded = await seedSshTargets(kinguPage, 10)
+    await openSshHostSettings(kinguPage)
 
-    const sshSection = orcaPage.locator('[data-settings-section="ssh"]')
+    const sshSection = kinguPage.locator('[data-settings-section="ssh"]')
     // Why: seed first, then open settings so SshPane's listTargets load includes them.
     for (const label of seeded.labels.slice(0, 3)) {
       await expect(sshSection.getByText(label, { exact: true })).toBeVisible()
@@ -123,7 +123,7 @@ test.describe('SSH host add/edit modal', () => {
     // ── Add flow ────────────────────────────────────────────────────
     await sshSection.getByRole('button', { name: 'Add Target' }).click()
 
-    const addDialog = orcaPage.getByRole('dialog', { name: 'Add SSH host' })
+    const addDialog = kinguPage.getByRole('dialog', { name: 'Add SSH host' })
     await expect(addDialog).toBeVisible()
     await expect(addDialog.getByRole('heading', { name: 'Add SSH host' })).toBeInViewport()
     await expect(
@@ -161,7 +161,7 @@ test.describe('SSH host add/edit modal', () => {
     )
     await createdCard.getByRole('button', { name: 'Edit target' }).click()
 
-    const editDialog = orcaPage.getByRole('dialog', { name: 'Edit SSH host' })
+    const editDialog = kinguPage.getByRole('dialog', { name: 'Edit SSH host' })
     await expect(editDialog).toBeVisible()
     await expect(editDialog.getByRole('heading', { name: 'Edit SSH host' })).toBeInViewport()
     await expect(
@@ -189,7 +189,7 @@ test.describe('SSH host add/edit modal', () => {
 
     // Dirty outside-click must not discard the draft.
     await editDialog.locator('#ssh-target-label').fill(`${createdLabel}-dirty`)
-    await orcaPage.locator('[data-slot="dialog-overlay"]').click({ position: { x: 8, y: 8 } })
+    await kinguPage.locator('[data-slot="dialog-overlay"]').click({ position: { x: 8, y: 8 } })
     await expect(editDialog).toBeVisible()
     await expect(editDialog.locator('#ssh-target-label')).toHaveValue(`${createdLabel}-dirty`)
 
@@ -198,7 +198,7 @@ test.describe('SSH host add/edit modal', () => {
     await expect(editDialog).toBeHidden()
 
     await createdCard.getByRole('button', { name: 'Edit target' }).click()
-    const reopened = orcaPage.getByRole('dialog', { name: 'Edit SSH host' })
+    const reopened = kinguPage.getByRole('dialog', { name: 'Edit SSH host' })
     await expect(reopened).toBeVisible()
     await expect(reopened.locator('#ssh-target-label')).toHaveValue(createdLabel)
     await expect(reopened.getByRole('button', { name: 'Advanced' })).toHaveAttribute(
@@ -208,8 +208,8 @@ test.describe('SSH host add/edit modal', () => {
     await reopened.getByRole('button', { name: 'Cancel' }).click()
   })
 
-  test('add-ssh-host settings intent opens the same modal dialog', async ({ orcaPage }) => {
-    await orcaPage.evaluate(() => {
+  test('add-ssh-host settings intent opens the same modal dialog', async ({ kinguPage }) => {
+    await kinguPage.evaluate(() => {
       const state = window.__store?.getState()
       if (!state) {
         throw new Error('store unavailable')
@@ -217,10 +217,10 @@ test.describe('SSH host add/edit modal', () => {
       state.openSettingsTarget({ pane: 'ssh', repoId: null, intent: 'add-ssh-host' })
       state.openSettingsPage()
     })
-    await expect(orcaPage.getByPlaceholder('Search settings')).toBeVisible({ timeout: 10_000 })
-    await dismissTransientAnnouncement(orcaPage)
+    await expect(kinguPage.getByPlaceholder('Search settings')).toBeVisible({ timeout: 10_000 })
+    await dismissTransientAnnouncement(kinguPage)
 
-    const dialog = orcaPage.getByRole('dialog', { name: 'Add SSH host' })
+    const dialog = kinguPage.getByRole('dialog', { name: 'Add SSH host' })
     await expect(dialog).toBeVisible({ timeout: 10_000 })
     await expect(dialog.getByRole('heading', { name: 'Add SSH host' })).toBeInViewport()
     await expect(dialog.locator('#ssh-target-host')).toBeFocused()

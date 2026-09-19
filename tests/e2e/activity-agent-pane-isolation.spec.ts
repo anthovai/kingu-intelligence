@@ -1,5 +1,5 @@
-import type { Page } from '@stablyai/playwright-test'
-import { test, expect } from './helpers/orca-app'
+import type { Page } from '@anthovai/playwright-test'
+import { test, expect } from './helpers/kingu-app'
 import {
   splitActiveTerminalPane,
   waitForActiveTerminalManager,
@@ -213,36 +213,36 @@ async function createTerminalInNewSplitGroup(page: Page): Promise<SplitGroupTerm
 }
 
 test.describe('Activity Agent Pane Isolation', () => {
-  test.beforeEach(async ({ orcaPage }) => {
-    await waitForSessionReady(orcaPage)
-    await enableActivityAgentsView(orcaPage)
-    await waitForActiveWorktree(orcaPage)
-    await ensureTerminalVisible(orcaPage)
-    const hasPaneManager = await waitForActiveTerminalManager(orcaPage, 30_000)
+  test.beforeEach(async ({ kinguPage }) => {
+    await waitForSessionReady(kinguPage)
+    await enableActivityAgentsView(kinguPage)
+    await waitForActiveWorktree(kinguPage)
+    await ensureTerminalVisible(kinguPage)
+    const hasPaneManager = await waitForActiveTerminalManager(kinguPage, 30_000)
       .then(() => true)
       .catch(() => false)
     test.skip(
       !hasPaneManager,
       'Electron automation in this environment never mounts the live TerminalPane manager, so Activity pane isolation would only fail on harness setup.'
     )
-    await waitForPaneCount(orcaPage, 1, 30_000)
+    await waitForPaneCount(kinguPage, 1, 30_000)
   })
 
   test('selecting agent rows focuses the matching split pane by stable leaf id', async ({
-    orcaPage
+    kinguPage
   }) => {
-    await splitActiveTerminalPane(orcaPage, 'vertical')
-    await waitForPaneCount(orcaPage, 2)
-    const snapshot = await waitForPaneIdentitySnapshot(orcaPage, 2)
-    const [first, second] = await seedActivityThreadsForSplitPanes(orcaPage, snapshot)
+    await splitActiveTerminalPane(kinguPage, 'vertical')
+    await waitForPaneCount(kinguPage, 2)
+    const snapshot = await waitForPaneIdentitySnapshot(kinguPage, 2)
+    const [first, second] = await seedActivityThreadsForSplitPanes(kinguPage, snapshot)
 
-    await agentsSidebarButton(orcaPage).click()
-    await expect(orcaPage.getByText(first.prompt)).toBeVisible()
-    await expect(orcaPage.getByText(second.prompt)).toBeVisible()
+    await agentsSidebarButton(kinguPage).click()
+    await expect(kinguPage.getByText(first.prompt)).toBeVisible()
+    await expect(kinguPage.getByText(second.prompt)).toBeVisible()
 
-    await orcaPage.getByRole('button').filter({ hasText: first.prompt }).first().click()
+    await kinguPage.getByRole('button').filter({ hasText: first.prompt }).first().click()
     await expect
-      .poll(async () => readActivePaneSelection(orcaPage), {
+      .poll(async () => readActivePaneSelection(kinguPage), {
         timeout: 10_000,
         message: 'Agents sidebar row did not focus the first selected split pane'
       })
@@ -252,11 +252,11 @@ test.describe('Activity Agent Pane Isolation', () => {
       })
 
     await expect(
-      orcaPage.getByRole('button', { name: 'Turn off activity view', exact: true })
+      kinguPage.getByRole('button', { name: 'Turn off activity view', exact: true })
     ).toHaveAttribute('aria-pressed', 'true')
-    await orcaPage.getByRole('button').filter({ hasText: second.prompt }).first().click()
+    await kinguPage.getByRole('button').filter({ hasText: second.prompt }).first().click()
     await expect
-      .poll(async () => readActivePaneSelection(orcaPage), {
+      .poll(async () => readActivePaneSelection(kinguPage), {
         timeout: 10_000,
         message: 'Agents sidebar row did not focus the second selected split pane'
       })
@@ -266,17 +266,19 @@ test.describe('Activity Agent Pane Isolation', () => {
       })
   })
 
-  test('workspace card agent rows focus the matching terminal split pane', async ({ orcaPage }) => {
-    await splitActiveTerminalPane(orcaPage, 'vertical')
-    await waitForPaneCount(orcaPage, 2)
-    const snapshot = await waitForPaneIdentitySnapshot(orcaPage, 2)
-    const [first, second] = await seedActivityThreadsForSplitPanes(orcaPage, snapshot)
+  test('workspace card agent rows focus the matching terminal split pane', async ({
+    kinguPage
+  }) => {
+    await splitActiveTerminalPane(kinguPage, 'vertical')
+    await waitForPaneCount(kinguPage, 2)
+    const snapshot = await waitForPaneIdentitySnapshot(kinguPage, 2)
+    const [first, second] = await seedActivityThreadsForSplitPanes(kinguPage, snapshot)
 
-    await enableInlineAgentCards(orcaPage)
+    await enableInlineAgentCards(kinguPage)
 
-    await clickWorkspaceCardAgentRow(orcaPage, first.prompt)
+    await clickWorkspaceCardAgentRow(kinguPage, first.prompt)
     await expect
-      .poll(async () => readActivePaneSelection(orcaPage), {
+      .poll(async () => readActivePaneSelection(kinguPage), {
         timeout: 10_000,
         message: 'Workspace-card row did not focus the first split pane'
       })
@@ -285,9 +287,9 @@ test.describe('Activity Agent Pane Isolation', () => {
         activeLeafId: first.leafId
       })
 
-    await clickWorkspaceCardAgentRow(orcaPage, second.prompt)
+    await clickWorkspaceCardAgentRow(kinguPage, second.prompt)
     await expect
-      .poll(async () => readActivePaneSelection(orcaPage), {
+      .poll(async () => readActivePaneSelection(kinguPage), {
         timeout: 10_000,
         message: 'Workspace-card row did not focus the second split pane'
       })
@@ -298,30 +300,30 @@ test.describe('Activity Agent Pane Isolation', () => {
   })
 
   test('workspace card agent rows reveal terminal logs from a non-terminal surface', async ({
-    orcaPage
+    kinguPage
   }) => {
-    await splitActiveTerminalPane(orcaPage, 'vertical')
-    await waitForPaneCount(orcaPage, 2)
-    const snapshot = await waitForPaneIdentitySnapshot(orcaPage, 2)
-    const [first] = await seedActivityThreadsForSplitPanes(orcaPage, snapshot)
+    await splitActiveTerminalPane(kinguPage, 'vertical')
+    await waitForPaneCount(kinguPage, 2)
+    const snapshot = await waitForPaneIdentitySnapshot(kinguPage, 2)
+    const [first] = await seedActivityThreadsForSplitPanes(kinguPage, snapshot)
 
-    await enableInlineAgentCards(orcaPage)
-    await expect(terminalPaneForLeaf(orcaPage, first.leafId)).toBeVisible()
+    await enableInlineAgentCards(kinguPage)
+    await expect(terminalPaneForLeaf(kinguPage, first.leafId)).toBeVisible()
     // Why: this reproduces the user-visible failure mode: the agent row is
     // visible in the sidebar while the main workspace surface is not Terminal.
-    await expect(await clickFileInExplorer(orcaPage, ['README.md'])).toBe('README.md')
+    await expect(await clickFileInExplorer(kinguPage, ['README.md'])).toBe('README.md')
     await expect
-      .poll(() => readActivePaneSelection(orcaPage))
+      .poll(() => readActivePaneSelection(kinguPage))
       .toMatchObject({
         activeTabType: 'editor',
         activeTabId: snapshot.tabId
       })
-    await expect(terminalPaneForLeaf(orcaPage, first.leafId)).toBeHidden()
+    await expect(terminalPaneForLeaf(kinguPage, first.leafId)).toBeHidden()
 
-    await clickWorkspaceCardAgentRow(orcaPage, first.prompt)
+    await clickWorkspaceCardAgentRow(kinguPage, first.prompt)
 
     await expect
-      .poll(async () => readActivePaneSelection(orcaPage), {
+      .poll(async () => readActivePaneSelection(kinguPage), {
         timeout: 10_000,
         message: 'Workspace-card row did not reveal the terminal log surface'
       })
@@ -330,21 +332,21 @@ test.describe('Activity Agent Pane Isolation', () => {
         activeTabId: snapshot.tabId,
         activeLeafId: first.leafId
       })
-    await expect(terminalPaneForLeaf(orcaPage, first.leafId)).toBeVisible()
+    await expect(terminalPaneForLeaf(kinguPage, first.leafId)).toBeVisible()
   })
 
   test('workspace card agent rows focus the matching split-group terminal pane', async ({
-    orcaPage
+    kinguPage
   }) => {
-    await splitActiveTerminalPane(orcaPage, 'vertical')
-    await waitForPaneCount(orcaPage, 2)
-    const firstGroupSnapshot = await waitForPaneIdentitySnapshot(orcaPage, 2)
-    const [first, second] = await seedActivityThreadsForSplitPanes(orcaPage, firstGroupSnapshot)
+    await splitActiveTerminalPane(kinguPage, 'vertical')
+    await waitForPaneCount(kinguPage, 2)
+    const firstGroupSnapshot = await waitForPaneIdentitySnapshot(kinguPage, 2)
+    const [first, second] = await seedActivityThreadsForSplitPanes(kinguPage, firstGroupSnapshot)
 
-    const splitGroup = await createTerminalInNewSplitGroup(orcaPage)
-    await waitForActiveTerminalManager(orcaPage, 30_000)
-    await waitForPaneCount(orcaPage, 1, 30_000)
-    const secondGroupSnapshot = await waitForPaneIdentitySnapshot(orcaPage, 1)
+    const splitGroup = await createTerminalInNewSplitGroup(kinguPage)
+    await waitForActiveTerminalManager(kinguPage, 30_000)
+    await waitForPaneCount(kinguPage, 1, 30_000)
+    const secondGroupSnapshot = await waitForPaneIdentitySnapshot(kinguPage, 1)
     const secondGroupPane = secondGroupSnapshot.panes[0]
     if (!secondGroupPane) {
       throw new Error('Split-group terminal did not mount a pane')
@@ -356,7 +358,7 @@ test.describe('Activity Agent Pane Isolation', () => {
       prompt: `ACTIVITY_UUID_SPLIT_GROUP_${now}`
     }
     await seedActivityThread(
-      orcaPage,
+      kinguPage,
       splitGroupThread,
       'Codex split group pane',
       'blocked',
@@ -364,11 +366,11 @@ test.describe('Activity Agent Pane Isolation', () => {
       now
     )
 
-    await enableInlineAgentCards(orcaPage)
+    await enableInlineAgentCards(kinguPage)
 
-    await clickWorkspaceCardAgentRow(orcaPage, splitGroupThread.prompt)
+    await clickWorkspaceCardAgentRow(kinguPage, splitGroupThread.prompt)
     await expect
-      .poll(async () => readActivePaneSelection(orcaPage), {
+      .poll(async () => readActivePaneSelection(kinguPage), {
         timeout: 10_000,
         message: 'Workspace-card row did not focus the split-group terminal pane'
       })
@@ -378,9 +380,9 @@ test.describe('Activity Agent Pane Isolation', () => {
         activeLeafId: splitGroupThread.leafId
       })
 
-    await clickWorkspaceCardAgentRow(orcaPage, first.prompt)
+    await clickWorkspaceCardAgentRow(kinguPage, first.prompt)
     await expect
-      .poll(async () => readActivePaneSelection(orcaPage), {
+      .poll(async () => readActivePaneSelection(kinguPage), {
         timeout: 10_000,
         message: 'Workspace-card row did not return to the first split group'
       })
@@ -390,9 +392,9 @@ test.describe('Activity Agent Pane Isolation', () => {
         activeLeafId: first.leafId
       })
 
-    await clickWorkspaceCardAgentRow(orcaPage, second.prompt)
+    await clickWorkspaceCardAgentRow(kinguPage, second.prompt)
     await expect
-      .poll(async () => readActivePaneSelection(orcaPage), {
+      .poll(async () => readActivePaneSelection(kinguPage), {
         timeout: 10_000,
         message: 'Workspace-card row did not focus the sibling pane after group switch'
       })

@@ -1,4 +1,4 @@
-import { expect, type Page } from '@stablyai/playwright-test'
+import { expect, type Page } from '@anthovai/playwright-test'
 
 // Why scoped: the Landing screen renders its own "Add project" button whenever no
 // workspace is open, which is exactly the state these helpers run in.

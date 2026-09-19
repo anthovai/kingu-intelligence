@@ -6,27 +6,27 @@ import { promisify } from 'node:util'
 import { createElectronHomeIsolation } from './electron-home-isolation'
 
 const execFileAsync = promisify(execFile)
-const RUNTIME_METADATA_FILE = 'orca-runtime.json'
-let orcaDevUserDataPath: string | null = null
-let orcaServeProcess: ChildProcess | null = null
-let orcaServeStdout = ''
-let orcaServeStderr = ''
+const RUNTIME_METADATA_FILE = 'kingu-runtime.json'
+let kinguDevUserDataPath: string | null = null
+let kinguServeProcess: ChildProcess | null = null
+let kinguServeStdout = ''
+let kinguServeStderr = ''
 
 export type CliResult = {
   stdout: string
   stderr: string
 }
 
-type RunOrcaCliOptions = {
+type RunKinguCliOptions = {
   retryMissingRuntimeMetadata?: boolean
 }
 
-export async function runOrcaCli(
+export async function runKinguCli(
   args: string[],
-  options: RunOrcaCliOptions = {}
+  options: RunKinguCliOptions = {}
 ): Promise<CliResult> {
   try {
-    return await runOrcaCliOnce(args)
+    return await runKinguCliOnce(args)
   } catch (error) {
     if (
       options.retryMissingRuntimeMetadata !== false &&
@@ -34,18 +34,18 @@ export async function runOrcaCli(
     ) {
       // Why: Windows CI can let the dev runtime exit while launching the
       // fixture app; reopen once so the desktop action gets a live runtime.
-      await ensureOrcaRuntimeLaunched()
-      return await runOrcaCliOnce(args)
+      await ensureKinguRuntimeLaunched()
+      return await runKinguCliOnce(args)
     }
     throw error
   }
 }
 
-async function runOrcaCliOnce(args: string[]): Promise<CliResult> {
-  const devCli = join(process.cwd(), 'config/scripts/orca-dev.mjs')
-  const command = process.env.ORCA_COMPUTER_CLI ?? process.execPath
-  const cliArgs = process.env.ORCA_COMPUTER_CLI ? args : [devCli, ...args]
-  const env = process.env.ORCA_COMPUTER_CLI
+async function runKinguCliOnce(args: string[]): Promise<CliResult> {
+  const devCli = join(process.cwd(), 'config/scripts/kingu-dev.mjs')
+  const command = process.env.KINGU_COMPUTER_CLI ?? process.execPath
+  const cliArgs = process.env.KINGU_COMPUTER_CLI ? args : [devCli, ...args]
+  const env = process.env.KINGU_COMPUTER_CLI
     ? { ...process.env }
     : await createComputerE2ERuntimeEnv()
   try {
@@ -63,21 +63,21 @@ async function runOrcaCliOnce(args: string[]): Promise<CliResult> {
   }
 }
 
-export async function ensureOrcaRuntimeLaunched(): Promise<void> {
-  if (!process.env.ORCA_COMPUTER_CLI && process.platform === 'win32') {
-    await ensureOrcaRuntimeServed()
+export async function ensureKinguRuntimeLaunched(): Promise<void> {
+  if (!process.env.KINGU_COMPUTER_CLI && process.platform === 'win32') {
+    await ensureKinguRuntimeServed()
     return
   }
-  await runOrcaCli(['open', '--json'], { retryMissingRuntimeMetadata: false })
-  await waitForOrcaRuntimeReady()
+  await runKinguCli(['open', '--json'], { retryMissingRuntimeMetadata: false })
+  await waitForKinguRuntimeReady()
 }
 
-export async function stopOrcaRuntime(): Promise<void> {
-  const processToStop = orcaServeProcess
+export async function stopKinguRuntime(): Promise<void> {
+  const processToStop = kinguServeProcess
   if (!processToStop?.pid) {
     return
   }
-  orcaServeProcess = null
+  kinguServeProcess = null
   if (process.platform === 'win32') {
     try {
       await execFileAsync('taskkill.exe', ['/PID', String(processToStop.pid), '/T', '/F'])
@@ -93,17 +93,17 @@ export function parseJsonOutput<T>(stdout: string): T {
   return JSON.parse(stdout) as T
 }
 
-async function getComputerE2eOrcaDevUserDataPath(): Promise<string> {
-  if (!orcaDevUserDataPath) {
-    // Why: the shared orca-dev profile can keep an older runtime alive across
+async function getComputerE2eKinguDevUserDataPath(): Promise<string> {
+  if (!kinguDevUserDataPath) {
+    // Why: the shared kingu-dev profile can keep an older runtime alive across
     // local test runs, making computer-use E2E exercise stale provider code.
-    orcaDevUserDataPath = await mkdtemp(join(tmpdir(), 'orca-computer-runtime-'))
+    kinguDevUserDataPath = await mkdtemp(join(tmpdir(), 'kingu-computer-runtime-'))
   }
-  return orcaDevUserDataPath
+  return kinguDevUserDataPath
 }
 
-async function waitForOrcaRuntimeReady(): Promise<void> {
-  const userDataPath = await getComputerE2eOrcaDevUserDataPath()
+async function waitForKinguRuntimeReady(): Promise<void> {
+  const userDataPath = await getComputerE2eKinguDevUserDataPath()
   const metadataPath = join(userDataPath, RUNTIME_METADATA_FILE)
   const deadline = Date.now() + 15000
   let lastError: unknown = null
@@ -113,7 +113,7 @@ async function waitForOrcaRuntimeReady(): Promise<void> {
       await access(metadataPath)
       const status = parseJsonOutput<{
         result: { runtime: { reachable: boolean } }
-      }>((await runOrcaCli(['status', '--json'], { retryMissingRuntimeMetadata: false })).stdout)
+      }>((await runKinguCli(['status', '--json'], { retryMissingRuntimeMetadata: false })).stdout)
       if (status.result.runtime.reachable) {
         return
       }
@@ -125,47 +125,47 @@ async function waitForOrcaRuntimeReady(): Promise<void> {
 
   const detail = [
     lastError instanceof Error ? `Last error: ${lastError.message}` : null,
-    orcaServeStdout.trim() ? `serve stdout: ${orcaServeStdout.trim()}` : null,
-    orcaServeStderr.trim() ? `serve stderr: ${orcaServeStderr.trim()}` : null
+    kinguServeStdout.trim() ? `serve stdout: ${kinguServeStdout.trim()}` : null,
+    kinguServeStderr.trim() ? `serve stderr: ${kinguServeStderr.trim()}` : null
   ]
     .filter(Boolean)
     .join(' ')
-  throw new Error(`Orca runtime metadata was not ready at ${metadataPath}.${detail}`)
+  throw new Error(`Kingu runtime metadata was not ready at ${metadataPath}.${detail}`)
 }
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-async function ensureOrcaRuntimeServed(): Promise<void> {
-  if (!orcaServeProcess || orcaServeProcess.exitCode !== null) {
-    const devCli = join(process.cwd(), 'config/scripts/orca-dev.mjs')
+async function ensureKinguRuntimeServed(): Promise<void> {
+  if (!kinguServeProcess || kinguServeProcess.exitCode !== null) {
+    const devCli = join(process.cwd(), 'config/scripts/kingu-dev.mjs')
     const env = await createComputerE2ERuntimeEnv()
-    orcaServeStdout = ''
-    orcaServeStderr = ''
-    orcaServeProcess = spawn(process.execPath, [devCli, 'serve', '--no-pairing', '--json'], {
+    kinguServeStdout = ''
+    kinguServeStderr = ''
+    kinguServeProcess = spawn(process.execPath, [devCli, 'serve', '--no-pairing', '--json'], {
       env,
       windowsHide: true
     })
-    orcaServeProcess.stdout?.on('data', (chunk) => {
-      orcaServeStdout += String(chunk)
+    kinguServeProcess.stdout?.on('data', (chunk) => {
+      kinguServeStdout += String(chunk)
     })
-    orcaServeProcess.stderr?.on('data', (chunk) => {
-      orcaServeStderr += String(chunk)
+    kinguServeProcess.stderr?.on('data', (chunk) => {
+      kinguServeStderr += String(chunk)
     })
-    orcaServeProcess.once('exit', () => {
-      orcaServeProcess = null
+    kinguServeProcess.once('exit', () => {
+      kinguServeProcess = null
     })
     process.once('exit', () => {
-      orcaServeProcess?.kill()
+      kinguServeProcess?.kill()
     })
   }
-  await waitForOrcaRuntimeReady()
+  await waitForKinguRuntimeReady()
 }
 
 async function createComputerE2ERuntimeEnv(): Promise<NodeJS.ProcessEnv> {
   const userDataDir =
-    process.env.ORCA_DEV_USER_DATA_PATH ?? (await getComputerE2eOrcaDevUserDataPath())
+    process.env.KINGU_DEV_USER_DATA_PATH ?? (await getComputerE2eKinguDevUserDataPath())
   // Why: agent runtimes export ELECTRON_RUN_AS_NODE, which would make the
   // spawned Electron behave as plain Node; strip it like every other caller.
   const { ELECTRON_RUN_AS_NODE: _electronRunAsNode, ...inheritedEnv } = process.env
@@ -180,7 +180,7 @@ async function createComputerE2ERuntimeEnv(): Promise<NodeJS.ProcessEnv> {
     ...isolation.env,
     // Why: the Node CLI and the Electron child must resolve the same runtime
     // metadata while the E2E boundary owns their home and Codex paths.
-    ORCA_DEV_USER_DATA_PATH: userDataDir
+    KINGU_DEV_USER_DATA_PATH: userDataDir
   }
 }
 
@@ -194,6 +194,6 @@ function isMissingRuntimeMetadataError(args: string[], error: unknown): boolean 
   const message = String((error as { message?: unknown }).message)
   return (
     message.includes('"code": "runtime_unavailable"') &&
-    message.includes('Could not read Orca runtime metadata')
+    message.includes('Could not read Kingu runtime metadata')
   )
 }

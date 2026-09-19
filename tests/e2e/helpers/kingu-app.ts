@@ -1,5 +1,5 @@
 /**
- * Shared Electron fixture for Orca E2E tests.
+ * Shared Electron fixture for Kingu E2E tests.
  *
  * Why: Playwright's native _electron.launch() is used instead of CDP.
  * It launches the Electron app directly from the built output, gives
@@ -20,13 +20,13 @@ import {
   type Page,
   type ElectronApplication,
   type TestInfo
-} from '@stablyai/playwright-test'
+} from '@anthovai/playwright-test'
 import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { TEST_REPO_PATH_FILE } from '../global-setup'
 import { cleanupE2EDaemons, closeElectronAppForE2E } from './electron-process-shutdown'
-import { getOrcaElectronLaunchArgs } from './electron-launch-args'
+import { getKinguElectronLaunchArgs } from './electron-launch-args'
 import { retryTransientMainEvaluate } from './electron-main-evaluate-retry'
 import { getE2ECompletedOnboardingProfile } from './e2e-completed-onboarding-profile'
 import {
@@ -35,11 +35,11 @@ import {
 } from './electron-home-isolation'
 import { createSeededTestRepo, isValidGitRepo } from './seeded-test-repo'
 
-type OrcaTestFixtures = {
+type KinguTestFixtures = {
   electronApp: ElectronApplication
   registerPostElectronShutdownCleanup: (cleanup: () => Promise<void>) => void
   sharedPage: Page
-  orcaPage: Page
+  kinguPage: Page
   // Why: every fresh userData dir paints the first-launch onboarding overlay
   // (closedAt=null), which is `fixed inset-0 z-[100]` and intercepts pointer
   // events for every other test. Dismiss it by default; onboarding.spec.ts
@@ -54,33 +54,33 @@ type OrcaTestFixtures = {
   // Why: spec-scoped launch env. Mutating process.env at spec module scope
   // leaks into other specs when a worker reloads files without replaying the
   // first spec's afterAll; per-test launch env cannot leak.
-  orcaAppExtraEnv: Record<string, string>
+  kinguAppExtraEnv: Record<string, string>
   // Why: spec-scoped Chromium switches (e.g. --enable-precise-memory-info for
   // memory benchmarks). Prepended before the main entry so Electron forwards
   // them to Chromium without affecting other specs' launches.
-  orcaAppExtraArgs: string[]
+  kinguAppExtraArgs: string[]
   // Why: a few IPC repro specs need to launch the Electron app with a scoped
   // PATH/token environment. Keep this fixture-owned so tests never mutate the
-  // developer's shell or already-running Orca instance.
+  // developer's shell or already-running Kingu instance.
   launchEnv: NodeJS.ProcessEnv
 }
 
-type OrcaWorkerFixtures = {
+type KinguWorkerFixtures = {
   /** Absolute path to the test git repo created by globalSetup. */
   testRepoPath: string
 }
 
-// Why: parse + warn at module scope so a bad ORCA_E2E_SLOWMO_MS value logs once
+// Why: parse + warn at module scope so a bad KINGU_E2E_SLOWMO_MS value logs once
 // per worker instead of once per test (otherwise hundreds of lines per CI run).
-const ORCA_E2E_SLOWMO_MS_RAW = process.env.ORCA_E2E_SLOWMO_MS
-const ORCA_E2E_SLOWMO_MS = ((): number => {
-  if (ORCA_E2E_SLOWMO_MS_RAW === undefined) {
+const KINGU_E2E_SLOWMO_MS_RAW = process.env.KINGU_E2E_SLOWMO_MS
+const KINGU_E2E_SLOWMO_MS = ((): number => {
+  if (KINGU_E2E_SLOWMO_MS_RAW === undefined) {
     return 0
   }
-  const parsed = Number(ORCA_E2E_SLOWMO_MS_RAW)
+  const parsed = Number(KINGU_E2E_SLOWMO_MS_RAW)
   if (!Number.isFinite(parsed)) {
     console.warn(
-      `[orca-e2e] ORCA_E2E_SLOWMO_MS="${ORCA_E2E_SLOWMO_MS_RAW}" is not a number; ignoring (using 0).`
+      `[kingu-e2e] KINGU_E2E_SLOWMO_MS="${KINGU_E2E_SLOWMO_MS_RAW}" is not a number; ignoring (using 0).`
     )
     return 0
   }
@@ -104,19 +104,19 @@ async function removeUserDataDirAfterShutdown(userDataDir: string): Promise<void
 }
 
 function shouldLaunchHeadful(testInfo: TestInfo): boolean {
-  // Why: ORCA_E2E_FORCE_HEADFUL lets a developer watch any spec in a real
+  // Why: KINGU_E2E_FORCE_HEADFUL lets a developer watch any spec in a real
   // window without retagging it `@headful` or switching projects.
-  if (process.env.ORCA_E2E_FORCE_HEADFUL === '1') {
+  if (process.env.KINGU_E2E_FORCE_HEADFUL === '1') {
     return true
   }
-  return testInfo.project.metadata.orcaHeadful === true
+  return testInfo.project.metadata.kinguHeadful === true
 }
 
 // Why: exported so specs that launch their own ElectronApplication outside
 // this fixture (e.g. multi-instance lifecycle tests) can still opt into the
-// same ORCA_E2E_FORWARD_APP_LOGS-gated stdout/stderr capture.
+// same KINGU_E2E_FORWARD_APP_LOGS-gated stdout/stderr capture.
 export function forwardElectronProcessLogs(app: ElectronApplication, testInfo: TestInfo): void {
-  if (process.env.ORCA_E2E_FORWARD_APP_LOGS !== '1') {
+  if (process.env.KINGU_E2E_FORWARD_APP_LOGS !== '1') {
     return
   }
 
@@ -134,14 +134,14 @@ export function forwardElectronProcessLogs(app: ElectronApplication, testInfo: T
 }
 
 /**
- * Extended Playwright test with Orca-specific fixtures.
+ * Extended Playwright test with Kingu-specific fixtures.
  *
- * `orcaPage` — the main Orca renderer window.
+ * `kinguPage` — the main Kingu renderer window.
  *
  * Test-scoped: each test gets a fresh Electron instance and isolated
  * userData directory so state cannot leak across specs through persistence.
  */
-export const test = base.extend<OrcaTestFixtures, OrcaWorkerFixtures>({
+export const test = base.extend<KinguTestFixtures, KinguWorkerFixtures>({
   // Worker-scoped: read the test repo path once
   testRepoPath: [
     // oxlint-disable-next-line no-empty-pattern -- Playwright fixture callbacks require object destructuring here.
@@ -177,8 +177,8 @@ export const test = base.extend<OrcaTestFixtures, OrcaWorkerFixtures>({
     {
       dismissOnboarding,
       launchEnv,
-      orcaAppExtraEnv,
-      orcaAppExtraArgs,
+      kinguAppExtraEnv,
+      kinguAppExtraArgs,
       registerPostElectronShutdownCleanup
     },
     provideFixture,
@@ -188,7 +188,7 @@ export const test = base.extend<OrcaTestFixtures, OrcaWorkerFixtures>({
     // this Electron fixture has released watchers, terminals, and daemons.
     void registerPostElectronShutdownCleanup
     const mainPath = path.join(process.cwd(), 'out', 'main', 'index.js')
-    const userDataDir = mkdtempSync(path.join(os.tmpdir(), 'orca-e2e-userdata-'))
+    const userDataDir = mkdtempSync(path.join(os.tmpdir(), 'kingu-e2e-userdata-'))
 
     if (dismissOnboarding) {
       // Why: onboarding renders a fullscreen `fixed inset-0 z-[100]` overlay
@@ -197,13 +197,13 @@ export const test = base.extend<OrcaTestFixtures, OrcaWorkerFixtures>({
       // an empty file would make persistence treat the profile as an
       // existing-user upgrade cohort and mount the telemetry notice overlay.
       writeFileSync(
-        path.join(userDataDir, 'orca-data.json'),
+        path.join(userDataDir, 'kingu-data.json'),
         `${JSON.stringify(getE2ECompletedOnboardingProfile(), null, 2)}\n`
       )
     }
     const headful = shouldLaunchHeadful(testInfo)
     // Why: strip ELECTRON_RUN_AS_NODE before spawning. Some host shells (e.g.
-    // Orca's own agent runtime) set it so Electron behaves as a plain Node
+    // Kingu's own agent runtime) set it so Electron behaves as a plain Node
     // binary. Playwright's _electron.launch passes --remote-debugging-port,
     // which Node rejects with "bad option" and the process exits immediately.
     const { ELECTRON_RUN_AS_NODE: _unused, ...cleanEnv } = process.env
@@ -211,35 +211,35 @@ export const test = base.extend<OrcaTestFixtures, OrcaWorkerFixtures>({
     const homeIsolation = createElectronHomeIsolation({
       inheritedEnv: cleanEnv,
       launchEnv,
-      extraEnv: orcaAppExtraEnv,
+      extraEnv: kinguAppExtraEnv,
       userDataDir
     })
-    // Why: ORCA_E2E_SLOWMO_MS adds a pause between every Playwright action so a
-    // developer running with ORCA_E2E_FORCE_HEADFUL=1 can actually watch what
+    // Why: KINGU_E2E_SLOWMO_MS adds a pause between every Playwright action so a
+    // developer running with KINGU_E2E_FORCE_HEADFUL=1 can actually watch what
     // the test does. Defaults to 0 (no slowdown) for normal runs.
-    const slowMo = ORCA_E2E_SLOWMO_MS
-    // Why: ORCA_E2E_RECORD_VIDEO=1 captures a webm of the renderer so a
+    const slowMo = KINGU_E2E_SLOWMO_MS
+    // Why: KINGU_E2E_RECORD_VIDEO=1 captures a webm of the renderer so a
     // developer can replay the run later — Electron's Playwright trace viewer
     // does not produce DOM snapshots, so video is the only reliable replay.
     // Why: testInfo.outputDir is created lazily by Playwright; on Windows the
     // dir may not exist when the fixture initializes, and Electron silently
     // drops the recording. mkdir up-front so the recorder always has a home.
-    const recordVideoDir = process.env.ORCA_E2E_RECORD_VIDEO === '1' ? testInfo.outputDir : null
+    const recordVideoDir = process.env.KINGU_E2E_RECORD_VIDEO === '1' ? testInfo.outputDir : null
     if (recordVideoDir) {
       mkdirSync(recordVideoDir, { recursive: true })
     }
     const app = await electron.launch({
-      args: [...orcaAppExtraArgs, ...getOrcaElectronLaunchArgs(mainPath, headful)],
+      args: [...kinguAppExtraArgs, ...getKinguElectronLaunchArgs(mainPath, headful)],
       ...(slowMo > 0 ? { slowMo } : {}),
       ...(recordVideoDir ? { recordVideo: { dir: recordVideoDir } } : {}),
       // Why: keep NODE_ENV=development so window.__store is exposed and
-      // dev-only helpers activate. ORCA_E2E_USER_DATA_DIR overrides the usual
+      // dev-only helpers activate. KINGU_E2E_USER_DATA_DIR overrides the usual
       // shared dev profile so every spec gets a clean persistence root.
-      // Why: ORCA_E2E_HEADLESS suppresses mainWindow.show() so the app
+      // Why: KINGU_E2E_HEADLESS suppresses mainWindow.show() so the app
       // window stays hidden during test runs, avoiding focus stealing and
       // screen clutter. Playwright interacts via CDP regardless.
-      // Why: ORCA_E2E_HEADLESS suppresses mainWindow.show() for CI/headless
-      // runs. ORCA_E2E_HEADFUL overrides this for tests that need a visible
+      // Why: KINGU_E2E_HEADLESS suppresses mainWindow.show() for CI/headless
+      // runs. KINGU_E2E_HEADFUL overrides this for tests that need a visible
       // window (e.g. pointer-capture drag tests).
       // Why: local SSH E2E deploys the relay from the dev build output. The
       // Electron app's getAppPath() points at the compiled main bundle in E2E,
@@ -247,13 +247,13 @@ export const test = base.extend<OrcaTestFixtures, OrcaWorkerFixtures>({
       env: {
         ...homeIsolation.env,
         NODE_ENV: 'development',
-        ...((process.env.ORCA_E2E_SSH_LOCALHOST === '1' ||
-          process.env.ORCA_E2E_SSH_DOCKER === '1' ||
-          process.env.ORCA_E2E_NESTED_RUNTIME_SSH === '1') &&
-        !cleanEnv.ORCA_RELAY_PATH
-          ? { ORCA_RELAY_PATH: path.join(process.cwd(), 'out', 'relay') }
+        ...((process.env.KINGU_E2E_SSH_LOCALHOST === '1' ||
+          process.env.KINGU_E2E_SSH_DOCKER === '1' ||
+          process.env.KINGU_E2E_NESTED_RUNTIME_SSH === '1') &&
+        !cleanEnv.KINGU_RELAY_PATH
+          ? { KINGU_RELAY_PATH: path.join(process.cwd(), 'out', 'relay') }
           : {}),
-        ...(headful ? { ORCA_E2E_HEADFUL: '1' } : { ORCA_E2E_HEADLESS: '1' })
+        ...(headful ? { KINGU_E2E_HEADFUL: '1' } : { KINGU_E2E_HEADLESS: '1' })
       }
     })
     forwardElectronProcessLogs(app, testInfo)
@@ -285,8 +285,8 @@ export const test = base.extend<OrcaTestFixtures, OrcaWorkerFixtures>({
   },
   minimumSeededWorktreeCount: [2, { option: true }],
   launchEnv: [{}, { option: true }],
-  orcaAppExtraEnv: [{}, { option: true }],
-  orcaAppExtraArgs: [[], { option: true }],
+  kinguAppExtraEnv: [{}, { option: true }],
+  kinguAppExtraArgs: [[], { option: true }],
 
   // Test-scoped: grab the first BrowserWindow, add the test repo, and wait
   // until the session is fully ready with a worktree active.
@@ -450,9 +450,9 @@ export const test = base.extend<OrcaTestFixtures, OrcaWorkerFixtures>({
   },
 
   // Test-scoped: each test gets the shared page
-  orcaPage: async ({ sharedPage }, provideFixture) => {
+  kinguPage: async ({ sharedPage }, provideFixture) => {
     await provideFixture(sharedPage)
   }
 })
 
-export { expect } from '@stablyai/playwright-test'
+export { expect } from '@anthovai/playwright-test'

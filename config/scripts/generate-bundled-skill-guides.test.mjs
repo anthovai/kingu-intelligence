@@ -34,8 +34,8 @@ const GUIDE_REFERENCES = {
     'recovery-and-cleanup.md',
     'worker-contract.md'
   ],
-  'orca-cli': ['automations.md', 'browser.md', 'publishing.md'],
-  'orca-per-workspace-env': [
+  'kingu-cli': ['automations.md', 'browser.md', 'publishing.md'],
+  'kingu-per-workspace-env': [
     'docker-ssh.md',
     'failure-modes.md',
     'provider-vercel.md',
@@ -50,16 +50,16 @@ const GUIDE_REFERENCE_PATHS = Object.entries(GUIDE_REFERENCES).flatMap(([guide, 
 async function readPerWorkspaceEnvCorpus() {
   const guideRoot = path.join(projectDir, 'skill-guides')
   const files = [
-    path.join(guideRoot, 'orca-per-workspace-env.md'),
-    ...GUIDE_REFERENCES['orca-per-workspace-env'].map((reference) =>
-      path.join(guideRoot, 'orca-per-workspace-env', 'references', reference)
+    path.join(guideRoot, 'kingu-per-workspace-env.md'),
+    ...GUIDE_REFERENCES['kingu-per-workspace-env'].map((reference) =>
+      path.join(guideRoot, 'kingu-per-workspace-env', 'references', reference)
     )
   ]
   return (await Promise.all(files.map((file) => readFile(file, 'utf8')))).join('\n')
 }
 
 async function createFixture() {
-  const root = await mkdtemp(path.join(tmpdir(), 'orca-bundled-skill-guides-'))
+  const root = await mkdtemp(path.join(tmpdir(), 'kingu-bundled-skill-guides-'))
   temporaryDirectories.push(root)
   await Promise.all([
     cp(path.join(projectDir, 'skill-guides'), path.join(root, 'skill-guides'), {
@@ -105,54 +105,54 @@ describe('bundled skill guide generator', () => {
       path.join(
         projectDir,
         'skill-guides',
-        'orca-per-workspace-env',
+        'kingu-per-workspace-env',
         'references',
         'provider-vercel.md'
       ),
       'utf8'
     )
 
-    expect(corpus).toContain('ORCA_RECIPE_ID')
-    expect(corpus).not.toContain('ORCA_VM_RECIPE_ID')
+    expect(corpus).toContain('KINGU_RECIPE_ID')
+    expect(corpus).not.toContain('KINGU_VM_RECIPE_ID')
     expect(vercelReference).toContain('recipe_id="${recipe_id//./-}"')
     expect(vercelReference).toContain('max_recipe_id_length=$((128 - ${#instance_id} - 6))')
     expect(vercelReference).toContain(
-      'name="orca-${recipe_id:0:max_recipe_id_length}-${instance_id}"'
+      'name="kingu-${recipe_id:0:max_recipe_id_length}-${instance_id}"'
     )
   })
 
   it.skipIf(process.platform === 'win32')(
-    'resolves snapshot cleanup through Orca user-data precedence',
+    'resolves snapshot cleanup through Kingu user-data precedence',
     async () => {
       const source = await readFile(
-        path.join(projectDir, 'skill-guides', 'orca-per-workspace-env.md'),
+        path.join(projectDir, 'skill-guides', 'kingu-per-workspace-env.md'),
         'utf8'
       )
       const assignment =
-        'orca_user_data_path="${ORCA_USER_DATA_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/orca}"'
+        'kingu_user_data_path="${KINGU_USER_DATA_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/kingu}"'
       expect(source).toContain(assignment)
       const renderPath = async (env) =>
         (
           await execFileAsync(
             'bash',
-            ['-u', '-c', `${assignment}; printf '%s' "$orca_user_data_path"`],
+            ['-u', '-c', `${assignment}; printf '%s' "$kingu_user_data_path"`],
             {
               env
             }
           )
         ).stdout
 
-      await expect(renderPath({ HOME: '/home/orca' })).resolves.toBe('/home/orca/.config/orca')
+      await expect(renderPath({ HOME: '/home/kingu' })).resolves.toBe('/home/kingu/.config/kingu')
       await expect(
-        renderPath({ HOME: '/home/orca', XDG_CONFIG_HOME: '/srv/config' })
-      ).resolves.toBe('/srv/config/orca')
+        renderPath({ HOME: '/home/kingu', XDG_CONFIG_HOME: '/srv/config' })
+      ).resolves.toBe('/srv/config/kingu')
       await expect(
         renderPath({
-          HOME: '/home/orca',
+          HOME: '/home/kingu',
           XDG_CONFIG_HOME: '/srv/config',
-          ORCA_USER_DATA_PATH: '/var/lib/orca-custom'
+          KINGU_USER_DATA_PATH: '/var/lib/kingu-custom'
         })
-      ).resolves.toBe('/var/lib/orca-custom')
+      ).resolves.toBe('/var/lib/kingu-custom')
     }
   )
 
@@ -163,14 +163,14 @@ describe('bundled skill guide generator', () => {
         path.join(
           projectDir,
           'skill-guides',
-          'orca-per-workspace-env',
+          'kingu-per-workspace-env',
           'references',
           'provider-vercel.md'
         ),
         'utf8'
       )
-      const startMarker = 'recipe_id="${ORCA_RECIPE_ID:-vercel-sandbox}"'
-      const endMarker = 'name="orca-${recipe_id:0:max_recipe_id_length}-${instance_id}"'
+      const startMarker = 'recipe_id="${KINGU_RECIPE_ID:-vercel-sandbox}"'
+      const endMarker = 'name="kingu-${recipe_id:0:max_recipe_id_length}-${instance_id}"'
       const start = source.indexOf(startMarker)
       const endStart = source.indexOf(endMarker, start)
       expect(start).toBeGreaterThanOrEqual(0)
@@ -179,11 +179,11 @@ describe('bundled skill guide generator', () => {
       const renderName = async (recipeId, instanceId) =>
         (
           await execFileAsync('bash', ['-u', '-c', script], {
-            env: { ...process.env, ORCA_RECIPE_ID: recipeId, ORCA_VM_INSTANCE_ID: instanceId }
+            env: { ...process.env, KINGU_RECIPE_ID: recipeId, KINGU_VM_INSTANCE_ID: instanceId }
           })
         ).stdout
 
-      const instanceId = 'orca-123e4567-e89b-12d3-a456-426614174000'
+      const instanceId = 'kingu-123e4567-e89b-12d3-a456-426614174000'
       const dotted = await renderName('provider.cloud_sandbox', instanceId)
       const maximum = await renderName(`a${'.'.repeat(63)}`, instanceId)
       const longInstanceId = 'i'.repeat(100)
@@ -192,7 +192,7 @@ describe('bundled skill guide generator', () => {
         longInstanceId
       )
 
-      expect(dotted).toBe(`orca-provider-cloud_sandbox-${instanceId}`)
+      expect(dotted).toBe(`kingu-provider-cloud_sandbox-${instanceId}`)
       expect(maximum).toMatch(/^[a-zA-Z0-9_-]{1,128}$/u)
       expect(capped).toHaveLength(128)
       expect(capped.endsWith(`-${longInstanceId}`)).toBe(true)
@@ -257,14 +257,14 @@ describe('bundled skill guide generator', () => {
   })
 
   it('keeps CLI guide examples safe across shells and Linux command names', async () => {
-    for (const name of ['orca-cli', 'computer-use', 'orca-emulator', 'orca-emulator-android']) {
+    for (const name of ['kingu-cli', 'computer-use', 'kingu-emulator', 'kingu-emulator-android']) {
       const source = await readFile(path.join(projectDir, 'skill-guides', `${name}.md`), 'utf8')
 
-      expect(source).toMatch(/^ORCA .+--json$/mu)
-      // Why: bare command lines can launch GNOME Orca, while shell variables make
+      expect(source).toMatch(/^KINGU .+--json$/mu)
+      // Why: bare command lines can launch GNOME Kingu, while shell variables make
       // the same guide unusable from PowerShell and cmd.exe.
-      expect(source).not.toMatch(/^orca /mu)
-      expect(source).not.toMatch(/\$ORCA(?:_|\b)/u)
+      expect(source).not.toMatch(/^kingu /mu)
+      expect(source).not.toMatch(/\$KINGU(?:_|\b)/u)
     }
   })
 
@@ -379,35 +379,35 @@ describe('bundled skill guide generator', () => {
   })
 
   // G2: the resolver ladder is single-authored. Without this, a stub can re-inline it and
-  // drift again exactly as the guide copies already did (#7904 lost `/usr/bin/orca`).
+  // drift again exactly as the guide copies already did (#7904 lost `/usr/bin/kingu`).
   it('projects one shared resolver fragment byte-for-byte into every stub', async () => {
     const blocks = await readSharedStubBlocks(projectDir)
 
     expect([...blocks.keys()]).toEqual(['resolver', 'no-guessing'])
     // Why: the guide copies of this warning had each dropped one half. #7904 is the incident
-    // where bare `orca` started the screen reader talking on a user's Ubuntu box.
-    expect(blocks.get('resolver').text).toContain('(`/usr/bin/orca`)')
+    // where bare `kingu` started the screen reader talking on a user's Ubuntu box.
+    expect(blocks.get('resolver').text).toContain('(`/usr/bin/kingu`)')
     expect(blocks.get('resolver').text).toContain("starts speech on the user's machine")
     for (const name of STUB_TOPICS) {
       const projection = await readFile(path.join(projectDir, 'skills', name, 'SKILL.md'), 'utf8')
       for (const [id, block] of blocks) {
         expect(projection.split(block.text), `${name}/${id}`).toHaveLength(2)
       }
-      // The `ORCA` placeholder rule is stated once, in the fragment, never restated.
+      // The `KINGU` placeholder rule is stated once, in the fragment, never restated.
       expect(projection.split('is a placeholder for the executable'), name).toHaveLength(2)
     }
   })
 
   // G2, second half: the ladder is pre-resolution guidance and belongs only to the stub —
   // every path that delivers a guide body has already resolved an executable. Guides keep
-  // the `ORCA` placeholder rule. Red until the guide bodies drop their ladders; retiring
-  // those also retires the ORCA_CLI_COMMAND/orca-dev/orca-ide assertions in
+  // the `KINGU` placeholder rule. Red until the guide bodies drop their ladders; retiring
+  // those also retires the KINGU_CLI_COMMAND/kingu-dev/kingu-ide assertions in
   // 'keeps CLI guide examples safe across shells and Linux command names' above, which
   // pin the opposite contract.
   it('keeps the CLI resolver ladder out of every guide body', async () => {
     for (const name of CANONICAL_GUIDE_NAMES) {
       const source = await readFile(path.join(projectDir, 'skill-guides', `${name}.md`), 'utf8')
-      expect(source, name).not.toContain('ORCA_CLI_COMMAND')
+      expect(source, name).not.toContain('KINGU_CLI_COMMAND')
     }
   })
 
@@ -429,7 +429,7 @@ describe('bundled skill guide generator', () => {
 
   it('rejects non-Markdown and empty bundled references', async () => {
     const root = await createFixture()
-    const referenceRoot = path.join(root, 'skill-guides', 'orca-cli', 'references')
+    const referenceRoot = path.join(root, 'skill-guides', 'kingu-cli', 'references')
 
     await writeFile(path.join(referenceRoot, 'notes.txt'), 'not a reference\n')
     await expect(buildArtifacts(root)).rejects.toThrow('Guide references must be Markdown files')
@@ -464,8 +464,8 @@ describe('guide reference routing', () => {
 
   it('routes every shipped reference from its own guide, in both directions', async () => {
     const owners = await guidesWithReferences()
-    // A vacuous loop would pass forever; orca-cli is a guide that owns references today.
-    expect(owners.map((owner) => owner.name)).toContain('orca-cli')
+    // A vacuous loop would pass forever; kingu-cli is a guide that owns references today.
+    expect(owners.map((owner) => owner.name)).toContain('kingu-cli')
 
     const mismatches = []
     for (const owner of owners) {

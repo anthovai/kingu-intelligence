@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises'
-import type { Page } from '@stablyai/playwright-test'
-import { test, expect } from './helpers/orca-app'
+import type { Page } from '@anthovai/playwright-test'
+import { test, expect } from './helpers/kingu-app'
 import { getActiveTabId, getActiveWorktreeId, waitForSessionReady } from './helpers/store'
 import {
   execInTerminal,
@@ -342,10 +342,10 @@ async function captureFirstRevealedFrame(page: Page, tabId: string): Promise<Buf
 }
 
 test.describe('terminal reveal paused-render recovery', () => {
-  test("reveal repaint forces a render through xterm's paused gate", async ({ orcaPage }) => {
-    // Why: __store / __paneManagers live on the main Orca renderer window
-    // (orcaPage), not Playwright's default first page.
-    const page = orcaPage
+  test("reveal repaint forces a render through xterm's paused gate", async ({ kinguPage }) => {
+    // Why: __store / __paneManagers live on the main Kingu renderer window
+    // (kinguPage), not Playwright's default first page.
+    const page = kinguPage
     await waitForSessionReady(page)
     await waitForActiveTerminalManager(page)
     const tabId = (await getActiveTabId(page))!
@@ -426,13 +426,13 @@ test.describe('terminal reveal paused-render recovery', () => {
   })
 
   test('@headful atlas recovery presents a synchronized-output WebGL frame', async ({
-    orcaPage
+    kinguPage
   }, testInfo) => {
-    await waitForSessionReady(orcaPage)
-    await waitForActiveTerminalManager(orcaPage)
-    const tabId = (await getActiveTabId(orcaPage))!
-    await forceWebglOn(orcaPage, tabId)
-    const webglAttached = await orcaPage
+    await waitForSessionReady(kinguPage)
+    await waitForActiveTerminalManager(kinguPage)
+    const tabId = (await getActiveTabId(kinguPage))!
+    await forceWebglOn(kinguPage, tabId)
+    const webglAttached = await kinguPage
       .waitForFunction(
         (tabId) =>
           (window.__paneManagers?.get(tabId)?.getRenderingDiagnostics?.() ?? []).some(
@@ -447,33 +447,33 @@ test.describe('terminal reveal paused-render recovery', () => {
     if (!webglAttached) {
       return
     }
-    const installed = await installSynchronizedRevealProbe(orcaPage, tabId)
+    const installed = await installSynchronizedRevealProbe(kinguPage, tabId)
     expect(installed, 'WebGL renderer internals are available').toBe(true)
 
-    await callSynchronizedRevealProbe(orcaPage, 'paintFrame', {
+    await callSynchronizedRevealProbe(kinguPage, 'paintFrame', {
       marker: 'BASELINE_FRAME',
       background: 17,
       release: true
     })
-    await callSynchronizedRevealProbe(orcaPage, 'paintFrame', {
+    await callSynchronizedRevealProbe(kinguPage, 'paintFrame', {
       marker: 'REVEALED_FRAME',
       background: 52,
       release: false
     })
-    const held = await readSynchronizedRevealProbe(orcaPage)
+    const held = await readSynchronizedRevealProbe(kinguPage)
     expect(held.synchronizedOutput).toBe(true)
     expect(held.screen).toContain('REVEALED_FRAME')
 
-    await orcaPage.evaluate((tabId) => {
+    await kinguPage.evaluate((tabId) => {
       window.__paneManagers?.get(tabId)?.scheduleRevealRepaint?.()
     }, tabId)
     await expect
-      .poll(async () => (await readSynchronizedRevealProbe(orcaPage)).atlasClears)
+      .poll(async () => (await readSynchronizedRevealProbe(kinguPage)).atlasClears)
       .toBeGreaterThan(0)
-    const afterReveal = await captureStableTabScreenshot(orcaPage, tabId)
+    const afterReveal = await captureStableTabScreenshot(kinguPage, tabId)
 
-    await callSynchronizedRevealProbe(orcaPage, 'forceRendererPresent')
-    const afterForcedPresent = await captureStableTabScreenshot(orcaPage, tabId)
+    await callSynchronizedRevealProbe(kinguPage, 'forceRendererPresent')
+    const afterForcedPresent = await captureStableTabScreenshot(kinguPage, tabId)
     const diff = compareTerminalScreenshots(afterReveal, afterForcedPresent)
     const afterRevealPath = testInfo.outputPath('synchronized-frame-after-reveal.png')
     const afterForcedPresentPath = testInfo.outputPath(
@@ -504,14 +504,14 @@ test.describe('terminal reveal paused-render recovery', () => {
   })
 
   test('@headful reveal preserves the coherent frame until synchronized output releases', async ({
-    orcaPage
+    kinguPage
   }, testInfo) => {
-    await waitForSessionReady(orcaPage)
-    await waitForActiveTerminalManager(orcaPage)
-    const tabId = (await getActiveTabId(orcaPage))!
-    const worktreeId = (await getActiveWorktreeId(orcaPage))!
-    await forceWebglOn(orcaPage, tabId)
-    const webglAttached = await orcaPage
+    await waitForSessionReady(kinguPage)
+    await waitForActiveTerminalManager(kinguPage)
+    const tabId = (await getActiveTabId(kinguPage))!
+    const worktreeId = (await getActiveWorktreeId(kinguPage))!
+    await forceWebglOn(kinguPage, tabId)
+    const webglAttached = await kinguPage
       .waitForFunction(
         (tabId) =>
           (window.__paneManagers?.get(tabId)?.getRenderingDiagnostics?.() ?? []).some(
@@ -526,37 +526,37 @@ test.describe('terminal reveal paused-render recovery', () => {
     if (!webglAttached) {
       return
     }
-    expect(await installSynchronizedRevealProbe(orcaPage, tabId)).toBe(true)
+    expect(await installSynchronizedRevealProbe(kinguPage, tabId)).toBe(true)
 
-    await callSynchronizedRevealProbe(orcaPage, 'paintFrame', {
+    await callSynchronizedRevealProbe(kinguPage, 'paintFrame', {
       marker: 'COHERENT_FRAME',
       background: 17,
       release: true
     })
-    const coherent = await captureStableTabScreenshot(orcaPage, tabId)
-    const beforeHide = await readSynchronizedRevealProbe(orcaPage)
-    const siblingTabId = await orcaPage.evaluate((worktreeId) => {
+    const coherent = await captureStableTabScreenshot(kinguPage, tabId)
+    const beforeHide = await readSynchronizedRevealProbe(kinguPage)
+    const siblingTabId = await kinguPage.evaluate((worktreeId) => {
       const state = window.__store?.getState()
       if (!state) {
         throw new Error('Renderer store unavailable')
       }
       return state.createTab(worktreeId, undefined, undefined, { activate: false }).id
     }, worktreeId)
-    await orcaPage.evaluate(
+    await kinguPage.evaluate(
       (siblingTabId) => window.__store?.getState().setActiveTab(siblingTabId),
       siblingTabId
     )
-    await expect(orcaPage.locator(`[data-terminal-tab-id="${tabId}"]`)).toBeHidden()
+    await expect(kinguPage.locator(`[data-terminal-tab-id="${tabId}"]`)).toBeHidden()
 
-    await callSynchronizedRevealProbe(orcaPage, 'paintFrame', {
+    await callSynchronizedRevealProbe(kinguPage, 'paintFrame', {
       marker: 'PENDING_FRAME',
       background: 52,
       release: false
     })
-    await orcaPage.evaluate((tabId) => window.__store?.getState().setActiveTab(tabId), tabId)
-    await expect.poll(() => getActiveTabId(orcaPage)).toBe(tabId)
-    const held = await captureFirstRevealedFrame(orcaPage, tabId)
-    const heldState = await readSynchronizedRevealProbe(orcaPage)
+    await kinguPage.evaluate((tabId) => window.__store?.getState().setActiveTab(tabId), tabId)
+    await expect.poll(() => getActiveTabId(kinguPage)).toBe(tabId)
+    const held = await captureFirstRevealedFrame(kinguPage, tabId)
+    const heldState = await readSynchronizedRevealProbe(kinguPage)
     const heldDiff = compareTerminalScreenshots(coherent, held)
 
     expect(heldState.synchronizedOutput).toBe(true)
@@ -567,35 +567,35 @@ test.describe('terminal reveal paused-render recovery', () => {
       `held reveal preserves the coherent frame (diffRatio=${heldDiff.diffRatio})`
     ).toBe(true)
 
-    await callSynchronizedRevealProbe(orcaPage, 'paintFrame', {
+    await callSynchronizedRevealProbe(kinguPage, 'paintFrame', {
       marker: 'PENDING_FRAME',
       background: 52,
       release: true
     })
-    const released = await captureStableTabScreenshot(orcaPage, tabId)
-    const releaseState = await readSynchronizedRevealProbe(orcaPage)
-    await callSynchronizedRevealProbe(orcaPage, 'forceRendererPresent')
-    const direct = await captureStableTabScreenshot(orcaPage, tabId)
+    const released = await captureStableTabScreenshot(kinguPage, tabId)
+    const releaseState = await readSynchronizedRevealProbe(kinguPage)
+    await callSynchronizedRevealProbe(kinguPage, 'forceRendererPresent')
+    const direct = await captureStableTabScreenshot(kinguPage, tabId)
     const releasedDiff = compareTerminalScreenshots(released, direct)
 
-    await callSynchronizedRevealProbe(orcaPage, 'paintFrame', {
+    await callSynchronizedRevealProbe(kinguPage, 'paintFrame', {
       marker: 'WATCHDOG_FRAME',
       background: 88,
       release: false
     })
-    const beforeWatchdog = await readSynchronizedRevealProbe(orcaPage)
-    await orcaPage.evaluate((tabId) => {
+    const beforeWatchdog = await readSynchronizedRevealProbe(kinguPage)
+    await kinguPage.evaluate((tabId) => {
       window.__paneManagers?.get(tabId)?.scheduleRevealPresent?.()
     }, tabId)
     await expect
-      .poll(async () => (await readSynchronizedRevealProbe(orcaPage)).synchronizedOutput, {
+      .poll(async () => (await readSynchronizedRevealProbe(kinguPage)).synchronizedOutput, {
         timeout: 2_500
       })
       .toBe(false)
-    const watchdog = await captureStableTabScreenshot(orcaPage, tabId)
-    const watchdogState = await readSynchronizedRevealProbe(orcaPage)
-    await callSynchronizedRevealProbe(orcaPage, 'forceRendererPresent')
-    const watchdogDirect = await captureStableTabScreenshot(orcaPage, tabId)
+    const watchdog = await captureStableTabScreenshot(kinguPage, tabId)
+    const watchdogState = await readSynchronizedRevealProbe(kinguPage)
+    await callSynchronizedRevealProbe(kinguPage, 'forceRendererPresent')
+    const watchdogDirect = await captureStableTabScreenshot(kinguPage, tabId)
     const watchdogDiff = compareTerminalScreenshots(watchdog, watchdogDirect)
     const coherentPath = testInfo.outputPath('synchronized-coherent-before-hide.png')
     const heldPath = testInfo.outputPath('synchronized-coherent-while-held.png')

@@ -34,7 +34,7 @@ const COMPRESSED_LOCK_OPTIONS: CheckoutLockOptions = {
 }
 
 function temporaryCacheRoot(): string {
-  const root = mkdtempSync(join(tmpdir(), 'orca-cross-version-checkout-'))
+  const root = mkdtempSync(join(tmpdir(), 'kingu-cross-version-checkout-'))
   temporaryRoots.push(root)
   return root
 }

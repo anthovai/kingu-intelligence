@@ -1,5 +1,5 @@
-import type { Page } from '@stablyai/playwright-test'
-import { test, expect } from './helpers/orca-app'
+import type { Page } from '@anthovai/playwright-test'
+import { test, expect } from './helpers/kingu-app'
 import { waitForActiveTerminalManager } from './helpers/terminal'
 
 type AtlasPage = {
@@ -432,11 +432,11 @@ test.describe('terminal WebGL atlas budget', () => {
   test.describe.configure({ timeout: 120_000 })
 
   test('@headful keeps shared glyph pages bindable through overflow and recovery @terminal-rendering-golden', async ({
-    orcaPage
+    kinguPage
   }) => {
-    await waitForActiveTerminalManager(orcaPage)
-    test.skip(!(await forceActivePaneWebgl(orcaPage)), 'WebGL unavailable in this environment')
-    const result = await runAtlasBudgetScenario(orcaPage)
+    await waitForActiveTerminalManager(kinguPage)
+    test.skip(!(await forceActivePaneWebgl(kinguPage)), 'WebGL unavailable in this environment')
+    const result = await runAtlasBudgetScenario(kinguPage)
 
     expect(result.realBudget).toBeGreaterThanOrEqual(result.budget)
     expect(result.shared).toBe(true)
@@ -452,11 +452,11 @@ test.describe('terminal WebGL atlas budget', () => {
   })
 
   test('@headful rebuilds cached vertices after attaching a different shared atlas @terminal-rendering-golden', async ({
-    orcaPage
+    kinguPage
   }) => {
-    await waitForActiveTerminalManager(orcaPage)
-    test.skip(!(await forceActivePaneWebgl(orcaPage)), 'WebGL unavailable in this environment')
-    const result = await runAtlasReplacementScenario(orcaPage)
+    await waitForActiveTerminalManager(kinguPage)
+    test.skip(!(await forceActivePaneWebgl(kinguPage)), 'WebGL unavailable in this environment')
+    const result = await runAtlasReplacementScenario(kinguPage)
 
     expect(result.distinctAtlases).toBe(true)
     expect(result.baselineInkPixels).toBeGreaterThan(1000)

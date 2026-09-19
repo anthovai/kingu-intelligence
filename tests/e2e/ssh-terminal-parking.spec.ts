@@ -1,5 +1,5 @@
-import type { Page, TestInfo } from '@stablyai/playwright-test'
-import { test, expect } from './helpers/orca-app'
+import type { Page, TestInfo } from '@anthovai/playwright-test'
+import { test, expect } from './helpers/kingu-app'
 import { waitForActiveWorktree, waitForSessionReady, getActiveTabId } from './helpers/store'
 import {
   getTerminalContent,
@@ -16,8 +16,8 @@ import {
 } from './helpers/docker-ssh-relay-target'
 import { connectDockerSshRelayTarget } from './helpers/docker-ssh-relay-connection'
 
-const RUN_DOCKER_SSH = process.env.ORCA_E2E_SSH_DOCKER === '1'
-const PARKING_DELAY_MS = Number(process.env.ORCA_E2E_TERMINAL_PARKING_DELAY_MS) || 500
+const RUN_DOCKER_SSH = process.env.KINGU_E2E_SSH_DOCKER === '1'
+const PARKING_DELAY_MS = Number(process.env.KINGU_E2E_TERMINAL_PARKING_DELAY_MS) || 500
 
 async function terminalTailContains(page: Page, marker: string): Promise<boolean> {
   return page.evaluate((expected) => {
@@ -40,46 +40,46 @@ async function terminalTailContains(page: Page, marker: string): Promise<boolean
 
 test.use({
   seedTestRepo: false,
-  orcaAppExtraEnv: { ORCA_E2E_TERMINAL_PARKING_DELAY_MS: String(PARKING_DELAY_MS) }
+  kinguAppExtraEnv: { KINGU_E2E_TERMINAL_PARKING_DELAY_MS: String(PARKING_DELAY_MS) }
 })
 
 // C1 slice A: SSH tabs park like local ones and reveal restores content from
 // main's headless model (relay replay is the fallback). This is the SSH
 // park+reveal round-trip fidelity check the design gate required.
 test.describe('SSH terminal hidden view parking', () => {
-  test.skip(!RUN_DOCKER_SSH, 'Set ORCA_E2E_SSH_DOCKER=1 to run Docker-backed SSH tests.')
+  test.skip(!RUN_DOCKER_SSH, 'Set KINGU_E2E_SSH_DOCKER=1 to run Docker-backed SSH tests.')
   test.skip(process.platform === 'win32', 'Docker SSH parking uses POSIX SSH tooling.')
 
   test('parks a hidden SSH tab and restores its scrollback on reveal', async ({
-    orcaPage
+    kinguPage
   }, testInfo: TestInfo) => {
     test.setTimeout(240_000)
     let target: DockerSshRelayTarget | null = null
     try {
       target = startDockerSshRelayTarget(testInfo)
-      await waitForSessionReady(orcaPage)
-      const remote = await connectDockerSshRelayTarget(orcaPage, target)
+      await waitForSessionReady(kinguPage)
+      const remote = await connectDockerSshRelayTarget(kinguPage, target)
       await expect
-        .poll(() => waitForActiveWorktree(orcaPage), { timeout: 30_000 })
+        .poll(() => waitForActiveWorktree(kinguPage), { timeout: 30_000 })
         .toBe(remote.worktreeId)
-      await waitForActiveTerminalManager(orcaPage, 60_000)
-      const sshPtyId = await waitForActivePanePtyId(orcaPage, 60_000)
-      const sshTabId = await getActiveTabId(orcaPage)
+      await waitForActiveTerminalManager(kinguPage, 60_000)
+      const sshPtyId = await waitForActivePanePtyId(kinguPage, 60_000)
+      const sshTabId = await getActiveTabId(kinguPage)
       if (!sshTabId) {
         throw new Error('SSH terminal tab did not become active')
       }
-      const snapshot = await waitForPaneIdentitySnapshot(orcaPage, 1)
+      const snapshot = await waitForPaneIdentitySnapshot(kinguPage, 1)
       expect(snapshot.panes[0]?.ptyId).toBe(sshPtyId)
 
       // Why the ':' terminator: `${marker}_1:` must not substring-match _10/_100.
       const marker = `SSH_PARK_MARKER_${Date.now()}`
       await sendToTerminal(
-        orcaPage,
+        kinguPage,
         sshPtyId,
         `for i in $(seq 1 200); do echo "${marker}_$i:"; done\r`
       )
       await expect
-        .poll(() => terminalTailContains(orcaPage, `${marker}_200:`), {
+        .poll(() => terminalTailContains(kinguPage, `${marker}_200:`), {
           timeout: 30_000,
           message: 'SSH marker output did not render before parking'
         })
@@ -89,12 +89,12 @@ test.describe('SSH terminal hidden view parking', () => {
       // ~5k-row headless model — so a revealed `${marker}_1:` can only have
       // come from the model paint, never the relay fallback.
       await sendToTerminal(
-        orcaPage,
+        kinguPage,
         sshPtyId,
         `for i in $(seq 1 3000); do echo "PAD_$i:0123456789012345678901234567890123456789"; done; printf '%s%s\\n' "${marker}" "_PAD_DONE:"\r`
       )
       await expect
-        .poll(() => terminalTailContains(orcaPage, `${marker}_PAD_DONE:`), {
+        .poll(() => terminalTailContains(kinguPage, `${marker}_PAD_DONE:`), {
           timeout: 60_000,
           message: 'SSH pad output did not finish before parking'
         })
@@ -104,7 +104,7 @@ test.describe('SSH terminal hidden view parking', () => {
       await expect
         .poll(
           () =>
-            orcaPage.evaluate(async (ptyId) => {
+            kinguPage.evaluate(async (ptyId) => {
               const snapshot = await window.api.pty.getMainBufferSnapshot(ptyId, {
                 scrollbackRows: 5_000
               })
@@ -117,20 +117,20 @@ test.describe('SSH terminal hidden view parking', () => {
         )
         .toContain(`${marker}_PAD_DONE:`)
 
-      await parkHiddenTabBehindDecoy(orcaPage, remote.worktreeId, sshTabId, {
+      await parkHiddenTabBehindDecoy(kinguPage, remote.worktreeId, sshTabId, {
         parkDelayMs: PARKING_DELAY_MS
       })
 
       // Reveal: reattach must paint from main's headless model (or relay
       // replay when the model is unavailable) — never a blank pane.
-      await orcaPage.evaluate((tabId) => {
+      await kinguPage.evaluate((tabId) => {
         const state = window.__store?.getState()
         state?.setActiveTab(tabId)
         state?.setActiveTabType('terminal')
       }, sshTabId)
-      await waitForActiveTerminalManager(orcaPage, 60_000)
+      await waitForActiveTerminalManager(kinguPage, 60_000)
       await expect
-        .poll(() => terminalTailContains(orcaPage, `${marker}_PAD_DONE:`), {
+        .poll(() => terminalTailContains(kinguPage, `${marker}_PAD_DONE:`), {
           timeout: 60_000,
           message: 'revealed SSH tab did not restore the final pad line'
         })
@@ -139,7 +139,7 @@ test.describe('SSH terminal hidden view parking', () => {
       // presence after reveal proves the headless-model paint restored
       // scrollback the relay replay cannot hold.
       await expect
-        .poll(() => getTerminalContent(orcaPage, 2_000_000), {
+        .poll(() => getTerminalContent(kinguPage, 2_000_000), {
           timeout: 15_000,
           message: 'revealed SSH tab lost the pre-pad scrollback only the model paint restores'
         })

@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 import { sendToTerminal } from './terminal'
 
 export type StagedTerminalNodeScript = {
@@ -26,7 +26,7 @@ export function stageNodeScriptForTerminal(
 ): StagedTerminalNodeScript {
   const dir = options.dir ?? tmpdir()
   mkdirSync(dir, { recursive: true })
-  const prefix = options.prefix ?? 'orca-e2e-terminal-node'
+  const prefix = options.prefix ?? 'kingu-e2e-terminal-node'
   const scriptPath = path.join(dir, `${prefix}-${randomUUID()}.cjs`)
   writeFileSync(scriptPath, source)
   // Why: forward slashes are valid for node on Windows and parse identically in

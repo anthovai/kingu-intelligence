@@ -21,7 +21,7 @@ function fail(message) {
 }
 
 async function buildIntoScratch() {
-  const scratch = await mkdtemp(join(tmpdir(), 'orca-mobile-web-verify-'))
+  const scratch = await mkdtemp(join(tmpdir(), 'kingu-mobile-web-verify-'))
   try {
     const { manifest } = await buildMobileWebBundle({ outDir: join(scratch, 'mobile-web') })
     return manifest

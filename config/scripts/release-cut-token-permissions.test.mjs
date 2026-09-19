@@ -190,7 +190,7 @@ describe('release-cut token permissions', () => {
   })
 
   it('keeps fork, tag, and reusable-workflow boundaries explicit', () => {
-    expect(workflow.jobs.cut.if).toBe("github.repository == 'stablyai/orca'")
+    expect(workflow.jobs.cut.if).toBe("github.repository == 'anthovai/kingu-intelligence'")
     expect(checkoutRef(workflow.jobs.cut)).toBe(
       "${{ github.event_name == 'schedule' && 'main' || inputs.ref }}"
     )
@@ -207,7 +207,9 @@ describe('release-cut token permissions', () => {
     }
 
     const macWorkflow = readWorkflow('.github/workflows/release-mac-build.yml')
-    expect(macWorkflow.jobs['build-mac'].if).toBe("github.repository == 'stablyai/orca'")
+    expect(macWorkflow.jobs['build-mac'].if).toBe(
+      "github.repository == 'anthovai/kingu-intelligence'"
+    )
     expect(checkoutRef(macWorkflow.jobs['build-mac'])).toBe('refs/tags/${{ inputs.tag }}')
 
     const e2eWorkflow = readWorkflow('.github/workflows/e2e.yml')

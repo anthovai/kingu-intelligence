@@ -3,14 +3,14 @@ import { randomUUID } from 'node:crypto'
 import path from 'node:path'
 import { performance } from 'node:perf_hooks'
 import { promisify } from 'node:util'
-import type { Page } from '@stablyai/playwright-test'
+import type { Page } from '@anthovai/playwright-test'
 import { RuntimeClient } from '../../src/cli/runtime/client'
 import type {
   RuntimeTerminalListResult,
   RuntimeTerminalSplit,
   RuntimeTerminalSummary
 } from '../../src/shared/runtime-types'
-import { expect, test } from './helpers/orca-app'
+import { expect, test } from './helpers/kingu-app'
 import {
   readPaneIdentitySnapshot,
   waitForActiveTerminalManager,
@@ -29,7 +29,7 @@ const PARKING_DELAY_MS = 500
 const HISTORICAL_SPLIT_TIMEOUT_MS = 10_000
 
 test.use({
-  orcaAppExtraEnv: { ORCA_E2E_TERMINAL_PARKING_DELAY_MS: String(PARKING_DELAY_MS) }
+  kinguAppExtraEnv: { KINGU_E2E_TERMINAL_PARKING_DELAY_MS: String(PARKING_DELAY_MS) }
 })
 
 type CliSplitResponse = {
@@ -120,7 +120,7 @@ async function runParkedSplitCli(
     const result = await execFileAsync(
       process.execPath,
       [
-        path.join(repoRoot, 'config', 'scripts', 'orca-dev.mjs'),
+        path.join(repoRoot, 'config', 'scripts', 'kingu-dev.mjs'),
         'terminal',
         'split',
         '--terminal',
@@ -129,7 +129,7 @@ async function runParkedSplitCli(
       ],
       {
         cwd: repoRoot,
-        env: { ...process.env, ORCA_DEV_USER_DATA_PATH: userDataDir },
+        env: { ...process.env, KINGU_DEV_USER_DATA_PATH: userDataDir },
         timeout: HISTORICAL_SPLIT_TIMEOUT_MS + 5_000
       }
     )
@@ -183,8 +183,8 @@ async function expectPaneKeyboardRoundTrip(
   label: string
 ): Promise<void> {
   const nonce = randomUUID().replaceAll('-', '')
-  const marker = `ORCA_PARKED_SPLIT_${label}_${nonce}`
-  const command = `node -e "console.log('ORCA_PARKED_' + 'SPLIT_${label}_${nonce}')"`
+  const marker = `KINGU_PARKED_SPLIT_${label}_${nonce}`
+  const command = `node -e "console.log('KINGU_PARKED_' + 'SPLIT_${label}_${nonce}')"`
   const pane = page.locator(
     `[data-terminal-tab-id=${JSON.stringify(tabId)}][data-terminal-layout-leaf-ids] .pane[data-leaf-id=${JSON.stringify(leafId)}]`
   )
@@ -198,17 +198,17 @@ async function expectPaneKeyboardRoundTrip(
 
 test('CLI splits an exact cold-parked tab without stealing the active tab or focus', async ({
   electronApp,
-  orcaPage
+  kinguPage
 }, testInfo) => {
   test.setTimeout(180_000)
   const pageErrors: string[] = []
-  orcaPage.on('pageerror', (error) => pageErrors.push(String(error)))
+  kinguPage.on('pageerror', (error) => pageErrors.push(String(error)))
 
-  await waitForSessionReady(orcaPage)
-  const worktreeId = await waitForActiveWorktree(orcaPage)
-  await ensureTerminalVisible(orcaPage)
-  await waitForActiveTerminalManager(orcaPage, 30_000)
-  const initial = await waitForPaneIdentitySnapshot(orcaPage, 1)
+  await waitForSessionReady(kinguPage)
+  const worktreeId = await waitForActiveWorktree(kinguPage)
+  await ensureTerminalVisible(kinguPage)
+  await waitForActiveTerminalManager(kinguPage, 30_000)
+  const initial = await waitForPaneIdentitySnapshot(kinguPage, 1)
   const targetTabId = initial.tabId
   const sourcePane = initial.panes[0]
   if (!sourcePane?.ptyId) {
@@ -219,17 +219,17 @@ test('CLI splits an exact cold-parked tab without stealing the active tab or foc
   const client = new RuntimeClient(userDataDir, 30_000)
   const sourceTerminal = await resolveTerminal(client, worktreeId, targetTabId, sourcePane.leafId)
 
-  await parkHiddenTabBehindDecoy(orcaPage, worktreeId, targetTabId, {
+  await parkHiddenTabBehindDecoy(kinguPage, worktreeId, targetTabId, {
     parkDelayMs: PARKING_DELAY_MS
   })
-  const decoyTabId = await getActiveTabId(orcaPage)
+  const decoyTabId = await getActiveTabId(kinguPage)
   if (!decoyTabId || decoyTabId === targetTabId) {
     throw new Error('Parking did not leave a distinct decoy tab active')
   }
-  await orcaPage
+  await kinguPage
     .locator(`[data-terminal-tab-id=${JSON.stringify(decoyTabId)}] .xterm:visible`)
     .click({ force: true })
-  const contextBefore = await readActiveUiContext(orcaPage)
+  const contextBefore = await readActiveUiContext(kinguPage)
   expect(contextBefore).toMatchObject({
     activeTabForWorktree: decoyTabId,
     activeTabId: decoyTabId,
@@ -238,7 +238,7 @@ test('CLI splits an exact cold-parked tab without stealing the active tab or foc
     domActiveTabId: decoyTabId,
     focusedTerminalTabId: decoyTabId
   })
-  const mountedBefore = await orcaPage.evaluate(() =>
+  const mountedBefore = await kinguPage.evaluate(() =>
     Array.from(window.__paneManagers?.keys() ?? []).sort()
   )
   expect(mountedBefore).not.toContain(targetTabId)
@@ -248,7 +248,7 @@ test('CLI splits an exact cold-parked tab without stealing the active tab or foc
   await expect
     .poll(
       async () => {
-        mountedDuringSplit = await orcaPage.evaluate(() =>
+        mountedDuringSplit = await kinguPage.evaluate(() =>
           Array.from(window.__paneManagers?.keys() ?? []).sort()
         )
         return mountedDuringSplit.includes(targetTabId)
@@ -273,14 +273,14 @@ test('CLI splits an exact cold-parked tab without stealing the active tab or foc
     }
   })
   expect(splitRun.response.result.split.handle).toMatch(/^term_/)
-  expect(await readActiveUiContext(orcaPage)).toEqual(contextBefore)
+  expect(await readActiveUiContext(kinguPage)).toEqual(contextBefore)
 
-  await waitForTabParked(orcaPage, targetTabId, { parkDelayMs: PARKING_DELAY_MS })
-  expect(await readActiveUiContext(orcaPage)).toEqual(contextBefore)
+  await waitForTabParked(kinguPage, targetTabId, { parkDelayMs: PARKING_DELAY_MS })
+  expect(await readActiveUiContext(kinguPage)).toEqual(contextBefore)
 
-  await activateTerminalTab(orcaPage, worktreeId, targetTabId)
-  await waitForActiveTerminalManager(orcaPage, 30_000)
-  const revealed = await waitForPaneIdentitySnapshot(orcaPage, 2)
+  await activateTerminalTab(kinguPage, worktreeId, targetTabId)
+  await waitForActiveTerminalManager(kinguPage, 30_000)
+  const revealed = await waitForPaneIdentitySnapshot(kinguPage, 2)
   const restoredSource = revealed.panes.find((pane) => pane.leafId === sourcePane.leafId)
   const createdPane = revealed.panes.find((pane) => pane.leafId !== sourcePane.leafId)
   expect(restoredSource).toMatchObject({ ptyId: sourcePane.ptyId })
@@ -312,7 +312,7 @@ test('CLI splits an exact cold-parked tab without stealing the active tab or foc
     listedAfterReveal.find((terminal) => terminal.handle === splitRun.response.result.split.handle)
   ).toMatchObject({ leafId: createdPane.leafId, ptyId: createdPane.ptyId })
 
-  const targetSurface = orcaPage.locator(
+  const targetSurface = kinguPage.locator(
     `[data-terminal-tab-id=${JSON.stringify(targetTabId)}][data-terminal-layout-leaf-ids]`
   )
   await expect(targetSurface).toBeVisible()
@@ -325,17 +325,17 @@ test('CLI splits an exact cold-parked tab without stealing the active tab or foc
     targetSurface.locator(`.pane[data-leaf-id=${JSON.stringify(createdPane.leafId)}]`)
   ).toBeVisible()
 
-  await enablePaneAccessibility(orcaPage, targetTabId)
+  await enablePaneAccessibility(kinguPage, targetTabId)
   await expect(targetSurface.locator('.xterm-accessibility-tree')).toHaveCount(2)
-  await expectPaneKeyboardRoundTrip(orcaPage, targetTabId, sourcePane.leafId, 'SOURCE')
-  await expectPaneKeyboardRoundTrip(orcaPage, targetTabId, createdPane.leafId, 'CREATED')
+  await expectPaneKeyboardRoundTrip(kinguPage, targetTabId, sourcePane.leafId, 'SOURCE')
+  await expectPaneKeyboardRoundTrip(kinguPage, targetTabId, createdPane.leafId, 'CREATED')
 
   await testInfo.attach('parked-cli-split-final.png', {
-    body: await orcaPage.screenshot(),
+    body: await kinguPage.screenshot(),
     contentType: 'image/png'
   })
   expect(pageErrors).toEqual([])
-  expect(await readPaneIdentitySnapshot(orcaPage)).toMatchObject({
+  expect(await readPaneIdentitySnapshot(kinguPage)).toMatchObject({
     panes: revealed.panes,
     ptyIdsByLeafId: revealed.ptyIdsByLeafId,
     tabId: revealed.tabId

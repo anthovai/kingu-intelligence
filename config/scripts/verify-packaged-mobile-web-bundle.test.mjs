@@ -14,7 +14,7 @@ const electronBuilderConfig = require('../electron-builder.config.cjs')
 const REPO_ROOT = join(import.meta.dirname, '..', '..')
 
 async function withBundle(run) {
-  const scratch = await mkdtemp(join(tmpdir(), 'orca-mobile-web-guard-'))
+  const scratch = await mkdtemp(join(tmpdir(), 'kingu-mobile-web-guard-'))
   const bundleDir = join(scratch, 'mobile-web')
   try {
     const { manifest } = await buildMobileWebBundle({ outDir: bundleDir })
@@ -73,7 +73,7 @@ describe('assertMobileWebBundleBuilt', () => {
   })
 
   it('fails when the manifest is missing', async () => {
-    const scratch = await mkdtemp(join(tmpdir(), 'orca-mobile-web-guard-'))
+    const scratch = await mkdtemp(join(tmpdir(), 'kingu-mobile-web-guard-'))
     try {
       expect(() => assertMobileWebBundleBuilt(scratch)).toThrow(/no bundle manifest/)
     } finally {

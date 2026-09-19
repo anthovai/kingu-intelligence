@@ -1,12 +1,12 @@
-import type { Page, TestInfo } from '@stablyai/playwright-test'
+import type { Page, TestInfo } from '@anthovai/playwright-test'
 import {
   execDockerSshRelayTargetCommand,
   type DockerSshRelayTarget,
   writeDockerSshRelayTargetFile
 } from './helpers/docker-ssh-relay-target'
 
-export const REMOTE_MONITOR_PATH = '/tmp/orca-idle-grid-monitor.mjs'
-export const REMOTE_STATE_PATH = '/tmp/orca-idle-grid-state.json'
+export const REMOTE_MONITOR_PATH = '/tmp/kingu-idle-grid-monitor.mjs'
+export const REMOTE_STATE_PATH = '/tmp/kingu-idle-grid-state.json'
 
 export type Grid = { cols: number; rows: number }
 

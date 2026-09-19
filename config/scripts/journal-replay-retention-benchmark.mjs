@@ -15,7 +15,7 @@ assert.ok(
 )
 assert.ok(global.gc, 'Run with --expose-gc to measure live backing memory during replay')
 const root = fileURLToPath(new URL('../..', import.meta.url))
-const fixture = await mkdtemp(join(tmpdir(), 'orca-journal-replay-bench-'))
+const fixture = await mkdtemp(join(tmpdir(), 'kingu-journal-replay-bench-'))
 try {
   const implementations = {}
   for (const arm of ['baseline', 'current']) {

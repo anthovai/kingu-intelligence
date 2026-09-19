@@ -109,11 +109,11 @@ async function transformEntries(protocolWindow, desktopVersion) {
     sourcemap: false,
     logLevel: 'silent',
     define: {
-      ORCA_MOBILE_WEB_DESKTOP_VERSION: JSON.stringify(desktopVersion),
-      ORCA_MOBILE_WEB_RUNTIME_PROTOCOL_VERSION: JSON.stringify(
+      KINGU_MOBILE_WEB_DESKTOP_VERSION: JSON.stringify(desktopVersion),
+      KINGU_MOBILE_WEB_RUNTIME_PROTOCOL_VERSION: JSON.stringify(
         protocolWindow.runtimeProtocolVersion
       ),
-      ORCA_MOBILE_WEB_MIN_COMPATIBLE_RUNTIME_PROTOCOL_VERSION: JSON.stringify(
+      KINGU_MOBILE_WEB_MIN_COMPATIBLE_RUNTIME_PROTOCOL_VERSION: JSON.stringify(
         protocolWindow.minCompatibleRuntimeProtocolVersion
       )
     }
@@ -148,7 +148,7 @@ export async function buildMobileWebBundle({ outDir = defaultOutDir } = {}) {
     readProtocolWindow()
   ])
   const { script, stylesheet } = await transformEntries(protocolWindow, desktopVersion)
-  const mark = await readFile(join(sourceDir, 'src', 'orca-mark.png'))
+  const mark = await readFile(join(sourceDir, 'src', 'kingu-mark.png'))
 
   const hashed = [
     hashedAsset(script, 'js'),
@@ -159,9 +159,9 @@ export async function buildMobileWebBundle({ outDir = defaultOutDir } = {}) {
 
   const template = await readFile(join(sourceDir, MOBILE_WEB_BUNDLE_ENTRYPOINT), 'utf8')
   const substitutions = {
-    __ORCA_BOOTSTRAP_JS__: scriptAsset.path,
-    __ORCA_BOOTSTRAP_CSS__: stylesheetAsset.path,
-    __ORCA_MARK_PNG__: markAsset.path
+    __KINGU_BOOTSTRAP_JS__: scriptAsset.path,
+    __KINGU_BOOTSTRAP_CSS__: stylesheetAsset.path,
+    __KINGU_MARK_PNG__: markAsset.path
   }
   let html = template
   for (const [token, value] of Object.entries(substitutions)) {

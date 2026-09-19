@@ -27,7 +27,7 @@ describe('release-cut source map publication', () => {
 
     expect(bundle.run).toContain("find out/main -name '*.js.map'")
     expect(publish.with.command).toContain('gh release upload')
-    expect(publish.with.command).toContain('orca-sourcemaps-')
+    expect(publish.with.command).toContain('kingu-sourcemaps-')
   })
 
   it('stages the bundle outside the checkout so packaging cannot absorb it', () => {
@@ -36,8 +36,8 @@ describe('release-cut source map publication', () => {
     const bundle = buildSteps[stepIndex('Bundle main-process source maps')]
     const publish = buildSteps[stepIndex('Publish main-process source maps')]
 
-    expect(bundle.run).toContain('"$RUNNER_TEMP/orca-sourcemaps-$TAG.zip"')
-    expect(bundle.run).not.toMatch(/zip[^\n]*\s"orca-sourcemaps-/)
+    expect(bundle.run).toContain('"$RUNNER_TEMP/kingu-sourcemaps-$TAG.zip"')
+    expect(bundle.run).not.toMatch(/zip[^\n]*\s"kingu-sourcemaps-/)
     expect(publish.with.command).toContain('runner.temp')
   })
 

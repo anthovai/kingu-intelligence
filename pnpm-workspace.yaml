@@ -10,6 +10,12 @@
 packages:
   - native/windows-registry
 
+# Windows: MSBuild's FileTracker silently fails to create its .tlog directory once the
+# build path passes ~215 chars, which breaks every native rebuild. Shortening the virtual
+# store's directory names keeps those paths buildable. The store must stay inside
+# node_modules — moving it out breaks hoisted resolution for vendored native deps.
+virtualStoreDirMaxLength: 30
+
 minimumReleaseAge: 4320
 # 6.3.289 was published 2026-08-29T12:48Z; it clears the 3-day gate on 2026-09-01T12:48Z.
 # zod 4.5.4 was published 2026-08-29T17:55Z; it clears the 3-day gate on 2026-09-01T17:55Z.
@@ -20,7 +26,7 @@ minimumReleaseAgeExclude:
   - '@shadcn/lint@0.1.0'
 shamefullyHoist: true
 
-# Orca always launches the user's own resolved Claude CLI via
+# Kingu always launches the user's own resolved Claude CLI via
 # pathToClaudeCodeExecutable, so the SDK's bundled ~95 MB-per-platform CLI
 # binaries must never be installed. Excluding them is what makes the path
 # override mandatory rather than merely preferred.
@@ -54,7 +60,7 @@ allowBuilds:
   node-pty: true
   sherpa-onnx: true
   ssh2: false
-  '@orca/windows-registry': false
+  '@kingu/windows-registry': false
 
 overrides:
   monaco-editor>dompurify: 3.4.14

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 import { build } from 'esbuild'
 
 const root = fileURLToPath(new URL('../..', import.meta.url))
-const fixture = await mkdtemp(join(tmpdir(), 'orca-hermes-correlation-'))
+const fixture = await mkdtemp(join(tmpdir(), 'kingu-hermes-correlation-'))
 const baselineDirectory = process.argv[2]
 const key = (seconds) =>
   new Date(Date.UTC(2026, 0, 1) + seconds * 1000)

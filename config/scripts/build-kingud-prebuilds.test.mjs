@@ -9,15 +9,15 @@ import {
   mergeManifest,
   readManifest,
   slotName
-} from './build-orcad-prebuilds.mjs'
+} from './build-kingud-prebuilds.mjs'
 
 const PATCHED_BINDING_GYP =
   "'ldflags': ['-Wl,--no-as-needed,-l:libutil.so.1,-l:libpthread.so.0,--as-needed']"
-const PATCHED_PTY_CC = '__asm__(".symver openpty,openpty@" ORCA_GLIBC_COMPAT_VERSION);'
+const PATCHED_PTY_CC = '__asm__(".symver openpty,openpty@" KINGU_GLIBC_COMPAT_VERSION);'
 
 const dirs = []
 const stage = (bindingGyp, ptyCc) => {
-  const dir = mkdtempSync(join(tmpdir(), 'orcad-prebuild-src-'))
+  const dir = mkdtempSync(join(tmpdir(), 'kingud-prebuild-src-'))
   dirs.push(dir)
   mkdirSync(join(dir, 'src', 'unix'), { recursive: true })
   writeFileSync(join(dir, 'binding.gyp'), bindingGyp)
@@ -60,7 +60,7 @@ describe('assertNodePtyPatchApplied', () => {
 })
 
 describe('slot naming', () => {
-  it('covers every platform orcad ships to', () => {
+  it('covers every platform kingud ships to', () => {
     expect([...MATRIX_SLOTS].sort()).toEqual([
       'darwin-arm64',
       'darwin-x64',
@@ -116,7 +116,7 @@ describe('mergeManifest', () => {
 
 describe('readManifest', () => {
   it('returns null instead of throwing when no matrix has been built', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'orcad-prebuild-manifest-'))
+    const dir = mkdtempSync(join(tmpdir(), 'kingud-prebuild-manifest-'))
     dirs.push(dir)
     expect(readManifest(dir)).toBeNull()
   })

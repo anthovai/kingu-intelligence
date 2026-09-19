@@ -1,6 +1,6 @@
 /**
  * A paired viewer must not erase a verified mirrored PTY binding while a
- * restarted `orca serve` process republishes the same surface as pending, and
+ * restarted `kingu serve` process republishes the same surface as pending, and
  * the surviving daemon PTY must keep appending to its durable history log.
  *
  * Run:
@@ -10,14 +10,14 @@
  */
 import { readFileSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import type { ElectronApplication, Page } from '@stablyai/playwright-test'
+import type { ElectronApplication, Page } from '@anthovai/playwright-test'
 import { getHistorySessionDirName } from '../../src/main/daemon/history-paths'
 import { LOG_HEADER_BYTES } from '../../src/main/daemon/terminal-history-log'
-import { DEFAULT_LOCAL_ORCA_PROFILE_ID } from '../../src/shared/orca-profiles'
+import { DEFAULT_LOCAL_KINGU_PROFILE_ID } from '../../src/shared/kingu-profiles'
 import type { RuntimeMobileSessionTabsResult } from '../../src/shared/runtime-types'
 import { toRemoteRuntimePtyId } from '../../src/shared/remote-runtime-pty-id'
 import { toWebTerminalSurfaceTabId } from '../../src/shared/terminal-surface-id'
-import { expect, test } from './helpers/orca-app'
+import { expect, test } from './helpers/kingu-app'
 import {
   launchHeadlessPairedRuntimeHost,
   type HeadlessPairedRuntimeHost
@@ -117,7 +117,7 @@ type PersistedData = {
 }
 
 function persistedDataPath(userDataDir: string): string {
-  return path.join(userDataDir, 'profiles', DEFAULT_LOCAL_ORCA_PROFILE_ID, 'orca-data.json')
+  return path.join(userDataDir, 'profiles', DEFAULT_LOCAL_KINGU_PROFILE_ID, 'kingu-data.json')
 }
 
 function removePersistedTerminalBinding(
