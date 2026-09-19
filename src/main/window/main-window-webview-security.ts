@@ -21,7 +21,6 @@ import {
 } from '../browser/doc-preview-grant-registry'
 import { isDocPreviewSession } from '../browser/doc-preview-protocol'
 import { registerPluginPanelNavigationGuard } from '../plugins/plugin-panel-navigation-guard'
-import { isAdmissibleIdeAttach } from '../ide/ide-webview-admission'
 import { installPrivilegedWindowNavigationPolicy } from './privileged-window-navigation'
 
 /**
@@ -75,14 +74,10 @@ export function installMainWindowWebviewSecurity(mainWindow: BrowserWindow): voi
     // profile partitions — the renderer owns their URLs, no main-side grants.
     const isLocalSshPartition = isLocalSshBrowserPartition(partition)
     const isDocPreviewAttach = isAdmissibleDocPreviewAttach(partition, src)
-    // Why alongside doc-preview: the IDE guest's origin is minted by the main
-    // process when its server starts, so the renderer never names the target.
-    const isIdeAttach = isAdmissibleIdeAttach(partition, src)
 
     // Why: fail closed — deny any src or partition not in the registry allowlist so a renderer bug can't smuggle preload/Node into an unprivileged guest.
     if (
       !isDocPreviewAttach &&
-      !isIdeAttach &&
       (!normalizedSrc ||
         (!isProfilePartition && !isRoutePartition && !isLocalSshPartition) ||
         (isRoutePartition && normalizedSrc !== KINGU_BROWSER_BLANK_URL))

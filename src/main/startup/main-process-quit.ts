@@ -18,7 +18,6 @@ import { stopCodexStateDbBackfillRecoveries } from '../codex/codex-state-db-back
 import { awaitPackedRefsLockRelease } from '../git/local-repo-ref-maintenance'
 import { settleTeardownWithinDeadline, settleWithinMs } from '../quit-teardown-deadline'
 import { quitTeardownStartGate } from '../quit-teardown-start-gate'
-import { closeIdeSession } from '../ide/ide-session-service'
 import { setUnreadDockBadgeCount } from '../dock/unread-badge'
 import { destroySystemTray } from '../tray/system-tray'
 import { shutdownTelemetry } from '../telemetry/client'
@@ -126,10 +125,6 @@ function installWillQuitHandler(): void {
     // Why: an agent still working at quit gets no terminating hook, so stats.flushAsync() closes those sessions out synchronously (only the write is deferred) — otherwise their duration is lost.
     state.starNag?.stop()
     state.automations?.stop()
-    // Why here and not on view change: the IDE server is a detached child, so a
-    // quit that skipped it would leave a loopback server listening with a live
-    // token after the app that minted it is gone.
-    void closeIdeSession()
     // Why: plugin hosts are forked children; dispose sends shutdown and
     // escalates to SIGKILL so they cannot outlive the app. The promise joins
     // the teardown barrier below — quitting before it resolves would let

@@ -58,7 +58,6 @@ import { registerTerminalRenderDesyncEvidenceHandler } from '../terminal-render-
 import { registerKinguProfileHandlers } from '../kingu-profiles'
 import { registerCodexAccountHandlers } from '../codex-accounts'
 import { registerAgentHookHandlers } from '../agent-hooks'
-import { registerIdeHandlers } from '../ide'
 import { registerCodexConfigSyncHandlers } from '../codex-config-sync'
 import { getPtyIdForPaneKey } from '../pty'
 import { registerAgentTrustHandlers } from '../agent-trust'
@@ -146,7 +145,6 @@ export function registerCoreHandlers(
   registerUsageProviderHandlers({ claudeUsage, codexUsage, openCodeUsage })
   registerCodexAccountHandlers(codexAccounts, () => store.getSettings())
   registerAgentHookHandlers(runtime, { getPtyIdForPaneKey })
-  registerIdeHandlers()
   registerCodexConfigSyncHandlers(codexAccounts.runtimeHomeService)
   registerAgentTrustHandlers()
   registerClaudeAccountHandlers(claudeAccounts)

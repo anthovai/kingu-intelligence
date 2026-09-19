@@ -1,5 +1,5 @@
 import React from 'react'
-import { BookOpen, CalendarClock, Code2, EyeOff, Files, Search, Smartphone } from 'lucide-react'
+import { BookOpen, CalendarClock, EyeOff, Files, Search, Smartphone } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/store'
 import { cn } from '@/lib/utils'
@@ -57,8 +57,6 @@ const SidebarNav = React.memo(function SidebarNav() {
   const worktreePaletteShortcutCombos = useShortcutKeyComboDetails('worktree.palette')
   const openAutomationsPage = useAppStore((s) => s.openAutomationsPage)
   const openMobilePage = useAppStore((s) => s.openMobilePage)
-  const openIdePage = useAppStore((s) => s.openIdePage)
-  const closeIdePage = useAppStore((s) => s.closeIdePage)
   const openArtifactsPage = useAppStore((s) => s.openArtifactsPage)
   const openSkillsPage = useAppStore((s) => s.openSkillsPage)
   const openModal = useAppStore((s) => s.openModal)
@@ -71,7 +69,6 @@ const SidebarNav = React.memo(function SidebarNav() {
   const showSkillsButton = useAppStore((s) => shouldShowSkillsButton(s.settings))
   const automationsActive = activeView === 'automations'
   const mobileActive = activeView === 'mobile'
-  const ideActive = activeView === 'ide'
   const artifactsActive = activeView === 'artifacts'
   const skillsActive = activeView === 'skills'
   const mobileOnboardingBadge = useMobileSidebarOnboardingBadge(showMobileButton)
@@ -216,25 +213,6 @@ const SidebarNav = React.memo(function SidebarNav() {
           <AgentDashboardSidebarEntry />
         </React.Suspense>
       ) : null}
-      <button
-        type="button"
-        // Why toggle: the IDE covers the whole content area, so the entry that
-        // opened it is also the only affordance for getting back out.
-        onClick={ideActive ? closeIdePage : openIdePage}
-        aria-current={ideActive ? 'page' : undefined}
-        className={cn(
-          'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[13px] font-medium tracking-tight transition-colors',
-          ideActive
-            ? 'bg-worktree-sidebar-accent text-worktree-sidebar-accent-foreground'
-            : 'text-worktree-sidebar-foreground/60 hover:bg-worktree-sidebar-foreground/8'
-        )}
-      >
-        <Code2
-          className={cn('size-4 shrink-0', !ideActive && 'text-worktree-sidebar-foreground/30')}
-          strokeWidth={ideActive ? 2.25 : 1.75}
-        />
-        <span className="flex-1">{translate('auto.components.sidebar.SidebarNav.ide', 'IDE')}</span>
-      </button>
       {showMobileButton ? (
         <ContextMenu>
           <ContextMenuTrigger asChild>

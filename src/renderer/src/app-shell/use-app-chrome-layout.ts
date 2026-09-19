@@ -73,12 +73,8 @@ export function useAppChromeLayout() {
     activeView === 'terminal' && activeWorktreeId !== null && !creationLayoutActive
   const hasTabBar = tabCount >= 2
   // Activity/Space are full-page navigation surfaces (like Settings), so the worktree sidebar is hidden there.
-  // The IDE goes further: it owns the entire window, so no Kingu chrome shows at all.
   const showSidebar =
-    activeView !== 'settings' &&
-    activeView !== 'activity' &&
-    activeView !== 'space' &&
-    activeView !== 'ide'
+    activeView !== 'settings' && activeView !== 'activity' && activeView !== 'space'
   // Tasks/Landing show the full titlebar only when the sidebar is collapsed; open, they mirror workspace view (creation suppresses it).
   const stackedSidebarOpen =
     !workspaceChromeActive && !creationLayoutActive && showSidebar && sidebarOpen

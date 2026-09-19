@@ -139,9 +139,7 @@ export function AppRootSurfaces(props: {
   const voiceEnabled = useAppStore(selectAppRootSurfaceVoiceEnabled)
   const petEnabled = useAppStore(selectAppRootSurfacePetEnabled)
   const telemetryOptedIn = useAppStore(selectAppRootSurfaceTelemetryOptedIn)
-  // Why gated on the view too: the IDE owns the whole window and carries its own
-  // status bar, so Kingu's would sit under it as a second, unrelated strip.
-  const statusBarVisible = useAppStore((s) => s.statusBarVisible && s.activeView !== 'ide')
+  const statusBarVisible = useAppStore((s) => s.statusBarVisible)
   const persistedUIReady = useAppStore((s) => s.persistedUIReady)
   const petVisible = useAppStore((s) => s.petVisible)
   const dictationState = useAppStore((s) => s.dictationState)
