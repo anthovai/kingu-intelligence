@@ -262,7 +262,9 @@ export const DEFAULT_TERMINAL_LINK_OPEN_MODE: MobileTerminalLinkOpenMode = 'king
 export async function loadTerminalLinkOpenMode(): Promise<MobileTerminalLinkOpenMode> {
   try {
     const raw = await AsyncStorage.getItem(TERMINAL_LINK_OPEN_MODE_KEY)
-    return raw === 'phone-browser' || raw === 'kingu-browser' ? raw : DEFAULT_TERMINAL_LINK_OPEN_MODE
+    return raw === 'phone-browser' || raw === 'kingu-browser'
+      ? raw
+      : DEFAULT_TERMINAL_LINK_OPEN_MODE
   } catch {
     return DEFAULT_TERMINAL_LINK_OPEN_MODE
   }

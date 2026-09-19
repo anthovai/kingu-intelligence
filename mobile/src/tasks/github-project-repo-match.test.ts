@@ -264,7 +264,13 @@ describe('GitHub project repo matching', () => {
       findRepoForGitHubProjectRepository(
         'anthovai/kingu-intelligence',
         [{ id: 'repo-1', path: '/Users/me/anthovai/kingu-intelligence', displayName: 'kingu' }],
-        { 'repo-1': { path: '/Users/me/anthovai/kingu-intelligence', repository: null, failed: true } }
+        {
+          'repo-1': {
+            path: '/Users/me/anthovai/kingu-intelligence',
+            repository: null,
+            failed: true
+          }
+        }
       )
     ).toEqual({ id: 'repo-1', path: '/Users/me/anthovai/kingu-intelligence', displayName: 'kingu' })
   })

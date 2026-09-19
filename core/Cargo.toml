@@ -1,0 +1,11 @@
+[package]
+name = "kingu-core"
+version = "0.1.0"
+edition = "2021"
+description = "Kingu Intelligence core engine — agent orchestration, PTY, worktree isolation (Phase 3)"
+license = "MIT"
+
+[lib]
+name = "kingu_core"
+
+[dependencies]

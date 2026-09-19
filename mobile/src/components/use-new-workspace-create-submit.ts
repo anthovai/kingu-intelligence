@@ -145,7 +145,10 @@ export function useNewWorkspaceCreateSubmit(args: {
           repoName: selectedRepo.displayName,
           scriptContent: args.setupTrust.scriptContent,
           contentHash: args.setupTrust.contentHash,
-          previouslyApproved: wasSetupHookPreviouslyApproved(args.trustedKinguHooks, selectedRepo.id)
+          previouslyApproved: wasSetupHookPreviouslyApproved(
+            args.trustedKinguHooks,
+            selectedRepo.id
+          )
         })
         args.transitionDrawer('trust')
         return

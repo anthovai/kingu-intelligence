@@ -44,8 +44,8 @@ export function SetupHookTrustDrawer({
                 : `Run setup from ${prompt.repoName}?`}
             </Text>
             <Text style={styles.subtitle}>
-              This repository's kingu.yaml runs before the workspace starts. Only run it if you trust
-              this repository.
+              This repository's kingu.yaml runs before the workspace starts. Only run it if you
+              trust this repository.
             </Text>
           </View>
 

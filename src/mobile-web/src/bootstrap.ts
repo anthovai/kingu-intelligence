@@ -1,7 +1,7 @@
 // Build-time constants, substituted by config/scripts/build-mobile-web-bundle.mjs via esbuild define.
-declare const ORCA_MOBILE_WEB_DESKTOP_VERSION: string
-declare const ORCA_MOBILE_WEB_RUNTIME_PROTOCOL_VERSION: number
-declare const ORCA_MOBILE_WEB_MIN_COMPATIBLE_RUNTIME_PROTOCOL_VERSION: number
+declare const KINGU_MOBILE_WEB_DESKTOP_VERSION: string
+declare const KINGU_MOBILE_WEB_RUNTIME_PROTOCOL_VERSION: number
+declare const KINGU_MOBILE_WEB_MIN_COMPATIBLE_RUNTIME_PROTOCOL_VERSION: number
 
 // Why a runtime read and not a define: buildId is the hash of the asset list that index.html
 // belongs to, so injecting it into a hashed asset would make the hash depend on itself.
@@ -53,11 +53,11 @@ async function start(): Promise<void> {
   }
   renderFacts([
     ['buildId', buildId],
-    ['desktopVersion', ORCA_MOBILE_WEB_DESKTOP_VERSION],
-    ['runtimeProtocolVersion', String(ORCA_MOBILE_WEB_RUNTIME_PROTOCOL_VERSION)],
+    ['desktopVersion', KINGU_MOBILE_WEB_DESKTOP_VERSION],
+    ['runtimeProtocolVersion', String(KINGU_MOBILE_WEB_RUNTIME_PROTOCOL_VERSION)],
     [
       'minCompatibleRuntimeProtocolVersion',
-      String(ORCA_MOBILE_WEB_MIN_COMPATIBLE_RUNTIME_PROTOCOL_VERSION)
+      String(KINGU_MOBILE_WEB_MIN_COMPATIBLE_RUNTIME_PROTOCOL_VERSION)
     ]
   ])
 }

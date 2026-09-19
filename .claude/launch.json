@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "kingu-web",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["--cwd", "E:\\ModelBusiness\\kingu-intelligence\\web", "run", "dev"],
+      "port": 5199
+    }
+  ]
+}

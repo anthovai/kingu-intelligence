@@ -153,7 +153,13 @@
         "View": 4
       },
       "labels": ["Back", "Refresh agent sessions"],
-      "text": ["Agent Session History", "kingu-history", "Unable to Load", "Unknown method", "Retry"]
+      "text": [
+        "Agent Session History",
+        "kingu-history",
+        "Unable to Load",
+        "Unknown method",
+        "Retry"
+      ]
     },
     "2813efdd7233": {
       "name": "status.get#2",

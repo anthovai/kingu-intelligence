@@ -87,7 +87,9 @@ export function useMobileTasksWorkspaceAndProjectState(model: RouteAndItemStateM
   const [taskStateHydrated, setTaskStateHydrated] = useState(false)
   const [runtimeTaskSettings, setRuntimeTaskSettings] = useState<RuntimeTaskSettings>({})
   const [trustedKinguHooks, setTrustedKinguHooks] = useState<PersistedTrustedKinguHooks>({})
-  const [kinguYamlTrustPrompt, setKinguYamlTrustPrompt] = useState<KinguYamlTrustPrompt | null>(null)
+  const [kinguYamlTrustPrompt, setKinguYamlTrustPrompt] = useState<KinguYamlTrustPrompt | null>(
+    null
+  )
   const [githubProjectSettings, setGithubProjectSettings] = useState<GitHubProjectSettings>(
     EMPTY_GITHUB_PROJECT_SETTINGS
   )

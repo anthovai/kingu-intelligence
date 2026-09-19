@@ -20,8 +20,8 @@
     "start:emulator": "node scripts/start-emulator.mjs"
   },
   "dependencies": {
-    "@noble/hashes": "1.8.0",
     "@kingu/expo-two-way-audio": "file:./packages/expo-two-way-audio",
+    "@noble/hashes": "1.8.0",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@xterm/addon-unicode11": "0.10.0-beta.300",
     "@xterm/addon-webgl": "0.20.0-beta.299",

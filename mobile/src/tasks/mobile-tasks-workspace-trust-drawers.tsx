@@ -207,8 +207,8 @@ export function renderMobileTasksKinguYamlTrustDrawer(model: ConnectionPresentat
                 : `Run setup from ${kinguYamlTrustPrompt.repoName}?`}
             </Text>
             <Text style={styles.sheetSubtitle}>
-              This repository's kingu.yaml runs on your machine before the workspace starts. Only run
-              it if you trust this repository.
+              This repository's kingu.yaml runs on your machine before the workspace starts. Only
+              run it if you trust this repository.
             </Text>
           </View>
 

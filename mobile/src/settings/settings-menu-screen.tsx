@@ -33,7 +33,8 @@ export default function SettingsMenuScreen({
             label: 'Support',
             icon: LifeBuoy,
             external: true,
-            onPress: () => void openExternal('https://github.com/anthovai/kingu-intelligence/issues')
+            onPress: () =>
+              void openExternal('https://github.com/anthovai/kingu-intelligence/issues')
           }
         ]}
       />

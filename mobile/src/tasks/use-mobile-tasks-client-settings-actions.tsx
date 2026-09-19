@@ -198,7 +198,9 @@ export function useMobileTasksClientSettingsActions(model: ProjectRepositoryReso
         contentHash,
         alwaysTrust
       })
-      taskUiStateWrite.interpret(await taskUiStateWrite.request(client, { trustedKinguHooks: next }))
+      taskUiStateWrite.interpret(
+        await taskUiStateWrite.request(client, { trustedKinguHooks: next })
+      )
       setTrustedKinguHooks(next)
     },
     [client, trustedKinguHooks]

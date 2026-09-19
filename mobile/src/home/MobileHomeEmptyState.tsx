@@ -38,8 +38,8 @@ export function MobileHomeEmptyState(props: {
       <View style={styles.emptyHero}>
         <Text style={styles.emptyTitle}>Connect your desktop</Text>
         <Text style={styles.emptyBody}>
-          Pair with Kingu on your computer to check on your agents, jump into any terminal, and drive
-          work from your phone.
+          Pair with Kingu on your computer to check on your agents, jump into any terminal, and
+          drive work from your phone.
         </Text>
         <Pressable style={styles.primaryButton} onPress={props.onPairDesktop}>
           <QrCode size={17} color={colors.bgBase} />
