@@ -37,7 +37,7 @@ jobs:
       xterm_patch_sync: ${{ steps.filter.outputs.xterm_patch_sync }}
       shell_contracts: ${{ steps.filter.outputs.shell_contracts }}
       test: ${{ steps.filter.outputs.test }}
-      orcad_browser: ${{ steps.filter.outputs.orcad_browser }}
+      kingud_browser: ${{ steps.filter.outputs.kingud_browser }}
       cross-version-wire: ${{ steps.filter.outputs.cross-version-wire }}
       managed_hook_node18: ${{ steps.filter.outputs.managed_hook_node18 }}
       package: ${{ steps.filter.outputs.package }}
@@ -175,7 +175,7 @@ jobs:
             src/shared/ephemeral-vm-runtime-rollback-projection.ts \
             src/shared/ephemeral-vm-runtimes.ts \
             src/shared/ephemeral-vm-recipes.ts \
-            src/shared/orca-yaml-hook-types.ts \
+            src/shared/kingu-yaml-hook-types.ts \
             src/main/ephemeral-vm-runtime-service.ts \
             src/main/ephemeral-vm-runtime-provisioning-persistence.ts \
             src/main/ephemeral-vm-failed-start-cleanup.ts; then
@@ -197,8 +197,8 @@ jobs:
       # Why both: the ratchet proves nothing reachable from the runtime imports electron,
       # which is a property of the import graph. This proves the Node artifact it enables
       # actually boots, pairs, creates a worktree and round-trips a real PTY.
-      - name: Boot orcad and round-trip a terminal
-        run: pnpm run smoke:orcad-terminal
+      - name: Boot kingud and round-trip a terminal
+        run: pnpm run smoke:kingud-terminal
 
       - name: Verify the generated RPC params catalog
         run: pnpm run verify:rpc-params-catalog
@@ -326,7 +326,7 @@ jobs:
       - name: Cache baseline Git build
         uses: actions/cache@v5
         with:
-          path: ~/.cache/orca-git-compat/git-2.25.5
+          path: ~/.cache/kingu-git-compat/git-2.25.5
           key: git-compat-baseline-${{ runner.os }}-${{ runner.arch }}-2.25.5
 
       # Why its own step: this is `make -j$(nproc)` on every core, and the lanes below
@@ -336,7 +336,7 @@ jobs:
       - name: Build the baseline Git binary
         run: |
           archive="$RUNNER_TEMP/git-2.25.5.tar.gz"
-          source="$HOME/.cache/orca-git-compat/git-2.25.5"
+          source="$HOME/.cache/kingu-git-compat/git-2.25.5"
           if [ -x "$source/git" ]; then
             exit 0
           fi
@@ -365,8 +365,8 @@ jobs:
 
           pids=()
           (
-            ORCA_GIT_COMPAT_BINARY="$HOME/.cache/orca-git-compat/git-2.25.5/git" \
-              ORCA_GIT_COMPAT_VERSION="2.25.5" \
+            KINGU_GIT_COMPAT_BINARY="$HOME/.cache/kingu-git-compat/git-2.25.5/git" \
+              KINGU_GIT_COMPAT_VERSION="2.25.5" \
               pnpm exec vitest run --config config/vitest.config.ts \
               src/shared/git-binary-compatibility.test.ts
           ) &
@@ -376,7 +376,7 @@ jobs:
             (
               image="${spec%%|*}"
               version="${spec#*|}"
-              ORCA_GIT_COMPAT_IMAGE="$image" ORCA_GIT_COMPAT_VERSION="$version" \
+              KINGU_GIT_COMPAT_IMAGE="$image" KINGU_GIT_COMPAT_VERSION="$version" \
                 pnpm exec vitest run --config config/vitest.config.ts \
                 src/shared/git-binary-compatibility.test.ts
             ) &
@@ -389,7 +389,7 @@ jobs:
           done
           exit "$status"
 
-  # Why this job: Orca's session index-heal depends on a Codex behavior — a
+  # Why this job: Kingu's session index-heal depends on a Codex behavior — a
   # `thread/read` of an unindexed rollout performs a read-repair that inserts the
   # `threads` row. Every unit test drives a stub app-server and asserts only that the
   # call did not error, so if Codex dropped the repair they would all stay green while
@@ -422,11 +422,11 @@ jobs:
           # Why REQUIRED: without a binary the suite skips, and a job that skips
           # reports success. This turns a failed or missing install into a red test
           # instead of a green no-op.
-          ORCA_CODEX_CONTRACT_REQUIRED: '1'
-          ORCA_CODEX_CONTRACT_VERSION: ${{ env.CODEX_CLI_VERSION }}
+          KINGU_CODEX_CONTRACT_REQUIRED: '1'
+          KINGU_CODEX_CONTRACT_VERSION: ${{ env.CODEX_CLI_VERSION }}
         run: |
           set -euo pipefail
-          ORCA_CODEX_CONTRACT_BINARY="$RUNNER_TEMP/codex-cli/node_modules/.bin/codex" \
+          KINGU_CODEX_CONTRACT_BINARY="$RUNNER_TEMP/codex-cli/node_modules/.bin/codex" \
             pnpm exec vitest run --config config/vitest.config.ts \
             src/main/codex/codex-index-heal-binary-contract.test.ts
 
@@ -478,7 +478,7 @@ jobs:
       # right on a developer machine and wrong here — this job is a required check
       # and its fish lane is the only end-to-end guard for #9993, so a skip would
       # report green with nothing exercised. Turns those skips into failures.
-      ORCA_REQUIRE_FISH: '1'
+      KINGU_REQUIRE_FISH: '1'
 
     steps:
       - name: Checkout
@@ -519,7 +519,7 @@ jobs:
           # them. Retries are 1, not 3: a first attempt at these bounds already multiplied
           # 30s x 3 retries across every index file into a ~15 minute stall on a dead
           # mirror, which is worse than failing once and moving on.
-          sudo tee /etc/apt/apt.conf.d/99-orca-shell-contracts >/dev/null <<'APTCONF'
+          sudo tee /etc/apt/apt.conf.d/99-kingu-shell-contracts >/dev/null <<'APTCONF'
           Acquire::http::Timeout "15";
           Acquire::https::Timeout "15";
           Acquire::Retries "1";
@@ -542,7 +542,7 @@ jobs:
           timeout 300 sudo apt-get install -y zsh fish
 
       # Separate from the install so the failure names the contract, not an apt error.
-      # ORCA_REQUIRE_FISH re-checks this at test time; this step just fails in seconds
+      # KINGU_REQUIRE_FISH re-checks this at test time; this step just fails in seconds
       # instead of after a full dependency install.
       - name: Require fish 4+
         run: |
@@ -613,10 +613,10 @@ jobs:
 
   # Why a separate job: the test needs a real Chrome, and the sharded `test` matrix
   # would pay for it on every shard to run one file in whichever shard it landed in.
-  orcad_browser:
-    name: orcad browser provider
+  kingud_browser:
+    name: kingud browser provider
     needs: [code_paths]
-    if: needs.code_paths.outputs.orcad_browser == 'true'
+    if: needs.code_paths.outputs.kingud_browser == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -632,7 +632,7 @@ jobs:
       # Why the runner's Google Chrome and not its chromium: Ubuntu 24.04 only ships an
       # AppArmor userns profile for the Chrome .deb, so chromium dies with "No usable
       # sandbox" and the provider passes no --no-sandbox. Why fail instead of skip: an
-      # unset ORCA_BROWSER_EXECUTABLE is exactly how this test went uncovered for so long.
+      # unset KINGU_BROWSER_EXECUTABLE is exactly how this test went uncovered for so long.
       - name: Resolve Chrome for the browser provider
         run: |
           set -euo pipefail
@@ -642,12 +642,12 @@ jobs:
             exit 1
           fi
           "$chrome" --version
-          echo "ORCA_BROWSER_EXECUTABLE=$chrome" >> "$GITHUB_ENV"
+          echo "KINGU_BROWSER_EXECUTABLE=$chrome" >> "$GITHUB_ENV"
 
       - name: Test external Chromium browser provider
         run: |
           pnpm exec vitest run --config config/vitest.config.ts \
-            src/main/orcad/external-chromium-browser-process.integration.test.ts
+            src/main/kingud/external-chromium-browser-process.integration.test.ts
 
   # Why its own job: it needs mobile/node_modules and a real browser, and the sharded `test`
   # matrix would pay for both on every shard to run two files. Dark through Phase C: this proves
@@ -677,7 +677,7 @@ jobs:
       # The entry lives in mobile/ so one React resolves; without this every RN import is nothing.
       - uses: ./.github/actions/install-mobile-dependencies
 
-      # Why the runner's Google Chrome and not a downloaded chromium: same reason as the orcad
+      # Why the runner's Google Chrome and not a downloaded chromium: same reason as the kingud
       # browser job -- Ubuntu 24.04 only ships an AppArmor userns profile for the Chrome .deb.
       # Why fail instead of skip: a silently skipped render check is the failure this job exists
       # to prevent.
@@ -690,7 +690,7 @@ jobs:
             exit 1
           fi
           "$chrome" --version
-          echo "ORCA_MOBILE_WEB_RENDER_BROWSER=$chrome" >> "$GITHUB_ENV"
+          echo "KINGU_MOBILE_WEB_RENDER_BROWSER=$chrome" >> "$GITHUB_ENV"
 
       - name: Build and verify the app bundle
         run: pnpm run build:mobile-web:app
@@ -700,7 +700,7 @@ jobs:
       # install has to fail rather than skip everything the job exists to run.
       - name: Builder, override census and render check
         env:
-          ORCA_MOBILE_WEB_APP_DEPS_REQUIRED: '1'
+          KINGU_MOBILE_WEB_APP_DEPS_REQUIRED: '1'
         run: |
           pnpm exec vitest run --config config/vitest.config.ts \
             config/scripts/build-mobile-web-app-bundle.test.mjs \
@@ -849,7 +849,7 @@ jobs:
 
       - name: Package unpacked app
         env:
-          ORCA_REUSE_PREPARED_NATIVE_RUNTIME: '1'
+          KINGU_REUSE_PREPARED_NATIVE_RUNTIME: '1'
         # PR artifacts are only inspected locally; gzip avoids release-size xz compression.
         run: >-
           pnpm exec electron-builder --config config/electron-builder.config.cjs
@@ -860,23 +860,23 @@ jobs:
         run: |
           set -euo pipefail
           version="$(node -p "require('./package.json').version")"
-          deb="dist/orca-ide_${version}_amd64.deb"
-          rpm="dist/orca-ide-${version}.x86_64.rpm"
+          deb="dist/kingu-ide_${version}_amd64.deb"
+          rpm="dist/kingu-ide-${version}.x86_64.rpm"
           test -s "$deb"
           test -s "$rpm"
-          deb_marker="$(dpkg-deb --fsys-tarfile "$deb" | tar -xOf - ./opt/Orca/resources/package-type)"
-          rpm_marker="$(rpm2cpio "$rpm" | cpio --quiet --extract --to-stdout ./opt/Orca/resources/package-type)"
+          deb_marker="$(dpkg-deb --fsys-tarfile "$deb" | tar -xOf - ./opt/Kingu/resources/package-type)"
+          rpm_marker="$(rpm2cpio "$rpm" | cpio --quiet --extract --to-stdout ./opt/Kingu/resources/package-type)"
           [[ "$deb_marker" == deb ]] || { echo "Expected deb marker, got: $deb_marker"; exit 1; }
           [[ "$rpm_marker" == rpm ]] || { echo "Expected rpm marker, got: $rpm_marker"; exit 1; }
 
       - name: Verify headless serve signal shutdown
         run: >-
           node config/scripts/run-headless-serve-shutdown-docker.mjs
-          --appimage dist/orca-linux.AppImage --all-entrypoints
+          --appimage dist/kingu-linux.AppImage --all-entrypoints
 
       # A default container reproduces the hostile AppImage launch environment.
       - name: Verify Linux CLI launch contract
-        run: node config/scripts/run-linux-cli-launch-contract-docker.mjs --appimage dist/orca-linux.AppImage
+        run: node config/scripts/run-linux-cli-launch-contract-docker.mjs --appimage dist/kingu-linux.AppImage
 
       - name: Smoke packaged CLI
         run: node config/scripts/smoke-packaged-cli.mjs --app-dir=dist/linux-unpacked
@@ -978,7 +978,7 @@ jobs:
           src/main/cli/wsl-cli-powershell-boundary.test.ts
           src/main/computer/desktop-script-runtime-host.win32.test.ts
           src/main/cursor/hook-service.test.ts
-          src/main/orca-profiles/profile-index-store.test.ts
+          src/main/kingu-profiles/profile-index-store.test.ts
           src/main/startup/windows-install-dir-acl-repair.win32.test.ts
           src/main/runtime/repo-worktree-admin-fingerprint.test.ts
           src/main/runtime/worktree-scan-admin-fingerprint-gate.test.ts
@@ -1000,7 +1000,7 @@ jobs:
 
       - name: Build package inputs
         env:
-          ORCA_REUSE_WINDOWS_CLI_LAUNCHER: '1'
+          KINGU_REUSE_WINDOWS_CLI_LAUNCHER: '1'
         run: pnpm run build:release:parallel
 
       - name: Restore compiled Electron native modules
@@ -1017,11 +1017,11 @@ jobs:
 
       - name: Package unpacked app
         env:
-          ORCA_REUSE_PREPARED_NATIVE_RUNTIME: '1'
+          KINGU_REUSE_PREPARED_NATIVE_RUNTIME: '1'
         run: pnpm exec electron-builder --config config/electron-builder.config.cjs --dir
 
       - name: Smoke packaged Windows PTY native capability
-        run: pnpm run smoke:windows-pty-native-capability -- --exe=dist/win-unpacked/Orca.exe
+        run: pnpm run smoke:windows-pty-native-capability -- --exe=dist/win-unpacked/Kingu.exe
 
       - name: Smoke packaged CLI
         run: node config/scripts/smoke-packaged-cli.mjs --app-dir=dist/win-unpacked
@@ -1078,7 +1078,7 @@ jobs:
       - xterm_patch_sync
       - shell_contracts
       - test
-      - orcad_browser
+      - kingud_browser
       - mobile_web_app
       - cross-version-wire
       - managed_hook_node18
@@ -1114,8 +1114,8 @@ jobs:
           SHELL_CONTRACTS_SHOULD_RUN: ${{ needs.code_paths.outputs.shell_contracts }}
           TEST: ${{ needs.test.result }}
           TEST_SHOULD_RUN: ${{ needs.code_paths.outputs.test }}
-          ORCAD_BROWSER: ${{ needs.orcad_browser.result }}
-          ORCAD_BROWSER_SHOULD_RUN: ${{ needs.code_paths.outputs.orcad_browser }}
+          KINGUD_BROWSER: ${{ needs.kingud_browser.result }}
+          KINGUD_BROWSER_SHOULD_RUN: ${{ needs.code_paths.outputs.kingud_browser }}
           MOBILE_WEB_APP: ${{ needs.mobile_web_app.result }}
           MOBILE_WEB_APP_SHOULD_RUN: ${{ needs.code_paths.outputs.mobile_web_app }}
           CROSS_VERSION_WIRE: ${{ needs.cross-version-wire.result }}
@@ -1159,7 +1159,7 @@ jobs:
           check_job xterm_patch_sync "$XTERM_PATCH_SYNC" "$XTERM_PATCH_SYNC_SHOULD_RUN"
           check_job shell_contracts "$SHELL_CONTRACTS" "$SHELL_CONTRACTS_SHOULD_RUN"
           check_job test "$TEST" "$TEST_SHOULD_RUN"
-          check_job orcad_browser "$ORCAD_BROWSER" "$ORCAD_BROWSER_SHOULD_RUN"
+          check_job kingud_browser "$KINGUD_BROWSER" "$KINGUD_BROWSER_SHOULD_RUN"
           check_job mobile_web_app "$MOBILE_WEB_APP" "$MOBILE_WEB_APP_SHOULD_RUN"
           check_job cross-version-wire "$CROSS_VERSION_WIRE" "$CROSS_VERSION_WIRE_SHOULD_RUN"
           check_job managed_hook_node18 "$MANAGED_HOOK_NODE18" "$MANAGED_HOOK_NODE18_SHOULD_RUN"

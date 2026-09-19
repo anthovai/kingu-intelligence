@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AgentSessionRecordStore } from '../../../src/main/runtime/agent-session-record-store'
-import { OrcaRuntimeRpcServer } from '../../../src/main/runtime/runtime-rpc'
+import { KinguRuntimeRpcServer } from '../../../src/main/runtime/runtime-rpc'
 import { DeviceRegistry } from '../../../src/main/runtime/device-registry'
 import type { AuthenticatedMobileSocket } from '../../../src/main/runtime/rpc/mobile-socket-wiring'
 import { RpcDispatcher } from '../../../src/main/runtime/rpc/dispatcher'
@@ -11,7 +11,7 @@ import { AgentLaunch } from '../../../src/main/runtime/rpc/methods/agent-launch-
 import { runtimeStub } from '../../../src/main/runtime/rpc/methods/agent-launch.test-fixture'
 import { setStructuredAgentSessionHost } from '../../../src/main/native-chat/agent-session-wire/structured-agent-session-registry'
 import type { StructuredAgentSessionHost } from '../../../src/main/native-chat/agent-session-wire/structured-agent-session-host'
-import type { OrcaRuntimeService } from '../../../src/main/runtime/orca-runtime'
+import type { KinguRuntimeService } from '../../../src/main/runtime/kingu-runtime'
 import { markRpcDeliveryUnknown } from '../transport/rpc-delivery-ambiguity'
 import { createStableLogicalRpcClient } from '../transport/stable-logical-rpc-client'
 import type { RpcClient } from '../transport/rpc-client'
@@ -36,7 +36,7 @@ let store: AgentSessionRecordStore
 beforeEach(async () => {
   createStructuredSession.mockReset()
   createStructuredSession.mockResolvedValue({ ok: true, value: { sessionId: 'session-1' } })
-  directory = await mkdtemp(join(tmpdir(), 'orca-launch-architecture-'))
+  directory = await mkdtemp(join(tmpdir(), 'kingu-launch-architecture-'))
   store = await AgentSessionRecordStore.open({ directory, hostId: 'local' })
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the launch reads deps.store; session creation is injected above.
   setStructuredAgentSessionHost({ deps: { store } } as unknown as StructuredAgentSessionHost)
@@ -65,7 +65,7 @@ function scenario(
     (host, index) =>
       new RpcDispatcher({
         // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: this fixture supplies the methods reached by the real launch handler.
-        runtime: host as unknown as OrcaRuntimeService,
+        runtime: host as unknown as KinguRuntimeService,
         methods:
           index === 0 || options.replacement === 'current'
             ? AGENT_LAUNCH_METHODS
@@ -160,9 +160,9 @@ describe('mobile launch retry authority', () => {
       getRuntimeId: () => 'runtime-1',
       configureNotificationDismissalStore: () => {}
     }
-    const server = new OrcaRuntimeRpcServer({
+    const server = new KinguRuntimeRpcServer({
       // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the fixture supplies the constructor and launch method dependencies.
-      runtime: runtime as unknown as OrcaRuntimeService,
+      runtime: runtime as unknown as KinguRuntimeService,
       userDataPath: directory,
       enableWebSocket: false
     })
@@ -205,7 +205,7 @@ describe('mobile launch retry authority', () => {
     const runtime = { ...runtimeStub(), getRuntimeId: () => 'runtime-1' }
     const dispatcher = new RpcDispatcher({
       // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the fixture implements the launch handler dependencies.
-      runtime: runtime as unknown as OrcaRuntimeService,
+      runtime: runtime as unknown as KinguRuntimeService,
       methods: AGENT_LAUNCH_METHODS
     })
     const response = await dispatcher.dispatch({
@@ -226,7 +226,7 @@ describe('mobile launch retry authority', () => {
     const runtime = { ...runtimeStub(), getRuntimeId: () => 'runtime-1' }
     const dispatcher = new RpcDispatcher({
       // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the fixture implements the launch handler dependencies.
-      runtime: runtime as unknown as OrcaRuntimeService,
+      runtime: runtime as unknown as KinguRuntimeService,
       methods: AGENT_LAUNCH_METHODS
     })
     const request = {
@@ -271,7 +271,7 @@ describe('mobile launch retry authority', () => {
     )
     const dispatcher = new RpcDispatcher({
       // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the fixture implements the launch handler dependencies.
-      runtime: runtime as unknown as OrcaRuntimeService,
+      runtime: runtime as unknown as KinguRuntimeService,
       methods: AGENT_LAUNCH_METHODS
     })
     const request = {

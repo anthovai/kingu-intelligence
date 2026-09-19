@@ -52,10 +52,10 @@ const LOCAL_HOST_LABEL = getLocalExecutionHostLabel('darwin')
 const repos = [
   {
     id: 'repo-1',
-    displayName: 'orca',
-    path: '/src/orca',
+    displayName: 'kingu',
+    path: '/src/kingu',
     kind: 'git',
-    upstream: { owner: 'stablyai', repo: 'orca' }
+    upstream: { owner: 'anthovai', repo: 'kingu' }
   }
 ]
 
@@ -124,10 +124,10 @@ describe('NewWorktreeModal project targets', () => {
 
     expect(sendRequest).toHaveBeenCalledWith('repo.list')
     expect(pickerItems(renderer, 'Project')).toEqual([
-      expect.objectContaining({ label: 'orca', detail: 'stablyai/orca' })
+      expect.objectContaining({ label: 'kingu', detail: 'anthovai/kingu-intelligence' })
     ])
     expect(pickerItems(renderer, 'Run on')).toEqual([
-      expect.objectContaining({ label: LOCAL_HOST_LABEL, detail: '/src/orca' })
+      expect.objectContaining({ label: LOCAL_HOST_LABEL, detail: '/src/kingu' })
     ])
   })
 
@@ -136,11 +136,11 @@ describe('NewWorktreeModal project targets', () => {
       ...repos,
       {
         id: 'repo-2',
-        displayName: 'orca',
-        path: '/home/dev/orca',
+        displayName: 'kingu',
+        path: '/home/dev/kingu',
         connectionId: 'build-server',
         kind: 'git',
-        upstream: { owner: 'stablyai', repo: 'orca' }
+        upstream: { owner: 'anthovai', repo: 'kingu' }
       }
     ]
     const client = {
@@ -169,13 +169,13 @@ describe('NewWorktreeModal project targets', () => {
     })
 
     expect(pickerItems(renderer, 'Project')).toEqual([
-      expect.objectContaining({ label: 'orca', detail: 'stablyai/orca' })
+      expect.objectContaining({ label: 'kingu', detail: 'anthovai/kingu-intelligence' })
     ])
     expect(pickerItems(renderer, 'Run on')).toEqual([
-      expect.objectContaining({ label: LOCAL_HOST_LABEL, detail: '/src/orca' }),
+      expect.objectContaining({ label: LOCAL_HOST_LABEL, detail: '/src/kingu' }),
       expect.objectContaining({
         label: 'SSH · build-server',
-        detail: '/home/dev/orca'
+        detail: '/home/dev/kingu'
       })
     ])
   })
@@ -183,11 +183,11 @@ describe('NewWorktreeModal project targets', () => {
   it('loads SSH state before detecting agents on the selected remote target', async () => {
     const remoteRepo = {
       id: 'repo-remote',
-      displayName: 'orca',
-      path: '/home/dev/orca',
+      displayName: 'kingu',
+      path: '/home/dev/kingu',
       connectionId: 'build-server',
       kind: 'git',
-      upstream: { owner: 'stablyai', repo: 'orca' }
+      upstream: { owner: 'anthovai', repo: 'kingu' }
     }
     setCachedRepos('host-ssh', [remoteRepo])
     const sendRequest = vi.fn().mockImplementation((method: string) => {

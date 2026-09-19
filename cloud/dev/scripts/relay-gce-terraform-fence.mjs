@@ -192,7 +192,7 @@ function defaultGit(args, options = {}) {
 function privatePlanDirectory(deps) {
   const previousMask = process.umask(0o077)
   try {
-    const directory = deps.mkdtemp(join(deps.tmpdir(), 'orca-relay-fence-'))
+    const directory = deps.mkdtemp(join(deps.tmpdir(), 'kingu-relay-fence-'))
     deps.chmod(directory, 0o700)
     return directory
   } finally {
@@ -259,7 +259,7 @@ function assertAttemptMatches(config, attempt, requirePlanGeneration = true) {
   ) {
     throw new Error('fence attempt has no valid Terraform state object binding')
   }
-  if (attempt.requestReason !== `orca-relay-fence/${attempt.attemptId}`) {
+  if (attempt.requestReason !== `kingu-relay-fence/${attempt.attemptId}`) {
     throw new Error('fence attempt request-reason mismatch')
   }
 }
@@ -286,7 +286,7 @@ export function assertReviewedFenceCheckout(config, deps = {}) {
   const git = deps.git ?? defaultGit
   const readFile = deps.readFile ?? readFileSync
   const varPath = join(config.terraformDir, config.varFile)
-  const imageCommit = environment.ORCA_RELAY_FENCE_IMAGE_COMMIT
+  const imageCommit = environment.KINGU_RELAY_FENCE_IMAGE_COMMIT
   if (imageCommit !== undefined) {
     if (!/^[a-f0-9]{40}$/.test(imageCommit) || imageCommit !== config.fenceCommit) {
       throw new Error('fence commit does not match immutable broker image')
@@ -677,7 +677,7 @@ export async function runTerraformFenceApply(config, overrides = {}) {
       terraformStateSerial: stateBinding.serial,
       terraformStateObjectGeneration: stateBinding.generation,
       terraformStateObjectSha256: stateBinding.sha256,
-      requestReason: `orca-relay-fence/${attemptId}`
+      requestReason: `kingu-relay-fence/${attemptId}`
     }
     const prepared = await deps.prepareAttempt(attempt)
     let durableAttempt = prepared?.attempt ?? prepared

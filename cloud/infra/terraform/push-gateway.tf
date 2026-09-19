@@ -1,4 +1,4 @@
-# Orca mobile push gateway (`cloud/apps/push`).
+# Kingu mobile push gateway (`cloud/apps/push`).
 #
 # One public Cloud Run service that holds the APNs key and sends through APNs and FCM V1 on
 # behalf of paired phones. Operations: `docs/push-gateway.md`.
@@ -8,7 +8,7 @@
 # still reads every environment-shaped value from a variable, like the rest of this root, so a
 # future staging gateway is a tfvars edit rather than a rewrite.
 #
-# Several resources below already exist in `onorca-cloud`; they are declared so a plan is clean
+# Several resources below already exist in `onkingu-cloud`; they are declared so a plan is clean
 # and imported once. `docs/push-gateway.md` carries the exact `terraform import` commands.
 
 locals {
@@ -30,9 +30,9 @@ locals {
   ]) : toset([])
 
   push_provider_secret_env = {
-    "${var.name_prefix}-push-apns-key"      = "ORCA_PUSH_APNS_KEY"
-    "${var.name_prefix}-push-apns-key-id"   = "ORCA_PUSH_APNS_KEY_ID"
-    "${var.name_prefix}-push-apple-team-id" = "ORCA_PUSH_APPLE_TEAM_ID"
+    "${var.name_prefix}-push-apns-key"      = "KINGU_PUSH_APNS_KEY"
+    "${var.name_prefix}-push-apns-key-id"   = "KINGU_PUSH_APNS_KEY_ID"
+    "${var.name_prefix}-push-apple-team-id" = "KINGU_PUSH_APPLE_TEAM_ID"
   }
 
   push_fqdn = replace(replace(var.push_base_url, "https://", ""), "http://", "")
@@ -47,8 +47,8 @@ resource "google_service_account" "push_runtime" {
 
   project      = var.project_id
   account_id   = local.push_runtime_service_account_id
-  display_name = "Orca mobile push gateway"
-  description  = "Runtime identity for the Orca mobile push gateway; sends through FCM V1."
+  display_name = "Kingu mobile push gateway"
+  description  = "Runtime identity for the Kingu mobile push gateway; sends through FCM V1."
 }
 
 # FCM V1 sends are authorized by the runtime account's own metadata-server token.
@@ -153,23 +153,23 @@ resource "google_cloud_run_v2_service" "push" {
       }
 
       env {
-        name  = "ORCA_PUSH_PUBLIC_URL"
+        name  = "KINGU_PUSH_PUBLIC_URL"
         value = var.push_base_url
       }
 
       env {
-        name  = "ORCA_PUSH_FCM_PROJECT_ID"
+        name  = "KINGU_PUSH_FCM_PROJECT_ID"
         value = var.project_id
       }
 
       # Bound the declared pool against the dedicated database rollout budget.
       env {
-        name  = "ORCA_PUSH_DATABASE_POOL_MAX"
+        name  = "KINGU_PUSH_DATABASE_POOL_MAX"
         value = tostring(var.push_database_pool_max)
       }
 
       env {
-        name = "ORCA_PUSH_DATABASE_URL"
+        name = "KINGU_PUSH_DATABASE_URL"
 
         value_source {
           secret_key_ref {
@@ -248,7 +248,7 @@ resource "google_cloud_run_v2_service" "push" {
 }
 
 # Google issues and renews the certificate for the mapping. The DNS record itself is a
-# hand-managed Cloudflare CNAME to ghs.googlehosted.com, like relay.onorca.dev; this root has no
+# hand-managed Cloudflare CNAME to ghs.googlehosted.com, like relay.onkingu.dev; this root has no
 # Cloudflare surface by design. `terraform output push_dns_record` prints the record.
 resource "google_cloud_run_domain_mapping" "push" {
   count = var.push_gateway_enabled && var.manage_push_domain_mapping ? 1 : 0

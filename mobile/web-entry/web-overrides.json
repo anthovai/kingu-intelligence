@@ -7,7 +7,7 @@
     },
     {
       "file": "packages/expo-two-way-audio/src/ExpoTwoWayAudioModule.web.ts",
-      "reason": "Vendored with the module, not added for Route A. The dictation hook imports @orca/expo-two-way-audio, whose native module is a Swift/Kotlin JSI binding with no browser counterpart; the web file answers the same surface with denied microphone permission and no playback."
+      "reason": "Vendored with the module, not added for Route A. The dictation hook imports @kingu/expo-two-way-audio, whose native module is a Swift/Kotlin JSI binding with no browser counterpart; the web file answers the same surface with denied microphone permission and no playback."
     },
     {
       "file": "src/transport/host-device-token-store.web.ts",
@@ -15,7 +15,7 @@
     },
     {
       "file": "app/h/[hostId]/web.web.tsx",
-      "reason": "The hybrid shell route opens a WebView on this very page, so on web it redirects to the host instead of nesting the shell inside itself. Its native file pulls in OrcaMobileWebShellView, whose requireNativeViewManager call runs at import and throws in a browser."
+      "reason": "The hybrid shell route opens a WebView on this very page, so on web it redirects to the host instead of nesting the shell inside itself. Its native file pulls in KinguMobileWebShellView, whose requireNativeViewManager call runs at import and throws in a browser."
     }
   ]
 }

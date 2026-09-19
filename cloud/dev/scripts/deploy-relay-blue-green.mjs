@@ -7,21 +7,21 @@ const POLL_INTERVAL_MS = 5_000
 const MIGRATION_TIMEOUT_MS = 14 * 60 * 1000
 const CONNECTION_CAPACITY_PROTOCOL = 2
 export const DIRECTOR_REGIONAL_PLACEMENT_SECRET =
-  'orca-cloud-relay-regional-placement-enabled'
+  'kingu-cloud-relay-regional-placement-enabled'
 export const DIRECTOR_REGIONAL_PLACEMENT_ENV =
-  'ORCA_RELAY_REGIONAL_PLACEMENT_ENABLED'
-export const DIRECTOR_CORRECTION_COHORT_ENV = 'ORCA_RELAY_REGION_CORRECTION_COHORT_PERCENT'
+  'KINGU_RELAY_REGIONAL_PLACEMENT_ENABLED'
+export const DIRECTOR_CORRECTION_COHORT_ENV = 'KINGU_RELAY_REGION_CORRECTION_COHORT_PERCENT'
 export const DIRECTOR_REHOME_IDENTITY_ENV =
-  'ORCA_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT'
-export const DIRECTOR_REHOME_AUDIENCE_ENV = 'ORCA_RELAY_REHOME_AUDIENCE'
+  'KINGU_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT'
+export const DIRECTOR_REHOME_AUDIENCE_ENV = 'KINGU_RELAY_REHOME_AUDIENCE'
 export const SELECTOR_ROLLBACK_TAG = 'selector-rollback'
 export const SELECTOR_REVISION_MARKER = '3'
 export const DIRECTOR_ADMISSION_ENVIRONMENT = Object.freeze({
-  ORCA_RELAY_DATABASE_POOL_MAX: '3',
-  ORCA_RELAY_PUBLIC_ASSIGNMENT_CONCURRENCY: '2',
-  ORCA_RELAY_PUBLIC_ASSIGNMENT_QUEUE_MAX: '128',
-  ORCA_RELAY_PUBLIC_ASSIGNMENT_RETRY_AFTER_SECONDS: '5',
-  ORCA_RELAY_PUBLIC_ASSIGNMENT_WAIT_MS: '4000'
+  KINGU_RELAY_DATABASE_POOL_MAX: '3',
+  KINGU_RELAY_PUBLIC_ASSIGNMENT_CONCURRENCY: '2',
+  KINGU_RELAY_PUBLIC_ASSIGNMENT_QUEUE_MAX: '128',
+  KINGU_RELAY_PUBLIC_ASSIGNMENT_RETRY_AFTER_SECONDS: '5',
+  KINGU_RELAY_PUBLIC_ASSIGNMENT_WAIT_MS: '4000'
 })
 const DIRECTOR_STARTUP_PROBE =
   'tcpSocket.port=8080,timeoutSeconds=120,periodSeconds=120,failureThreshold=1'
@@ -243,8 +243,8 @@ export function directorDeploymentEnvironment(config) {
   }
   const environment = {
     ...DIRECTOR_ADMISSION_ENVIRONMENT,
-    ORCA_RELAY_ADMISSION_SELECTOR_VERSION: SELECTOR_REVISION_MARKER,
-    ...(imageDigest === undefined ? {} : { ORCA_RELAY_IMAGE_DIGEST: imageDigest })
+    KINGU_RELAY_ADMISSION_SELECTOR_VERSION: SELECTOR_REVISION_MARKER,
+    ...(imageDigest === undefined ? {} : { KINGU_RELAY_IMAGE_DIGEST: imageDigest })
   }
   if (config['region-correction-cohort-percent'] !== undefined &&
       config['region-correction-cohort-percent'] !== 'preserve') {
@@ -258,16 +258,16 @@ export function directorDeploymentEnvironment(config) {
   )
   const cellsJson = directorCellsJson(config['director-cells-json'])
   if (serviceAccount !== undefined) {
-    environment.ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT = serviceAccount
+    environment.KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT = serviceAccount
   }
   if (asiaProofServiceAccount !== undefined) {
-    environment.ORCA_RELAY_ASIA_PROOF_SERVICE_ACCOUNT = asiaProofServiceAccount
+    environment.KINGU_RELAY_ASIA_PROOF_SERVICE_ACCOUNT = asiaProofServiceAccount
   }
   if (rehomeDirectorServiceAccount !== undefined) {
     environment[DIRECTOR_REHOME_IDENTITY_ENV] = rehomeDirectorServiceAccount
     environment[DIRECTOR_REHOME_AUDIENCE_ENV] = config['rehome-audience']
   }
-  if (cellsJson !== undefined) environment.ORCA_RELAY_CELLS_JSON = cellsJson
+  if (cellsJson !== undefined) environment.KINGU_RELAY_CELLS_JSON = cellsJson
   return environment
 }
 
@@ -420,7 +420,7 @@ function commandText(args, { sensitive = false } = {}) {
 }
 
 export function suppliedAdminIdentityToken(environment = process.env) {
-  const token = environment.ORCA_RELAY_ADMIN_ID_TOKEN
+  const token = environment.KINGU_RELAY_ADMIN_ID_TOKEN
   if (token === undefined) return null
   // The workflow supplies a masked Google ID token because external-account gcloud cannot mint one directly.
   if (token.length > 8_192 || !/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(token)) {
@@ -814,12 +814,12 @@ export async function deployDirector(config, tag, overrides = {}) {
     ? { changed: false }
     : config['capacity-cell-id'] === undefined
       ? directorCellSetAddition(
-          currentEnvironment.ORCA_RELAY_CELLS_JSON,
-          deploymentEnvironment.ORCA_RELAY_CELLS_JSON
+          currentEnvironment.KINGU_RELAY_CELLS_JSON,
+          deploymentEnvironment.KINGU_RELAY_CELLS_JSON
         )
       : directorTopologyChange(
-          currentEnvironment.ORCA_RELAY_CELLS_JSON,
-          deploymentEnvironment.ORCA_RELAY_CELLS_JSON,
+          currentEnvironment.KINGU_RELAY_CELLS_JSON,
+          deploymentEnvironment.KINGU_RELAY_CELLS_JSON,
           config['capacity-cell-id']
         )
   const verifyRehomeDisabled = async (origin) => {
@@ -857,8 +857,8 @@ export async function deployDirector(config, tag, overrides = {}) {
     const rollbackEnvironment = revisionEnvironment(rollbackRevision)
     const rollbackSecrets = revisionSecretEnvironment(rollbackRevision)
     if (
-      rollbackEnvironment.ORCA_RELAY_ROLE !== 'director' ||
-      rollbackEnvironment.ORCA_RELAY_ADMISSION_SELECTOR_VERSION !==
+      rollbackEnvironment.KINGU_RELAY_ROLE !== 'director' ||
+      rollbackEnvironment.KINGU_RELAY_ADMISSION_SELECTOR_VERSION !==
         SELECTOR_REVISION_MARKER ||
       !hasExpectedEnvironment(rollbackEnvironment, deploymentEnvironment) ||
       rollbackSecrets[DIRECTOR_REGIONAL_PLACEMENT_ENV]?.secret !==
@@ -892,8 +892,8 @@ export async function deployDirector(config, tag, overrides = {}) {
     const environment = revisionEnvironment(candidateRevision)
     const secrets = revisionSecretEnvironment(candidateRevision)
     if (
-      environment.ORCA_RELAY_ROLE !== 'director' ||
-      environment.ORCA_RELAY_ADMISSION_SELECTOR_VERSION !== SELECTOR_REVISION_MARKER ||
+      environment.KINGU_RELAY_ROLE !== 'director' ||
+      environment.KINGU_RELAY_ADMISSION_SELECTOR_VERSION !== SELECTOR_REVISION_MARKER ||
       !hasExpectedEnvironment(environment, deploymentEnvironment) ||
       secrets[DIRECTOR_REGIONAL_PLACEMENT_ENV]?.secret !==
         DIRECTOR_REGIONAL_PLACEMENT_SECRET ||
@@ -1003,11 +1003,11 @@ async function deployCell(config, tag, oldTag, drainTag) {
   const currentRevisionState = describeRevision(config, currentRevision)
   const currentEnv = revisionEnvironment(currentRevisionState)
   const currentImage = currentRevisionState.spec?.containers?.[0]?.image
-  const sourceCellId = currentEnv.ORCA_RELAY_CELL_ID
-  const sourceOrigin = currentEnv.ORCA_RELAY_CELL_URL
-  const capacityRequests = Number(currentEnv.ORCA_RELAY_CELL_CAPACITY)
+  const sourceCellId = currentEnv.KINGU_RELAY_CELL_ID
+  const sourceOrigin = currentEnv.KINGU_RELAY_CELL_URL
+  const capacityRequests = Number(currentEnv.KINGU_RELAY_CELL_CAPACITY)
   if (
-    currentEnv.ORCA_RELAY_ROLE !== 'cell' ||
+    currentEnv.KINGU_RELAY_ROLE !== 'cell' ||
     !sourceCellId ||
     !sourceOrigin ||
     !currentImage ||
@@ -1031,9 +1031,9 @@ async function deployCell(config, tag, oldTag, drainTag) {
     enabled: false
   })
   deployCandidate(config, tag, {
-    ORCA_RELAY_CELL_ID: targetCellId,
-    ORCA_RELAY_CELL_URL: candidateOrigin,
-    ORCA_RELAY_PUBLIC_URL: candidateOrigin
+    KINGU_RELAY_CELL_ID: targetCellId,
+    KINGU_RELAY_CELL_URL: candidateOrigin,
+    KINGU_RELAY_PUBLIC_URL: candidateOrigin
   })
   const candidate = taggedTraffic(describeService(config), tag)
   if (candidate.origin !== candidateOrigin) {
@@ -1044,9 +1044,9 @@ async function deployCell(config, tag, oldTag, drainTag) {
     config,
     oldTag,
     {
-      ORCA_RELAY_CELL_ID: sourceCellId,
-      ORCA_RELAY_CELL_URL: previousOrigin,
-      ORCA_RELAY_PUBLIC_URL: previousOrigin
+      KINGU_RELAY_CELL_ID: sourceCellId,
+      KINGU_RELAY_CELL_URL: previousOrigin,
+      KINGU_RELAY_PUBLIC_URL: previousOrigin
     },
     currentImage
   )

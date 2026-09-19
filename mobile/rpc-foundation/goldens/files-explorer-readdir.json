@@ -27,7 +27,7 @@
       },
       "labels": ["Back to session"],
       "rows": ["dir:src", "file:README.md"],
-      "text": ["Files", "orca-files"]
+      "text": ["Files", "kingu-files"]
     },
     "59851eb4cbf7": {
       "name": "files.readDir#1",
@@ -75,7 +75,7 @@
       },
       "labels": ["Back to session"],
       "rows": [],
-      "text": ["Files", "orca-files"]
+      "text": ["Files", "kingu-files"]
     },
     "eb79a9b3682a": {
       "status": "fulfilled",

@@ -7,23 +7,23 @@ import {
 } from './github-project-repo-match'
 
 const repos = [
-  { id: 'repo-1', path: '/Users/me/orca', displayName: 'orca' },
+  { id: 'repo-1', path: '/Users/me/kingu', displayName: 'kingu' },
   { id: 'repo-2', path: '/Users/me/other', displayName: 'other' }
 ]
 
 describe('GitHub project repo matching', () => {
   it('normalizes owner/repo slugs case-insensitively', () => {
-    expect(normalizeGitHubRepositorySlug(' StablyAI/Orca ')).toBe('stablyai/orca')
-    expect(normalizeGitHubRepositorySlug('orca')).toBeNull()
-    expect(normalizeGitHubRepositorySlug('stablyai/orca/extra')).toBeNull()
+    expect(normalizeGitHubRepositorySlug(' StablyAI/Kingu ')).toBe('anthovai/kingu-intelligence')
+    expect(normalizeGitHubRepositorySlug('kingu')).toBeNull()
+    expect(normalizeGitHubRepositorySlug('anthovai/kingu-intelligence/extra')).toBeNull()
   })
 
   it('matches project rows by resolved repo slug before path/display heuristics', () => {
     expect(
-      findRepoForGitHubProjectRepository('stablyai/orca', repos, {
+      findRepoForGitHubProjectRepository('anthovai/kingu-intelligence', repos, {
         'repo-1': {
-          path: '/Users/me/orca',
-          repository: { owner: 'stablyai', repo: 'orca' }
+          path: '/Users/me/kingu',
+          repository: { owner: 'anthovai', repo: 'kingu' }
         }
       })
     ).toBe(repos[0])
@@ -31,14 +31,14 @@ describe('GitHub project repo matching', () => {
 
   it('does not pick a repo when resolved slugs are ambiguous', () => {
     expect(
-      findRepoForGitHubProjectRepository('stablyai/orca', repos, {
+      findRepoForGitHubProjectRepository('anthovai/kingu-intelligence', repos, {
         'repo-1': {
-          path: '/Users/me/orca',
-          repository: { owner: 'stablyai', repo: 'orca' }
+          path: '/Users/me/kingu',
+          repository: { owner: 'anthovai', repo: 'kingu' }
         },
         'repo-2': {
           path: '/Users/me/other',
-          repository: { owner: 'stablyai', repo: 'orca' }
+          repository: { owner: 'anthovai', repo: 'kingu' }
         }
       })
     ).toBeNull()
@@ -46,29 +46,29 @@ describe('GitHub project repo matching', () => {
 
   it('falls back to exact display/path slug matching when slug resolution is unavailable', () => {
     expect(
-      findRepoForGitHubProjectRepository('stablyai/orca', [
-        { id: 'repo-1', path: '/Users/me/stablyai/orca', displayName: 'orca' }
+      findRepoForGitHubProjectRepository('anthovai/kingu-intelligence', [
+        { id: 'repo-1', path: '/Users/me/anthovai/kingu-intelligence', displayName: 'kingu' }
       ])
-    ).toEqual({ id: 'repo-1', path: '/Users/me/stablyai/orca', displayName: 'orca' })
+    ).toEqual({ id: 'repo-1', path: '/Users/me/anthovai/kingu-intelligence', displayName: 'kingu' })
   })
 
   it('normalizes Windows paths before path slug fallback matching', () => {
     expect(
-      findRepoForGitHubProjectRepository('stablyai/orca', [
-        { id: 'repo-1', path: 'C:\\Users\\me\\stablyai\\orca', displayName: 'orca' }
+      findRepoForGitHubProjectRepository('anthovai/kingu-intelligence', [
+        { id: 'repo-1', path: 'C:\\Users\\me\\anthovai\\kingu', displayName: 'kingu' }
       ])
-    ).toEqual({ id: 'repo-1', path: 'C:\\Users\\me\\stablyai\\orca', displayName: 'orca' })
+    ).toEqual({ id: 'repo-1', path: 'C:\\Users\\me\\anthovai\\kingu', displayName: 'kingu' })
   })
 
   it('does not path-match a repo whose resolved slug points somewhere else', () => {
     expect(
       findRepoForGitHubProjectRepository(
-        'stablyai/orca',
-        [{ id: 'repo-1', path: '/Users/me/stablyai/orca', displayName: 'orca' }],
+        'anthovai/kingu-intelligence',
+        [{ id: 'repo-1', path: '/Users/me/anthovai/kingu-intelligence', displayName: 'kingu' }],
         {
           'repo-1': {
-            path: '/Users/me/stablyai/orca',
-            repository: { owner: 'fork', repo: 'orca' }
+            path: '/Users/me/anthovai/kingu-intelligence',
+            repository: { owner: 'fork', repo: 'kingu' }
           }
         }
       )
@@ -77,7 +77,7 @@ describe('GitHub project repo matching', () => {
 
   it('filters project rows to rows backed by open repositories', () => {
     const rows = [
-      { id: 'row-1', content: { repository: 'stablyai/orca' } },
+      { id: 'row-1', content: { repository: 'anthovai/kingu-intelligence' } },
       { id: 'row-2', content: { repository: 'other/missing' } },
       { id: 'row-3', content: { repository: null } }
     ]
@@ -85,8 +85,8 @@ describe('GitHub project repo matching', () => {
     expect(
       filterGitHubProjectRowsForRepos(rows, repos, {
         'repo-1': {
-          path: '/Users/me/orca',
-          repository: { owner: 'stablyai', repo: 'orca' }
+          path: '/Users/me/kingu',
+          repository: { owner: 'anthovai', repo: 'kingu' }
         }
       }).map((row) => row.id)
     ).toEqual(['row-1'])
@@ -95,18 +95,18 @@ describe('GitHub project repo matching', () => {
   it('matches same-named repositories only on the active Project host', () => {
     expect(
       findRepoForGitHubProjectRepository(
-        'stablyai/orca',
+        'anthovai/kingu-intelligence',
         repos,
         {
           'repo-1': {
-            path: '/Users/me/orca',
-            repository: { owner: 'stablyai', repo: 'orca', host: 'github.com' }
+            path: '/Users/me/kingu',
+            repository: { owner: 'anthovai', repo: 'kingu', host: 'github.com' }
           },
           'repo-2': {
             path: '/Users/me/other',
             repository: {
-              owner: 'stablyai',
-              repo: 'orca',
+              owner: 'anthovai',
+              repo: 'kingu',
               host: 'github.acme-corp.com'
             }
           }
@@ -249,8 +249,8 @@ describe('GitHub project repo matching', () => {
   it('does not use hostless path heuristics for Enterprise Project rows', () => {
     expect(
       findRepoForGitHubProjectRepository(
-        'stablyai/orca',
-        [{ id: 'repo-1', path: '/Users/me/stablyai/orca', displayName: 'orca' }],
+        'anthovai/kingu-intelligence',
+        [{ id: 'repo-1', path: '/Users/me/anthovai/kingu-intelligence', displayName: 'kingu' }],
         {},
         'github.acme-corp.com'
       )
@@ -262,11 +262,11 @@ describe('GitHub project repo matching', () => {
   it('leaves a failed slug lookup matchable by the path fallback', () => {
     expect(
       findRepoForGitHubProjectRepository(
-        'stablyai/orca',
-        [{ id: 'repo-1', path: '/Users/me/stablyai/orca', displayName: 'orca' }],
-        { 'repo-1': { path: '/Users/me/stablyai/orca', repository: null, failed: true } }
+        'anthovai/kingu-intelligence',
+        [{ id: 'repo-1', path: '/Users/me/anthovai/kingu-intelligence', displayName: 'kingu' }],
+        { 'repo-1': { path: '/Users/me/anthovai/kingu-intelligence', repository: null, failed: true } }
       )
-    ).toEqual({ id: 'repo-1', path: '/Users/me/stablyai/orca', displayName: 'orca' })
+    ).toEqual({ id: 'repo-1', path: '/Users/me/anthovai/kingu-intelligence', displayName: 'kingu' })
   })
 })
 
@@ -274,12 +274,12 @@ describe('dropFailedGitHubRepoSlugEntries', () => {
   it('drops only the entries a retry could still resolve', () => {
     expect(
       dropFailedGitHubRepoSlugEntries({
-        'repo-1': { path: '/a', repository: { owner: 'stablyai', repo: 'orca' } },
+        'repo-1': { path: '/a', repository: { owner: 'anthovai', repo: 'kingu' } },
         'repo-2': { path: '/b', repository: null, failed: true },
         'repo-3': { path: '/c', repository: null }
       })
     ).toEqual({
-      'repo-1': { path: '/a', repository: { owner: 'stablyai', repo: 'orca' } },
+      'repo-1': { path: '/a', repository: { owner: 'anthovai', repo: 'kingu' } },
       'repo-3': { path: '/c', repository: null }
     })
   })

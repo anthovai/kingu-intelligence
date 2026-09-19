@@ -10,7 +10,7 @@ export const PushNotificationSchema = z
   .object({
     // Absent for terminal-bell, which the desktop raises without a notification record.
     // Printable ASCII only: the id becomes the APNs collapse header, and the
-    // desktop builds it from URL-encoded parts, so anything else is not Orca's.
+    // desktop builds it from URL-encoded parts, so anything else is not Kingu's.
     notificationId: z
       .string()
       .min(1)

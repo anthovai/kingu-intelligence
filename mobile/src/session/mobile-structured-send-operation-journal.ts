@@ -9,7 +9,7 @@ import {
 import { AGENT_SESSION_DURABLE_OPERATION_GLOBAL_LIMIT } from '../../../src/shared/agent-session-operation-ledger'
 import { structuredAgentSessionDomainFingerprint } from '../../../src/shared/structured-agent-session-mutation'
 
-const STORAGE_KEY = 'orca:mobileStructuredSendOperations:v1'
+const STORAGE_KEY = 'kingu:mobileStructuredSendOperations:v1'
 const OperationEntrySchema = z
   .object({
     operationKey: z.string().regex(/^[0-9a-f]{64}$/),

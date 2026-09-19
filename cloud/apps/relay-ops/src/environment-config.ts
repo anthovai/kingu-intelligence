@@ -93,30 +93,30 @@ export const RELAY_OPS_ENVIRONMENTS: Record<RelayOpsEnvironmentId, RelayOpsEnvir
   production: {
     id: 'production',
     label: 'Production',
-    project: 'onorca-cloud',
+    project: 'onkingu-cloud',
     region: 'us-central1',
-    directorOrigin: 'https://relay.onorca.dev',
-    authOrigin: 'https://login.onorca.dev',
-    directorService: 'orca-cloud-relay',
-    authService: 'orca-cloud-auth',
-    sqlInstance: 'orca-cloud-auth-db',
-    migPrefix: 'orca-cloud-relay-gce-',
-    certificateName: 'orca-cloud-relay-gce',
-    cells: durableCells('production', 'relay.onorca.dev')
+    directorOrigin: 'https://relay.onkingu.dev',
+    authOrigin: 'https://login.onkingu.dev',
+    directorService: 'kingu-cloud-relay',
+    authService: 'kingu-cloud-auth',
+    sqlInstance: 'kingu-cloud-auth-db',
+    migPrefix: 'kingu-cloud-relay-gce-',
+    certificateName: 'kingu-cloud-relay-gce',
+    cells: durableCells('production', 'relay.onkingu.dev')
   },
   staging: {
     id: 'staging',
     label: 'Staging',
-    project: 'onorca-cloud-staging',
+    project: 'onkingu-cloud-staging',
     region: 'us-central1',
-    directorOrigin: 'https://relay-staging.onorca.dev',
-    authOrigin: 'https://auth-staging.onorca.dev',
-    directorService: 'orca-cloud-relay-staging',
-    authService: 'orca-cloud-auth-staging',
-    sqlInstance: 'orca-cloud-staging-auth-db',
-    migPrefix: 'orca-cloud-staging-relay-gce-',
-    certificateName: 'orca-cloud-staging-relay-gce',
-    cells: durableCells('staging', 'relay-staging.onorca.dev')
+    directorOrigin: 'https://relay-staging.onkingu.dev',
+    authOrigin: 'https://auth-staging.onkingu.dev',
+    directorService: 'kingu-cloud-relay-staging',
+    authService: 'kingu-cloud-auth-staging',
+    sqlInstance: 'kingu-cloud-staging-auth-db',
+    migPrefix: 'kingu-cloud-staging-relay-gce-',
+    certificateName: 'kingu-cloud-staging-relay-gce',
+    cells: durableCells('staging', 'relay-staging.onkingu.dev')
   }
 }
 

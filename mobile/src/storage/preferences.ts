@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const PINS_PREFIX = 'orca:pins:'
+const PINS_PREFIX = 'kingu:pins:'
 // Consent to the push service is separate from the old socket notification choice.
-const NOTIF_KEY = 'orca:pushServiceNotificationsEnabled'
+const NOTIF_KEY = 'kingu:pushServiceNotificationsEnabled'
 
 export type PushNotificationsPreference = {
   readonly value: boolean | null
@@ -31,7 +31,7 @@ export async function savePushNotificationsEnabled(enabled: boolean): Promise<vo
   await AsyncStorage.setItem(NOTIF_KEY, String(enabled))
 }
 
-const REMOTE_PUSH_HOST_REGISTRATIONS_KEY = 'orca:remotePushHostRegistrations'
+const REMOTE_PUSH_HOST_REGISTRATIONS_KEY = 'kingu:remotePushHostRegistrations'
 
 // Why persisted: switching off while a host is offline leaves a token the gateway
 // would still push to. The pending list is the phone's side of the desktop's
@@ -68,7 +68,7 @@ export async function saveRemotePushHostRegistrations(
   await AsyncStorage.setItem(REMOTE_PUSH_HOST_REGISTRATIONS_KEY, JSON.stringify(value))
 }
 
-const TEXT_SCALE_KEY = 'orca:terminalTextScale'
+const TEXT_SCALE_KEY = 'kingu:terminalTextScale'
 
 // Why: the mobile terminal fits the desktop's full column count to the phone
 // width with a CSS scale, so xterm's raw fontSize is cancelled out and can't
@@ -99,7 +99,7 @@ export async function saveTerminalTextScale(scale: number): Promise<void> {
   await AsyncStorage.setItem(TEXT_SCALE_KEY, String(scale))
 }
 
-const AUTOCOMPLETE_KEY = 'orca:terminalAutocompleteEnabled'
+const AUTOCOMPLETE_KEY = 'kingu:terminalAutocompleteEnabled'
 
 // Why: terminal command inputs default to autocorrect/suggestions OFF so the
 // keyboard never mangles commands, flags, or paths. Users who want phone-style
@@ -117,7 +117,7 @@ export async function saveTerminalAutocompleteEnabled(enabled: boolean): Promise
   await AsyncStorage.setItem(AUTOCOMPLETE_KEY, String(enabled))
 }
 
-const MOBILE_WEB_SHELL_KEY = 'orca:mobileWebShellEnabled'
+const MOBILE_WEB_SHELL_KEY = 'kingu:mobileWebShellEnabled'
 
 // Why: the hybrid shell route is dark. Default-off means a store build never fetches, writes or
 // sweeps a bundle cache, and the only writer is the __DEV__ Troubleshoot toggle — anything but
@@ -141,7 +141,7 @@ export async function saveMobileWebShellEnabled(enabled: boolean): Promise<void>
   await AsyncStorage.setItem(MOBILE_WEB_SHELL_KEY, String(enabled))
 }
 
-const TERMINAL_LIVE_INPUT_DISABLED_PREFIX = 'orca:terminalLiveInputDisabled:'
+const TERMINAL_LIVE_INPUT_DISABLED_PREFIX = 'kingu:terminalLiveInputDisabled:'
 
 export type DisabledTerminalLiveInputHandlesPreference = {
   readonly handles: Set<string>
@@ -188,7 +188,7 @@ export async function saveDisabledTerminalLiveInputHandles(
   )
 }
 
-const SIDEBAR_WIDTH_KEY = 'orca:hostSidebarWidth'
+const SIDEBAR_WIDTH_KEY = 'kingu:hostSidebarWidth'
 
 // Bounds for the draggable host worktree-list sidebar on tablet/foldable
 // layouts (mirrors the desktop's resizable sidebar). The caller additionally
@@ -220,7 +220,7 @@ export async function saveHostSidebarWidth(width: number): Promise<void> {
   await AsyncStorage.setItem(SIDEBAR_WIDTH_KEY, String(clampHostSidebarWidth(width)))
 }
 
-const DOCK_WIDTH_KEY = 'orca:hostDockWidth'
+const DOCK_WIDTH_KEY = 'kingu:hostDockWidth'
 
 // Bounds for the draggable right-hand session dock (Source Control / Files / PR)
 // on wide layouts. Mirrors the left worktree-list sidebar's bounds so the two
@@ -254,15 +254,15 @@ export async function saveHostDockWidth(width: number): Promise<void> {
   await AsyncStorage.setItem(DOCK_WIDTH_KEY, String(clampHostDockWidth(width)))
 }
 
-export type MobileTerminalLinkOpenMode = 'orca-browser' | 'phone-browser'
+export type MobileTerminalLinkOpenMode = 'kingu-browser' | 'phone-browser'
 
-const TERMINAL_LINK_OPEN_MODE_KEY = 'orca:terminalLinkOpenMode'
-export const DEFAULT_TERMINAL_LINK_OPEN_MODE: MobileTerminalLinkOpenMode = 'orca-browser'
+const TERMINAL_LINK_OPEN_MODE_KEY = 'kingu:terminalLinkOpenMode'
+export const DEFAULT_TERMINAL_LINK_OPEN_MODE: MobileTerminalLinkOpenMode = 'kingu-browser'
 
 export async function loadTerminalLinkOpenMode(): Promise<MobileTerminalLinkOpenMode> {
   try {
     const raw = await AsyncStorage.getItem(TERMINAL_LINK_OPEN_MODE_KEY)
-    return raw === 'phone-browser' || raw === 'orca-browser' ? raw : DEFAULT_TERMINAL_LINK_OPEN_MODE
+    return raw === 'phone-browser' || raw === 'kingu-browser' ? raw : DEFAULT_TERMINAL_LINK_OPEN_MODE
   } catch {
     return DEFAULT_TERMINAL_LINK_OPEN_MODE
   }

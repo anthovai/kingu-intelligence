@@ -1,8 +1,8 @@
 import { useCallback, useLayoutEffect, useRef } from 'react'
 import type {
   MobileWebShellBridgeMessagePayload,
-  OrcaMobileWebShellViewHandle
-} from '../../modules/orca-mobile-web-shell/src'
+  KinguMobileWebShellViewHandle
+} from '../../modules/kingu-mobile-web-shell/src'
 import { useHostClient } from '../transport/client-context'
 import { createBridgeHost, type BridgeHost, type BridgeHostDiagnostic } from './bridge-host'
 import type { MobileWebShellSessionState } from './mobile-web-shell-session-contract'
@@ -50,7 +50,7 @@ function createBridgeDiagnosticReporter(): (diagnostic: BridgeHostDiagnostic) =>
  * React swaps refs in the commit phase and runs the retiring effect's cleanup after it, so a host
  * disposing on a remount would otherwise post its teardown frames into the page that replaced it.
  */
-type MountedView = { sessionId: string; handle: OrcaMobileWebShellViewHandle }
+type MountedView = { sessionId: string; handle: KinguMobileWebShellViewHandle }
 type MountedHost = { sessionId: string; host: BridgeHost }
 
 /** Exactly the field the handler reads. The view's own `NativeSyntheticEvent` prop type is
@@ -67,7 +67,7 @@ export type MobileWebShellBridgeView = {
    * time it is asked so the page can ask again.
    */
   readonly bridgeEnabled: boolean
-  readonly viewRef: (handle: OrcaMobileWebShellViewHandle | null) => void
+  readonly viewRef: (handle: KinguMobileWebShellViewHandle | null) => void
   readonly onBridgeMessage: (event: MobileWebShellBridgeMessageEvent) => void
 }
 
@@ -117,7 +117,7 @@ export function useMobileWebShellBridge(args: {
   return {
     bridgeEnabled: ready !== null,
     viewRef: useCallback(
-      (handle: OrcaMobileWebShellViewHandle | null) => {
+      (handle: KinguMobileWebShellViewHandle | null) => {
         viewRef.current = handle === null || sessionId === null ? null : { sessionId, handle }
       },
       [sessionId]

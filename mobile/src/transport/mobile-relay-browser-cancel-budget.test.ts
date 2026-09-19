@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { RuntimeBrowserScreencastController } from '../../../src/main/runtime/runtime-browser-screencast-controller'
-import type { RuntimeBrowserCommands } from '../../../src/main/runtime/orca-runtime-browser'
+import type { RuntimeBrowserCommands } from '../../../src/main/runtime/kingu-runtime-browser'
 import type { BrowserScreencastResult } from '../../../src/shared/runtime-types'
 import { MobileRelayRpcStreams } from './mobile-relay-rpc-streams'
 import type { RpcResponse } from './types'

@@ -6,12 +6,12 @@ recently removed tasks can each retain those slices. The fix uses the existing
 `ownRetainedString` at the shared text boundary; normalization, UTF-16 clipping,
 task identity, publication, and lifecycle behavior stay the same.
 
-This extends [ML-018 / #20960](https://github.com/stablyai/orca/pull/20960).
+This extends [ML-018 / #20960](https://github.com/anthovai/kingu-intelligence/pull/20960).
 
 ## Reproduce
 
 ```sh
-ORCA_BACKGROUND_LAUNCH=1 node --expose-gc docs/audits/claude-task-retention/reproduce.cjs
+KINGU_BACKGROUND_LAUNCH=1 node --expose-gc docs/audits/claude-task-retention/reproduce.cjs
 ```
 
 The script bundles the actual tracker and its retention classes. Its baseline

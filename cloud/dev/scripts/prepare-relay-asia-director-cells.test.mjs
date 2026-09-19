@@ -4,16 +4,16 @@ import { prepareRelayAsiaDirectorCells } from './prepare-relay-asia-director-cel
 
 const digest = `sha256:${'a'.repeat(64)}`
 const topologyCell = (ordinal, zone) => ({
-  origin: `https://c${ordinal}.relay.onorca.dev`, region: 'asia-east2', zone,
+  origin: `https://c${ordinal}.relay.onkingu.dev`, region: 'asia-east2', zone,
   capacity_requests: 6_000, database_pool_max: 10,
   connection_hard_cap: 3_000, connection_unobserved_bound: 60,
   initially_enabled: false,
-  image: `us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@${digest}`
+  image: `us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@${digest}`
 })
 
 test('preserves current order, defaults predecessor regions, and appends exact Asia cells', () => {
   const current = [{
-    id: 'production-gce-c1', url: 'https://c1.relay.onorca.dev',
+    id: 'production-gce-c1', url: 'https://c1.relay.onkingu.dev',
     capacityRequests: 4_000, initiallyEnabled: false
   }]
   const result = prepareRelayAsiaDirectorCells({

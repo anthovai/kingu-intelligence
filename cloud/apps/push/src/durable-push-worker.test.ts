@@ -1,5 +1,5 @@
 import { afterEach, expect, it, vi } from 'vitest'
-import type { PushNotification } from '@orca-cloud/push-contract'
+import type { PushNotification } from '@kingu-cloud/push-contract'
 import { DurablePushStore } from './durable-push-store.js'
 import { DurablePushWorker } from './durable-push-worker.js'
 import { PushDispatcher } from './push-dispatcher.js'
@@ -74,12 +74,12 @@ it('sends every burst event immediately with its original content and identity',
   )
   await h.worker.runDue()
   expect(h.send).toHaveBeenCalledTimes(2)
-  const first = h.send.mock.calls.find(([delivery]) => delivery.orca.notificationSeq === 1)![0]
-  const second = h.send.mock.calls.find(([delivery]) => delivery.orca.notificationSeq === 2)![0]
+  const first = h.send.mock.calls.find(([delivery]) => delivery.kingu.notificationSeq === 1)![0]
+  const second = h.send.mock.calls.find(([delivery]) => delivery.kingu.notificationSeq === 2)![0]
   expect(first).toMatchObject({
     title: 'Done',
     body: 'Finished task',
-    orca: {
+    kingu: {
       notificationId: 'note-1',
       notificationSeq: 1
     }
@@ -87,11 +87,11 @@ it('sends every burst event immediately with its original content and identity',
   expect(second).toMatchObject({
     title: 'Answer needed',
     body: 'Please respond',
-    orca: { notificationId: 'note-2', notificationSeq: 2 }
+    kingu: { notificationId: 'note-2', notificationSeq: 2 }
   })
   expect(first.collapseId).not.toBe(second.collapseId)
-  expect(h.send.mock.calls.every(([delivery]) => !('coalescedCount' in delivery.orca))).toBe(true)
-  expect(h.send.mock.calls.every(([delivery]) => !('summaryMembers' in delivery.orca))).toBe(true)
+  expect(h.send.mock.calls.every(([delivery]) => !('coalescedCount' in delivery.kingu))).toBe(true)
+  expect(h.send.mock.calls.every(([delivery]) => !('summaryMembers' in delivery.kingu))).toBe(true)
   expect(h.onRetry).not.toHaveBeenCalled()
 })
 
@@ -116,7 +116,7 @@ it('keeps untrackable bells and per-phone deliveries individually replaceable', 
   expect(new Set(primary.map((delivery) => delivery.collapseId)).size).toBe(3)
   expect(
     deliveries.find((delivery) => delivery.registrationId === other.registrationId)
-  ).toMatchObject({ orca: { notificationId: 'note-2', notificationSeq: 2 } })
+  ).toMatchObject({ kingu: { notificationId: 'note-2', notificationSeq: 2 } })
 })
 
 it('persists provider retry delay and resumes it through a new worker', async () => {

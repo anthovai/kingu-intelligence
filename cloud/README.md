@@ -1,12 +1,12 @@
-# Orca Relay
+# Kingu Relay
 
-The relay that connects the Orca mobile app to a desktop host. Phones and
+The relay that connects the Kingu mobile app to a desktop host. Phones and
 desktops never talk to each other directly: each opens an outbound WebSocket
 to a relay cell, the relay pairs the two sessions, and it splices frames
 between them. A director assigns hosts to cells and coordinates migrations;
 cells carry the user connections.
 
-This directory is an independent pnpm workspace inside the Orca monorepo. Run
+This directory is an independent pnpm workspace inside the Kingu monorepo. Run
 its commands from `cloud/`, not the repository root. The source is covered by
 the repository's root [MIT license](../LICENSE).
 
@@ -16,7 +16,7 @@ the repository's root [MIT license](../LICENSE).
   desktop app, and the mobile app (frame shapes, close codes, admission budgets,
   splice state machine).
 - `apps/relay`: the relay server. The same image runs as a director or a cell
-  depending on `ORCA_RELAY_ROLE`.
+  depending on `KINGU_RELAY_ROLE`.
 - `apps/relay-fence-broker`: a private, IAM-only service that owns the durable
   mutation lease, the Terraform checkout, and the narrow Compute mutation used
   when a registered target is superseded. The workflow that calls it holds read
@@ -32,7 +32,7 @@ the repository's root [MIT license](../LICENSE).
 ## Mobile push gateway
 
 `apps/push` is a separate Cloud Run service from the relay. Phones never hold an
-Orca credential for it: the desktop host authenticates with the same X25519
+Kingu credential for it: the desktop host authenticates with the same X25519
 key it uses for the relay, answering an encrypted challenge to mint a 24 hour
 session, then registers each paired phone's native push token and asks the
 gateway to push. The gateway queues each event as its own notification,
@@ -49,10 +49,10 @@ FCM notification messages are inherently collapsible while offline and have a
 small concurrent collapse-key budget, so every pending alert is not guaranteed.
 
 Storage follows the relay pattern: PostgreSQL in production, SQLite for tests
-and local development. Configure it with `ORCA_PUSH_PUBLIC_URL`, `ORCA_PUSH_FCM_PROJECT_ID`,
-`ORCA_PUSH_DATABASE_URL`, the three APNs variables (`ORCA_PUSH_APNS_KEY`,
-`ORCA_PUSH_APNS_KEY_ID`, `ORCA_PUSH_APPLE_TEAM_ID`, all three or none), and
-optionally `ORCA_PUSH_APNS_TOPIC`. The FCM credential comes from
+and local development. Configure it with `KINGU_PUSH_PUBLIC_URL`, `KINGU_PUSH_FCM_PROJECT_ID`,
+`KINGU_PUSH_DATABASE_URL`, the three APNs variables (`KINGU_PUSH_APNS_KEY`,
+`KINGU_PUSH_APNS_KEY_ID`, `KINGU_PUSH_APPLE_TEAM_ID`, all three or none), and
+optionally `KINGU_PUSH_APNS_TOPIC`. The FCM credential comes from
 the runtime service account, so no key material is configured for Android. See
 [push gateway operations](docs/push-gateway.md) for deployment and recovery.
 
@@ -86,7 +86,7 @@ serializes rollouts against the shared Cloud SQL instance. Push reuses that
 action with its own lease object and deployment concurrency group.
 
 Every one of them is inert. Each top-level job is gated on
-`vars.ORCA_CLOUD_OPERATIONS_ENABLED == 'true'`, a repository variable that is
+`vars.KINGU_CLOUD_OPERATIONS_ENABLED == 'true'`, a repository variable that is
 unset here, so the two scheduled triggers and every manual dispatch skip
 without running a step. Only the repository owner, holding the GCP identities
 these workflows authenticate as, can turn them on.
@@ -98,7 +98,7 @@ on fork pull requests, so it configures no backend and holds no credential.
 ## What is not here
 
 The `terraform-foundation` and `terraform-apps` roots and the API and auth
-services live in the private `stablyai/orca-cloud` repository. Scripts and
+services live in the private `anthovai/kingu-intelligence-cloud` repository. Scripts and
 tests that spanned both trees were narrowed to the relay side rather than
 carrying a dangling reference.
 
@@ -112,17 +112,17 @@ pnpm test
 ```
 
 `pnpm test` runs the SQLite-backed suites. Tests that need PostgreSQL run only
-when `ORCA_RELAY_TEST_POSTGRES_URL` points at a disposable PostgreSQL 16 or 17
+when `KINGU_RELAY_TEST_POSTGRES_URL` points at a disposable PostgreSQL 16 or 17
 database, for example:
 
 ```sh
-docker run --rm -d --name orca-relay-pg -e POSTGRES_HOST_AUTH_METHOD=trust \
-  -e POSTGRES_DB=orca_relay_test -p 55440:5432 postgres:16-alpine
-ORCA_RELAY_TEST_POSTGRES_URL=postgres://postgres@127.0.0.1:55440/orca_relay_test \
-  pnpm --filter @orca-cloud/relay test
-docker rm -f orca-relay-pg
+docker run --rm -d --name kingu-relay-pg -e POSTGRES_HOST_AUTH_METHOD=trust \
+  -e POSTGRES_DB=kingu_relay_test -p 55440:5432 postgres:16-alpine
+KINGU_RELAY_TEST_POSTGRES_URL=postgres://postgres@127.0.0.1:55440/kingu_relay_test \
+  pnpm --filter @kingu-cloud/relay test
+docker rm -f kingu-relay-pg
 ```
 
 Configuration is read from environment variables validated in
-`apps/relay/src/config.ts`. `ORCA_RELAY_ASSIGNMENT_SIGNING_KEY` (at least 32
+`apps/relay/src/config.ts`. `KINGU_RELAY_ASSIGNMENT_SIGNING_KEY` (at least 32
 bytes) is the only required value; everything else has a local default.

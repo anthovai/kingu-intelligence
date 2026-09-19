@@ -3,7 +3,7 @@ import pg from 'pg'
 import { afterEach, describe, expect, it } from 'vitest'
 import { openInMemoryPushDatabase, openPushDatabase, type PushDatabase } from './push-database.js'
 import { DurablePushStore, DELIVERY_LEASE_MS } from './durable-push-store.js'
-import type { PushNotification } from '@orca-cloud/push-contract'
+import type { PushNotification } from '@kingu-cloud/push-contract'
 
 const cleanups: (() => Promise<void>)[] = []
 afterEach(async () => {
@@ -21,7 +21,7 @@ const notification = (seq: number, kind: 'alert' | 'dismiss' = 'alert'): PushNot
 })
 async function fixture() {
   const databaseUrl =
-    process.env.ORCA_PUSH_DURABLE_TEST_POSTGRES_URL ?? process.env.ORCA_PUSH_TEST_DATABASE_URL
+    process.env.KINGU_PUSH_DURABLE_TEST_POSTGRES_URL ?? process.env.KINGU_PUSH_TEST_DATABASE_URL
   if (databaseUrl && !process.env.CI && new URL(databaseUrl).port !== '55440')
     throw new Error('isolated_postgres_port_required')
   let db: PushDatabase
@@ -165,7 +165,7 @@ describe('durable push acceptance', () => {
     await db.query('ALTER TABLE push_delivery_batches RENAME TO push_delivery_batches_unavailable')
     try {
       const databaseUrl =
-        process.env.ORCA_PUSH_DURABLE_TEST_POSTGRES_URL ?? process.env.ORCA_PUSH_TEST_DATABASE_URL
+        process.env.KINGU_PUSH_DURABLE_TEST_POSTGRES_URL ?? process.env.KINGU_PUSH_TEST_DATABASE_URL
       if (databaseUrl) {
         const concurrent = await openPushDatabase({ databaseUrl, dataDir: '' })
         try {

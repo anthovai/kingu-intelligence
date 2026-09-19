@@ -55,7 +55,7 @@ describe('sweep schedule jitter', () => {
 
   it('jitters the credential cleanup tick', () => {
     const source = readFileSync(new URL('./index.ts', import.meta.url), 'utf8')
-    const cleanup = /'\[orca-relay\] credential cleanup failed'\s*\),\s*([^\n]*?)\n/.exec(source)
+    const cleanup = /'\[kingu-relay\] credential cleanup failed'\s*\),\s*([^\n]*?)\n/.exec(source)
 
     expect(cleanup?.[1]).toBe('jitteredSweepIntervalMs(30_000)')
   })

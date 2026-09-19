@@ -5,7 +5,7 @@ import {
   catalogObjectPresence,
   schemaLockTarget,
   takesRelationLock
-} from '@orca-cloud/postgres-schema'
+} from '@kingu-cloud/postgres-schema'
 import {
   openRelayDatabase,
   POSTGRES_LOCK_TIMEOUT_MS,
@@ -17,7 +17,7 @@ import {
 // server evaluates the existence test, so on a database that already has the index the boot still
 // joins the lock queue, and relation locks are granted in queue order, so every writer queues
 // behind it. Only a real server can show that the catalog pre-check removes those statements.
-const databaseUrl = process.env.ORCA_RELAY_TEST_POSTGRES_URL
+const databaseUrl = process.env.KINGU_RELAY_TEST_POSTGRES_URL
 const describePostgres = databaseUrl ? describe : describe.skip
 const schema = 'relay_schema_precheck_test'
 
@@ -231,7 +231,7 @@ describePostgres('relay boot-time schema against PostgreSQL', () => {
     expect(summary.ran).toBeGreaterThan(0)
     const deferred = warned
       .map((line) => JSON.parse(line) as { event?: string; name?: string })
-      .filter((event) => event.event === 'orca_relay_postgres_schema_object_deferred')
+      .filter((event) => event.event === 'kingu_relay_postgres_schema_object_deferred')
     expect(deferred.map((event) => event.name)).toEqual([
       'relay_assignment_activity_expiry',
       'fillfactor=70'

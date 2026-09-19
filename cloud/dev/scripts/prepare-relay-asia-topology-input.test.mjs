@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { prepareRelayAsiaTopologyInput } from './prepare-relay-asia-topology-input.mjs'
 
-const image = `us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:${'a'.repeat(64)}`
+const image = `us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:${'a'.repeat(64)}`
 
 const additionalRegions = { 'asia-east2': '10.42.1.0/24' }
 
@@ -38,7 +38,7 @@ test('accepts the exact production topology only after it is durably committed',
 })
 
 test('accepts the one exact committed staging Asia cell', () => {
-  const stagingImage = image.replace('onorca-cloud/', 'onorca-cloud-staging/')
+  const stagingImage = image.replace('onkingu-cloud/', 'onkingu-cloud-staging/')
   const stagingCell = {
     hostname: 'c4', region: 'asia-east2', zone: 'asia-east2-a',
     machine_type: 'e2-standard-4', boot_disk_gb: 30,
@@ -67,7 +67,7 @@ test('rejects an uncommitted subnet or cell, partial wave, wrong image, and drif
     existingCells: productionCells(), existingAdditionalRegions: additionalRegions,
     environment: 'production',
     cellIds: 'production-gce-c27,production-gce-c28,production-gce-c29',
-    image: image.replace('onorca-cloud/', 'other-project/')
+    image: image.replace('onkingu-cloud/', 'other-project/')
   }), /environment Relay image/)
   assert.throws(() => prepareRelayAsiaTopologyInput({
     existingCells: productionCells(), existingAdditionalRegions: {}, environment: 'production',

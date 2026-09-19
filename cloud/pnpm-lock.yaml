@@ -26,10 +26,10 @@ importers:
       '@hono/node-server':
         specifier: ^1.19.17
         version: 1.19.17(hono@4.13.7)
-      '@orca-cloud/postgres-schema':
+      '@kingu-cloud/postgres-schema':
         specifier: workspace:*
         version: link:../../packages/postgres-schema
-      '@orca-cloud/push-contract':
+      '@kingu-cloud/push-contract':
         specifier: workspace:*
         version: link:../../packages/push-contract
       google-auth-library:
@@ -72,10 +72,10 @@ importers:
       '@hono/node-server':
         specifier: ^1.19.17
         version: 1.19.17(hono@4.13.7)
-      '@orca-cloud/postgres-schema':
+      '@kingu-cloud/postgres-schema':
         specifier: workspace:*
         version: link:../../packages/postgres-schema
-      '@orca-cloud/relay-contract':
+      '@kingu-cloud/relay-contract':
         specifier: workspace:*
         version: link:../../packages/relay-contract
       hono:

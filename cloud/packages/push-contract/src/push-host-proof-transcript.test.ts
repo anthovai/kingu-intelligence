@@ -10,7 +10,7 @@ import {
 import { PUSH_LIMITS } from './push-limits.js'
 
 const transcriptInput = {
-  gatewayOrigin: 'https://push.onorca.dev',
+  gatewayOrigin: 'https://push.onkingu.dev',
   gatewayEphemeralPublicKey: new Uint8Array(32).fill(7),
   challengeNonce: new Uint8Array(24).fill(9),
   challengeId: 'challenge-1',

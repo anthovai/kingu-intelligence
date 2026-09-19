@@ -1,7 +1,7 @@
 ﻿# Windows inner-binary signing rehearsal.
 #
 # Why: SignPath cannot deep-sign inside NSIS installers, so shipping signed
-# inner binaries (Orca.exe, node-pty *.node, DLLs — see issue #7785) requires
+# inner binaries (Kingu.exe, node-pty *.node, DLLs — see issue #7785) requires
 # a two-request flow: sign the unpacked PE files first, then build the NSIS
 # installer from the signed tree, then sign the installer. The NSIS uninstaller
 # rides that same first request — it is captured through electron-builder's sign
@@ -102,17 +102,17 @@ jobs:
           # runner.temp, never the workspace: the all-negation `files` list in
           # config/electron-builder.config.cjs packs whatever is left in the
           # checkout root into app.asar.
-          ORCA_WIN_UNINSTALLER_EXPORT_PATH: ${{ runner.temp }}\uninstaller-signing\unsigned\orca-uninstaller.exe
+          KINGU_WIN_UNINSTALLER_EXPORT_PATH: ${{ runner.temp }}\uninstaller-signing\unsigned\kingu-uninstaller.exe
         run: |
           node config/scripts/ensure-native-runtime.mjs --runtime=electron
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           pnpm exec electron-builder --config config/electron-builder.config.cjs --win --publish never
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          if (-not (Test-Path 'dist/win-unpacked/Orca.exe')) {
-            throw 'electron-builder --win did not produce dist/win-unpacked/Orca.exe'
+          if (-not (Test-Path 'dist/win-unpacked/Kingu.exe')) {
+            throw 'electron-builder --win did not produce dist/win-unpacked/Kingu.exe'
           }
-          if (-not (Test-Path -LiteralPath $env:ORCA_WIN_UNINSTALLER_EXPORT_PATH)) {
-            throw "The sign hook did not export the NSIS uninstaller to $env:ORCA_WIN_UNINSTALLER_EXPORT_PATH"
+          if (-not (Test-Path -LiteralPath $env:KINGU_WIN_UNINSTALLER_EXPORT_PATH)) {
+            throw "The sign hook did not export the NSIS uninstaller to $env:KINGU_WIN_UNINSTALLER_EXPORT_PATH"
           }
 
       # Why: only unsigned PE files go to SignPath. Files that already carry a
@@ -142,8 +142,8 @@ jobs:
               $list.Add($relative)
             }
 
-          if (-not ($list -contains 'Orca.exe')) {
-            throw 'Orca.exe was not staged for signing; unpacked layout changed?'
+          if (-not ($list -contains 'Kingu.exe')) {
+            throw 'Kingu.exe was not staged for signing; unpacked layout changed?'
           }
           if (-not ($list | Where-Object { $_ -like '*conpty_console_list.node' })) {
             throw 'node-pty conpty_console_list.node was not staged; this is the file from issue #7785.'
@@ -160,17 +160,17 @@ jobs:
           # re-injected through the electron-builder sign hook during the rebuild.
           # No catch here, unlike the release job: the rehearsal exists to prove
           # the flow, so a staging failure must fail it loudly.
-          $exportedUninstaller = Join-Path $env:RUNNER_TEMP 'uninstaller-signing\unsigned\orca-uninstaller.exe'
-          $uninstallerStagePath = Join-Path $stage.FullName 'uninstaller\orca-uninstaller.exe'
+          $exportedUninstaller = Join-Path $env:RUNNER_TEMP 'uninstaller-signing\unsigned\kingu-uninstaller.exe'
+          $uninstallerStagePath = Join-Path $stage.FullName 'uninstaller\kingu-uninstaller.exe'
           New-Item -ItemType Directory -Force -Path (Split-Path $uninstallerStagePath) | Out-Null
           Copy-Item -LiteralPath $exportedUninstaller -Destination $uninstallerStagePath -Force
-          Write-Host 'Staged the NSIS uninstaller for signing: uninstaller\orca-uninstaller.exe'
+          Write-Host 'Staged the NSIS uninstaller for signing: uninstaller\kingu-uninstaller.exe'
 
       - name: Upload unsigned inner binaries for SignPath
         id: upload-unsigned-inner
         uses: actions/upload-artifact@v7
         with:
-          name: orca-windows-inner-unsigned-${{ github.run_id }}
+          name: kingu-windows-inner-unsigned-${{ github.run_id }}
           path: signing-stage/**
           if-no-files-found: error
 
@@ -183,7 +183,7 @@ jobs:
         with:
           api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
           organization-id: c37aa192-a27a-4377-9c90-5d6c95912dc0
-          project-slug: orca
+          project-slug: kingu
           signing-policy-slug: ${{ inputs.signing-policy-slug || 'test-signing' }}
           artifact-configuration-slug: ${{ inputs.inner-artifact-configuration-slug || 'windows-inner-binaries-zip' }}
           github-artifact-id: ${{ steps.upload-unsigned-inner.outputs.artifact-id }}
@@ -237,10 +237,10 @@ jobs:
       - name: Restore signed uninstaller for the installer rebuild
         shell: pwsh
         run: |
-          $signed = Get-ChildItem -Path signed-inner -Recurse -File -Filter 'orca-uninstaller.exe' |
+          $signed = Get-ChildItem -Path signed-inner -Recurse -File -Filter 'kingu-uninstaller.exe' |
             Select-Object -First 1
           if ($null -eq $signed) {
-            throw 'SignPath did not return uninstaller/orca-uninstaller.exe; check the inner-binaries artifact configuration covers it.'
+            throw 'SignPath did not return uninstaller/kingu-uninstaller.exe; check the inner-binaries artifact configuration covers it.'
           }
           $signature = Get-AuthenticodeSignature -FilePath $signed.FullName
           if ($null -eq $signature.SignerCertificate) {
@@ -248,26 +248,26 @@ jobs:
           }
           $signedDir = Join-Path $env:RUNNER_TEMP 'uninstaller-signing\signed'
           New-Item -ItemType Directory -Force -Path $signedDir | Out-Null
-          Copy-Item -LiteralPath $signed.FullName -Destination (Join-Path $signedDir 'orca-uninstaller.exe') -Force
+          Copy-Item -LiteralPath $signed.FullName -Destination (Join-Path $signedDir 'kingu-uninstaller.exe') -Force
           Write-Host ("{0,-14} uninstaller  <{1}>" -f $signature.Status, $signature.SignerCertificate.Subject)
 
       - name: Build NSIS installer from signed unpacked app
         shell: pwsh
         env:
-          ORCA_WIN_UNINSTALLER_SIGNED_PATH: ${{ runner.temp }}\uninstaller-signing\signed\orca-uninstaller.exe
+          KINGU_WIN_UNINSTALLER_SIGNED_PATH: ${{ runner.temp }}\uninstaller-signing\signed\kingu-uninstaller.exe
         run: |
           pnpm exec electron-builder --config config/electron-builder.config.cjs --win --publish never --prepackaged "$env:GITHUB_WORKSPACE\dist\win-unpacked"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          if (-not (Test-Path 'dist/orca-windows-setup.exe')) {
-            throw 'electron-builder --prepackaged did not produce dist/orca-windows-setup.exe'
+          if (-not (Test-Path 'dist/kingu-windows-setup.exe')) {
+            throw 'electron-builder --prepackaged did not produce dist/kingu-windows-setup.exe'
           }
 
       - name: Upload unsigned Windows installer for SignPath
         id: upload-unsigned-installer
         uses: actions/upload-artifact@v7
         with:
-          name: orca-windows-installer-unsigned-${{ github.run_id }}
-          path: dist/orca-windows-setup.exe
+          name: kingu-windows-installer-unsigned-${{ github.run_id }}
+          path: dist/kingu-windows-setup.exe
           compression-level: 0
           if-no-files-found: error
 
@@ -277,7 +277,7 @@ jobs:
         with:
           api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
           organization-id: c37aa192-a27a-4377-9c90-5d6c95912dc0
-          project-slug: orca
+          project-slug: kingu
           signing-policy-slug: ${{ inputs.signing-policy-slug || 'test-signing' }}
           artifact-configuration-slug: github-actions-windows-installer
           github-artifact-id: ${{ steps.upload-unsigned-installer.outputs.artifact-id }}
@@ -304,16 +304,16 @@ jobs:
       - name: Stage signed Windows installer and regenerate updater metadata
         shell: pwsh
         run: |
-          $signedInstaller = Get-ChildItem -Path signed-windows -Recurse -File -Filter 'orca-windows-setup.exe' | Select-Object -First 1
+          $signedInstaller = Get-ChildItem -Path signed-windows -Recurse -File -Filter 'kingu-windows-setup.exe' | Select-Object -First 1
           if ($null -eq $signedInstaller) {
             throw 'Signed Windows installer was not returned by SignPath.'
           }
-          Copy-Item -Path $signedInstaller.FullName -Destination 'dist/orca-windows-setup.exe' -Force
-          node config/scripts/generate-windows-blockmap.mjs 'dist/orca-windows-setup.exe' 'dist/orca-windows-setup.exe.blockmap'
+          Copy-Item -Path $signedInstaller.FullName -Destination 'dist/kingu-windows-setup.exe' -Force
+          node config/scripts/generate-windows-blockmap.mjs 'dist/kingu-windows-setup.exe' 'dist/kingu-windows-setup.exe.blockmap'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-          $installer = Get-Item 'dist/orca-windows-setup.exe'
-          $blockmap = Get-Item 'dist/orca-windows-setup.exe.blockmap'
+          $installer = Get-Item 'dist/kingu-windows-setup.exe'
+          $blockmap = Get-Item 'dist/kingu-windows-setup.exe.blockmap'
           $stream = [System.IO.File]::OpenRead($installer.FullName)
           try {
             $sha512 = [System.Security.Cryptography.SHA512]::Create()
@@ -372,7 +372,7 @@ jobs:
             }
           }
 
-          Test-Signature 'installer: orca-windows-setup.exe' 'dist/orca-windows-setup.exe'
+          Test-Signature 'installer: kingu-windows-setup.exe' 'dist/kingu-windows-setup.exe'
 
           # Extract the signed installer and verify the files a user actually
           # gets on disk — including the exact file from issue #7785.
@@ -387,7 +387,7 @@ jobs:
             throw "The 7za resolver returned an invalid path for the signing rehearsal: $7za"
           }
           New-Item -ItemType Directory -Path extracted-app -Force | Out-Null
-          & $7za x 'dist/orca-windows-setup.exe' '-oextracted-app' -y | Out-Null
+          & $7za x 'dist/kingu-windows-setup.exe' '-oextracted-app' -y | Out-Null
 
           $root = Resolve-Path 'extracted-app'
           # The receipt only proves the import leg ran; it cannot prove what NSIS
@@ -397,12 +397,12 @@ jobs:
           # must not mutate the runner it publishes from - goes all the way: it
           # installs the installer silently and inspects the uninstaller the
           # installer actually wrote to disk. That is the file MDE flags.
-          $signedUninstaller = Join-Path $env:RUNNER_TEMP 'uninstaller-signing\signed\orca-uninstaller.exe'
+          $signedUninstaller = Join-Path $env:RUNNER_TEMP 'uninstaller-signing\signed\kingu-uninstaller.exe'
           $receipt = "$signedUninstaller.embedded-sha256"
           if (-not (Test-Path -LiteralPath $receipt)) {
             $failures.Add('the sign hook did not embed the signed uninstaller into the rebuilt installer')
           } else {
-            Test-Signature 'relayed: orca-uninstaller.exe' $signedUninstaller
+            Test-Signature 'relayed: kingu-uninstaller.exe' $signedUninstaller
           }
 
           # Why a full 7-Zip attempt first: it is non-invasive. The runner image
@@ -415,7 +415,7 @@ jobs:
           $full7z = 'C:\Program Files\7-Zip\7z.exe'
           if (Test-Path -LiteralPath $full7z) {
             New-Item -ItemType Directory -Path nsis-extract -Force | Out-Null
-            & $full7z x -tnsis 'dist/orca-windows-setup.exe' '-onsis-extract' -y 2>&1 | Out-Null
+            & $full7z x -tnsis 'dist/kingu-windows-setup.exe' '-onsis-extract' -y 2>&1 | Out-Null
             $installedUninstaller = Get-ChildItem -Path nsis-extract -Recurse -File -Filter 'Uninstall*.exe' -ErrorAction SilentlyContinue |
               Select-Object -First 1
             # Why the digest guard before trusting this route: 7-Zip's NSIS
@@ -443,28 +443,28 @@ jobs:
             # Nothing here is published, so mutating this runner is free.
             # Why -PassThru and a bounded wait rather than -Wait: a bare -Wait on
             # an installer that ever prompts hangs to the job's 360-minute cap.
-            $installerProcess = Start-Process -FilePath (Resolve-Path 'dist/orca-windows-setup.exe') -ArgumentList '/S' -PassThru
+            $installerProcess = Start-Process -FilePath (Resolve-Path 'dist/kingu-windows-setup.exe') -ArgumentList '/S' -PassThru
             if (-not $installerProcess.WaitForExit(300000)) {
               $installerProcess | Stop-Process -Force -ErrorAction SilentlyContinue
               $failures.Add('the silent install did not exit within 5 minutes; it is likely prompting')
             }
             # Why a poll rather than one Stop-Process: the oneClick installer
-            # launches the app as it finishes, so Orca.exe can appear *after* the
+            # launches the app as it finishes, so Kingu.exe can appear *after* the
             # installer process exits. A single silenced Stop-Process would miss
-            # it and leave Orca plus orca-terminal-daemon.exe holding handles
+            # it and leave Kingu plus kingu-terminal-daemon.exe holding handles
             # under %LOCALAPPDATA%\Programs for the rest of the job.
             for ($attempt = 0; $attempt -lt 20; $attempt++) {
-              $running = @(Get-Process -Name 'Orca' -ErrorAction SilentlyContinue)
+              $running = @(Get-Process -Name 'Kingu' -ErrorAction SilentlyContinue)
               if ($running.Count -gt 0) {
                 $running | Stop-Process -Force -ErrorAction SilentlyContinue
                 break
               }
               Start-Sleep -Milliseconds 500
             }
-            Get-Process -Name 'orca-terminal-daemon' -ErrorAction SilentlyContinue |
+            Get-Process -Name 'kingu-terminal-daemon' -ErrorAction SilentlyContinue |
               Stop-Process -Force -ErrorAction SilentlyContinue
             $installedUninstaller = Get-ChildItem -Path "$env:LOCALAPPDATA\Programs" -Recurse -File -Filter 'Uninstall*.exe' -ErrorAction SilentlyContinue |
-              Where-Object { $_.FullName -like '*Orca*' } |
+              Where-Object { $_.FullName -like '*Kingu*' } |
               Select-Object -First 1
             if ($null -ne $installedUninstaller) { $installedVia = 'a silent install' }
           }
@@ -484,7 +484,7 @@ jobs:
                 $failures.Add("the uninstaller the installer ships is not the relayed one (via $installedVia): $shippedDigest vs $expectedDigest")
               }
             }
-            Test-Signature "shipped: Uninstall Orca.exe (via $installedVia)" $installedUninstaller.FullName
+            Test-Signature "shipped: Uninstall Kingu.exe (via $installedVia)" $installedUninstaller.FullName
           }
 
           foreach ($relative in Get-Content 'inner-signing-list.txt') {
@@ -515,7 +515,7 @@ jobs:
             # cache key `electron-builder-win-<lockfile hash>`, and that guard is
             # the only thing stopping a test certificate from being seeded into
             # the cache a real release restores from. Shipping users a binary
-            # signed by "Test certificate for 'Orca agent ide [OSS]'" is worse
+            # signed by "Test certificate for 'Kingu agent ide [OSS]'" is worse
             # than shipping it unsigned.
             #
             # Fixing elevate.exe belongs in its own PR - it is a UAC elevation
@@ -548,7 +548,7 @@ jobs:
           path: |
             signing-evidence.txt
             inner-signing-list.txt
-            dist/orca-windows-setup.exe
-            dist/orca-windows-setup.exe.blockmap
+            dist/kingu-windows-setup.exe
+            dist/kingu-windows-setup.exe.blockmap
             dist/latest.yml
           retention-days: 7

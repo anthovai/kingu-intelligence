@@ -17,7 +17,7 @@ export class DurablePushWorker {
     this.stopped = false
     this.timer = setInterval(() => {
       void this.runDue().catch(() => {
-        console.warn(JSON.stringify({ event: 'orca_push_worker_failed' }))
+        console.warn(JSON.stringify({ event: 'kingu_push_worker_failed' }))
       })
     }, 1000)
     this.timer.unref()

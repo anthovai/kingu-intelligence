@@ -27,13 +27,13 @@ export default function SettingsMenuScreen({
             label: 'Privacy Policy',
             icon: Shield,
             external: true,
-            onPress: () => void openExternal('https://www.onorca.dev/privacy')
+            onPress: () => void openExternal('https://www.onkingu.dev/privacy')
           },
           {
             label: 'Support',
             icon: LifeBuoy,
             external: true,
-            onPress: () => void openExternal('https://github.com/stablyai/orca/issues')
+            onPress: () => void openExternal('https://github.com/anthovai/kingu-intelligence/issues')
           }
         ]}
       />

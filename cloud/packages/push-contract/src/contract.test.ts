@@ -48,8 +48,8 @@ describe('push contract limits', () => {
       authenticatedRequestsPerMinutePerIp: 6_000,
       authenticatedRequestsPerMinutePerHost: 600
     })
-    expect(PUSH_DEFAULTS.apnsTopic).toBe('com.stably.orca.mobile')
-    expect(PUSH_DEFAULTS.androidChannelId).toBe('orca-desktop')
+    expect(PUSH_DEFAULTS.apnsTopic).toBe('com.stably.kingu.mobile')
+    expect(PUSH_DEFAULTS.androidChannelId).toBe('kingu-desktop')
   })
 })
 

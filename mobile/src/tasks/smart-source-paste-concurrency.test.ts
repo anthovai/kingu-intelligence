@@ -15,7 +15,7 @@ function Probe(props: { client: RpcClient; query: string }) {
     gitlabAvailable: false,
     linearAvailable: false,
     mrStateFilter: 'opened',
-    repos: [{ id: 'repo-1', displayName: 'orca', slug: { owner: 'stablyai', repo: 'orca' } }]
+    repos: [{ id: 'repo-1', displayName: 'kingu', slug: { owner: 'anthovai', repo: 'kingu' } }]
   })
   return null
 }

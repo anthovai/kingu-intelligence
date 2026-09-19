@@ -149,7 +149,7 @@
       }
     },
     "2481ef2215b8": {
-      "name": "projectRepoNotInOrca",
+      "name": "projectRepoNotInKingu",
       "ordinal": 69,
       "value": {
         "$rpc": "null"
@@ -762,7 +762,7 @@
       }
     },
     "7d8029e889cf": {
-      "name": "projectRepoNotInOrca",
+      "name": "projectRepoNotInKingu",
       "ordinal": 27,
       "value": {
         "$rpc": "null"
@@ -912,7 +912,7 @@
       }
     },
     "9490fcb6d06d": {
-      "name": "trustedOrcaHooks",
+      "name": "trustedKinguHooks",
       "ordinal": 52,
       "value": {}
     },
@@ -1223,7 +1223,7 @@
     "e74a1813f5ba": {
       "name": "error",
       "ordinal": 81,
-      "value": "Update Orca desktop to use Tasks on mobile."
+      "value": "Update Kingu desktop to use Tasks on mobile."
     },
     "e7538ac5908a": {
       "name": "runtimeTaskSettings",

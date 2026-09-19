@@ -5,7 +5,7 @@
 let addon = null
 function getAddon() {
   if (!addon) {
-    addon = require('./build/Release/orca_windows_registry.node')
+    addon = require('./build/Release/kingu_windows_registry.node')
   }
   return addon
 }

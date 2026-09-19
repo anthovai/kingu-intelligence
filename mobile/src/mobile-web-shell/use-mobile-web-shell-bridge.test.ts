@@ -1,7 +1,7 @@
 import { createElement, useImperativeHandle, useLayoutEffect, type ReactElement } from 'react'
 import { act, create, type ReactTestRenderer } from 'react-test-renderer'
 import { beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest'
-import type { OrcaMobileWebShellViewHandle } from '../../modules/orca-mobile-web-shell/src'
+import type { KinguMobileWebShellViewHandle } from '../../modules/kingu-mobile-web-shell/src'
 import { readBridgeHostMessage, type BridgeHostMessage } from './bridge/bridge-envelope'
 import type { MobileWebShellSessionState } from './mobile-web-shell-session-contract'
 import type { FakeRpcClient } from './bridge-host-test-fakes'
@@ -44,7 +44,7 @@ function fakeClient(): FakeRpcClient {
 
 function FakeShellView(props: {
   sessionId: string
-  viewRef: (handle: OrcaMobileWebShellViewHandle | null) => void
+  viewRef: (handle: KinguMobileWebShellViewHandle | null) => void
   posted: PostedFrame[]
 }): null {
   useImperativeHandle(

@@ -2,7 +2,7 @@
 
 A restored pane can already hold a scoped `remote:<environment>@@<handle>` layout binding while `remote.attach()` waits for `terminal.resolvePane`. The transport's `getPtyId()` is still null. An explicit split close therefore passed null to `closeWebRuntimeTerminal`, removed the layout binding, and destroyed only the viewer. The host terminal stayed connected. This attachment/teardown behavior exists in `v1.4.198`.
 
-This is a specific retained host-terminal mechanism. The change is stacked on the local/direct-SSH pending-close fix in [#21001](https://github.com/stablyai/orca/pull/21001) and reuses its current-owner query. It does not prove the incident frequency in [#15210](https://github.com/stablyai/orca/issues/15210), Linux Electron-main growth, or [#19831](https://github.com/stablyai/orca/issues/19831)'s memory slope.
+This is a specific retained host-terminal mechanism. The change is stacked on the local/direct-SSH pending-close fix in [#21001](https://github.com/anthovai/kingu-intelligence/pull/21001) and reuses its current-owner query. It does not prove the incident frequency in [#15210](https://github.com/anthovai/kingu-intelligence/issues/15210), Linux Electron-main growth, or [#19831](https://github.com/anthovai/kingu-intelligence/issues/19831)'s memory slope.
 
 ## Scope and authority
 
@@ -23,10 +23,10 @@ The public split-close callback now probes the captured scoped handle before aut
 Run in the repository root with existing dependencies:
 
 ```sh
-ORCA_BACKGROUND_LAUNCH=1 node docs/audits/pending-runtime-pane-close/reproduce.mjs
+KINGU_BACKGROUND_LAUNCH=1 node docs/audits/pending-runtime-pane-close/reproduce.mjs
 ```
 
-The script runs 13 tests using the actual split-close hook and remote transport, plus two tests delivering the close RPC into an actual `OrcaRuntimeService` with a fake PTY controller. React registration and unrelated presentation callbacks are mocked. No Electron window, host process inventory, or real PTY child is used.
+The script runs 13 tests using the actual split-close hook and remote transport, plus two tests delivering the close RPC into an actual `KinguRuntimeService` with a fake PTY controller. React registration and unrelated presentation callbacks are mocked. No Electron window, host process inventory, or real PTY child is used.
 
 The temporary Vite transform reverses only `fix.patch`; the baseline includes the IPC fix from #21001. Working sources remain untouched. The script uses the shared cross-platform process runner and records source hashes and exact cases in `results.json`.
 

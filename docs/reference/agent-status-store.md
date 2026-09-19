@@ -18,8 +18,8 @@ have landed; its proposed PR 2/3 sequence is superseded by that boundary:
 
 ## The problem this solves
 
-Orca shows "what is this agent doing" in four places: the desktop sidebar, the
-`orca worktree ps` command, the mobile app, and the agent dashboard. Before
+Kingu shows "what is this agent doing" in four places: the desktop sidebar, the
+`kingu worktree ps` command, the mobile app, and the agent dashboard. Before
 #19217 those readers did not even share their inputs. After #19217 they share
 the structured-session mapping and nothing else.
 
@@ -34,7 +34,7 @@ separate copies of the same row inside the main process alone:
 
 The second copy is a duplicate write: the OSC status parsed in main is
 forwarded to the hook server _and_ retained in the runtime store from the same
-call (`orca-runtime-create-terminal-side-effect-command-code-detector.ts`).
+call (`kingu-runtime-create-terminal-side-effect-command-code-detector.ts`).
 The third copy is keyed differently and never reaches the hook server at all,
 which is why `worktree ps` grew its own adapter for it in #19217.
 
@@ -163,9 +163,9 @@ the admission gate that decides which rows a worktree listing may show:
   structured session's tab lives in the renderer's own tab state, and a
   headless host has no renderer to mirror it from. That argument only holds if
   the headless host is itself wired to the store, which is a separate
-  obligation per entry point: the Electron hosts (desktop and `orca serve`)
-  share `main-process-runtime-service.ts`, and `orcad` constructs its own
-  runtime in `src/main/orcad/orcad-entry.ts`. A host missing that wiring lists
+  obligation per entry point: the Electron hosts (desktop and `kingu serve`)
+  share `main-process-runtime-service.ts`, and `kingud` constructs its own
+  runtime in `src/main/kingud/kingud-entry.ts`. A host missing that wiring lists
   no agents at all, not just no structured ones, because `worktree ps` reads
   the same snapshot for every row.
 
@@ -196,11 +196,11 @@ store is now the only main-process copy of a PTY agent's row.
 
 | Call site                                                                      | Before                                                          | After                                                                                              |
 | ------------------------------------------------------------------------------ | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `orca-runtime-create-terminal-side-effect-command-code-detector.ts` `retain()` | second write of the OSC payload already sent to the hook server | deleted; the event now carries the pane's `terminalHandle` and the hook ingest keeps the only copy |
+| `kingu-runtime-create-terminal-side-effect-command-code-detector.ts` `retain()` | second write of the OSC payload already sent to the hook server | deleted; the event now carries the pane's `terminalHandle` and the hook ingest keeps the only copy |
 | `...command-code-detector.ts` `clearPty()`                                     | drops rows on pty exit                                          | deleted; pane teardown already clears the hook row                                                 |
-| `orca-runtime-get-worktree-ps.ts` `values()`                                   | fed `retainedSnapshots`                                         | deleted; the reader keeps only `hookSnapshots`                                                     |
-| `orca-runtime-serialize-agent-prompt-submission.ts` `getFreshExplicit()`       | retained row first, hook rows second                            | `selectFreshExplicitAgentStatus`, hook rows only                                                   |
-| `orca-runtime-prune-mobile-session-tab-group-layout.ts` `getFreshForMobile()`  | pane key, then pty id                                           | `selectFreshAgentRowForMobileTab`: pane key, then `terminalHandle`                                 |
+| `kingu-runtime-get-worktree-ps.ts` `values()`                                   | fed `retainedSnapshots`                                         | deleted; the reader keeps only `hookSnapshots`                                                     |
+| `kingu-runtime-serialize-agent-prompt-submission.ts` `getFreshExplicit()`       | retained row first, hook rows second                            | `selectFreshExplicitAgentStatus`, hook rows only                                                   |
+| `kingu-runtime-prune-mobile-session-tab-group-layout.ts` `getFreshForMobile()`  | pane key, then pty id                                           | `selectFreshAgentRowForMobileTab`: pane key, then `terminalHandle`                                 |
 
 Both readers moved into `runtime-hook-agent-row-selection.ts`, which also owns
 `RuntimeAgentRowSnapshot` now that nothing retains one.
@@ -246,10 +246,10 @@ install it.
 
 ### Both hosts, not just the desktop one
 
-`orcad` constructed its runtime with no `onTerminalAgentStatus`, so main's OSC
+`kingud` constructed its runtime with no `onTerminalAgentStatus`, so main's OSC
 parse never reached the store there and the retained copy was the only carrier.
-Deleting it without wiring orcad would have made a headless host list no PTY
-agents at all. `orcad-entry.ts` now binds the producer and installs the
+Deleting it without wiring kingud would have made a headless host list no PTY
+agents at all. `kingud-entry.ts` now binds the producer and installs the
 republish signal, alongside the snapshot and structured sink it already had.
 
 ### The intended behavior change
@@ -331,7 +331,7 @@ call it.
 - **Performance budget:** publication stays event-driven with no new polling or
   subprocesses. One mobile projection clones the status snapshot once, builds
   pane/handle indexes once, and has a deterministic call-count test; lifecycle
-  cleanup is bounded by the existing status and handle inventories, and orcad
+  cleanup is bounded by the existing status and handle inventories, and kingud
   tests prove listeners clean up once on failed startup and repeated stop.
 - **Diagnostics:** existing hook-listener errors name the pane and PTY, while
   status-store tests pin delivery versus evidence clocks. No new telemetry or
@@ -350,7 +350,7 @@ call it.
   to a real `AgentHookServer` (`agent-status-store-wiring.test-fixture.ts`)
   rather than deleted, so each still asserts the listing behavior it named. The
   dismissal change is pinned end to end in
-  `orca-runtime-tests/worktree-ps-agent-row-dismissal.spec.ts`, which fails with
+  `kingu-runtime-tests/worktree-ps-agent-row-dismissal.spec.ts`, which fails with
   the retained store restored.
 - Live: the parity check from #19217 (working, done, close, reload) repeated
   against the merged store, with both surfaces read from the one row.

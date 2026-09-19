@@ -97,7 +97,7 @@
         [
           "Avatar",
           {
-            "label": "acme/orca",
+            "label": "acme/kingu",
             "source": "github",
             "src": "https://github.com/acme.png?size=64",
             "type": "image"
@@ -257,7 +257,7 @@
                 "executionHostId": "ssh:ssh-1",
                 "id": "repo-3",
                 "repoIcon": {
-                  "label": "acme/orca",
+                  "label": "acme/kingu",
                   "source": "github",
                   "src": "https://github.com/acme.png?size=64",
                   "type": "image"
@@ -289,7 +289,7 @@
         [
           "Avatar",
           {
-            "label": "acme/orca",
+            "label": "acme/kingu",
             "source": "github",
             "src": "https://github.com/acme.png?size=64",
             "type": "image"
@@ -372,7 +372,7 @@
         [
           "Avatar",
           {
-            "label": "acme/orca",
+            "label": "acme/kingu",
             "source": "github",
             "src": "https://github.com/acme.png?size=64",
             "type": "image"

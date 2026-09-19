@@ -13,7 +13,7 @@ import {
 import { setStructuredAgentSessionHost } from '../../../src/main/native-chat/agent-session-wire/structured-agent-session-registry'
 import type { StructuredAgentSessionHost } from '../../../src/main/native-chat/agent-session-wire/structured-agent-session-host'
 import { AgentSessionRecordStore } from '../../../src/main/runtime/agent-session-record-store'
-import type { OrcaRuntimeService } from '../../../src/main/runtime/orca-runtime'
+import type { KinguRuntimeService } from '../../../src/main/runtime/kingu-runtime'
 import { RpcDispatcher } from '../../../src/main/runtime/rpc/dispatcher'
 import { runtimeStub } from '../../../src/main/runtime/rpc/methods/agent-launch.test-fixture'
 
@@ -29,7 +29,7 @@ let store: AgentSessionRecordStore
 beforeEach(async () => {
   createStructuredSession.mockReset()
   createStructuredSession.mockResolvedValue({ ok: true, value: { sessionId: 'session-1' } })
-  directory = await mkdtemp(join(tmpdir(), 'orca-mobile-launch-replay-'))
+  directory = await mkdtemp(join(tmpdir(), 'kingu-mobile-launch-replay-'))
   store = await AgentSessionRecordStore.open({ directory, hostId: 'local' })
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the launch reads only deps.store; structured session creation is the injected boundary above.
   setStructuredAgentSessionHost({ deps: { store } } as unknown as StructuredAgentSessionHost)
@@ -55,7 +55,7 @@ function mobileLaunch(
     (host) =>
       new RpcDispatcher({
         // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: this fixture implements the launch handler and dispatcher metadata dependencies.
-        runtime: host as unknown as OrcaRuntimeService,
+        runtime: host as unknown as KinguRuntimeService,
         methods: AGENT_LAUNCH_METHODS
       })
   )

@@ -1,6 +1,6 @@
 # Linux glibc Compatibility
 
-Orca's Linux builds target **stock Ubuntu 20.04 and newer** — glibc 2.31 and
+Kingu's Linux builds target **stock Ubuntu 20.04 and newer** — glibc 2.31 and
 libstdc++ `GLIBCXX_3.4.28` (also Debian 11, RHEL 9), on both x64 and arm64.
 Packaging enforces this floor automatically; keep it in mind when adding or
 upgrading native dependencies. (The optional speech feature is the one
@@ -26,9 +26,9 @@ and the dynamic loader then refuses to load it:
 /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.34' not found (required by .../pty.node)
 ```
 
-Because the Orca main process loads node-pty at startup, that failure crashes the
+Because the Kingu main process loads node-pty at startup, that failure crashes the
 whole app before a window appears — this is exactly what shipped in v1.4.150 and
-broke launch on Ubuntu 20.04 ([#9902](https://github.com/stablyai/orca/issues/9902)).
+broke launch on Ubuntu 20.04 ([#9902](https://github.com/anthovai/kingu-intelligence/issues/9902)).
 
 The specific trap is glibc's 2.32–2.34 "libpthread/libutil merge", which moved
 several long-stable functions into libc under brand-new symbol versions:
@@ -90,11 +90,11 @@ libstdc++ floor — its glibc needs are still checked. Speech-to-text therefore
 needs a host with libstdc++ from GCC 11+ (Ubuntu 21.10 / 22.04 LTS or newer); the
 app itself still launches on stock 20.04.
 
-**3. Check before loading, on hosts that ship without a compiler (`orcad`).**
+**3. Check before loading, on hosts that ship without a compiler (`kingud`).**
 The two gates above protect the packaged desktop app, where the binary is built and
-verified by the same pipeline. `orcad` is deployed to hosts Orca never built on, so it
+verified by the same pipeline. `kingud` is deployed to hosts Kingu never built on, so it
 adds a runtime precondition
-([`src/main/orcad/node-pty-precondition.ts`](../../src/main/orcad/node-pty-precondition.ts)),
+([`src/main/kingud/node-pty-precondition.ts`](../../src/main/kingud/node-pty-precondition.ts)),
 run from `main.ts` before anything requires `node-pty`. It loads the addon in a **child
 process**, so a binary the loader refuses — or one that aborts outright — is data rather
 than this process's death, and the operator gets a sentence naming the host's libc, its
@@ -104,9 +104,9 @@ as unverifiable and boots anyway, because a silent probe is not evidence. Whatev
 finds is published in `status.get`'s `degradations[]` under `terminal_unavailable`.
 
 **4. Ship the binary, built from patched sources.**
-[`config/scripts/build-orcad-prebuilds.mjs`](../../config/scripts/build-orcad-prebuilds.mjs)
-(`pnpm run build:orcad-prebuilds`, after `build:orcad`) compiles node-pty for the current
-host and files it under `out/orcad/prebuilds/<slot>/`, where a slot is
+[`config/scripts/build-kingud-prebuilds.mjs`](../../config/scripts/build-kingud-prebuilds.mjs)
+(`pnpm run build:kingud-prebuilds`, after `build:kingud`) compiles node-pty for the current
+host and files it under `out/kingud/prebuilds/<slot>/`, where a slot is
 `linux-{x64,arm64}-{glibc,musl}` or `darwin-{x64,arm64}`. libc is part of the slot name
 because node-pty's own loader falls back to `prebuilds/<platform>-<arch>` and cannot tell
 glibc from musl — a glibc binary parked there is loaded on Alpine and dies at `dlopen`.
@@ -148,9 +148,9 @@ concurrently and calls `getenv()` constantly
 is a browser-process use-after-free about a second into startup — no window, no
 GPU child involved, and the corruption surfaces wherever the next allocation
 lands, which is why reports name unrelated frames (`gtk_widget_realize`,
-libxcb-dri3, FontConfig/expat). Orca 1.4.199/1.4.200 shipped that runtime and
+libxcb-dri3, FontConfig/expat). Kingu 1.4.199/1.4.200 shipped that runtime and
 died on launch on Ubuntu + NVIDIA/X11
-([#20081](https://github.com/stablyai/orca/issues/20081)).
+([#20081](https://github.com/anthovai/kingu-intelligence/issues/20081)).
 
 Electron 43.7.0 fixes it by overriding `setenv`/`unsetenv`/`putenv`/`clearenv`
 so a published `environ` is never freed, deferring to glibc on 2.41+
@@ -158,6 +158,6 @@ so a published `environ` is never freed, deferring to glibc on 2.41+
 to 42/43/44/45). **Do not downgrade Electron below 43.7.0, or move to another
 line, without confirming that backport is in the target release** —
 `config/scripts/electron-runtime-floor.test.ts` fails the suite if the pin drops
-below the floor. Orca itself writes `process.env` during early startup
-(`patchPackagedProcessPath`, `configureOrcaUserDataPathEnv`,
+below the floor. Kingu itself writes `process.env` during early startup
+(`patchPackagedProcessPath`, `configureKinguUserDataPathEnv`,
 `hydrate-shell-path`), so it is a first-class trigger, not just a bystander.

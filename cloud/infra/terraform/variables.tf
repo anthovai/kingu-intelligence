@@ -16,13 +16,13 @@ variable "environment" {
 variable "github_owner" {
   type        = string
   description = "GitHub owner allowed to deploy through Workload Identity Federation."
-  default     = "stablyai"
+  default     = "anthovai"
 }
 
 variable "github_repo" {
   type        = string
   description = "GitHub repo allowed to deploy through Workload Identity Federation."
-  default     = "orca"
+  default     = "kingu"
 }
 
 # Numeric IDs survive a rename or transfer of the repository; every provider pins them next to the name.
@@ -65,7 +65,7 @@ variable "github_workflow_file_prefix" {
 # repository move. Each entry renders its own OR arm in every provider condition, so both repos
 # can run the same workflows through the same identities. `workflow_file_prefix` is the rename the
 # importing repository applies to the workflow files it copies. Empty is the steady state, and is
-# where the public extraction left it: stablyai/orca is now the primary and only repository.
+# where the public extraction left it: anthovai/kingu-intelligence is now the primary and only repository.
 variable "github_accepted_repositories" {
   type = list(object({
     owner                = string
@@ -128,7 +128,7 @@ variable "relay_base_url" {
 
 variable "relay_cloud_run_service_name" {
   type        = string
-  description = "Cloud Run service name for Orca Relay."
+  description = "Cloud Run service name for Kingu Relay."
 }
 
 variable "relay_staging_power_auth_service_name" {
@@ -158,7 +158,7 @@ variable "relay_cloud_run_memory" {
 variable "relay_fence_broker_service_name" {
   type        = string
   description = "Private Cloud Run service that owns reviewed Relay Terraform fences."
-  default     = "orca-cloud-relay-fence"
+  default     = "kingu-cloud-relay-fence"
 }
 
 variable "relay_fence_broker_image" {
@@ -358,7 +358,7 @@ variable "relay_cells" {
 
 variable "relay_alert_notification_channels" {
   type        = list(string)
-  description = "Cloud Monitoring notification-channel resource names for Orca Relay alerts. Empty keeps policies visible without paging."
+  description = "Cloud Monitoring notification-channel resource names for Kingu Relay alerts. Empty keeps policies visible without paging."
   default     = []
 }
 
@@ -490,14 +490,14 @@ variable "relay_gce_cloud_sql_proxy_image" {
 # environments/production.tfvars turns it on. Everything in push-gateway.tf is behind it.
 variable "push_gateway_enabled" {
   type        = bool
-  description = "Create the Orca mobile push gateway, its database, secrets, and identity."
+  description = "Create the Kingu mobile push gateway, its database, secrets, and identity."
   default     = false
 }
 
 variable "push_base_url" {
   type        = string
   description = "Public TLS origin of the mobile push gateway."
-  default     = "https://push.onorca.dev"
+  default     = "https://push.onkingu.dev"
 
   validation {
     condition     = can(regex("^https://[^/]+$", var.push_base_url))
@@ -508,7 +508,7 @@ variable "push_base_url" {
 variable "push_cloud_run_service_name" {
   type        = string
   description = "Cloud Run service name for the mobile push gateway."
-  default     = "orca-cloud-push"
+  default     = "kingu-cloud-push"
 }
 
 variable "push_cloud_run_image" {

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import * as ExpoCrypto from 'expo-crypto'
-import type { MobileWebShellFailureReason } from '../../modules/orca-mobile-web-shell/src/load-state'
+import type { MobileWebShellFailureReason } from '../../modules/kingu-mobile-web-shell/src/load-state'
 import { useHostProtocolGates } from '../components/HostProtocolGate'
 import { useHostClient } from '../transport/client-context'
 import { encodeBase64Url } from '../transport/mobile-endpoint-supervisor-support'

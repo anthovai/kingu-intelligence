@@ -54,7 +54,7 @@
         "View": 5
       },
       "labels": ["Back", "Refresh agent sessions"],
-      "text": ["Agent Session History", "orca-history", "Workspace", "Project", "All"]
+      "text": ["Agent Session History", "kingu-history", "Workspace", "Project", "All"]
     },
     "3a91d2093c6e": {
       "name": "worktree.ps#1",
@@ -316,7 +316,7 @@
         "View": 4
       },
       "labels": ["Back", "Refresh agent sessions"],
-      "text": ["Agent Session History", "orca-history"]
+      "text": ["Agent Session History", "kingu-history"]
     },
     "d3c3ce66625d": {
       "name": "aiVault.listSessions#1",

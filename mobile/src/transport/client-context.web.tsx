@@ -16,9 +16,9 @@ import {
   type BridgeRpcClientDiagnostic
 } from '../mobile-web-shell/bridge/bridge-rpc-client'
 import {
-  createOrcaBridgePageTransport,
-  readOrcaBridgePageChannel
-} from '../mobile-web-shell/bridge/orca-bridge-page-channel'
+  createKinguBridgePageTransport,
+  readKinguBridgePageChannel
+} from '../mobile-web-shell/bridge/kingu-bridge-page-channel'
 import type { RpcClient } from './rpc-client'
 import type { ConnectionState, HostProfile } from './types'
 import type { RpcClientContextValue } from './rpc-client-context-contract'
@@ -86,7 +86,7 @@ export function RpcClientProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    const channel = readOrcaBridgePageChannel()
+    const channel = readKinguBridgePageChannel()
     if (channel === null) {
       // Nothing to wait for, so the tree mounts against the placeholder rather than never.
       clientRef.current = createPlaceholderClient()
@@ -94,7 +94,7 @@ export function RpcClientProvider({ children }: { children: ReactNode }) {
       return
     }
     const client: BridgeRpcClient = createBridgeRpcClient({
-      ...createOrcaBridgePageTransport(channel),
+      ...createKinguBridgePageTransport(channel),
       onDiagnostic: createPageDiagnosticReporter()
     })
     // Nothing mounts before `init`: every member of this client throws until the shell answers,

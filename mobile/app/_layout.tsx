@@ -10,7 +10,7 @@ import * as SplashScreen from 'expo-splash-screen'
 import * as Notifications from 'expo-notifications'
 import * as Linking from 'expo-linking'
 import { colors } from '../src/theme/mobile-theme'
-import { OrcaLogo } from '../src/components/OrcaLogo'
+import { KinguLogo } from '../src/components/KinguLogo'
 import { RpcClientProvider } from '../src/transport/client-context'
 import { getNotificationNavigationTarget } from '../src/notifications/notification-routing'
 import { useOpenNotificationRoute } from '../src/notifications/use-open-notification-route'
@@ -31,7 +31,7 @@ import { recoverMobileRelayPairing } from '../src/transport/mobile-relay-pairing
 SplashScreen.preventAutoHideAsync()
 
 // Why at boot and not only on subscribe: the gateway's FCM payload targets the
-// 'orca-desktop' channel, and a background push can land before any socket has
+// 'kingu-desktop' channel, and a background push can land before any socket has
 // connected. Android drops a notification whose channel does not exist yet.
 void ensureDesktopNotificationChannel().catch(() => {})
 void registerPushDismissalTask().catch(() => {})
@@ -67,7 +67,7 @@ export default function RootLayout() {
   useEffect(() => startPushTokenSync(), [])
   useEffect(() => startAndroidForegroundPushPresentation(), [])
 
-  // Why: route `orca://pair?...` deep links to the confirm screen so
+  // Why: route `kingu://pair?...` deep links to the confirm screen so
   // the same pairing flow runs whether the link arrived via QR scan,
   // paste, AirDrop, Messages, or `xcrun simctl openurl`. getInitialURL
   // covers cold-start (link tapped while app was closed); the listener
@@ -77,7 +77,7 @@ export default function RootLayout() {
       const code = extractPairingCodeFromUrl(url)
       if (code) {
         // Why: Android camera launches can leave Expo Router's unmatched
-        // `orca://pair` route underneath this screen; replacing keeps cancel
+        // `kingu://pair` route underneath this screen; replacing keeps cancel
         // and edge-back from revealing the router error page.
         router.replace({ pathname: '/pair-confirm', params: { code } })
       }
@@ -211,7 +211,7 @@ export default function RootLayout() {
             name="index"
             options={{
               headerShown: false,
-              headerTitle: () => <OrcaLogo size={22} />
+              headerTitle: () => <KinguLogo size={22} />
             }}
           />
           <Stack.Screen name="pair-scan" options={{ headerShown: false }} />

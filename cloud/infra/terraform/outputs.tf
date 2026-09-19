@@ -211,5 +211,5 @@ output "push_dns_record" {
     type = "CNAME"
     data = "ghs.googlehosted.com."
   } : null
-  description = "Record the stablyai/orca-cloud apps root must publish in the onorca.dev zone."
+  description = "Record the anthovai/kingu-intelligence-cloud apps root must publish in the onkingu.dev zone."
 }

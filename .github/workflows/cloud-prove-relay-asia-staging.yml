@@ -38,14 +38,14 @@ defaults:
 
 jobs:
   prove:
-    if: ${{ vars.ORCA_CLOUD_OPERATIONS_ENABLED == 'true' && (github.ref == 'refs/heads/main') }}
+    if: ${{ vars.KINGU_CLOUD_OPERATIONS_ENABLED == 'true' && (github.ref == 'refs/heads/main') }}
     runs-on: [self-hosted, linux, x64, relay-asia-east2-load]
     timeout-minutes: 75
     environment: staging
     env:
-      GCP_PROJECT_ID: onorca-cloud-staging
-      DIRECTOR_ORIGIN: https://relay-staging.onorca.dev
-      AUTH_ORIGIN: https://auth-staging.onorca.dev
+      GCP_PROJECT_ID: onkingu-cloud-staging
+      DIRECTOR_ORIGIN: https://relay-staging.onkingu.dev
+      AUTH_ORIGIN: https://auth-staging.onkingu.dev
       IMAGE_DIGEST: ${{ inputs.image-digest }}
       INITIAL_SELECTOR_GENERATION: ${{ inputs.selector-generation }}
       PROMOTE_ATTEMPT_ID: ${{ inputs.promote-attempt-id }}
@@ -72,14 +72,14 @@ jobs:
           workload_identity_provider: ${{ vars.STAGING_GCP_RELAY_ASIA_PROOF_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.STAGING_GCP_RELAY_ASIA_PROOF_SERVICE_ACCOUNT }}
           token_format: id_token
-          id_token_audience: https://relay-staging.onorca.dev/v1/admin/drain
+          id_token_audience: https://relay-staging.onkingu.dev/v1/admin/drain
           id_token_include_email: true
 
       - uses: google-github-actions/setup-gcloud@v2
 
       - uses: ./.github/actions/cloud-sql-rollout-lease
         with:
-          bucket: onorca-cloud-staging-terraform-state
+          bucket: onkingu-cloud-staging-terraform-state
           object: terraform/state/cloud-sql-rollout/staging.lock
 
       - uses: actions/setup-node@v4
@@ -92,13 +92,13 @@ jobs:
 
       - name: Require the exact staging director image before promotion
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.auth.outputs.id_token }}
         shell: bash
         run: |
           set -euo pipefail
           runtime="$(curl --fail-with-body --max-time 30 --request POST \
             "${DIRECTOR_ORIGIN}/v1/admin/runtime-status" \
-            --header "Authorization: Bearer ${ORCA_RELAY_ADMIN_ID_TOKEN}" \
+            --header "Authorization: Bearer ${KINGU_RELAY_ADMIN_ID_TOKEN}" \
             --header 'Content-Type: application/json' --data '{"v":1}')"
           test "$(jq -r '.role' <<< "${runtime}")" = director
           test "$(jq -r '.imageDigest' <<< "${runtime}")" = "${IMAGE_DIGEST}"
@@ -107,12 +107,12 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build the Relay load-harness contract
-        run: pnpm --filter @orca-cloud/relay-contract build
+        run: pnpm --filter @kingu-cloud/relay-contract build
 
       - name: Promote only staging C4
         id: promote
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.auth.outputs.id_token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -130,7 +130,7 @@ jobs:
 
       - name: Run sharded two-horizon and mixed splice proofs
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.auth.outputs.id_token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -164,7 +164,7 @@ jobs:
                 boundary_args=(
                   --region-behavior-probes 1
                   --capacity-cell-id staging-gce-c4
-                  --capacity-cell-origin https://c4.relay-staging.onorca.dev
+                  --capacity-cell-origin https://c4.relay-staging.onkingu.dev
                   --capacity-unobserved-bound 60
                   --rebind-probes 2
                   --skip-rebind-overflow-check
@@ -231,7 +231,7 @@ jobs:
           ended_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           sleep 60
           gcloud logging read \
-            "timestamp>=\"${PROOF_STARTED_AT}\" AND timestamp<=\"${ended_at}\" AND jsonPayload.event=\"orca_relay_runtime_metrics\"" \
+            "timestamp>=\"${PROOF_STARTED_AT}\" AND timestamp<=\"${ended_at}\" AND jsonPayload.event=\"kingu_relay_runtime_metrics\"" \
             --project "${GCP_PROJECT_ID}" --limit 20000 --format json \
             > "${proof_dir}/runtime-metrics.json"
           node dev/scripts/relay-asia-rollout-evidence.mjs create-staging \
@@ -250,7 +250,7 @@ jobs:
       - name: Return staging C4 to migration-only
         if: ${{ always() && steps.promote.outcome != 'skipped' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.auth.outputs.id_token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -301,7 +301,7 @@ jobs:
           workload_identity_provider: ${{ vars.STAGING_GCP_RELAY_ASIA_PROOF_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.STAGING_GCP_RELAY_ASIA_PROOF_SERVICE_ACCOUNT }}
           token_format: id_token
-          id_token_audience: https://relay-staging.onorca.dev/v1/admin/drain
+          id_token_audience: https://relay-staging.onkingu.dev/v1/admin/drain
           id_token_include_email: true
 
       - uses: actions/setup-node@v4
@@ -310,7 +310,7 @@ jobs:
 
       - name: Recover staging C4 with a fresh identity
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.auth.outputs.id_token }}
         shell: bash
         run: |
           set -euo pipefail

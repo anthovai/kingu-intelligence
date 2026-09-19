@@ -2,19 +2,19 @@
 
 Moves the five staging Relay workflows off the apps-owned `github_deploy`
 account and onto the relay-owned `github_staging_relay_deploy` account
-(`orca-cloud-staging-gha-relay`). This is a **rollout**, not state surgery, so
+(`kingu-cloud-staging-gha-relay`). This is a **rollout**, not state surgery, so
 it lives beside [`terraform-root-split-runbook.md`](./terraform-root-split-runbook.md)
 rather than inside it: that runbook is state-only and runs no apply, and every
 step below applies.
 
 Production is untouched. `local.relay_github_deploy_service_account_email`
-still renders `orca-cloud-gha-deploy` there, and the production relay plan slice
+still renders `kingu-cloud-gha-deploy` there, and the production relay plan slice
 is byte-identical to the pre-split single-root baseline.
 
 ## What moves, and what it costs
 
 The staging Relay runtime allowlists exactly one deploy account
-(`ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT`, `apps/relay/src/admin-token-verifier.ts`),
+(`KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT`, `apps/relay/src/admin-token-verifier.ts`),
 so the account, the director env, the four cell startup scripts, and the
 workflow variables have to change together. Plan on a staging window in which
 no Relay workflow runs.
@@ -23,7 +23,7 @@ no Relay workflow runs.
 | --- | --- |
 | 10 new identity resources | Create only. No compute. |
 | 6 relay bindings repoint to the new account | Delete + create. The old account loses them. |
-| `ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT` on the director | New Cloud Run revision. |
+| `KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT` on the director | New Cloud Run revision. |
 | Cells c1–c4 startup metadata | Four instance-template replacements, one MIG repoint each. |
 
 ## Preconditions
@@ -94,10 +94,10 @@ that one `-target` if you would rather leave it to the staging drift
 remediation, and accept that the new account then has no `serviceAccountUser`
 on the director runtime account.
 
-The director's `ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT` changes only through
+The director's `KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT` changes only through
 `google_cloud_run_v2_service.relay`, and applying that address in staging also
 carries the whole staging director backlog: the identity swap to
-`orca-cloud-staging-relay-dir`, `timeout` 3600s to 30s, concurrency 1000 to 80,
+`kingu-cloud-staging-relay-dir`, `timeout` 3600s to 30s, concurrency 1000 to 80,
 the four-cell topology, and roughly twenty new env entries. Do it as part of
 the staging identity remediation in the drift plan, in this same window, with
 that plan reviewed on its own terms.
@@ -137,7 +137,7 @@ Wait for each MIG to report stable before starting the next cell.
 Dispatch **Power Relay Staging** in `status` mode. It exercises the new
 credential end to end: Workload Identity exchange on the new provider, the
 state read, `gcloud sql instances describe` and the MIG reads through
-`orcaRelayStagingPower`, `run services describe` on both the director and the
+`kinguRelayStagingPower`, `run services describe` on both the director and the
 shared staging auth service, and an admin `cell-status` call that only succeeds
 if the director allowlists the new account. Then run a `sleep` and a `wake` to
 exercise the mutation paths.
@@ -169,7 +169,7 @@ Before (c): revert the two variables, or unset them. The job gates skip while
 they are empty, and the old account still holds every grant.
 
 After (c) but before the cells are rolled: re-apply the six bindings from the
-previous commit, which points them back at `orca-cloud-staging-gha-deploy`, and
+previous commit, which points them back at `kingu-cloud-staging-gha-deploy`, and
 revert the workflow repoint. The new account and its provider can stay; they
 grant nothing the old path needs.
 

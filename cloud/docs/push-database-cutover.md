@@ -9,7 +9,7 @@ There is no shared-storage fallback or provision/activate switch.
 ## Existing-resource cleanup: operator prerequisite
 
 This is a plan/runbook, not authorization to apply or delete resources. Preserve the
-shared Orca instance, dedicated push instance, all dedicated data and identities, and
+shared Kingu instance, dedicated push instance, all dedicated data and identities, and
 unrelated resources. The dedicated resource addresses remain unchanged:
 
 - `google_sql_database_instance.push_dedicated[0]`
@@ -75,7 +75,7 @@ dispatches while preparing the following exact changes:
 1. Review the relay-root plan for
    `google_storage_bucket_iam_member.github_push_rollout_lease[0]`. It grants only
    `roles/storage.objectAdmin` on
-   `projects/_/buckets/onorca-cloud-terraform-state/objects/terraform/state/push-rollout/production.lock`
+   `projects/_/buckets/onkingu-cloud-terraform-state/objects/terraform/state/push-rollout/production.lock`
    to the dedicated push deploy account. The lease action uses object GET/upload/delete,
    so no bucket-wide listing or Terraform-state access is needed.
 2. After approval, apply only the reviewed IAM/dependency plan. Verify the exact condition

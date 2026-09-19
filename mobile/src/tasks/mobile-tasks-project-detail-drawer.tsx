@@ -35,34 +35,34 @@ export function renderMobileTasksProjectMissingRepoDrawer(model: ConnectionPrese
   const {
     copiedLinkKey,
     copyTextToClipboard,
-    projectRepoNotInOrca,
-    setProjectRepoNotInOrca,
+    projectRepoNotInKingu,
+    setProjectRepoNotInKingu,
     taskUiReady
   } = model
   return (
     <BottomDrawer
-      visible={taskUiReady && projectRepoNotInOrca != null}
+      visible={taskUiReady && projectRepoNotInKingu != null}
       onClose={() => {
-        setProjectRepoNotInOrca(null)
+        setProjectRepoNotInKingu(null)
       }}
     >
-      {projectRepoNotInOrca ? (
+      {projectRepoNotInKingu ? (
         <View>
           <View style={styles.sheetHeader}>
-            <Text style={styles.sheetTitle}>Repository not in Orca</Text>
+            <Text style={styles.sheetTitle}>Repository not in Kingu</Text>
             <Text style={styles.sheetSubtitle}>
-              {projectRepoNotInOrca.owner}/{projectRepoNotInOrca.repo} is not added to Orca. Add
+              {projectRepoNotInKingu.owner}/{projectRepoNotInKingu.repo} is not added to Kingu. Add
               this repository from the desktop app, then refresh mobile Tasks.
             </Text>
           </View>
 
           <View style={styles.actionGroup}>
-            {projectRepoNotInOrca.url ? (
+            {projectRepoNotInKingu.url ? (
               <Pressable
                 style={styles.actionRow}
                 onPress={() => {
-                  if (projectRepoNotInOrca.url) {
-                    void Linking.openURL(projectRepoNotInOrca.url)
+                  if (projectRepoNotInKingu.url) {
+                    void Linking.openURL(projectRepoNotInKingu.url)
                   }
                 }}
               >
@@ -70,20 +70,20 @@ export function renderMobileTasksProjectMissingRepoDrawer(model: ConnectionPrese
                 <Text style={styles.actionText}>Open in GitHub</Text>
               </Pressable>
             ) : null}
-            {projectRepoNotInOrca.url ? <View style={styles.actionSeparator} /> : null}
+            {projectRepoNotInKingu.url ? <View style={styles.actionSeparator} /> : null}
             <Pressable
               style={styles.actionRow}
               onPress={() =>
                 void copyTextToClipboard(
-                  `project-repo:${projectRepoNotInOrca.owner}/${projectRepoNotInOrca.repo}`,
-                  `${projectRepoNotInOrca.owner}/${projectRepoNotInOrca.repo}`
+                  `project-repo:${projectRepoNotInKingu.owner}/${projectRepoNotInKingu.repo}`,
+                  `${projectRepoNotInKingu.owner}/${projectRepoNotInKingu.repo}`
                 )
               }
             >
               <Copy size={16} color={colors.textPrimary} />
               <Text style={styles.actionText}>
                 {copiedLinkKey ===
-                `project-repo:${projectRepoNotInOrca.owner}/${projectRepoNotInOrca.repo}`
+                `project-repo:${projectRepoNotInKingu.owner}/${projectRepoNotInKingu.repo}`
                   ? 'Copied'
                   : 'Copy repository'}
               </Text>
@@ -340,7 +340,7 @@ export function renderMobileTasksProjectDetailDrawer(model: ConnectionPresentati
                 </Pressable>
                 {!projectRowHostedRepo ? (
                   <Text style={styles.emptyInlineText}>
-                    Merge requires this repository in Orca.
+                    Merge requires this repository in Kingu.
                   </Text>
                 ) : null}
               </>

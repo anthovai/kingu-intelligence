@@ -4,7 +4,7 @@ import type {
   RegionCorrectionRequest,
   RegionCorrectionResponse,
   RelayRegion
-} from '@orca-cloud/relay-contract'
+} from '@kingu-cloud/relay-contract'
 import type { RelayDatabase } from './database.js'
 
 type Identity = { userId: string; relayHostId: string }
@@ -123,7 +123,7 @@ export async function exchangeRegionCorrection(
     if (Number.parseInt(digest.slice(0, 8), 16) % 10 === 0) {
       console.log(
         JSON.stringify({
-          event: 'orca_relay_region_comparison',
+          event: 'kingu_relay_region_comparison',
           relayHostIdDigest: digest,
           assignmentEpoch,
           generation: request.generation,

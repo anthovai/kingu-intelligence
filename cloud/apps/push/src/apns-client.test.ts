@@ -74,7 +74,7 @@ describe('apns client', () => {
     const clock = 1_700_000_000_000
     const fake = fakeTransport({ status: 200, body: '' })
     const client = new ApnsClient({
-      topic: 'com.stably.orca.mobile',
+      topic: 'com.stably.kingu.mobile',
       credentials: credentials(),
       transport: fake.transport,
       now: () => clock
@@ -86,7 +86,7 @@ describe('apns client', () => {
     expect(request.host).toBe('api.push.apple.com')
     expect(request.path).toBe(`/3/device/${'a'.repeat(64)}`)
     expect(request.headers).toMatchObject({
-      'apns-topic': 'com.stably.orca.mobile',
+      'apns-topic': 'com.stably.kingu.mobile',
       'apns-push-type': 'alert',
       'apns-priority': '10',
       'apns-expiration': String(Math.floor(clock / 1000) + 5 * 60),
@@ -99,7 +99,7 @@ describe('apns client', () => {
         sound: 'default',
         'thread-id': HOST
       },
-      orca: {
+      kingu: {
         hostFingerprint: HOST,
         worktreeId: 'wt-1',
         notificationId: 'note-1',
@@ -114,7 +114,7 @@ describe('apns client', () => {
   it('targets the sandbox host and keeps the individual collapse id', async () => {
     const fake = fakeTransport({ status: 200, body: '' })
     const client = new ApnsClient({
-      topic: 'com.stably.orca.mobile',
+      topic: 'com.stably.kingu.mobile',
       credentials: credentials(),
       transport: fake.transport
     })
@@ -130,7 +130,7 @@ describe('apns client', () => {
   ])('classifies %i %s as a dead token', async (status, reason) => {
     const fake = fakeTransport({ status, body: JSON.stringify({ reason }) })
     const client = new ApnsClient({
-      topic: 'com.stably.orca.mobile',
+      topic: 'com.stably.kingu.mobile',
       credentials: credentials(),
       transport: fake.transport
     })
@@ -147,7 +147,7 @@ describe('apns client', () => {
   ])('treats %i %s with the appropriate retry policy', async (status, reason) => {
     const fake = fakeTransport({ status, body: JSON.stringify({ reason }) })
     const client = new ApnsClient({
-      topic: 'com.stably.orca.mobile',
+      topic: 'com.stably.kingu.mobile',
       credentials: credentials(),
       transport: fake.transport
     })
@@ -158,7 +158,7 @@ describe('apns client', () => {
 
   it('reports a transport failure as an error rather than throwing', async () => {
     const client = new ApnsClient({
-      topic: 'com.stably.orca.mobile',
+      topic: 'com.stably.kingu.mobile',
       credentials: credentials(),
       transport: async () => {
         throw new Error('socket hang up')
@@ -179,7 +179,7 @@ it('does not collapse background dismissals with visible alerts', async () => {
   })
   const alert = delivery()
   await apns.send(
-    { ...alert, orca: { ...alert.orca, kind: 'dismiss' } },
+    { ...alert, kingu: { ...alert.kingu, kind: 'dismiss' } },
     {
       token: 'test',
       apnsEnvironment: 'sandbox'

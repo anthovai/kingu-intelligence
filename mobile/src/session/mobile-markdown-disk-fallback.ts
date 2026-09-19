@@ -20,7 +20,7 @@ export function buildMarkdownDiskFallbackDoc(args: {
     ? 'File too large for mobile preview'
     : args.tabIsDirty
       ? 'Desktop has unsaved changes. Showing disk content.'
-      : 'Editing needs Orca desktop running.'
+      : 'Editing needs Kingu desktop running.'
   return {
     status: 'ready' as const,
     content: args.content,

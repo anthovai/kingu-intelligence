@@ -20,7 +20,7 @@ import {
   RELAY_CLOSE_CODE,
   type RelayHostCloseReason,
   type RelayRegion
-} from '@orca-cloud/relay-contract'
+} from '@kingu-cloud/relay-contract'
 import nacl from 'tweetnacl'
 import type WebSocket from 'ws'
 import type { RawData } from 'ws'
@@ -364,7 +364,7 @@ export class HostSessionRegistry {
       const elapsedMs = this.now() - acceptStartedAt
       this.observer.recordClientAcceptAbandoned?.(stage, elapsedMs)
       console.warn(
-        JSON.stringify({ event: 'orca_relay_client_accept_abandoned', stage, elapsedMs })
+        JSON.stringify({ event: 'kingu_relay_client_accept_abandoned', stage, elapsedMs })
       )
       return true
     }
@@ -652,7 +652,7 @@ export class HostSessionRegistry {
           closeInfo.trigger.includes('oversize')
         ) {
           console.warn(
-            `[orca-relay] splice closed host=${relayHostLogDigest(session.relayHostId)}` +
+            `[kingu-relay] splice closed host=${relayHostLogDigest(session.relayHostId)}` +
               ` trigger=${closeInfo.trigger} code=${closeInfo.code}` +
               ` reason=${JSON.stringify(closeInfo.reason)}`
           )
@@ -704,7 +704,7 @@ export class HostSessionRegistry {
     this.observer.recordClientAcceptCompleted?.({ totalMs, stageMs })
     console.log(
       JSON.stringify({
-        event: 'orca_relay_client_accept_completed',
+        event: 'kingu_relay_client_accept_completed',
         ...this.logIdentity(),
         ...this.sessionPlacementLogFields(session),
         credentialKind: pending.reservation.credentialKind,
@@ -757,7 +757,7 @@ export class HostSessionRegistry {
     session.controlRttLoggedAt = now
     console.log(
       JSON.stringify({
-        event: 'orca_relay_host_control_rtt',
+        event: 'kingu_relay_host_control_rtt',
         ...this.logIdentity(),
         ...this.sessionPlacementLogFields(session),
         relayHostIdDigest: relayHostLogDigest(session.relayHostId),
@@ -823,7 +823,7 @@ export class HostSessionRegistry {
           // Untruncated, unlike peer-supplied close reasons: this is the
           // primary diagnostic for the next rejection class.
           .replace(/[^\x20-\x7e]/g, '')
-        console.warn(`[orca-relay] ${context} failed: ${message}`)
+        console.warn(`[kingu-relay] ${context} failed: ${message}`)
         socket?.close(RELAY_CLOSE_CODE.LIMIT_EXCEEDED, 'relay temporarily unavailable')
       })
       // Terminal: a throw in the handler above must not itself crash the process.
@@ -1284,7 +1284,7 @@ export class HostSessionRegistry {
       // One line per control close makes reconnect churners attributable by
       // host digest without exposing the raw relay host id.
       console.warn(
-        `[orca-relay] control closed host=${relayHostLogDigest(session.relayHostId)}` +
+        `[kingu-relay] control closed host=${relayHostLogDigest(session.relayHostId)}` +
           ` gen=${session.generation} state=${session.state} ageMs=${this.now() - wiredAt}` +
           ` app=${JSON.stringify(printableCloseReason(appVersion))}` +
           ` splices=${session.closingCounts?.splices ?? session.activeSplices.size}` +
@@ -1458,7 +1458,7 @@ export class HostSessionRegistry {
                 session.socket?.close(RELAY_CLOSE_CODE.DRAINING, 'control migration completed')
                 return
               }
-              console.warn('[orca-relay] control activity recovery failed')
+              console.warn('[kingu-relay] control activity recovery failed')
             }
             return
           }
@@ -1473,12 +1473,12 @@ export class HostSessionRegistry {
             // reports the count, so this needs no line of its own.
             return
           }
-          console.warn('[orca-relay] control activity renewal failed')
+          console.warn('[kingu-relay] control activity renewal failed')
         })
         // Terminal handler: a throw inside the async catch above (e.g. a
         // future await) must not become a process-killing rejection.
         .catch(() => {
-          console.warn('[orca-relay] control activity renewal handling failed')
+          console.warn('[kingu-relay] control activity renewal handling failed')
         })
     }
     if (now - session.lastPongAt > 75_000) {
@@ -1533,7 +1533,7 @@ export class HostSessionRegistry {
     if (forcedConnections > 0) {
       console.warn(
         JSON.stringify({
-          event: 'orca_relay_host_drain_forced_close',
+          event: 'kingu_relay_host_drain_forced_close',
           ...this.logIdentity(),
           ...this.sessionPlacementLogFields(session),
           relayHostIdDigest: relayHostLogDigest(session.relayHostId),
@@ -1767,7 +1767,7 @@ export class HostSessionRegistry {
     void this.assignments.releaseActivity(identity, activityId).catch(() => {
       // Why: expiry cleanup is the durable fallback; a transient SQL failure while
       // closing a socket must not become an unhandled rejection that kills the cell.
-      console.warn('[orca-relay] activity release deferred to lease cleanup')
+      console.warn('[kingu-relay] activity release deferred to lease cleanup')
     })
   }
 
@@ -1775,13 +1775,13 @@ export class HostSessionRegistry {
     // Why: reservation deadlines and basis cleanup are durable recovery paths;
     // transient SQL errors during socket callbacks must stay process-contained.
     void this.store.failReservation(reservation).catch(() => {
-      console.warn('[orca-relay] reservation release deferred to credential cleanup')
+      console.warn('[kingu-relay] reservation release deferred to credential cleanup')
     })
   }
 
   private deactivateBasisBestEffort(connId: string): void {
     void this.store.deactivateBasis(connId).catch(() => {
-      console.warn('[orca-relay] basis deactivation deferred to credential cleanup')
+      console.warn('[kingu-relay] basis deactivation deferred to credential cleanup')
     })
   }
 }

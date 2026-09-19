@@ -45,16 +45,16 @@ test('accepts only the exact canary template replacement and MIG update', () => 
   const image = `us-docker.pkg.dev/project/relay/image@sha256:${'a'.repeat(64)}`
   const startupScript = (cap, bound, selectedImage, extra = '') =>
     [
-      `  printf 'ORCA_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '${cap}'`,
-      `  printf 'ORCA_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '${bound}'`,
-      `printf 'ORCA_RELAY_IMAGE_DIGEST=%s\\n' '${selectedImage.split('@')[1]}'`,
+      `  printf 'KINGU_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '${cap}'`,
+      `  printf 'KINGU_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '${bound}'`,
+      `printf 'KINGU_RELAY_IMAGE_DIGEST=%s\\n' '${selectedImage.split('@')[1]}'`,
       `docker pull '${selectedImage}'`,
       extra,
       'docker run --detach \\',
       '  --name cloud-sql-proxy \\',
       `  'us-docker.pkg.dev/project/proxy@sha256:${'c'.repeat(64)}'`,
       'docker run --detach \\',
-      '  --name orca-relay \\',
+      '  --name kingu-relay \\',
       `  '${selectedImage}'`
     ].join('\n')
   const script = startupScript(1_000, 60, image)
@@ -122,11 +122,11 @@ test('accepts only the exact canary template replacement and MIG update', () => 
     /reviewed template dependency/
   )
   const capacityServiceAccount =
-    'orca-cloud-staging-gha-cap@onorca-cloud-staging.iam.gserviceaccount.com'
+    'kingu-cloud-staging-gha-cap@onkingu-cloud-staging.iam.gserviceaccount.com'
   const bootstrapTemplate = structuredClone(template)
   const bootstrapManager = structuredClone(manager)
   bootstrapTemplate.change.after.metadata_startup_script = [
-    `  printf 'ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' '${capacityServiceAccount}'`,
+    `  printf 'KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' '${capacityServiceAccount}'`,
     script
   ].join('\n')
   const bootstrapConfig = {
@@ -321,7 +321,7 @@ test('accepts only the exact canary template replacement and MIG update', () => 
   const duplicateHardCapTemplate = structuredClone(template)
   duplicateHardCapTemplate.change.after.metadata_startup_script = [
     script,
-    `  printf 'ORCA_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '600'`
+    `  printf 'KINGU_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '600'`
   ].join('\n')
   assert.throws(
     () =>
@@ -334,7 +334,7 @@ test('accepts only the exact canary template replacement and MIG update', () => 
   const duplicateIdentityTemplate = structuredClone(bootstrapTemplate)
   duplicateIdentityTemplate.change.after.metadata_startup_script = [
     duplicateIdentityTemplate.change.after.metadata_startup_script,
-    `  printf 'ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' 'other-capacity@onorca-cloud-staging.iam.gserviceaccount.com'`
+    `  printf 'KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' 'other-capacity@onkingu-cloud-staging.iam.gserviceaccount.com'`
   ].join('\n')
   assert.throws(
     () =>
@@ -375,7 +375,7 @@ test('accepts only the exact canary template replacement and MIG update', () => 
     1_000,
     60,
     image,
-    'curl bad # ORCA_RELAY_CELL_CONNECTION_HARD_CAP='
+    'curl bad # KINGU_RELAY_CELL_CONNECTION_HARD_CAP='
   )
   assert.throws(
     () => validateCapacityPlan({ resource_changes: [template, manager] }, cellConfig),
@@ -428,22 +428,22 @@ test('same-cap mode preserves 1000/60 while adding only the reviewed trust confi
   const rollbackImage = `us-docker.pkg.dev/project/relay/image@sha256:${'d'.repeat(64)}`
   const image = `us-docker.pkg.dev/project/relay/image@sha256:${'e'.repeat(64)}`
   const directorIdentity = 'relay-director@project.iam.gserviceaccount.com'
-  const capacityIdentity = 'orca-cloud-gha-cap@project.iam.gserviceaccount.com'
+  const capacityIdentity = 'kingu-cloud-gha-cap@project.iam.gserviceaccount.com'
   const audience = 'https://relay.example.com/v1/admin/host-drain'
   const startup = ({ selectedImage, cap = 1_000, trust = false, capacity = capacityIdentity }) => [
-    `  printf 'ORCA_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '${cap}'`,
-    `  printf 'ORCA_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '60'`,
+    `  printf 'KINGU_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '${cap}'`,
+    `  printf 'KINGU_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '60'`,
     ...(capacity === null
       ? []
-      : [`  printf 'ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' '${capacity}'`]),
+      : [`  printf 'KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' '${capacity}'`]),
     ...(trust ? [
-      `  printf 'ORCA_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT=%s\\n' '${directorIdentity}'`,
-      `  printf 'ORCA_RELAY_REHOME_AUDIENCE=%s\\n' '${audience}'`
+      `  printf 'KINGU_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT=%s\\n' '${directorIdentity}'`,
+      `  printf 'KINGU_RELAY_REHOME_AUDIENCE=%s\\n' '${audience}'`
     ] : []),
-    `printf 'ORCA_RELAY_IMAGE_DIGEST=%s\\n' '${selectedImage.split('@')[1]}'`,
+    `printf 'KINGU_RELAY_IMAGE_DIGEST=%s\\n' '${selectedImage.split('@')[1]}'`,
     `docker pull '${selectedImage}'`,
     'docker run --detach \\',
-    '  --name orca-relay \\',
+    '  --name kingu-relay \\',
     `  '${selectedImage}'`
   ].join('\n')
   const template = {
@@ -564,7 +564,7 @@ test('same-cap mode preserves 1000/60 while adding only the reviewed trust confi
   )
   const changedTrust = structuredClone(imageOnly)
   changedTrust.change.after.metadata_startup_script +=
-    `\n  printf 'ORCA_RELAY_REHOME_AUDIENCE=%s\\n' '${audience}'`
+    `\n  printf 'KINGU_RELAY_REHOME_AUDIENCE=%s\\n' '${audience}'`
   assert.throws(
     () => validateCapacityPlan({ resource_changes: [changedTrust, manager] }, imageOnlyConfig),
     /reviewed image and capacity/
@@ -658,21 +658,21 @@ test('protocol-0 same-cap cells roll without rehome trust lines', () => {
   const rollbackImage = `us-docker.pkg.dev/project/relay/image@sha256:${'d'.repeat(64)}`
   const image = `us-docker.pkg.dev/project/relay/image@sha256:${'e'.repeat(64)}`
   const directorIdentity = 'relay-director@project.iam.gserviceaccount.com'
-  const capacityIdentity = 'orca-cloud-gha-cap@project.iam.gserviceaccount.com'
+  const capacityIdentity = 'kingu-cloud-gha-cap@project.iam.gserviceaccount.com'
   const audience = 'https://relay.example.com/v1/admin/host-drain'
   const startup = ({ selectedImage, trust = false }) => [
-    `  printf 'ORCA_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '3000'`,
-    `  printf 'ORCA_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '60'`,
-    `  printf 'ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' '${capacityIdentity}'`,
-    `  printf 'ORCA_RELAY_CELL_REGION=%s\\n' 'asia-east2'`,
+    `  printf 'KINGU_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '3000'`,
+    `  printf 'KINGU_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '60'`,
+    `  printf 'KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' '${capacityIdentity}'`,
+    `  printf 'KINGU_RELAY_CELL_REGION=%s\\n' 'asia-east2'`,
     ...(trust ? [
-      `  printf 'ORCA_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT=%s\\n' '${directorIdentity}'`,
-      `  printf 'ORCA_RELAY_REHOME_AUDIENCE=%s\\n' '${audience}'`
+      `  printf 'KINGU_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT=%s\\n' '${directorIdentity}'`,
+      `  printf 'KINGU_RELAY_REHOME_AUDIENCE=%s\\n' '${audience}'`
     ] : []),
-    `printf 'ORCA_RELAY_IMAGE_DIGEST=%s\\n' '${selectedImage.split('@')[1]}'`,
+    `printf 'KINGU_RELAY_IMAGE_DIGEST=%s\\n' '${selectedImage.split('@')[1]}'`,
     `docker pull '${selectedImage}'`,
     'docker run --detach \\',
-    '  --name orca-relay \\',
+    '  --name kingu-relay \\',
     `  '${selectedImage}'`
   ].join('\n')
   const template = {
@@ -749,18 +749,18 @@ test('a same-cap roll may gain the pinned capacity identity but never move it', 
   const rollbackImage = `us-docker.pkg.dev/project/relay/image@sha256:${'d'.repeat(64)}`
   const image = `us-docker.pkg.dev/project/relay/image@sha256:${'e'.repeat(64)}`
   const directorIdentity = 'relay-director@project.iam.gserviceaccount.com'
-  const capacityIdentity = 'orca-cloud-gha-cap@project.iam.gserviceaccount.com'
+  const capacityIdentity = 'kingu-cloud-gha-cap@project.iam.gserviceaccount.com'
   const audience = 'https://relay.example.com/v1/admin/host-drain'
   const startup = ({ selectedImage, capacity }) => [
-    `  printf 'ORCA_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '600'`,
-    `  printf 'ORCA_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '60'`,
+    `  printf 'KINGU_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '600'`,
+    `  printf 'KINGU_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '60'`,
     ...(capacity === null
       ? []
-      : [`  printf 'ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' '${capacity}'`]),
-    `printf 'ORCA_RELAY_IMAGE_DIGEST=%s\\n' '${selectedImage.split('@')[1]}'`,
+      : [`  printf 'KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' '${capacity}'`]),
+    `printf 'KINGU_RELAY_IMAGE_DIGEST=%s\\n' '${selectedImage.split('@')[1]}'`,
     `docker pull '${selectedImage}'`,
     'docker run --detach \\',
-    '  --name orca-relay \\',
+    '  --name kingu-relay \\',
     `  '${selectedImage}'`
   ].join('\n')
   const plan = (beforeCapacity, afterCapacity) => ({
@@ -817,8 +817,8 @@ test('a same-cap roll may gain the pinned capacity identity but never move it', 
   for (const [before, after] of [
     [capacityIdentity, null],
     [null, null],
-    [capacityIdentity, 'orca-cloud-gha-other@project.iam.gserviceaccount.com'],
-    [null, 'orca-cloud-gha-other@project.iam.gserviceaccount.com']
+    [capacityIdentity, 'kingu-cloud-gha-other@project.iam.gserviceaccount.com'],
+    [null, 'kingu-cloud-gha-other@project.iam.gserviceaccount.com']
   ]) {
     assert.throws(
       () => validateCapacityPlan(plan(before, after), config),
@@ -854,7 +854,7 @@ test('the capacity identity argument is required by same-cap-cell mode', () => {
     '--image', image,
     '--rollback-image', rollbackImage,
     '--rehome-director-service-account', 'relay-director@project.iam.gserviceaccount.com',
-    '--rehome-audience', 'https://relay.onorca.dev/v1/admin/host-drain',
+    '--rehome-audience', 'https://relay.onkingu.dev/v1/admin/host-drain',
     '--regional-rehome-protocol', '0'
   ]
   assert.throws(() => parseCapacityPlanArguments(base), /missing --capacity-service-account/)
@@ -866,9 +866,9 @@ test('the capacity identity argument is required by same-cap-cell mode', () => {
     parseCapacityPlanArguments([
       ...base,
       '--capacity-service-account',
-      'orca-cloud-gha-cap@project.iam.gserviceaccount.com'
+      'kingu-cloud-gha-cap@project.iam.gserviceaccount.com'
     ]).capacityServiceAccount,
-    'orca-cloud-gha-cap@project.iam.gserviceaccount.com'
+    'kingu-cloud-gha-cap@project.iam.gserviceaccount.com'
   )
 })
 
@@ -882,9 +882,9 @@ test('the rehome protocol argument is required by same-cap-cell mode alone', () 
     '--unobserved-bound', '60',
     '--image', image,
     '--rollback-image', rollbackImage,
-    '--capacity-service-account', 'orca-cloud-gha-cap@project.iam.gserviceaccount.com',
+    '--capacity-service-account', 'kingu-cloud-gha-cap@project.iam.gserviceaccount.com',
     '--rehome-director-service-account', 'relay-director@project.iam.gserviceaccount.com',
-    '--rehome-audience', 'https://relay.onorca.dev/v1/admin/host-drain',
+    '--rehome-audience', 'https://relay.onkingu.dev/v1/admin/host-drain',
     ...extra
   ]
   assert.equal(
@@ -913,7 +913,7 @@ test('the rehome protocol argument is required by same-cap-cell mode alone', () 
       '--hard-cap', '1000',
       '--unobserved-bound', '60',
       '--image', image,
-      '--capacity-service-account', 'orca-cap@onorca-cloud.iam.gserviceaccount.com',
+      '--capacity-service-account', 'kingu-cap@onkingu-cloud.iam.gserviceaccount.com',
       '--regional-rehome-protocol', '0'
     ]),
     /applies only to same-cap-cell validation/
@@ -924,21 +924,21 @@ test('the reviewed database pool is pinned for the cells that emit one', () => {
   const rollbackImage = `us-docker.pkg.dev/project/relay/image@sha256:${'d'.repeat(64)}`
   const image = `us-docker.pkg.dev/project/relay/image@sha256:${'e'.repeat(64)}`
   const directorIdentity = 'relay-director@project.iam.gserviceaccount.com'
-  const capacityIdentity = 'orca-cloud-gha-cap@project.iam.gserviceaccount.com'
+  const capacityIdentity = 'kingu-cloud-gha-cap@project.iam.gserviceaccount.com'
   const audience = 'https://relay.example.com/v1/admin/host-drain'
   const startup = ({ selectedImage, pool }) => [
-    `  printf 'ORCA_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '3000'`,
-    `  printf 'ORCA_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '60'`,
-    `  printf 'ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' '${capacityIdentity}'`,
+    `  printf 'KINGU_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '3000'`,
+    `  printf 'KINGU_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '60'`,
+    `  printf 'KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' '${capacityIdentity}'`,
     ...(pool === undefined
       ? []
-      : [`  printf 'ORCA_RELAY_DATABASE_POOL_MAX=%s\\n' '${pool}'`]),
-    `  printf 'ORCA_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT=%s\\n' '${directorIdentity}'`,
-    `  printf 'ORCA_RELAY_REHOME_AUDIENCE=%s\\n' '${audience}'`,
-    `printf 'ORCA_RELAY_IMAGE_DIGEST=%s\\n' '${selectedImage.split('@')[1]}'`,
+      : [`  printf 'KINGU_RELAY_DATABASE_POOL_MAX=%s\\n' '${pool}'`]),
+    `  printf 'KINGU_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT=%s\\n' '${directorIdentity}'`,
+    `  printf 'KINGU_RELAY_REHOME_AUDIENCE=%s\\n' '${audience}'`,
+    `printf 'KINGU_RELAY_IMAGE_DIGEST=%s\\n' '${selectedImage.split('@')[1]}'`,
     `docker pull '${selectedImage}'`,
     'docker run --detach \\',
-    '  --name orca-relay \\',
+    '  --name kingu-relay \\',
     `  '${selectedImage}'`
   ].join('\n')
   const rollPlan = (before, after) => ({
@@ -1030,9 +1030,9 @@ test('the database pool argument is accepted by same-cap-cell mode alone', () =>
     '--unobserved-bound', '60',
     '--image', image,
     '--rollback-image', rollbackImage,
-    '--capacity-service-account', 'orca-cloud-gha-cap@project.iam.gserviceaccount.com',
+    '--capacity-service-account', 'kingu-cloud-gha-cap@project.iam.gserviceaccount.com',
     '--rehome-director-service-account', 'relay-director@project.iam.gserviceaccount.com',
-    '--rehome-audience', 'https://relay.onorca.dev/v1/admin/host-drain',
+    '--rehome-audience', 'https://relay.onkingu.dev/v1/admin/host-drain',
     '--regional-rehome-protocol', '1',
     ...extra
   ]
@@ -1048,7 +1048,7 @@ test('the database pool argument is accepted by same-cap-cell mode alone', () =>
       '--hard-cap', '1000',
       '--unobserved-bound', '60',
       '--image', image,
-      '--capacity-service-account', 'orca-cap@onorca-cloud.iam.gserviceaccount.com',
+      '--capacity-service-account', 'kingu-cap@onkingu-cloud.iam.gserviceaccount.com',
       '--database-pool-max', '16'
     ]),
     /applies only to same-cap-cell validation/

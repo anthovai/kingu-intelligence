@@ -4,8 +4,8 @@ import { fileURLToPath } from 'node:url'
 const REGION = 'asia-east2'
 const CELL_SHAPES = {
   production: {
-    domain: 'relay.onorca.dev',
-    project: 'onorca-cloud',
+    domain: 'relay.onkingu.dev',
+    project: 'onkingu-cloud',
     cells: {
       'production-gce-c27': 'asia-east2-a',
       'production-gce-c28': 'asia-east2-b',
@@ -13,8 +13,8 @@ const CELL_SHAPES = {
     }
   },
   staging: {
-    domain: 'relay-staging.onorca.dev',
-    project: 'onorca-cloud-staging',
+    domain: 'relay-staging.onkingu.dev',
+    project: 'onkingu-cloud-staging',
     cells: { 'staging-gce-c4': 'asia-east2-a' }
   }
 }
@@ -37,7 +37,7 @@ function parseArguments(argv) {
     throw new Error('--cell-ids must be the exact reviewed Asia topology set')
   }
   if (values.region !== REGION) throw new Error('--region must be asia-east2')
-  const expectedImagePrefix = `us-central1-docker.pkg.dev/${CELL_SHAPES[values.environment].project}/orca-cloud/relay@sha256:`
+  const expectedImagePrefix = `us-central1-docker.pkg.dev/${CELL_SHAPES[values.environment].project}/kingu-cloud/relay@sha256:`
   if (!values.image.startsWith(expectedImagePrefix) || !/sha256:[a-f0-9]{64}$/.test(values.image)) {
     throw new Error('--image must be the environment Relay image pinned by digest')
   }
@@ -61,7 +61,7 @@ function startupValue(script, name) {
 }
 
 function relayGceName(environment) {
-  return environment === 'production' ? 'orca-cloud-relay-gce' : 'orca-cloud-staging-relay-gce'
+  return environment === 'production' ? 'kingu-cloud-relay-gce' : 'kingu-cloud-staging-relay-gce'
 }
 
 function unknownOrMatches(value, predicate) {
@@ -73,19 +73,19 @@ function requireCellTemplate(change, config, cellId) {
   const script = after?.metadata_startup_script ?? ''
   if (
     after?.machine_type !== 'e2-standard-4' ||
-    after?.labels?.['orca-relay-cell'] !== cellId ||
-    after?.labels?.['orca-relay-region'] !== REGION ||
+    after?.labels?.['kingu-relay-cell'] !== cellId ||
+    after?.labels?.['kingu-relay-region'] !== REGION ||
     !unknownOrMatches(
       after?.network_interface?.[0]?.subnetwork,
       (value) => value.includes(`/regions/${REGION}/subnetworks/`)
     ) ||
     (after?.network_interface?.[0]?.access_config?.length ?? 0) !== 0 ||
-    startupValue(script, 'ORCA_RELAY_REGION') !== REGION ||
-    startupValue(script, 'ORCA_RELAY_CELL_CAPACITY') !== '6000' ||
-    startupValue(script, 'ORCA_RELAY_DATABASE_POOL_MAX') !== '10' ||
-    startupValue(script, 'ORCA_RELAY_CELL_CONNECTION_HARD_CAP') !== '3000' ||
-    startupValue(script, 'ORCA_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND') !== '60' ||
-    startupValue(script, 'ORCA_RELAY_IMAGE_DIGEST') !== config.image.split('@')[1] ||
+    startupValue(script, 'KINGU_RELAY_REGION') !== REGION ||
+    startupValue(script, 'KINGU_RELAY_CELL_CAPACITY') !== '6000' ||
+    startupValue(script, 'KINGU_RELAY_DATABASE_POOL_MAX') !== '10' ||
+    startupValue(script, 'KINGU_RELAY_CELL_CONNECTION_HARD_CAP') !== '3000' ||
+    startupValue(script, 'KINGU_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND') !== '60' ||
+    startupValue(script, 'KINGU_RELAY_IMAGE_DIGEST') !== config.image.split('@')[1] ||
     !script.includes(`docker pull '${config.image}'`) ||
     !script.trimEnd().includes(`'${config.image}'`)
   ) throw new Error(`${change.address} does not have the reviewed Asia cell shape`)

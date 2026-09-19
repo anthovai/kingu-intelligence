@@ -136,7 +136,7 @@ describe('applyPostgresSchema classification', () => {
     expect(summary).toEqual({ ran: 0, skipped: 0, deferred: 1 })
     expect(query).toHaveBeenCalledTimes(1)
     const event = JSON.parse(warned[warned.length - 1] ?? '{}')
-    expect(event.event).toBe('orca_relay_postgres_schema_object_deferred')
+    expect(event.event).toBe('kingu_relay_postgres_schema_object_deferred')
     expect(event.code).toBe('55P03')
     expect(event.name).toBe('i')
   })
@@ -235,7 +235,7 @@ describe('applyPostgresSchema lock timeouts', () => {
     })
     await expect(applyPostgresSchema([COMMENTED_INDEX], query)).rejects.toThrow(/55P03/)
     expect(JSON.parse(lines[0] ?? '{}')).toMatchObject({
-      event: 'orca_relay_postgres_schema_lock_timeout',
+      event: 'kingu_relay_postgres_schema_lock_timeout',
       code: '55P03',
       statement: 'CREATE INDEX IF NOT EXISTS relay_bases_active ON relay_connection_bases(active, deadline)'
     })
@@ -287,7 +287,7 @@ describe('applyPostgresSchema catalog pre-check', () => {
     expect(query).not.toHaveBeenCalled()
     expect(logged.filter((entry) => entry.event?.endsWith('_object_present'))).toEqual([
       {
-        event: 'orca_relay_postgres_schema_object_present',
+        event: 'kingu_relay_postgres_schema_object_present',
         kind: 'index',
         table: 'relay_connection_bases',
         name: 'relay_bases_active',
@@ -304,10 +304,10 @@ describe('applyPostgresSchema catalog pre-check', () => {
     const { catalogQuery } = catalogAnswers([{ indisvalid: true }])
     await applyPostgresSchema([COMMENTED_TABLE, COMMENTED_INDEX], vi.fn(async () => undefined), {
       catalogQuery,
-      eventPrefix: 'orca_push_postgres_schema'
+      eventPrefix: 'kingu_push_postgres_schema'
     })
     expect(JSON.parse(logged[logged.length - 1] ?? '{}')).toEqual({
-      event: 'orca_push_postgres_schema_applied',
+      event: 'kingu_push_postgres_schema_applied',
       ran: 1,
       skipped: 1,
       deferred: 0
@@ -371,7 +371,7 @@ describe('applyPostgresSchema catalog pre-check', () => {
     expect(query).not.toHaveBeenCalled()
     expect(summary).toEqual({ ran: 0, skipped: 1, deferred: 0 })
     expect(logged).toContainEqual({
-      event: 'orca_relay_postgres_schema_object_absent',
+      event: 'kingu_relay_postgres_schema_object_absent',
       kind: 'constraint',
       table: 'relay_region_rehome_attempts',
       name: 'region_check',

@@ -31,7 +31,7 @@ Paths below are relative to the repository root. Searches covered production
 | `src/shared/task-source-context.ts`: normalize/build functions                             | GitHub missing owner/repo becomes null identity; other providers' missing fields become null. Provider mismatch becomes null, never an inferred provider.                                                                    |
 | `src/cli/handlers/automation-handler-flags.ts`, `src/cli/handlers/automations.ts`          | Explicit JSON source-context input is normalized before create/update. GitHub fields populated or null identity; other fields nullable. Omitted/null context preserved by flag handling.                                     |
 | `src/main/persistence/scheduling-automations/automation-context-migration.ts`              | Builds source context from projected complete GitHub identity, or null context.                                                                                                                                              |
-| Desktop automation save/scoped-list/host clients and web transport                         | Forward existing source contexts, not new identity constructors. `automation-orca-save.ts` forwards the current automation context or null. Legacy arbitrary malformed RPC input is deliberately rejected by the new schema. |
+| Desktop automation save/scoped-list/host clients and web transport                         | Forward existing source contexts, not new identity constructors. `automation-kingu-save.ts` forwards the current automation context or null. Legacy arbitrary malformed RPC input is deliberately rejected by the new schema. |
 | Mobile                                                                                     | No task-provider identity/source-context constructor or sender found. `mobile/src/components/new-workspace-project-targets.ts` uses project identity solely for display.                                                     |
 
 ## Compatibility evidence and limits
@@ -64,7 +64,7 @@ the earlier 74/16/58 figures described the commit before it.
 
 ## Gate results
 
-All commands ran with `ORCA_BACKGROUND_LAUNCH=1`.
+All commands ran with `KINGU_BACKGROUND_LAUNCH=1`.
 
 - `pnpm tc`: exit 0; completed the repository typecheck runner.
 - `pnpm exec vitest run src/main/runtime/rpc`: exit 1; 277 files passed,

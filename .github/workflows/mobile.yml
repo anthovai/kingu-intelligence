@@ -15,7 +15,7 @@ on:
       - 'src/main/runtime/runtime-rpc/**'
       - 'src/main/runtime/runtime-rpc.ts'
       - 'src/main/runtime/device-registry.ts'
-      - 'src/main/runtime/orca-runtime.ts'
+      - 'src/main/runtime/kingu-runtime.ts'
       - 'src/main/runtime/agent-session-*.ts'
       - 'src/main/native-chat/agent-session-wire/**'
       - 'src/shared/agent-launch-*.ts'

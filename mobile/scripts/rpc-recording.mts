@@ -65,7 +65,7 @@ const result = await runProcess({
   ],
   cwd: resolve(root, 'mobile'),
   timeoutMs: RECORDING_TIMEOUT_MS,
-  env: { ...process.env, ORCA_BACKGROUND_LAUNCH: '1', RPC_FOUNDATION_MODE: '--record' }
+  env: { ...process.env, KINGU_BACKGROUND_LAUNCH: '1', RPC_FOUNDATION_MODE: '--record' }
 })
 process.stdout.write(result.stdout)
 process.stderr.write(result.stderr)

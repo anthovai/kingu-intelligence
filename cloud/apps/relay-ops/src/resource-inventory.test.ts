@@ -27,7 +27,7 @@ const sleepingStagingFetch = (migOutcome: (migName: string) => MigOutcome): type
       settings: { activationPolicy: 'NEVER', availabilityType: 'ZONAL', tier: 'db-custom-1-3840' }
     })
     if (url.hostname === 'certificatemanager.googleapis.com') return Response.json({
-      managed: { domains: ['*.relay-staging.onorca.dev'], state: 'ACTIVE' }
+      managed: { domains: ['*.relay-staging.onkingu.dev'], state: 'ACTIVE' }
     })
     if (url.pathname.includes('/instanceGroupManagers/')) {
       const name = url.pathname.split('/').at(-1)!
@@ -53,7 +53,7 @@ describe('readResourceInventory', () => {
     let calls = 0
     let waits = 0
     const result = await probeEndpointHealth(
-      'https://c9.relay.onorca.dev',
+      'https://c9.relay.onkingu.dev',
       async () => {
         calls += 1
         return new Response(null, { status: 200 })
@@ -75,7 +75,7 @@ describe('readResourceInventory', () => {
     const calls = new Map<string, number>()
     const waits: number[] = []
     const result = await probeEndpointHealth(
-      'https://c9.relay.onorca.dev',
+      'https://c9.relay.onkingu.dev',
       async (input) => {
         const path = new URL(String(input)).pathname
         const call = (calls.get(path) ?? 0) + 1
@@ -99,7 +99,7 @@ describe('readResourceInventory', () => {
     let calls = 0
     const waits: number[] = []
     const result = await probeEndpointHealth(
-      'https://c9.relay.onorca.dev',
+      'https://c9.relay.onkingu.dev',
       async () => {
         calls += 1
         return new Response(null, { status: 503 })
@@ -122,7 +122,7 @@ describe('readResourceInventory', () => {
     const calls: string[] = []
     const waits: number[] = []
     const result = await probeEndpointHealth(
-      'https://c9.relay.onorca.dev',
+      'https://c9.relay.onkingu.dev',
       async (input) => {
         const path = new URL(String(input)).pathname
         calls.push(path)
@@ -148,7 +148,7 @@ describe('readResourceInventory', () => {
     const calls: string[] = []
     const waits: number[] = []
     const result = await probeEndpointHealth(
-      'https://c9.relay.onorca.dev',
+      'https://c9.relay.onkingu.dev',
       async (input) => {
         const path = new URL(String(input)).pathname
         calls.push(path)
@@ -171,7 +171,7 @@ describe('readResourceInventory', () => {
     const calls: string[] = []
     const waits: number[] = []
     const result = await probeEndpointHealth(
-      'https://login.onorca.dev',
+      'https://login.onkingu.dev',
       async (input) => {
         const path = new URL(String(input)).pathname
         calls.push(path)
@@ -194,7 +194,7 @@ describe('readResourceInventory', () => {
   it('still requires readiness for the director and cells', async () => {
     const waits: number[] = []
     const result = await probeEndpointHealth(
-      'https://relay.onorca.dev',
+      'https://relay.onkingu.dev',
       async (input) => new Response(null, {
         status: new URL(String(input)).pathname === '/ready' ? 503 : 200
       }),
@@ -213,7 +213,7 @@ describe('readResourceInventory', () => {
   it('measures latency as the answering round trip, not the retry delay', async () => {
     let healthCalls = 0
     const result = await probeEndpointHealth(
-      'https://c9.relay.onorca.dev',
+      'https://c9.relay.onkingu.dev',
       async (input) => {
         if (new URL(String(input)).pathname !== '/health') return new Response(null, { status: 200 })
         healthCalls += 1
@@ -233,7 +233,7 @@ describe('readResourceInventory', () => {
     let publicProbeCalls = 0
     const fetchImpl: typeof fetch = async (input) => {
       const url = new URL(String(input))
-      if (url.hostname.endsWith('onorca.dev')) {
+      if (url.hostname.endsWith('onkingu.dev')) {
         publicProbeCalls += 1
         return Response.json({ status: 'ok' })
       }
@@ -248,7 +248,7 @@ describe('readResourceInventory', () => {
         }
       })
       if (url.hostname === 'certificatemanager.googleapis.com') return Response.json({
-        managed: { domains: ['*.relay-staging.onorca.dev'], state: 'ACTIVE' }
+        managed: { domains: ['*.relay-staging.onkingu.dev'], state: 'ACTIVE' }
       })
       if (url.pathname.includes('/instanceGroupManagers/')) {
         const name = url.pathname.split('/').at(-1)!
@@ -264,7 +264,7 @@ describe('readResourceInventory', () => {
       if (url.pathname.includes('/instanceTemplates/')) return Response.json({
         properties: { metadata: { items: [{
           key: 'startup-script',
-          value: `SECRET_TEXT\nORCA_RELAY_IMAGE_DIGEST=%s\\n' '${digest}'`
+          value: `SECRET_TEXT\nKINGU_RELAY_IMAGE_DIGEST=%s\\n' '${digest}'`
         }] } }
       })
       if (url.pathname.endsWith('/getHealth')) return Response.json([])

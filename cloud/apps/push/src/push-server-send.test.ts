@@ -1,5 +1,5 @@
-import { PushNotificationSchema } from '@orca-cloud/push-contract'
-import { PUSH_LIMITS } from '@orca-cloud/push-contract'
+import { PushNotificationSchema } from '@kingu-cloud/push-contract'
+import { PUSH_LIMITS } from '@kingu-cloud/push-contract'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { createPushHostKeypair } from './host-challenge-answering.test-fixture.js'
 import {
@@ -146,7 +146,7 @@ describe('push gateway send route', () => {
       (request) =>
         JSON.parse(request.body) as {
           aps: { alert: { title: string; body: string }; 'thread-id': string }
-          orca: Record<string, unknown> & { notificationSeq: number }
+          kingu: Record<string, unknown> & { notificationSeq: number }
         }
     )
     expect(
@@ -159,9 +159,9 @@ describe('push gateway send route', () => {
       }))
     )
     expect(new Set(bodies.map((body) => body.aps['thread-id'])).size).toBe(1)
-    expect(bodies.map((body) => body.orca.notificationSeq).sort((a, b) => a - b)).toEqual([1, 2, 3])
-    expect(bodies.every((body) => !('coalescedCount' in body.orca))).toBe(true)
-    expect(bodies.every((body) => !('summaryMembers' in body.orca))).toBe(true)
+    expect(bodies.map((body) => body.kingu.notificationSeq).sort((a, b) => a - b)).toEqual([1, 2, 3])
+    expect(bodies.every((body) => !('coalescedCount' in body.kingu))).toBe(true)
+    expect(bodies.every((body) => !('summaryMembers' in body.kingu))).toBe(true)
     expect(
       new Set(harness.apnsRequests.map((request) => request.headers['apns-collapse-id'])).size
     ).toBe(3)

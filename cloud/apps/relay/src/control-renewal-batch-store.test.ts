@@ -1,4 +1,4 @@
-import { ASSIGNMENT_LIMITS } from '@orca-cloud/relay-contract'
+import { ASSIGNMENT_LIMITS } from '@kingu-cloud/relay-contract'
 import { describe, expect, it, vi } from 'vitest'
 import { RelayAssignmentStore } from './assignment-store.js'
 import { CONTROL_RENEWAL_BATCH_SQL } from './control-renewal-statement.js'
@@ -141,7 +141,7 @@ describe('batched control renewals on PostgreSQL', () => {
       expect(probe.statements[1]!.params[1]).toEqual(['host000000000001'])
       expect(probe.statements[2]!.params[1]).toEqual(['host000000000002'])
       expect(JSON.parse(String(warn.mock.calls[0]![0]))).toMatchObject({
-        event: 'orca_relay_control_renewal_batch_failed',
+        event: 'kingu_relay_control_renewal_batch_failed',
         rows: 2
       })
     } finally {

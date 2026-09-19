@@ -57,7 +57,7 @@ export function useMobileNativeChatMessageSend(args: {
    *  session-option effects against the newly active tab. */
   commandSendRef: MutableRefObject<(command: string) => void>
   captureSendOrigin: (text: string) => MobileNativeChatSendOrigin | null
-  /** Launch-context text Orca parked on the agent's TUI input line, or null. Read
+  /** Launch-context text Kingu parked on the agent's TUI input line, or null. Read
    *  at send time so the pre-clear can be sized to every line it occupies. */
   readSeededLaunchDraftSeed: () => MobileNativeChatLaunchDraftSeed | null
   clearDraftForSend: (origin: MobileNativeChatSendOrigin, text: string) => void

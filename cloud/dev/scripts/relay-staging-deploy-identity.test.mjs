@@ -196,7 +196,7 @@ test('the staging deploy identity declares exactly its enumerated grants', () =>
 // Why: the auth-plane grants are guarded on a variable, so an unset tfvars entry would drop them
 // silently and Power Relay Staging would fail only on the sleep path.
 test('staging pins the shared auth service the power workflow scales', () => {
-  assert.match(stagingTfvars, /relay_staging_power_auth_service_name\s*=\s*"orca-cloud-auth-staging"/)
+  assert.match(stagingTfvars, /relay_staging_power_auth_service_name\s*=\s*"kingu-cloud-auth-staging"/)
   assert.match(variables, /variable "relay_staging_power_auth_service_name"/)
   for (const name of [
     'github_staging_relay_deploy_auth_developer',
@@ -210,7 +210,7 @@ test('staging pins the shared auth service the power workflow scales', () => {
 })
 
 // Why: flipping this local is what moves the staging cells' startup metadata and the director's
-// ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT onto the new account. Production must keep the shared one.
+// KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT onto the new account. Production must keep the shared one.
 test('the deploy account email is environment-conditional', () => {
   assert.match(
     shared,

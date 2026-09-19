@@ -1,8 +1,8 @@
 # Windows EDR signal surface
 
-Orca's Windows process tree is shaped like the thing behavioural EDR is built to
+Kingu's Windows process tree is shaped like the thing behavioural EDR is built to
 find. An enterprise Windows 11 / Intune tenant opened **six Microsoft Defender
-for Endpoint incidents against Orca 1.4.192 in eight days**. All six fired as
+for Endpoint incidents against Kingu 1.4.192 in eight days**. All six fired as
 active incidents and stayed open; three closed only because a human classified
 them by hand in the portal. Defender never downgraded or closed one on its own.
 
@@ -12,7 +12,7 @@ two escalated to multi-stage incidents carrying ATT&CK tactic mappings
 
 The framing this document keeps throughout, because both halves matter:
 
-> **Defender is not malfunctioning. It is describing the code accurately.** Orca
+> **Defender is not malfunctioning. It is describing the code accurately.** Kingu
 > really does copy its own signed image under a different name, really did read
 > every process's memory on a timer, really does run base64-encoded PowerShell
 > with the execution policy bypassed, and really does take screenshots and
@@ -23,7 +23,7 @@ The framing this document keeps throughout, because both halves matter:
 > cannot see the difference.
 
 Do not read this as a bug report against Defender, and do not read it as a claim
-that Orca is malware. It is a map of which of our behaviours are legible to an
+that Kingu is malware. It is a map of which of our behaviours are legible to an
 EDR as attack-technique-shaped, why each one exists, and what engineers and
 administrators can do about it.
 
@@ -33,8 +33,8 @@ Four independent evidence clusters, from six incidents:
 
 | Cluster           | Incidents | Evidence                                                                                                                              |
 | ----------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| **Update**        | A, B, C   | `orca-windows-setup.exe` → `old-uninstaller.exe`, `Uninstall Orca.exe` (electron-builder generates these; they are in no repo file)   |
-| **Spawn**         | all six   | `Orca.exe` → `orca-terminal-daemon.exe` → `powershell.exe` / `pwsh.exe` / `cmd.exe` / `reg.exe` → `claude.exe`, `gh.exe`, `codex.cmd` |
+| **Update**        | A, B, C   | `kingu-windows-setup.exe` → `old-uninstaller.exe`, `Uninstall Kingu.exe` (electron-builder generates these; they are in no repo file)   |
+| **Spawn**         | all six   | `Kingu.exe` → `kingu-terminal-daemon.exe` → `powershell.exe` / `pwsh.exe` / `cmd.exe` / `reg.exe` → `claude.exe`, `gh.exe`, `codex.cmd` |
 | **Process table** | D         | "suspicious memory activity" — `OpenProcess` plus a PEB read against every process on a repeating cadence                             |
 | **Computer use**  | E, F      | `runtime.ps1`, `computer-sidecar.js`, many `operation.json`, a burst of ~10 short-lived `powershell.exe`                              |
 
@@ -45,28 +45,28 @@ by powershell.exe."_ Incident F added _"suspicious MSIL code"_, from the
 `Add-Type -TypeDefinition` that recompiles inline C# P/Invoke on every
 operation.
 
-In the update cluster the uninstaller is genuinely `NotSigned`, while `Orca.exe`
-and `orca-terminal-daemon.exe` report `Valid CN=SignPath Foundation`.
+In the update cluster the uninstaller is genuinely `NotSigned`, while `Kingu.exe`
+and `kingu-terminal-daemon.exe` report `Valid CN=SignPath Foundation`.
 
 ## The behaviours, and why each one exists
 
 ### The daemon runs from a copy of our own image
 
 `src/main/daemon/daemon-host-relocation.ts` copies the Electron runtime into
-`%LOCALAPPDATA%\Orca\daemon-host\<version>\` and forks the terminal daemon from
+`%LOCALAPPDATA%\Kingu\daemon-host\<version>\` and forks the terminal daemon from
 there.
 
 It exists because the NSIS installer deletes the old install directory and force-
 kills every process imaged under it. Without relocation, an auto-update kills the
 terminal daemon and every live terminal with it. The copy is a run-as-node
-`Orca.exe` rather than `node.exe` so there is no console flash and asar still
-resolves; `config/nsis/orca-installer-hooks.nsh` reaps it on a real uninstall
+`Kingu.exe` rather than `node.exe` so there is no console flash and asar still
+resolves; `config/nsis/kingu-installer-hooks.nsh` reaps it on a real uninstall
 (guarded by `${isUpdated}` so an update's `uninstallOldVersion` never fires it).
 
 **At the time of these incidents the copy was also renamed** to
-`orca-terminal-daemon.exe`, the image name every incident here reports, and
+`kingu-terminal-daemon.exe`, the image name every incident here reports, and
 `DAEMON_HOST_EXE_NAME`'s comment stated the reason without varnish: _"so the NSIS
-updater's `taskkill /IM Orca.exe` can't match it."_ The rename has since been
+updater's `taskkill /IM Kingu.exe` can't match it."_ The rename has since been
 removed; the copy now keeps the app exe's own file name, because the updater's
 kill sweep is path-scoped on every host that has PowerShell and the rename only
 ever bought the no-PowerShell fallback. See
@@ -154,7 +154,7 @@ What to declare to administrators is now one
 `PROCESS_QUERY_LIMITED_INFORMATION` handle per process on a detailed snapshot and
 no remote memory access at all; an identity snapshot opens nothing. What this
 does not narrow is _which_ processes are asked — a detailed scan still queries
-every pid, including `lsass.exe`. Restricting the command-line pass to Orca's own
+every pid, including `lsass.exe`. Restricting the command-line pass to Kingu's own
 subtree needs job-object membership as its source of truth (a ppid-derived
 allowlist would miss the detached, reparented descendants of #9045 and #10475),
 and remains unclaimed work.
@@ -257,27 +257,27 @@ obfuscated-command-line detector is tuned on.
 
 ### The spawn tree itself
 
-`Orca.exe` → the relocated daemon host (`orca-terminal-daemon.exe` in the builds
-these incidents cover, `Orca.exe` since) → a shell → an agent CLI is what a
+`Kingu.exe` → the relocated daemon host (`kingu-terminal-daemon.exe` in the builds
+these incidents cover, `Kingu.exe` since) → a shell → an agent CLI is what a
 terminal multiplexer for coding agents _is_. `reg.exe` appears from
 `src/main/win32-utils.ts`,
 `src/main/agent-hooks/managed-hook-owner-identity.ts` and
 `src/relay/pty-shell-utils.ts` (reading the OpenSSH `DefaultShell`).
 
 Nothing here is avoidable in principle. What is controllable is depth and
-breadth: every interpreter hop between Orca and the thing the user asked for adds
+breadth: every interpreter hop between Kingu and the thing the user asked for adds
 a scored edge, which is why the shipped doctrine of #15520 and #15595 is to
 _shorten the interpreter chain_ rather than to hide a window.
 
 #18875 is a worked example of that doctrine. The Claude Code lifecycle hook was
 registered as `powershell.exe -NoProfile -EncodedCommand <...>` whose entire
-decoded payload was a `Test-Path` and a call to `~/.orca/agent-hooks/claude-hook.cmd`.
+decoded payload was a `Test-Path` and a call to `~/.kingu/agent-hooks/claude-hook.cmd`.
 It now registers the script path itself (`<path> || echo {}`), so `bash ->
 powershell -> cmd -> curl` became `bash -> cmd -> curl` and one
 `powershell.exe -EncodedCommand` per hook event — a first-class Defender alert
 title — leaves the tree. The reporting box fired ~6 900 of them in five days,
-70% from Claude sessions that were not running under Orca at all and whose hook
-exits at its first `ORCA_PANE_KEY` guard.
+70% from Claude sessions that were not running under Kingu at all and whose hook
+exits at its first `KINGU_PANE_KEY` guard.
 
 What is measured is latency and the hop count, nothing else: median 471 ms ->
 213 ms per event idle, and 656 ms -> 296 ms (p95 696 ms -> 337 ms) under 10-way
@@ -337,12 +337,12 @@ inherent to the feature and no refactor removes them.
 
 The most useful calibration in the whole incident set came from the reporter's
 own machine: **Antigravity IDE's main executable is `NotSigned` and was not
-flagged, while Orca's is signed and was flagged six times.** Their conclusion:
+flagged, while Kingu's is signed and was flagged six times.** Their conclusion:
 _"signing is not the gate here — behaviour is."_
 
 The mechanism is that Defender reputation is signer **plus prevalence**, and
 prevalence is keyed on **file hash**. A widely installed unsigned binary clears
-on install count alone. Orca's signature is a free OV certificate from SignPath
+on install count alone. Kingu's signature is a free OV certificate from SignPath
 Foundation (`config/electron-builder.config.cjs` sets
 `win.signtoolOptions.publisherName`; `config/scripts/verify-windows-inner-signature.mjs`
 pins `CN=SignPath Foundation, O=SignPath Foundation, L=Lewes, S=Delaware, C=US`),
@@ -394,14 +394,14 @@ The checklist. On Windows, do not reach for:
 
 Two framing rules that outlast the table:
 
-- **Shorten the interpreter chain.** Each hop between Orca and the user's actual
+- **Shorten the interpreter chain.** Each hop between Kingu and the user's actual
   target is a scored edge and a place for AV to deny a `CreateProcess`. This is
   the shipped doctrine of #15520 and #15595.
 - **Do not spell a flag you can avoid spelling.** #16003 measured a denial that
   was independent of the payload and keyed purely on the switch combination on
   the command line. What is on the line is itself the detection surface.
 
-## Guidance for administrators deploying Orca
+## Guidance for administrators deploying Kingu
 
 ### Path exclusions alone will not silence these
 
@@ -409,7 +409,7 @@ This is the single most important operational point, and it is the one most
 commonly got wrong. The six incidents are **MDE EDR behavioural alerts**.
 Defender Antivirus path exclusions suppress _scan_ detections; they do not
 suppress EDR behavioural alerts the same way. Adding
-`%LOCALAPPDATA%\Programs\orca\` to the AV exclusion list and expecting the
+`%LOCALAPPDATA%\Programs\kingu\` to the AV exclusion list and expecting the
 incidents to stop will not work.
 
 ### What actually stops incidents being created
@@ -422,18 +422,18 @@ on:
   `Suspicious PowerShell command line`, plus any further titles your tenant
   actually produced. Take the titles from your own incidents rather than from
   this list.
-- **File paths** — `Orca.exe` and `orca-terminal-daemon.exe` under
-  `%LOCALAPPDATA%\Programs\orca\` and `%LOCALAPPDATA%\Orca\daemon-host\`.
+- **File paths** — `Kingu.exe` and `kingu-terminal-daemon.exe` under
+  `%LOCALAPPDATA%\Programs\kingu\` and `%LOCALAPPDATA%\Kingu\daemon-host\`.
 
-Scope it as narrowly as your tenant will tolerate, and review it when Orca
+Scope it as narrowly as your tenant will tolerate, and review it when Kingu
 updates: the `daemon-host` path carries a `<version>` segment, so a rule pinned
 to one version will silently stop matching. Two traps in that path in particular.
 Materialization stages into a `<version>.staging-<hex>` sibling before renaming
 it into place, so an exact-version rule misses the tree **mid-update** — which is
 precisely when the update-cluster incidents fire. And the root falls back to the
 Electron `userData` path when `LOCALAPPDATA` is unset, so
-`%LOCALAPPDATA%\Orca\daemon-host\` is the normal location rather than a
-guaranteed one. Prefer a prefix match on `…\Orca\daemon-host\` over a rule
+`%LOCALAPPDATA%\Kingu\daemon-host\` is the normal location rather than a
+guaranteed one. Prefer a prefix match on `…\Kingu\daemon-host\` over a rule
 pinned to one full path.
 
 Add AV path exclusions for those two directories as well — they cut scan cost on
@@ -445,10 +445,10 @@ incidents being created.**
 
 Check whether the tenant has the Attack Surface Reduction rule **"Block
 executable files from running unless they meet a prevalence, age, or trusted list
-criterion"** enabled. If it is, that alone explains a freshly signed Orca build
+criterion"** enabled. If it is, that alone explains a freshly signed Kingu build
 being hit immediately after every update: each release ships new hashes, so every
 build starts at zero prevalence and zero age no matter how it is signed. Either
-allowlist the Orca install paths for that rule or expect a hit on each update.
+allowlist the Kingu install paths for that rule or expect a hit on each update.
 
 ### Expect the alerts to recur after each update
 
@@ -469,7 +469,7 @@ incident mapped to ATT&CK **Execution + Collection**, and a description naming
 screen capture found in a script launched by `powershell.exe`. Incident F adds
 runtime-compiled MSIL to the same tree.
 
-Every part of that is an accurate description of what the feature does. Orca's
+Every part of that is an accurate description of what the feature does. Kingu's
 computer use takes screenshots, synthesises keyboard and mouse input into other
 applications, and compiles the P/Invoke stubs it needs at runtime. An
 organisation that monitors for Collection-tactic activity — and any organisation
@@ -479,7 +479,7 @@ as Collection.
 So decide deliberately, in advance:
 
 - **Allowlist it**, with a suppression rule covering the computer-use tree
-  (`powershell.exe` with `-File …\runtime.ps1`) as well as the base Orca paths,
+  (`powershell.exe` with `-File …\runtime.ps1`) as well as the base Kingu paths,
   and tell your SOC what it is before the first incident rather than during it.
 - **Or leave it disabled** on monitored endpoints.
 

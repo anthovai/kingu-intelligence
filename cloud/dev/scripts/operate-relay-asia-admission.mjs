@@ -10,13 +10,13 @@ import {
 
 const SHAPES = {
   staging: {
-    directorOrigin: 'https://relay-staging.onorca.dev',
-    domain: 'relay-staging.onorca.dev',
+    directorOrigin: 'https://relay-staging.onkingu.dev',
+    domain: 'relay-staging.onkingu.dev',
     allCells: ['staging-gce-c4']
   },
   production: {
-    directorOrigin: 'https://relay.onorca.dev',
-    domain: 'relay.onorca.dev',
+    directorOrigin: 'https://relay.onkingu.dev',
+    domain: 'relay.onkingu.dev',
     allCells: ['production-gce-c27', 'production-gce-c28', 'production-gce-c29']
   }
 }
@@ -79,7 +79,7 @@ function parseArguments(argv) {
     expectedMembershipSha256: values['expected-membership-sha256'],
     imageDigest: values['image-digest'],
     attemptId,
-    token: process.env.ORCA_RELAY_ADMIN_ID_TOKEN ?? ''
+    token: process.env.KINGU_RELAY_ADMIN_ID_TOKEN ?? ''
   }
 }
 
@@ -435,6 +435,6 @@ export async function operateRelayAsiaAdmission(config, dependencies = {}) {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const config = parseArguments(process.argv.slice(2))
-  if (!config.token) throw new Error('ORCA_RELAY_ADMIN_ID_TOKEN is required')
+  if (!config.token) throw new Error('KINGU_RELAY_ADMIN_ID_TOKEN is required')
   console.log(JSON.stringify(await operateRelayAsiaAdmission(config)))
 }

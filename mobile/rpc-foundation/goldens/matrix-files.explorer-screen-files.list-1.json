@@ -26,7 +26,7 @@
       },
       "labels": ["Back to session"],
       "rows": [],
-      "text": ["Files", "orca-files", "outer refused", "Retry"]
+      "text": ["Files", "kingu-files", "outer refused", "Retry"]
     },
     "17ee98fb7a54": {
       "crash": {
@@ -41,7 +41,7 @@
       },
       "labels": ["Back to session"],
       "rows": [],
-      "text": ["Files", "orca-files", "Unknown method", "Retry"]
+      "text": ["Files", "kingu-files", "Unknown method", "Retry"]
     },
     "1b7ad474c481": {
       "name": "files.list#1",
@@ -192,7 +192,7 @@
       },
       "labels": ["Back to session"],
       "rows": [],
-      "text": ["Files", "orca-files", "transport failure", "Retry"]
+      "text": ["Files", "kingu-files", "transport failure", "Retry"]
     },
     "41c86594aed3": {
       "name": "files.list#1",
@@ -430,7 +430,7 @@
       },
       "labels": ["Back to session"],
       "rows": [],
-      "text": ["Files", "orca-files", "No files found"]
+      "text": ["Files", "kingu-files", "No files found"]
     },
     "b85511fb8929": {
       "crash": {
@@ -446,7 +446,7 @@
       },
       "labels": ["Back to session"],
       "rows": ["dir:src", "file:README.md"],
-      "text": ["Files", "orca-files", " - Showing first 5000"]
+      "text": ["Files", "kingu-files", " - Showing first 5000"]
     },
     "bec439845fd2": {
       "name": "files.list#1",
@@ -531,7 +531,7 @@
       },
       "labels": ["Back to session"],
       "rows": [],
-      "text": ["Files", "orca-files"]
+      "text": ["Files", "kingu-files"]
     },
     "eb79a9b3682a": {
       "status": "fulfilled",
@@ -556,7 +556,7 @@
       "rows": [],
       "text": [
         "Files",
-        "orca-files",
+        "kingu-files",
         "The host sent a reply this app could not read (files.list)",
         "Retry"
       ]

@@ -37,7 +37,7 @@ const indexOfStep = (name) => {
 
 test('the whole surface stays inert until the owner enables cloud operations', () => {
   const guard = jobIf(deploy().text)
-  assert.ok(guard.includes("vars.ORCA_CLOUD_OPERATIONS_ENABLED == 'true'"), guard)
+  assert.ok(guard.includes("vars.KINGU_CLOUD_OPERATIONS_ENABLED == 'true'"), guard)
   assert.ok(guard.includes("github.ref == 'refs/heads/main'"), guard)
   assert.equal(jobs(workflow).length, 1, 'a second job would need its own gate')
 })
@@ -67,7 +67,7 @@ test('the rollout is serialized and leases its dedicated push rollout lock', () 
   assert.equal(blocks[0].cancelInProgress, 'false')
   const steps = leaseSteps(workflow)
   assert.equal(steps.length, 1, 'exactly one lease step, held for the whole run')
-  assert.equal(steps[0].bucket, 'onorca-cloud-terraform-state')
+  assert.equal(steps[0].bucket, 'onkingu-cloud-terraform-state')
   assert.equal(steps[0].object, 'terraform/state/push-rollout/production.lock')
   assert.equal(steps[0].release, undefined, 'release stays at its default for a single-job run')
 })
@@ -131,7 +131,7 @@ test('the image is built before the rollout lease is taken', () => {
 // lease can only account for a pool it declares. Leaving it at the application default hid it.
 test('the database pool size is Terraform-owned and bounded at plan time', () => {
   const source = terraform('push-gateway.tf')
-  assert.match(source, /name {2}= "ORCA_PUSH_DATABASE_POOL_MAX"/)
+  assert.match(source, /name {2}= "KINGU_PUSH_DATABASE_POOL_MAX"/)
   assert.match(source, /value = tostring\(var\.push_database_pool_max\)/)
   assert.match(terraform('variables.tf'), /variable "push_database_pool_max"[\s\S]*?default {5}= 2/)
   const block = /resource "google_cloud_run_v2_service" "push"[\s\S]*?\n  lifecycle \{([\s\S]*?)\n  \}/.exec(source)
@@ -143,7 +143,7 @@ test('the database pool size is Terraform-owned and bounded at plan time', () =>
   )
   assert.match(
     readFileSync(new URL('../../apps/push/src/config.ts', import.meta.url), 'utf8'),
-    /ORCA_PUSH_DATABASE_POOL_MAX/,
+    /KINGU_PUSH_DATABASE_POOL_MAX/,
     'the gateway must read the variable Terraform sets'
   )
 })
@@ -167,8 +167,8 @@ test('the FCM probe is validate-only and separates a bad token from a bad creden
   assert.ok(fcm < indexOfStep('Shift all traffic to the verified candidate'))
   assert.match(workflow, /"validate_only":true/)
   assert.match(workflow, /https:\/\/fcm\.googleapis\.com\/v1\/projects\/\$\{GCP_PROJECT_ID\}\/messages:send/)
-  assert.match(workflow, /GCP_PROJECT_ID: onorca-cloud$/m)
-  assert.match(workflow, /orca-push-deploy-probe-invalid-token/)
+  assert.match(workflow, /GCP_PROJECT_ID: onkingu-cloud$/m)
+  assert.match(workflow, /kingu-push-deploy-probe-invalid-token/)
   assert.match(workflow, /test "\$\{status\}" = INVALID_ARGUMENT/)
   assert.match(workflow, /test "\$\{status\}" = PERMISSION_DENIED/)
   // Only those four answers are conclusive; a 429 or a 5xx says nothing about the credential, so
@@ -192,7 +192,7 @@ test('the FCM probe is validate-only and separates a bad token from a bad creden
     /test -n "\$\{token\}"\n {10}echo "::add-mask::\$\{token\}"/,
     'the impersonated token must be masked before anything else runs'
   )
-  assert.match(workflow, /PUSH_RUNTIME_SERVICE_ACCOUNT: orca-cloud-push@onorca-cloud\.iam\.gserviceaccount\.com/)
+  assert.match(workflow, /PUSH_RUNTIME_SERVICE_ACCOUNT: kingu-cloud-push@onkingu-cloud\.iam\.gserviceaccount\.com/)
 })
 
 // Why: a deploy ends with traffic pinned to an exact revision, and a rollback pins it to the
@@ -218,7 +218,7 @@ test('the traffic shift is all-or-nothing and is verified after the fact', () =>
   assert.match(workflow, /--to-revisions "\$\{CANDIDATE_REVISION\}=100"/)
   assert.match(workflow, /test "\$\{serving\}" = "\$\{CANDIDATE_REVISION\}"/)
   assert.ok(shift < indexOfStep('Verify the public origin after the shift'))
-  assert.match(workflow, /PUSH_ORIGIN: https:\/\/push\.onorca\.dev/)
+  assert.match(workflow, /PUSH_ORIGIN: https:\/\/push\.onkingu\.dev/)
   assert.match(workflow, /"\$\{PUSH_ORIGIN\}\/ready"/)
 })
 

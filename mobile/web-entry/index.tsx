@@ -10,7 +10,7 @@ import routeContext from './route-manifest'
 // Progress of the mount, in one attribute, so the render check can tell a page that never ran
 // its script from one that ran it and threw. Effects run child-first, so 'mounted' lands only
 // after the router tree below this wrapper has committed.
-const MOUNT_STATE_ATTRIBUTE = 'orcaWebEntry'
+const MOUNT_STATE_ATTRIBUTE = 'kinguWebEntry'
 
 // The route tree starts at app/h, below the native root layout that owns the provider, so the
 // page supplies it here through ExpoRoot's own wrapper rather than mounting the native shell.
@@ -23,7 +23,7 @@ function RootProviders({ children }: PropsWithChildren) {
 
 const container = document.getElementById('root')
 if (!container) {
-  throw new Error('[orca-mobile-web-app] #root missing')
+  throw new Error('[kingu-mobile-web-app] #root missing')
 }
 document.documentElement.dataset[MOUNT_STATE_ATTRIBUTE] = 'started'
 createRoot(container).render(<ExpoRoot context={routeContext} wrapper={RootProviders} />)

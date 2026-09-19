@@ -1,14 +1,14 @@
-# Orca Relay Operations
+# Kingu Relay Operations
 
-A private, aggregate dashboard for the Orca Relay control and data planes. It reads local `gcloud` and `gh` credentials on the server; credentials and per-user Relay state never enter the browser. One cached `gcloud auth print-access-token` refresh feeds concurrent read-only Google APIs so the collector does not stampede the local credential store.
+A private, aggregate dashboard for the Kingu Relay control and data planes. It reads local `gcloud` and `gh` credentials on the server; credentials and per-user Relay state never enter the browser. One cached `gcloud auth print-access-token` refresh feeds concurrent read-only Google APIs so the collector does not stampede the local credential store.
 
 ## Run locally
 
 Prerequisites:
 
 - Node 24 and pnpm 10
-- `gcloud` authenticated for `onorca-cloud` and `onorca-cloud-staging`
-- `gh` authenticated with read access to `stablyai/orca-cloud`
+- `gcloud` authenticated for `onkingu-cloud` and `onkingu-cloud-staging`
+- `gh` authenticated with read access to `anthovai/kingu-intelligence-cloud`
 
 From the repository root:
 
@@ -36,7 +36,7 @@ Share the HTTPS URL printed by `tailscale serve status` with the team. Limit acc
 tailscale serve reset
 ```
 
-For a persistent host, run `pnpm --filter @orca-cloud/relay-ops build` and supervise `pnpm --filter @orca-cloud/relay-ops start` with the host's normal process manager. The process needs the same non-interactive `gcloud` and `gh` identities.
+For a persistent host, run `pnpm --filter @kingu-cloud/relay-ops build` and supervise `pnpm --filter @kingu-cloud/relay-ops start` with the host's normal process manager. The process needs the same non-interactive `gcloud` and `gh` identities.
 
 ## Optional staging controls
 
@@ -60,7 +60,7 @@ Even in this mode the service never changes GCP directly. It dispatches `.github
 ## Verification
 
 ```sh
-pnpm --filter @orca-cloud/relay-ops test
-pnpm --filter @orca-cloud/relay-ops typecheck
-pnpm --filter @orca-cloud/relay-ops build
+pnpm --filter @kingu-cloud/relay-ops test
+pnpm --filter @kingu-cloud/relay-ops typecheck
+pnpm --filter @kingu-cloud/relay-ops build
 ```

@@ -39,7 +39,7 @@ import {
   escapeInjectedJavaScriptString
 } from './mobile-rich-markdown-editor-html'
 
-const EDITOR_DOCUMENT_ORIGIN = 'https://orca-mobile-editor.invalid'
+const EDITOR_DOCUMENT_ORIGIN = 'https://kingu-mobile-editor.invalid'
 const EDITOR_DOCUMENT_URL = `${EDITOR_DOCUMENT_ORIGIN}/rich-markdown-editor`
 
 type Props = Omit<MobileRichMarkdownEditorProps, 'onOpenLink'> & {
@@ -89,15 +89,15 @@ function MobileRichMarkdownEditorInner(
     () => ({
       setMarkdown: (markdown: string, generation: number) =>
         inject(
-          `window.__orcaRichMarkdown && window.__orcaRichMarkdown.setMarkdown(${escapeInjectedJavaScriptString(markdown)}, ${generation});`
+          `window.__kinguRichMarkdown && window.__kinguRichMarkdown.setMarkdown(${escapeInjectedJavaScriptString(markdown)}, ${generation});`
         ),
       setEditable: (nextEditable: boolean) =>
         inject(
-          `window.__orcaRichMarkdown && window.__orcaRichMarkdown.setEditable(${nextEditable ? 'true' : 'false'});`
+          `window.__kinguRichMarkdown && window.__kinguRichMarkdown.setEditable(${nextEditable ? 'true' : 'false'});`
         ),
       runCommand: (command: MobileRichMarkdownCommand) =>
         inject(
-          `window.__orcaRichMarkdown && window.__orcaRichMarkdown.runCommand(${escapeInjectedJavaScriptString(command)});`
+          `window.__kinguRichMarkdown && window.__kinguRichMarkdown.runCommand(${escapeInjectedJavaScriptString(command)});`
         )
     }),
     [inject]
@@ -152,7 +152,7 @@ function MobileRichMarkdownEditorInner(
   const dismissKeyboard = useCallback(() => {
     // Why: the caret lives in the WebView, so the injected blur is what closes the keyboard;
     // Keyboard.dismiss only clears a native TextInput that stole focus first.
-    inject('window.__orcaRichMarkdown && window.__orcaRichMarkdown.dismissKeyboard();')
+    inject('window.__kinguRichMarkdown && window.__kinguRichMarkdown.dismissKeyboard();')
     Keyboard.dismiss()
   }, [inject])
 

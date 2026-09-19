@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
 import pg from 'pg'
 import { parseIntoClientConfig } from 'pg-connection-string'
-import { applyPostgresSchema } from '@orca-cloud/postgres-schema'
+import { applyPostgresSchema } from '@kingu-cloud/postgres-schema'
 import { pushSchemaStatements } from './push-schema.js'
 
 const POSTGRES_LOCK_TIMEOUT_MS = 1_000
@@ -161,7 +161,7 @@ class PostgresDatabase implements PushDatabase {
         }
         console.warn(
           JSON.stringify({
-            event: 'orca_push_postgres_transaction_retry',
+            event: 'kingu_push_postgres_transaction_retry',
             code: String((error as { code?: unknown }).code),
             attempt
           })
@@ -213,7 +213,7 @@ async function applySchemaOnUntimedPool(
   const database = new PostgresDatabase(pool)
   try {
     await applyPostgresSchema(pushSchemaStatements(), (statement) => database.query(statement), {
-      eventPrefix: 'orca_push_postgres_schema',
+      eventPrefix: 'kingu_push_postgres_schema',
       // Push has no catalog pre-check, so a lock timeout here says nothing about whether the
       // object already exists and the old bounded retry is still the right answer.
       retryLockTimeout: true
@@ -227,7 +227,7 @@ export function absorbPostgresIdleClientErrors(pool: Pick<pg.Pool, 'on'>): void 
   pool.on('error', () => {
     // node-postgres removes failed idle clients itself; an unhandled 'error'
     // would crash the service and turn a SQL blip into a restart loop.
-    console.warn('[orca-push] idle PostgreSQL client failed')
+    console.warn('[kingu-push] idle PostgreSQL client failed')
   })
 }
 
@@ -261,7 +261,7 @@ export async function openPushDatabase(input: {
     database = new PostgresDatabase(pool)
   } else {
     mkdirSync(input.dataDir, { recursive: true })
-    const sqlite = new DatabaseSync(join(input.dataDir, 'orca-push.sqlite'), {
+    const sqlite = new DatabaseSync(join(input.dataDir, 'kingu-push.sqlite'), {
       readOnly: input.readOnly ?? false
     })
     if (!input.readOnly) sqlite.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;')

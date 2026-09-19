@@ -18,9 +18,9 @@ if (!health.ok || (await health.json()).ok !== true) {
   throw new Error(`relay health failed: ${health.status}`)
 }
 
-const accessToken = process.env.ORCA_RELAY_SMOKE_ACCESS_TOKEN
-const authUrl = process.env.ORCA_RELAY_SMOKE_AUTH_URL?.replace(/\/$/, '')
-const signingKeyFile = process.env.ORCA_RELAY_SMOKE_SIGNING_KEY_FILE
+const accessToken = process.env.KINGU_RELAY_SMOKE_ACCESS_TOKEN
+const authUrl = process.env.KINGU_RELAY_SMOKE_AUTH_URL?.replace(/\/$/, '')
+const signingKeyFile = process.env.KINGU_RELAY_SMOKE_SIGNING_KEY_FILE
 if (!authUrl || (!accessToken && !signingKeyFile)) {
   console.log('relay health smoke passed; provide auth URL plus an access token or operator signing-key file for a splice round-trip')
   process.exit(0)
@@ -29,7 +29,7 @@ if (!authUrl || (!accessToken && !signingKeyFile)) {
 const nacl = requireFromRelay('tweetnacl')
 const WebSocket = requireFromRelay('ws')
 const { buildHostProofMacInput, HOST_CHALLENGE_PLAINTEXT_DOMAIN } = await import(
-  requireFromRelay.resolve('@orca-cloud/relay-contract')
+  requireFromRelay.resolve('@kingu-cloud/relay-contract')
 )
 
 function nextMessage(socket) {
@@ -105,7 +105,7 @@ if (accessToken) {
   })
     .setProtectedHeader({ alg: 'ES256', kid: keyId })
     .setIssuer(authUrl)
-    .setAudience('orca-relay')
+    .setAudience('kingu-relay')
     .setSubject('staging-smoke-user')
     .setIssuedAt()
     .setExpirationTime('5m')
@@ -199,9 +199,9 @@ const dataEcho = new Promise((resolve, reject) => {
   data.once('message', (bytes, binary) => resolve({ bytes: Buffer.from(bytes), binary }))
   data.once('error', reject)
 })
-phone.send('orca-relay-smoke')
+phone.send('kingu-relay-smoke')
 const returned = await dataEcho
-if (returned.binary || returned.bytes.toString() !== 'orca-relay-smoke') {
+if (returned.binary || returned.bytes.toString() !== 'kingu-relay-smoke') {
   throw new Error('relay splice changed text payload or opcode')
 }
 

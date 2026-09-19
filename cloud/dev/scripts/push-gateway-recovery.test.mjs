@@ -42,10 +42,10 @@ const spec = {
       name: 'push-test-1',
       env: [
         {
-          name: 'ORCA_PUSH_DATABASE_URL',
+          name: 'KINGU_PUSH_DATABASE_URL',
           valueFrom: { secretKeyRef: { name: 'database', key: '7' } }
         },
-        { name: 'ORCA_PUSH_DATABASE_POOL_MAX', value: '2' }
+        { name: 'KINGU_PUSH_DATABASE_POOL_MAX', value: '2' }
       ]
     }
   ]
@@ -282,7 +282,7 @@ for (const defect of [
       gcloud() {
         node "$MODEL_SCRIPT" "$@" > "$RUNNER_TEMP/out" || return $?
         if [[ "$*" == 'run services describe '* && "$*" == *'--format=json'* ]]; then
-          jq '${defect === 'mode' ? '.spec.template.spec.containers[0].env += [{name:"ORCA_PUSH_MODE",value:"validation"}]' : '.spec.template.spec.containers[0].image = "wrong"'}' "$RUNNER_TEMP/out"
+          jq '${defect === 'mode' ? '.spec.template.spec.containers[0].env += [{name:"KINGU_PUSH_MODE",value:"validation"}]' : '.spec.template.spec.containers[0].image = "wrong"'}' "$RUNNER_TEMP/out"
         else cat "$RUNNER_TEMP/out"; fi
       }`
         : ''
@@ -349,13 +349,13 @@ for (const [label, source, ok] of [
   ['old image', 'export function loadPushConfig() { return {}; }', false],
   [
     'invalid mode accepted',
-    'export function loadPushConfig(env) { return { mode: env.ORCA_PUSH_MODE }; }',
+    'export function loadPushConfig(env) { return { mode: env.KINGU_PUSH_MODE }; }',
     false
   ],
   [
     'validation supported',
     `export function loadPushConfig(env) {
-    if (env.ORCA_PUSH_MODE !== 'validation') throw new Error('invalid mode');
+    if (env.KINGU_PUSH_MODE !== 'validation') throw new Error('invalid mode');
     return { mode: 'validation' };
   }`,
     true

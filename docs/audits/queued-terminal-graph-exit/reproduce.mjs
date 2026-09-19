@@ -6,14 +6,14 @@ import { join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { startVitest } from 'vitest/node'
 
-if (process.env.ORCA_BACKGROUND_LAUNCH !== '1') {
-  throw new Error('Run with ORCA_BACKGROUND_LAUNCH=1.')
+if (process.env.KINGU_BACKGROUND_LAUNCH !== '1') {
+  throw new Error('Run with KINGU_BACKGROUND_LAUNCH=1.')
 }
 const root = fileURLToPath(new URL('../../../', import.meta.url))
 const paths = [
-  'src/main/runtime/orca-runtime-sync-window-graph.ts',
-  'src/main/runtime/orca-runtime-mark-pty-liveness-unverifiable.ts',
-  'src/main/runtime/orca-runtime-on-pty-exit.ts'
+  'src/main/runtime/kingu-runtime-sync-window-graph.ts',
+  'src/main/runtime/kingu-runtime-mark-pty-liveness-unverifiable.ts',
+  'src/main/runtime/kingu-runtime-on-pty-exit.ts'
 ]
 const sources = await Promise.all(paths.map((path) => readFile(join(root, path), 'utf8')))
 const gate = `      // Retained history stays addressable, but a renderer graph cannot revoke a host-certified exit.
@@ -50,7 +50,7 @@ const baseline = [
 `
   )
 ]
-const scratch = await mkdtemp(join(tmpdir(), 'orca-queued-graph-proof-'))
+const scratch = await mkdtemp(join(tmpdir(), 'kingu-queued-graph-proof-'))
 const phases = []
 try {
   for (const phase of ['before', 'guard-only', 'after']) {

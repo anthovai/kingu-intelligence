@@ -190,7 +190,7 @@ function printAddedFailure(added) {
     console.error(`    • ${entry}`)
   }
   console.error('')
-  console.error('  See the errors with:  pnpm --filter orca-mobile typecheck:tests')
+  console.error('  See the errors with:  pnpm --filter kingu-mobile typecheck:tests')
   console.error('')
   console.error('  A type-level pin in an unchecked test proves nothing, which is the whole reason')
   console.error('  this gate exists. Fix the test rather than adding it to the baseline.')
@@ -216,7 +216,7 @@ function printStaleFailure(stale) {
   }
   console.error('')
   console.error(
-    `  ✅  Fix it (one command):  pnpm --filter orca-mobile check:tests-typecheck --prune`
+    `  ✅  Fix it (one command):  pnpm --filter kingu-mobile check:tests-typecheck --prune`
   )
   console.error('')
 }

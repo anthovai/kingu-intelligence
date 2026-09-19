@@ -14,8 +14,8 @@ function accessToken() {
 export async function readCloudSqlBackends(environment, startedAt, endedAt) {
   const production = environment === 'production'
   if (!production && environment !== 'staging') throw new Error('Cloud SQL environment is invalid')
-  const project = production ? 'onorca-cloud' : 'onorca-cloud-staging'
-  const instance = production ? 'orca-cloud-auth-db' : 'orca-cloud-staging-auth-db'
+  const project = production ? 'onkingu-cloud' : 'onkingu-cloud-staging'
+  const instance = production ? 'kingu-cloud-auth-db' : 'kingu-cloud-staging-auth-db'
   const url = new URL(`https://monitoring.googleapis.com/v3/projects/${project}/timeSeries`)
   url.searchParams.set('filter', `metric.type = "cloudsql.googleapis.com/database/postgresql/num_backends" AND resource.labels.database_id = "${project}:${instance}"`)
   url.searchParams.set('interval.startTime', startedAt)

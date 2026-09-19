@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { defaultExclude, defineConfig } from 'vitest/config'
 
-// Every test file that opens ORCA_RELAY_TEST_POSTGRES_URL shares one CI
+// Every test file that opens KINGU_RELAY_TEST_POSTGRES_URL shares one CI
 // database, and those tests take session-level locks with a 1s lock_timeout.
 // Running them alongside anything else collides into lock timeouts, capacity
 // exhaustion, and afterAll hangs. Keep them in their own serialized project so
@@ -13,7 +13,7 @@ const sharedPostgresTests = readdirSync(sourceDirectory)
   .filter((entry) => entry.endsWith('.test.ts'))
   .filter((entry) =>
     readFileSync(`${sourceDirectory}/${entry}`, 'utf8').includes(
-      'ORCA_RELAY_TEST_POSTGRES_URL'
+      'KINGU_RELAY_TEST_POSTGRES_URL'
     )
   )
   .map((entry) => `src/${entry}`)

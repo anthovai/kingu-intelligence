@@ -12,7 +12,7 @@ import { relayWorkflowFile } from './relay-repository.mjs'
 
 // Why: this repository publishes the relay's operate surface next to the desktop app. Three
 // invariants make that safe, and each of them is one careless edit away from being lost.
-const OPERATIONS_GATE = "vars.ORCA_CLOUD_OPERATIONS_ENABLED == 'true'"
+const OPERATIONS_GATE = "vars.KINGU_CLOUD_OPERATIONS_ENABLED == 'true'"
 
 // Cloud Verify is the only cloud workflow that must run on every pull request.
 const UNGATED = relayWorkflowFile('verify.yml')

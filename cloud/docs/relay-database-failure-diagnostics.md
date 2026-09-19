@@ -1,6 +1,6 @@
 # Relay database failure phases
 
-`orca_relay_postgres_query_failed` separates failure to acquire a pooled connection
+`kingu_relay_postgres_query_failed` separates failure to acquire a pooled connection
 (`phase=acquire`) from failure after acquisition (`phase=execute`). It covers
 `PostgresDatabase.query`, including the single-statement control-renewal CTE.
 Statements inside explicit transactions use a different query path and are not
@@ -29,7 +29,7 @@ fault such as a rejected password.
 Query text, parameters, error messages, and identifiers are never emitted.
 Successful queries emit no additional event.
 
-Use structured GCE logs with `jsonPayload.event="orca_relay_postgres_query_failed"`.
+Use structured GCE logs with `jsonPayload.event="kingu_relay_postgres_query_failed"`.
 Compare counts by phase, operation, and code with the same cell's renewal outcomes
 and pool pressure, and with independent PostgreSQL wait samples. Establishing the
 failure phase does not by itself establish why the pool backed up.

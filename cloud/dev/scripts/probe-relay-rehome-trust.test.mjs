@@ -6,11 +6,11 @@ import {
 } from './probe-relay-rehome-trust.mjs'
 
 const argv = [
-  '--director-origin', 'https://relay.onorca.dev',
+  '--director-origin', 'https://relay.onkingu.dev',
   '--cell-id', 'production-gce-c7',
   '--cell-incarnation', '11111111-1111-4111-8111-111111111111'
 ]
-const environment = { ORCA_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' }
+const environment = { KINGU_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' }
 
 test('binds the application-mediated probe to an exact approved cell incarnation', () => {
   assert.equal(parseRehomeTrustProbeArguments(argv, environment).cellId, 'production-gce-c7')
@@ -19,7 +19,7 @@ test('binds the application-mediated probe to an exact approved cell incarnation
     environment
   ))
   assert.throws(() => parseRehomeTrustProbeArguments(argv, {
-    ORCA_RELAY_ADMIN_ID_TOKEN: 'not-a-token'
+    KINGU_RELAY_ADMIN_ID_TOKEN: 'not-a-token'
   }))
 })
 
@@ -27,7 +27,7 @@ test('requires complete aggregate application-mediated trust proof', async () =>
   const config = parseRehomeTrustProbeArguments(argv, environment)
   const result = await probeRehomeTrust(config, {
     fetch: async (url, init) => {
-      assert.equal(url, 'https://relay.onorca.dev/v1/admin/regional-rehome-trust-probe')
+      assert.equal(url, 'https://relay.onkingu.dev/v1/admin/regional-rehome-trust-probe')
       assert.deepEqual(JSON.parse(init.body), {
         v: 1,
         sourceCellId: 'production-gce-c7',

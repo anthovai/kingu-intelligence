@@ -374,7 +374,7 @@ export function suppliedIdentityToken(value: string | undefined): string | null 
     value.length > 8_192 ||
     !/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(value)
   ) {
-    throw new Error('ORCA_RELAY_ADMIN_ID_TOKEN is invalid')
+    throw new Error('KINGU_RELAY_ADMIN_ID_TOKEN is invalid')
   }
   return value
 }
@@ -437,7 +437,7 @@ export async function runIncidentMonitorCli(
   const state = await readInitialState(options, dependencies.now)
   const baseGcloud = dependencies.gcloud ?? createGcloudClient()
   const token = suppliedIdentityToken(
-    (dependencies.environment ?? process.env).ORCA_RELAY_ADMIN_ID_TOKEN
+    (dependencies.environment ?? process.env).KINGU_RELAY_ADMIN_ID_TOKEN
   )
   await persistState(options.stateFile, state)
   const gcloud = token

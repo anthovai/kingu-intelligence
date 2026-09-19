@@ -7,7 +7,7 @@ import { openRelayDatabase, type RelayDatabase } from './database.js'
 // sweeps over relay_invites had no usable index, so each one seq-scanned the whole table inside the
 // maintenance transaction. Only a real planner can show the partial indexes take that away, and
 // only a real server has ctid.
-const databaseUrl = process.env.ORCA_RELAY_TEST_POSTGRES_URL
+const databaseUrl = process.env.KINGU_RELAY_TEST_POSTGRES_URL
 const describePostgres = databaseUrl ? describe : describe.skip
 const schema = 'relay_credential_sweep_test'
 

@@ -22,7 +22,7 @@ wire shape. Folder workspaces require no git metadata.
 Run actual persistence and cache validation with a read-only OMP checkout:
 
 ```sh
-ORCA_BACKGROUND_LAUNCH=1 bun tests/tools/omp-history-title-smoke.mjs /path/to/oh-my-pi
+KINGU_BACKGROUND_LAUNCH=1 bun tests/tools/omp-history-title-smoke.mjs /path/to/oh-my-pi
 ```
 
 The smoke persists a first prompt, performs a real OMP user rename, and verifies

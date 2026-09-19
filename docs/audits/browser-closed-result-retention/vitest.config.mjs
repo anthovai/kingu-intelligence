@@ -5,7 +5,7 @@ import base from '../../../config/vitest.config.ts'
 
 const { loadSources } = createRequire(import.meta.url)('./sources.cjs')
 const { before, after } = loadSources()
-const sources = process.env.ORCA_BROWSER_CACHE_VARIANT === 'before' ? before : after
+const sources = process.env.KINGU_BROWSER_CACHE_VARIANT === 'before' ? before : after
 const config = mergeConfig(
   base,
   defineConfig({

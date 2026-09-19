@@ -1,4 +1,4 @@
-import { RELAY_REGION_METRIC_SEGMENTS, RELAY_REGIONS } from '@orca-cloud/relay-contract'
+import { RELAY_REGION_METRIC_SEGMENTS, RELAY_REGIONS } from '@kingu-cloud/relay-contract'
 import { describe, expect, it, vi } from 'vitest'
 import type { RelayDatabase } from './database.js'
 import { observeRelayDatabase } from './observed-relay-database.js'
@@ -75,8 +75,8 @@ describe('relay observability', () => {
     expect(entries).toEqual([
       {
         severity: 'WARNING',
-        message: 'Orca Relay readiness check',
-        event: 'orca_relay_readiness_check',
+        message: 'Kingu Relay readiness check',
+        event: 'kingu_relay_readiness_check',
         metricVersion: 1,
         role: 'cell',
         cellId: 'production-gce-c28',
@@ -110,7 +110,7 @@ describe('relay observability', () => {
     expect(entries).toEqual([
       expect.objectContaining({
         severity: 'WARNING',
-        event: 'orca_relay_readiness_check',
+        event: 'kingu_relay_readiness_check',
         ready: true,
         degraded: true,
         degradedDependencies: ['jwks'],
@@ -143,8 +143,8 @@ describe('relay observability', () => {
     expect(entries).toEqual([
       {
         severity: 'WARNING',
-        message: 'Orca Relay readiness entered last-known-good grace',
-        event: 'orca_relay_readiness_grace_entered',
+        message: 'Kingu Relay readiness entered last-known-good grace',
+        event: 'kingu_relay_readiness_grace_entered',
         metricVersion: 1,
         role: 'cell',
         cellId: 'production-gce-c28',
@@ -157,8 +157,8 @@ describe('relay observability', () => {
       },
       {
         severity: 'INFO',
-        message: 'Orca Relay readiness left last-known-good grace',
-        event: 'orca_relay_readiness_grace_left',
+        message: 'Kingu Relay readiness left last-known-good grace',
+        event: 'kingu_relay_readiness_grace_left',
         metricVersion: 1,
         role: 'cell',
         cellId: 'production-gce-c28',
@@ -270,7 +270,7 @@ describe('relay observability', () => {
     observability.flush(counts)
 
     expect(entries[0]).toMatchObject({
-      event: 'orca_relay_runtime_metrics',
+      event: 'kingu_relay_runtime_metrics',
       metricVersion: 2,
       role: 'cell',
       cellId: 'staging-c1',
@@ -384,7 +384,7 @@ describe('relay observability', () => {
     })
     // Only-add: the pre-existing fields still read the same after the extension.
     expect(entries[0]).toMatchObject({
-      event: 'orca_relay_runtime_metrics',
+      event: 'kingu_relay_runtime_metrics',
       metricVersion: 2,
       clientAcceptsAbandonedByStageDelta: {},
       clientAcceptAbandonedMsMax: 0

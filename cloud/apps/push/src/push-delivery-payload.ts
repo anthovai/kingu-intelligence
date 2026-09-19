@@ -1,4 +1,4 @@
-import type { PushNotification } from '@orca-cloud/push-contract'
+import type { PushNotification } from '@kingu-cloud/push-contract'
 
 export function parsePushDeliveryPayload(payload: string): PushNotification {
   const value: unknown = JSON.parse(payload)

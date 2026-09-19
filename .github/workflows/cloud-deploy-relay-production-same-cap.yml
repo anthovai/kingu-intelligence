@@ -96,7 +96,7 @@ defaults:
 
 jobs:
   gate:
-    if: ${{ vars.ORCA_CLOUD_OPERATIONS_ENABLED == 'true' && (github.ref == 'refs/heads/main') }}
+    if: ${{ vars.KINGU_CLOUD_OPERATIONS_ENABLED == 'true' && (github.ref == 'refs/heads/main') }}
     runs-on: blacksmith-2vcpu-ubuntu-2204
     # Headroom for the full-history checkout the canary provenance check needs.
     timeout-minutes: 15
@@ -376,6 +376,6 @@ jobs:
 
       - uses: ./.github/actions/cloud-sql-rollout-lease
         with:
-          bucket: onorca-cloud-terraform-state
+          bucket: onkingu-cloud-terraform-state
           object: terraform/state/cloud-sql-rollout/production.lock
           release: 'true'

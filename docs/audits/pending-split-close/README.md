@@ -2,7 +2,7 @@
 
 A restored split pane can be explicitly closed while its IPC spawn/reattach reply is pending. Its transport has no bound PTY ID yet. The old close path deleted the durable leaf binding and destroyed the unbound transport without requesting retirement. The late-result cleanup deliberately preserved reattach and cold-restore replies for remounts, so an existing shell or newly cold-restored shell could remain live with no pane and no kill request.
 
-This is a concrete mechanism matching the **missing kill requests** in [#15210](https://github.com/stablyai/orca/issues/15210). The relevant close, late-result exclusion, and daemon cold-restore behavior exists in both `v1.4.184` and `v1.4.198`. The report does not establish that this sequence produced its 51 shells. It also does not establish a retained Electron-main heap slope or independently explain [#19831](https://github.com/stablyai/orca/issues/19831).
+This is a concrete mechanism matching the **missing kill requests** in [#15210](https://github.com/anthovai/kingu-intelligence/issues/15210). The relevant close, late-result exclusion, and daemon cold-restore behavior exists in both `v1.4.184` and `v1.4.198`. The report does not establish that this sequence produced its 51 shells. It also does not establish a retained Electron-main heap slope or independently explain [#19831](https://github.com/anthovai/kingu-intelligence/issues/19831).
 
 ## Ownership and fix
 
@@ -25,10 +25,10 @@ The original tests called `executeClosePane` after a close decision. A separate 
 From the repository root with the existing dependencies installed:
 
 ```sh
-ORCA_BACKGROUND_LAUNCH=1 node docs/audits/pending-split-close/reproduce.mjs
+KINGU_BACKGROUND_LAUNCH=1 node docs/audits/pending-split-close/reproduce.mjs
 ```
 
-The script runs the actual close hook, layout binding, pane-close handler, IPC transport, daemon server, and daemon adapter. React registration and unrelated presentation/status callbacks are mocked. Daemon cases use temporary sockets, synthetic history, and the existing fake subprocess fixture; no real shell or Orca window is launched. It cleans its temporary configuration and invokes Vitest through the repository's cross-platform `runProcess`.
+The script runs the actual close hook, layout binding, pane-close handler, IPC transport, daemon server, and daemon adapter. React registration and unrelated presentation/status callbacks are mocked. Daemon cases use temporary sockets, synthetic history, and the existing fake subprocess fixture; no real shell or Kingu window is launched. It cleans its temporary configuration and invokes Vitest through the repository's cross-platform `runProcess`.
 
 `fix.patch` is reversed only inside a temporary Vite source transform for the baseline. Working files remain unchanged. New helper/test sources remain present, but the baseline close hook cannot call the helper. Source hashes and exact cases are recorded in `results.json`:
 

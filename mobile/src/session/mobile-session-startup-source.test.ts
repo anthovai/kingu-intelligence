@@ -166,7 +166,7 @@ describe('mobile session startup', () => {
       startupEffect.indexOf('await ensureSessionTabs()')
     )
     expect(startupEffect).toContain('headlessActivationNeedsHostRenderer(activation.value)')
-    expect(startupEffect).toContain("showToast('Open Orca on the host to wake sleeping agents.'")
+    expect(startupEffect).toContain("showToast('Open Kingu on the host to wake sleeping agents.'")
   })
 
   it('fails runtime capability gates closed before probing a replacement client', () => {

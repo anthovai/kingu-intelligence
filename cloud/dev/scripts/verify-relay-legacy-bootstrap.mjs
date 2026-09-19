@@ -218,7 +218,7 @@ function requireFreshZeroMetrics(metrics, config, now) {
 
 export async function verifyLegacyBootstrap(config, overrides = {}) {
   const fetchImpl = overrides.fetch ?? fetch
-  const token = overrides.token ?? process.env.ORCA_RELAY_ADMIN_ID_TOKEN
+  const token = overrides.token ?? process.env.KINGU_RELAY_ADMIN_ID_TOKEN
   const now = overrides.now?.() ?? Date.now()
   const metrics = overrides.metrics ?? JSON.parse(readFileSync(config.metricsFile, 'utf8'))
   if (!token || token.length > 8_192) throw new Error('admin identity token is unavailable')

@@ -218,8 +218,8 @@ resource "google_service_account" "github_deploy" {
 
   project      = var.project_id
   account_id   = "${var.name_prefix}-gha-deploy"
-  display_name = "Orca Cloud GitHub deploy"
-  description  = "Deploys Orca Cloud from GitHub Actions."
+  display_name = "Kingu Cloud GitHub deploy"
+  description  = "Deploys Kingu Cloud from GitHub Actions."
 }
 
 resource "google_service_account" "github_monitor" {
@@ -227,7 +227,7 @@ resource "google_service_account" "github_monitor" {
 
   project      = var.project_id
   account_id   = "${var.name_prefix}-gha-monitor"
-  display_name = "Orca Relay production monitor"
+  display_name = "Kingu Relay production monitor"
   description  = "Reads aggregate Relay production telemetry."
 }
 
@@ -236,7 +236,7 @@ resource "google_service_account" "github_fence" {
 
   project      = var.project_id
   account_id   = "${var.name_prefix}-gha-fence"
-  display_name = "Orca Relay production fence requester"
+  display_name = "Kingu Relay production fence requester"
   description  = "Requests exact reviewed Relay cell fences through the private broker."
 }
 
@@ -245,7 +245,7 @@ resource "google_service_account" "github_staging_relay_capacity" {
 
   project      = var.project_id
   account_id   = "${var.name_prefix}-gha-cap"
-  display_name = "Orca Relay staging capacity transition"
+  display_name = "Kingu Relay staging capacity transition"
   description  = "Runs the exact reviewed Relay staging capacity workflow."
 }
 
@@ -254,7 +254,7 @@ resource "google_service_account" "github_production_relay_capacity" {
 
   project      = var.project_id
   account_id   = "${var.name_prefix}-gha-cap"
-  display_name = "Orca Relay production capacity transition"
+  display_name = "Kingu Relay production capacity transition"
   description  = "Runs the exact reviewed Relay production capacity workflow."
 }
 
@@ -330,7 +330,7 @@ resource "google_artifact_registry_repository_iam_member" "github_production_rel
   location   = var.region
   repository = var.artifact_repository_id
   role       = "roles/artifactregistry.writer"
-  member     = "serviceAccount:orca-cloud-gha-deploy@onorca-cloud.iam.gserviceaccount.com"
+  member     = "serviceAccount:kingu-cloud-gha-deploy@onkingu-cloud.iam.gserviceaccount.com"
 }
 
 resource "google_cloud_run_v2_service_iam_member" "github_production_relay_director_developer" {
@@ -457,8 +457,8 @@ resource "google_project_iam_custom_role" "github_staging_relay_power" {
   count = local.create_staging_relay_power_role ? 1 : 0
 
   project     = var.project_id
-  role_id     = "orcaRelayStagingPower"
-  title       = "Orca Relay staging power operator"
+  role_id     = "kinguRelayStagingPower"
+  title       = "Kingu Relay staging power operator"
   description = "Scales staging Relay MIGs and starts or stops its shared staging database."
   permissions = [
     "cloudsql.instances.get",
@@ -482,8 +482,8 @@ resource "google_project_iam_custom_role" "github_staging_relay_capacity_mutatio
   count = local.create_staging_relay_capacity_identity ? 1 : 0
 
   project     = var.project_id
-  role_id     = "orcaRelayStagingCapacity"
-  title       = "Orca Relay staging capacity transition"
+  role_id     = "kinguRelayStagingCapacity"
+  title       = "Kingu Relay staging capacity transition"
   description = "Replaces one staging Relay template and restarts its managed instance group."
   permissions = [
     "compute.disks.create",
@@ -568,8 +568,8 @@ resource "google_project_iam_custom_role" "github_production_relay_capacity_muta
   count = local.create_production_relay_capacity_identity ? 1 : 0
 
   project     = var.project_id
-  role_id     = "orcaRelayProductionCapacity"
-  title       = "Orca Relay production capacity transition"
+  role_id     = "kinguRelayProductionCapacity"
+  title       = "Kingu Relay production capacity transition"
   description = "Replaces exactly one production Relay template and its managed instance."
   permissions = [
     "compute.disks.create",

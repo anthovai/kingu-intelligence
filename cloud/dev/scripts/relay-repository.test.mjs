@@ -33,7 +33,7 @@ test('workflow identity is derived, never restated', () => {
 test('no Relay script restates the repository or the workflow directory', () => {
   for (const name of relayScripts) {
     const text = readFileSync(`${directory}${name}`, 'utf8')
-    assert.doesNotMatch(text, /stablyai\//, `${name} restates the GitHub repository`)
+    assert.doesNotMatch(text, /anthovai\//, `${name} restates the GitHub repository`)
     assert.doesNotMatch(text, /\.github\/workflows/, `${name} restates the workflow directory`)
   }
 })

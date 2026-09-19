@@ -19,11 +19,11 @@ const production = readFileSync(
   'utf8'
 )
 const REHOME_SOURCE_CELLS = rehomeSourceCells()
-const DIRECTOR_IDENTITY = 'relay-director@onorca-cloud.iam.gserviceaccount.com'
-const CAPACITY_IDENTITY = 'orca-cloud-gha-cap@onorca-cloud.iam.gserviceaccount.com'
-const AUDIENCE = 'https://relay.onorca.dev/v1/admin/host-drain'
-const ROLLBACK_IMAGE = `us-central1-docker.pkg.dev/p/orca-cloud/relay@sha256:${'d'.repeat(64)}`
-const TARGET_IMAGE = `us-central1-docker.pkg.dev/p/orca-cloud/relay@sha256:${'e'.repeat(64)}`
+const DIRECTOR_IDENTITY = 'relay-director@onkingu-cloud.iam.gserviceaccount.com'
+const CAPACITY_IDENTITY = 'kingu-cloud-gha-cap@onkingu-cloud.iam.gserviceaccount.com'
+const AUDIENCE = 'https://relay.onkingu.dev/v1/admin/host-drain'
+const ROLLBACK_IMAGE = `us-central1-docker.pkg.dev/p/kingu-cloud/relay@sha256:${'d'.repeat(64)}`
+const TARGET_IMAGE = `us-central1-docker.pkg.dev/p/kingu-cloud/relay@sha256:${'e'.repeat(64)}`
 
 // The startup template emits rehome trust only for cells in this list, so it is what decides
 // whether a cell's plan may carry those lines at all.
@@ -56,22 +56,22 @@ function tfvarsCellBlock(cellId) {
 
 function startupScript({ cap, image, trusted, pool, capacityIdentity = CAPACITY_IDENTITY }) {
   return [
-    `  printf 'ORCA_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '${cap}'`,
-    `  printf 'ORCA_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '60'`,
+    `  printf 'KINGU_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '${cap}'`,
+    `  printf 'KINGU_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '60'`,
     ...(capacityIdentity === null
       ? []
-      : [`  printf 'ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' '${capacityIdentity}'`]),
+      : [`  printf 'KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' '${capacityIdentity}'`]),
     ...(pool === undefined
       ? []
-      : [`  printf 'ORCA_RELAY_DATABASE_POOL_MAX=%s\\n' '${pool}'`]),
+      : [`  printf 'KINGU_RELAY_DATABASE_POOL_MAX=%s\\n' '${pool}'`]),
     ...(trusted ? [
-      `  printf 'ORCA_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT=%s\\n' '${DIRECTOR_IDENTITY}'`,
-      `  printf 'ORCA_RELAY_REHOME_AUDIENCE=%s\\n' '${AUDIENCE}'`
+      `  printf 'KINGU_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT=%s\\n' '${DIRECTOR_IDENTITY}'`,
+      `  printf 'KINGU_RELAY_REHOME_AUDIENCE=%s\\n' '${AUDIENCE}'`
     ] : []),
-    `printf 'ORCA_RELAY_IMAGE_DIGEST=%s\\n' '${image.split('@')[1]}'`,
+    `printf 'KINGU_RELAY_IMAGE_DIGEST=%s\\n' '${image.split('@')[1]}'`,
     `docker pull '${image}'`,
     'docker run --detach \\',
-    '  --name orca-relay \\',
+    '  --name kingu-relay \\',
     `  '${image}'`
   ].join('\n')
 }
@@ -263,14 +263,14 @@ describe('same-cap roll scripts accept every same-cap cell', () => {
     for (const cellId of SAME_CAP_CELLS) {
       for (const mode of ['isolate', 'drain', 'activate']) {
         assert.deepEqual(parseProductionCapacityCellArguments([
-          '--director-origin', 'https://relay.onorca.dev',
-          '--cell-origin', `https://${hostname(cellId)}.relay.onorca.dev`,
+          '--director-origin', 'https://relay.onkingu.dev',
+          '--cell-origin', `https://${hostname(cellId)}.relay.onkingu.dev`,
           '--cell-id', cellId,
           '--approved-cells', 'same-cap',
           '--mode', mode
         ]), {
-          directorOrigin: 'https://relay.onorca.dev',
-          cellOrigin: `https://${hostname(cellId)}.relay.onorca.dev`,
+          directorOrigin: 'https://relay.onkingu.dev',
+          cellOrigin: `https://${hostname(cellId)}.relay.onkingu.dev`,
           cellId,
           mode,
           paceWindowMs: 0
@@ -522,7 +522,7 @@ describe('same-cap roll scripts accept every same-cap cell', () => {
     assert.throws(
       () => validateCapacityPlan(stale, {
         ...config,
-        capacityServiceAccount: 'orca-cloud-gha-other@onorca-cloud.iam.gserviceaccount.com'
+        capacityServiceAccount: 'kingu-cloud-gha-other@onkingu-cloud.iam.gserviceaccount.com'
       }),
       /reviewed image and capacity/
     )
@@ -614,7 +614,7 @@ describe('same-cap roll scripts accept every same-cap cell', () => {
   })
 
   it('classifies every rollback stage from the real block', () => {
-    const repository = 'us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay'
+    const repository = 'us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay'
     const target = `sha256:${'7'.repeat(64)}`
     const rollback = `sha256:${'0'.repeat(64)}`
     const stage = (mode, live, draining) => {

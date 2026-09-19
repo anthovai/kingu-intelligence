@@ -91,7 +91,7 @@ export function repinInstruction(baseline: string, ref: string, cause: string): 
     '',
     `  git switch -c repin-rpc-recording ${ref}`,
     `  # set "baseline" in mobile/rpc-foundation/pilot-scenarios.json to ${ref}`,
-    '  ORCA_BACKGROUND_LAUNCH=1 RPC_FOUNDATION_RECORD=1 \\',
+    '  KINGU_BACKGROUND_LAUNCH=1 RPC_FOUNDATION_RECORD=1 \\',
     '    pnpm --dir mobile exec tsx scripts/rpc-recording.mts --record',
     '',
     'Re-record everything: the repin rewrites the `baseline` header of every golden, so a partial',
@@ -231,7 +231,7 @@ async function reproduceFromPin(root: string, baseline: string): Promise<boolean
       maxOutputBytes: RECORDING_OUTPUT_BYTES,
       env: {
         ...process.env,
-        ORCA_BACKGROUND_LAUNCH: '1',
+        KINGU_BACKGROUND_LAUNCH: '1',
         // Replay, never `--record`: the suites read these two from the candidate tree and compare.
         RPC_FOUNDATION_GOLDENS: resolve(root, 'mobile/rpc-foundation/goldens'),
         RPC_FOUNDATION_SCENARIOS: resolve(root, 'mobile/rpc-foundation/pilot-scenarios.json')
@@ -276,7 +276,7 @@ const REPRODUCTION_FAILURE = [
   'that auto-merged golden JSON, or a refresh recorded somewhere other than the pin, both land',
   'here. Re-record the whole corpus from the pin rather than editing a golden:',
   '',
-  '  ORCA_BACKGROUND_LAUNCH=1 RPC_FOUNDATION_RECORD=1 \\',
+  '  KINGU_BACKGROUND_LAUNCH=1 RPC_FOUNDATION_RECORD=1 \\',
   '    pnpm --dir mobile exec tsx scripts/rpc-recording.mts --record'
 ].join('\n')
 

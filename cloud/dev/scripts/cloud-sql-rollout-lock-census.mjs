@@ -12,11 +12,11 @@ export const SCRIPT_ROOT = new URL('./', import.meta.url)
 
 export const LEASE_ACTION = './.github/actions/cloud-sql-rollout-lease'
 export const PRODUCTION_LEASE = {
-  bucket: 'onorca-cloud-terraform-state',
+  bucket: 'onkingu-cloud-terraform-state',
   object: 'terraform/state/cloud-sql-rollout/production.lock'
 }
 export const STAGING_LEASE = {
-  bucket: 'onorca-cloud-staging-terraform-state',
+  bucket: 'onkingu-cloud-staging-terraform-state',
   object: 'terraform/state/cloud-sql-rollout/staging.lock'
 }
 

@@ -119,11 +119,11 @@ empty, current index. A registered service may report disabled or not-ready.
 
 - Desktop: `aiVault:searchSessions` and `aiVault:searchStatus`, via preload.
 - Runtime and relay: `aiVault.searchSessions` and `aiVault.searchStatus`.
-- CLI: `orca search` calls both over the runtime RPC, against the host that
+- CLI: `kingu search` calls both over the runtime RPC, against the host that
   `--environment` / `--pairing-code` selects and no other. It reuses
   `createSessionSearchClient`, so an old host's refusal reaches the caller as
   `unavailable/no-service` rather than an error, and needs no new capability.
-  In an Orca SSH terminal, the forwarded CLI defaults to the controlling Orca
+  In an Kingu SSH terminal, the forwarded CLI defaults to the controlling Kingu
   runtime's index. `--path` filters that index; it does not select the SSH host.
   `--environment` / `--pairing-code` can explicitly select a paired runtime.
 - Desktop preload optionally accepts an execution host scope as a separate
@@ -142,7 +142,7 @@ compatibility.
 
 The process-local `setSessionSearchService(service | null)` registry connects
 these endpoints to the production service installed by PR 3b. Desktop indexing
-runs in the scanner child; orcad and the SSH relay register their own in-process
+runs in the scanner child; kingud and the SSH relay register their own in-process
 services. Registration alone does not grant consent.
 
 ## Desktop index controls (PR8)

@@ -1,6 +1,6 @@
 import { settingsRead } from '../transport/settings-read-operations'
 import { useRef, useState, type Dispatch, type SetStateAction } from 'react'
-import type { PersistedTrustedOrcaHooks } from '../../../src/shared/orca-yaml-hook-types'
+import type { PersistedTrustedKinguHooks } from '../../../src/shared/kingu-yaml-hook-types'
 import type { RetiredNameRegistry } from '../../../src/shared/worktree/retired-name-registry'
 import type { RpcClient } from '../transport/rpc-client'
 import { createBlankWorkspace } from '../tasks/blank-workspace-create'
@@ -54,8 +54,8 @@ export function useNewWorkspaceCreateSubmit(args: {
   setupRunPolicy: SetupRunPolicy
   setupDecisionChoice: Exclude<WorkspaceCreateSetupDecision, 'inherit'> | null
   runSetup: boolean
-  trustedOrcaHooks: PersistedTrustedOrcaHooks
-  setTrustedOrcaHooks: (trust: PersistedTrustedOrcaHooks) => void
+  trustedKinguHooks: PersistedTrustedKinguHooks
+  setTrustedKinguHooks: (trust: PersistedTrustedKinguHooks) => void
   getWorktreeCreateCutoverSupport: () => Promise<WorktreeCreateIdempotencySupport | false>
   getAgentLaunchSupport: () => Promise<AgentLaunchSupport | false>
   transitionDrawer: (view: Exclude<NewWorktreeDrawerView, 'transition'>) => void
@@ -138,14 +138,14 @@ export function useNewWorkspaceCreateSubmit(args: {
         setupDecision === 'run' &&
         args.setupTrust &&
         args.setupTrust.contentHash !== options.approvedSetupContentHash &&
-        !isSetupHookTrusted(args.trustedOrcaHooks, selectedRepo.id, args.setupTrust.contentHash)
+        !isSetupHookTrusted(args.trustedKinguHooks, selectedRepo.id, args.setupTrust.contentHash)
       ) {
         setSetupTrustPrompt({
           repoId: selectedRepo.id,
           repoName: selectedRepo.displayName,
           scriptContent: args.setupTrust.scriptContent,
           contentHash: args.setupTrust.contentHash,
-          previouslyApproved: wasSetupHookPreviouslyApproved(args.trustedOrcaHooks, selectedRepo.id)
+          previouslyApproved: wasSetupHookPreviouslyApproved(args.trustedKinguHooks, selectedRepo.id)
         })
         args.transitionDrawer('trust')
         return
@@ -207,12 +207,12 @@ export function useNewWorkspaceCreateSubmit(args: {
     try {
       const nextTrust = await persistSetupHookTrustApproval({
         client: args.client,
-        trust: args.trustedOrcaHooks,
+        trust: args.trustedKinguHooks,
         repoId: setupTrustPrompt.repoId,
         contentHash: setupTrustPrompt.contentHash,
         alwaysTrust
       })
-      args.setTrustedOrcaHooks(nextTrust)
+      args.setTrustedKinguHooks(nextTrust)
       const approvedHash = setupTrustPrompt.contentHash
       setSetupTrustPrompt(null)
       args.transitionDrawer('form')

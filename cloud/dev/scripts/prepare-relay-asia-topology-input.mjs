@@ -3,9 +3,9 @@ import { fileURLToPath } from 'node:url'
 
 const BOOT_IMAGE = 'https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21'
 const SHAPES = {
-  staging: { project: 'onorca-cloud-staging', cells: { 'staging-gce-c4': 'asia-east2-a' } },
+  staging: { project: 'onkingu-cloud-staging', cells: { 'staging-gce-c4': 'asia-east2-a' } },
   production: {
-    project: 'onorca-cloud',
+    project: 'onkingu-cloud',
     cells: {
       'production-gce-c27': 'asia-east2-a',
       'production-gce-c28': 'asia-east2-b',
@@ -50,7 +50,7 @@ export function prepareRelayAsiaTopologyInput({
   if (new Set(requested).size !== requested.length || JSON.stringify(requested) !== JSON.stringify(expected)) {
     throw new Error('cell IDs do not match the reviewed Asia topology')
   }
-  const prefix = `us-central1-docker.pkg.dev/${shape.project}/orca-cloud/relay@sha256:`
+  const prefix = `us-central1-docker.pkg.dev/${shape.project}/kingu-cloud/relay@sha256:`
   if (!image.startsWith(prefix) || !/sha256:[a-f0-9]{64}$/.test(image)) {
     throw new Error('image is not the environment Relay image pinned by digest')
   }

@@ -3,13 +3,13 @@ import type { ReactNode } from 'react'
 import { RootProvider } from 'fumadocs-ui/provider/next'
 import './globals.css'
 
-const siteUrl = 'https://www.onorca.dev'
+const siteUrl = 'https://www.onkingu.dev'
 
 export const metadata: Metadata = {
-  title: 'Orca Docs',
-  description: 'Product documentation for Orca — the worktree IDE for AI coding agents.',
+  title: 'Kingu Docs',
+  description: 'Product documentation for Kingu — the worktree IDE for AI coding agents.',
   metadataBase: new URL(siteUrl),
-  applicationName: 'Orca Docs',
+  applicationName: 'Kingu Docs',
   icons: {
     icon: '/docs/favicon.ico',
     shortcut: '/docs/favicon.ico'
@@ -18,14 +18,14 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: `${siteUrl}/docs`,
-    siteName: 'Orca',
-    title: 'Orca Docs',
-    description: 'Product documentation for Orca — the worktree IDE for AI coding agents.'
+    siteName: 'Kingu',
+    title: 'Kingu Docs',
+    description: 'Product documentation for Kingu — the worktree IDE for AI coding agents.'
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Orca Docs',
-    description: 'Product documentation for Orca — the worktree IDE for AI coding agents.'
+    title: 'Kingu Docs',
+    description: 'Product documentation for Kingu — the worktree IDE for AI coding agents.'
   },
   robots: {
     index: true,

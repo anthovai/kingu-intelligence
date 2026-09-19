@@ -20,5 +20,5 @@ override.tf.json
 *_override.tf.json
 
 # Local dev signing key + SQLite live under data/ — never commit (contains a
-# private key and dev PII). Prod supplies the key via ORCA_CLOUD_SIGNING_KEY_PEM.
+# private key and dev PII). Prod supplies the key via KINGU_CLOUD_SIGNING_KEY_PEM.
 data/

@@ -60,17 +60,17 @@ defaults:
 
 jobs:
   capacity:
-    if: ${{ vars.ORCA_CLOUD_OPERATIONS_ENABLED == 'true' && inputs.mode != 'refresh-asia-c4-image' }}
+    if: ${{ vars.KINGU_CLOUD_OPERATIONS_ENABLED == 'true' && inputs.mode != 'refresh-asia-c4-image' }}
     runs-on: blacksmith-2vcpu-ubuntu-2204
     environment: staging
     env:
-      GCP_PROJECT_ID: onorca-cloud-staging
+      GCP_PROJECT_ID: onkingu-cloud-staging
       GCP_REGION: ${{ vars.STAGING_GCP_REGION }}
-      DIRECTOR_SERVICE_NAME: orca-cloud-relay-staging
-      DIRECTOR_ORIGIN: https://relay-staging.onorca.dev
-      CELL_ORIGIN: https://c3.relay-staging.onorca.dev
+      DIRECTOR_SERVICE_NAME: kingu-cloud-relay-staging
+      DIRECTOR_ORIGIN: https://relay-staging.onkingu.dev
+      CELL_ORIGIN: https://c3.relay-staging.onkingu.dev
       TARGET_CELL_ID: staging-gce-c3
-      FALLBACK_CELL_ORIGIN: https://c2.relay-staging.onorca.dev
+      FALLBACK_CELL_ORIGIN: https://c2.relay-staging.onkingu.dev
       FALLBACK_CELL_ID: staging-gce-c2
       CAPACITY_SERVICE_ACCOUNT: ${{ vars.STAGING_GCP_RELAY_CAPACITY_SERVICE_ACCOUNT }}
       EXPECTED_HARD_CAP: ${{ inputs.expected-hard-cap }}
@@ -84,14 +84,14 @@ jobs:
           workload_identity_provider: ${{ vars.STAGING_GCP_RELAY_CAPACITY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.STAGING_GCP_RELAY_CAPACITY_SERVICE_ACCOUNT }}
           token_format: id_token
-          id_token_audience: https://relay-staging.onorca.dev/v1/admin/drain
+          id_token_audience: https://relay-staging.onkingu.dev/v1/admin/drain
           id_token_include_email: true
 
       - uses: google-github-actions/setup-gcloud@v2
 
       - uses: ./.github/actions/cloud-sql-rollout-lease
         with:
-          bucket: onorca-cloud-staging-terraform-state
+          bucket: onkingu-cloud-staging-terraform-state
           object: terraform/state/cloud-sql-rollout/staging.lock
 
       - uses: hashicorp/setup-terraform@v3
@@ -135,7 +135,7 @@ jobs:
           [[ "${DESIRED_IMAGE}" =~ @sha256:[0-9a-f]{64}$ ]]
           [[ "${TARGET_ZONE}" =~ ^[a-z0-9-]+$ ]]
           [[ "${MIG_NAME}" =~ ^[a-z0-9-]+$ ]]
-          test "${CELL_ORIGIN}" = "https://c3.relay-staging.onorca.dev"
+          test "${CELL_ORIGIN}" = "https://c3.relay-staging.onkingu.dev"
           jq -e \
             --arg cell "${TARGET_CELL_ID}" \
             --arg fallback "${FALLBACK_CELL_ID}" \
@@ -182,7 +182,7 @@ jobs:
       - name: Require capacity identity and exact predecessor state
         if: ${{ inputs.mode == 'apply' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -214,7 +214,7 @@ jobs:
             --project "${GCP_PROJECT_ID}" --region "${GCP_REGION}" --format=json \
             | jq -cer '
                 [.spec.containers[0].env[]? |
-                  select(.name == "ORCA_RELAY_CELLS_JSON") | .value] |
+                  select(.name == "KINGU_RELAY_CELLS_JSON") | .value] |
                 if length == 1 then .[0] | fromjson else error("missing director topology") end')"
           PREDECESSOR_CELLS_JSON="$(jq -ce \
             --arg cell "${TARGET_CELL_ID}" \
@@ -293,7 +293,7 @@ jobs:
       - name: Restore C2 as the safe placement fallback
         if: ${{ inputs.mode == 'restore-admission' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
         run: |
           node dev/scripts/verify-relay-capacity-transition.mjs \
             --director-origin "${DIRECTOR_ORIGIN}" \
@@ -312,7 +312,7 @@ jobs:
       - name: Require a healthy non-draining C3 before restoring it
         if: ${{ inputs.mode == 'restore-admission' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
         run: |
           node dev/scripts/verify-relay-capacity-transition.mjs \
             --director-origin "${DIRECTOR_ORIGIN}" \
@@ -328,7 +328,7 @@ jobs:
       - name: Require a healthy general C2 before isolating C3
         if: ${{ inputs.mode == 'apply' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
         run: |
           if test "${TRANSITION_PHASE}" = cell-active; then
             node dev/scripts/prepare-relay-capacity-canary.mjs \
@@ -351,7 +351,7 @@ jobs:
       - name: Reversibly isolate and drain C3
         if: ${{ inputs.mode == 'apply' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
         run: |
           if test "${TRANSITION_PHASE}" = cell-ready; then
             exit 0
@@ -365,7 +365,7 @@ jobs:
       - name: Verify restart-safe migration-only target
         if: ${{ inputs.mode == 'apply' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
         run: |
           if test "${TRANSITION_PHASE}" = cell-ready; then
             exit 0
@@ -382,7 +382,7 @@ jobs:
       - name: Verify current capacity
         if: ${{ inputs.mode == 'verify' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
         run: |
           node dev/scripts/verify-relay-capacity-transition.mjs \
             --director-origin "${DIRECTOR_ORIGIN}" \
@@ -423,7 +423,7 @@ jobs:
       - name: Require fail-closed director transition
         if: ${{ inputs.mode == 'apply' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
         run: |
           if test "${TRANSITION_PHASE}" = cell-ready; then
             node dev/scripts/verify-relay-capacity-transition.mjs \
@@ -514,7 +514,7 @@ jobs:
       - name: Verify exact live cap and fresh matching heartbeat
         if: ${{ inputs.mode == 'apply' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
         run: |
           node dev/scripts/verify-relay-capacity-transition.mjs \
             --director-origin "${DIRECTOR_ORIGIN}" \
@@ -530,7 +530,7 @@ jobs:
       - name: Make C3 the only staging placement cell
         if: ${{ inputs.mode == 'apply' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
         run: |
           node dev/scripts/prepare-relay-capacity-canary.mjs \
             --director-origin "${DIRECTOR_ORIGIN}" \
@@ -540,7 +540,7 @@ jobs:
       - name: Verify the sole general canary after transition
         if: ${{ inputs.mode == 'apply' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
         run: |
           node dev/scripts/verify-relay-capacity-transition.mjs \
             --director-origin "${DIRECTOR_ORIGIN}" \
@@ -556,7 +556,7 @@ jobs:
       - name: Restore the reviewed C2 and C3 placement set
         if: ${{ inputs.mode == 'restore-admission' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
         run: |
           node dev/scripts/prepare-relay-capacity-canary.mjs \
             --director-origin "${DIRECTOR_ORIGIN}" \
@@ -567,7 +567,7 @@ jobs:
       - name: Verify restored C3 admission and capacity
         if: ${{ inputs.mode == 'restore-admission' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
         run: |
           node dev/scripts/verify-relay-capacity-transition.mjs \
             --director-origin "${DIRECTOR_ORIGIN}" \
@@ -583,7 +583,7 @@ jobs:
       - name: Preserve C2 as the safe fallback after a failed transition
         if: ${{ failure() && inputs.mode == 'apply' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
         run: |
           node dev/scripts/prepare-relay-capacity-canary.mjs \
             --director-origin "${DIRECTOR_ORIGIN}" \
@@ -592,15 +592,15 @@ jobs:
             --general-cell-ids "${FALLBACK_CELL_ID}"
 
   refresh-asia-c4-image:
-    if: ${{ vars.ORCA_CLOUD_OPERATIONS_ENABLED == 'true' && github.ref == 'refs/heads/main' && inputs.mode == 'refresh-asia-c4-image' }}
+    if: ${{ vars.KINGU_CLOUD_OPERATIONS_ENABLED == 'true' && github.ref == 'refs/heads/main' && inputs.mode == 'refresh-asia-c4-image' }}
     runs-on: blacksmith-2vcpu-ubuntu-2204
     timeout-minutes: 90
     environment: staging
     env:
-      GCP_PROJECT_ID: onorca-cloud-staging
+      GCP_PROJECT_ID: onkingu-cloud-staging
       GCP_REGION: ${{ vars.STAGING_GCP_REGION }}
-      DIRECTOR_ORIGIN: https://relay-staging.onorca.dev
-      CELL_ORIGIN: https://c4.relay-staging.onorca.dev
+      DIRECTOR_ORIGIN: https://relay-staging.onkingu.dev
+      CELL_ORIGIN: https://c4.relay-staging.onkingu.dev
       TARGET_CELL_ID: staging-gce-c4
       EXPECTED_SELECTOR_GENERATION: ${{ inputs.expected-selector-generation }}
       PREDECESSOR_IMAGE_DIGEST: ${{ inputs.predecessor-image-digest }}
@@ -628,14 +628,14 @@ jobs:
           workload_identity_provider: ${{ vars.STAGING_GCP_RELAY_CAPACITY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.STAGING_GCP_RELAY_CAPACITY_SERVICE_ACCOUNT }}
           token_format: id_token
-          id_token_audience: https://relay-staging.onorca.dev/v1/admin/drain
+          id_token_audience: https://relay-staging.onkingu.dev/v1/admin/drain
           id_token_include_email: true
 
       - uses: google-github-actions/setup-gcloud@v2
 
       - uses: ./.github/actions/cloud-sql-rollout-lease
         with:
-          bucket: onorca-cloud-staging-terraform-state
+          bucket: onkingu-cloud-staging-terraform-state
           object: terraform/state/cloud-sql-rollout/staging.lock
 
       - uses: hashicorp/setup-terraform@v3
@@ -669,16 +669,16 @@ jobs:
           test "$(jq -r '.initially_enabled' <<< "${shape}")" = false
           desired_image="$(jq -r '.image' <<< "${shape}")"
           test "${desired_image}" = \
-            "us-central1-docker.pkg.dev/${GCP_PROJECT_ID}/orca-cloud/relay@${TARGET_IMAGE_DIGEST}"
+            "us-central1-docker.pkg.dev/${GCP_PROJECT_ID}/kingu-cloud/relay@${TARGET_IMAGE_DIGEST}"
           served_digest="$(gcloud artifacts docker images describe "${desired_image}" \
             --project "${GCP_PROJECT_ID}" --format='value(image_summary.digest)')"
           test "${served_digest}" = "${TARGET_IMAGE_DIGEST}"
           mig_name="$(terraform -chdir=infra/terraform output -json relay_gce_cell_deployments \
             | jq -r --arg cell "${TARGET_CELL_ID}" '.[$cell].mig_name')"
-          test "${mig_name}" = orca-cloud-staging-relay-gce-c4
+          test "${mig_name}" = kingu-cloud-staging-relay-gce-c4
           {
             echo "DESIRED_IMAGE=${desired_image}"
-            echo "ROLLBACK_IMAGE=us-central1-docker.pkg.dev/${GCP_PROJECT_ID}/orca-cloud/relay@${PREDECESSOR_IMAGE_DIGEST}"
+            echo "ROLLBACK_IMAGE=us-central1-docker.pkg.dev/${GCP_PROJECT_ID}/kingu-cloud/relay@${PREDECESSOR_IMAGE_DIGEST}"
             echo "TARGET_ZONE=asia-east2-a"
             echo "MIG_NAME=${mig_name}"
           } >> "${GITHUB_ENV}"
@@ -716,12 +716,12 @@ jobs:
           workload_identity_provider: ${{ vars.STAGING_GCP_RELAY_CAPACITY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.STAGING_GCP_RELAY_CAPACITY_SERVICE_ACCOUNT }}
           token_format: id_token
-          id_token_audience: https://relay-staging.onorca.dev/v1/admin/drain
+          id_token_audience: https://relay-staging.onkingu.dev/v1/admin/drain
           id_token_include_email: true
 
       - name: Verify the exact selector and current C4 state
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.state-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.state-auth.outputs.id_token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -740,7 +740,7 @@ jobs:
           fi
           if runtime="$(curl --silent --show-error --fail-with-body --max-time 30 --request POST \
               "${CELL_ORIGIN}/v1/admin/runtime-status" \
-              --header "Authorization: Bearer ${ORCA_RELAY_ADMIN_ID_TOKEN}" \
+              --header "Authorization: Bearer ${KINGU_RELAY_ADMIN_ID_TOKEN}" \
               --header 'Content-Type: application/json' --data '{"v":1}')"; then
             current_digest="$(jq -er '.imageDigest' <<< "${runtime}")"
             case ",${expected_digests}," in
@@ -752,7 +752,7 @@ jobs:
             if test "${REFRESH_PHASE}" != applied; then
               status="$(curl --fail-with-body --max-time 30 --request POST \
                 "${DIRECTOR_ORIGIN}/v1/admin/cell-status" \
-                --header "Authorization: Bearer ${ORCA_RELAY_ADMIN_ID_TOKEN}" \
+                --header "Authorization: Bearer ${KINGU_RELAY_ADMIN_ID_TOKEN}" \
                 --header 'Content-Type: application/json' \
                 --data "$(jq -cn --arg cell "${TARGET_CELL_ID}" '{v:1,cellId:$cell}')")"
               source_incarnation="$(jq -er '.status.runtime.cellIncarnation' <<< "${status}")"
@@ -790,12 +790,12 @@ jobs:
           workload_identity_provider: ${{ vars.STAGING_GCP_RELAY_CAPACITY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.STAGING_GCP_RELAY_CAPACITY_SERVICE_ACCOUNT }}
           token_format: id_token
-          id_token_audience: https://relay-staging.onorca.dev/v1/admin/drain
+          id_token_audience: https://relay-staging.onkingu.dev/v1/admin/drain
           id_token_include_email: true
 
       - name: Fence C4 and prove it stayed empty before replacement
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.fence-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.fence-auth.outputs.id_token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -853,12 +853,12 @@ jobs:
           workload_identity_provider: ${{ vars.STAGING_GCP_RELAY_CAPACITY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.STAGING_GCP_RELAY_CAPACITY_SERVICE_ACCOUNT }}
           token_format: id_token
-          id_token_audience: https://relay-staging.onorca.dev/v1/admin/drain
+          id_token_audience: https://relay-staging.onkingu.dev/v1/admin/drain
           id_token_include_email: true
 
       - name: Verify new C4 incarnation, image, and unchanged isolation
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.post-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.post-auth.outputs.id_token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -879,7 +879,7 @@ jobs:
           for _ in $(seq 1 36); do
             status="$(curl --fail-with-body --max-time 30 --request POST \
               "${DIRECTOR_ORIGIN}/v1/admin/cell-status" \
-              --header "Authorization: Bearer ${ORCA_RELAY_ADMIN_ID_TOKEN}" \
+              --header "Authorization: Bearer ${KINGU_RELAY_ADMIN_ID_TOKEN}" \
               --header 'Content-Type: application/json' \
               --data "$(jq -cn --arg cell "${TARGET_CELL_ID}" '{v:1,cellId:$cell}')")"
             if test "$(jq -r '.status.runtime.ready' <<< "${status}")" = true && \

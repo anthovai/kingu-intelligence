@@ -12,7 +12,7 @@ import {
   HOST_CHALLENGE_PLAINTEXT_DOMAIN,
   RELAY_HOST_CAPABILITIES_HEADER,
   RELAY_HOST_CAPABILITY_PENDING_CONN_DETAILS
-} from '@orca-cloud/relay-contract'
+} from '@kingu-cloud/relay-contract'
 import nacl from 'tweetnacl'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import WebSocket from 'ws'
@@ -57,7 +57,7 @@ async function waitForRelay(child: ChildProcess): Promise<void> {
     let stderr = ''
     const timeout = setTimeout(() => reject(new Error('relay did not start')), 10_000)
     child.stdout?.on('data', (chunk: Buffer) => {
-      if (chunk.toString().includes('[orca-relay] listening')) {
+      if (chunk.toString().includes('[kingu-relay] listening')) {
         clearTimeout(timeout)
         resolveReady()
       }
@@ -136,22 +136,22 @@ function spawnTopologyRelay(input: {
     env: {
       ...process.env,
       PORT: new URL(input.url).port,
-      ORCA_RELAY_PUBLIC_URL: input.url,
-      ORCA_RELAY_CELL_URL: input.url,
-      ORCA_RELAY_CELL_ID: input.cellId,
-      ORCA_RELAY_CELL_CAPACITY: '10',
-      ORCA_RELAY_CELLS_JSON: JSON.stringify(input.cells ?? []),
-      ORCA_RELAY_ROLE: input.role,
-      ORCA_RELAY_AUTH_ISSUER: issuer,
-      ORCA_RELAY_JWKS_URL: `${issuer}/jwks`,
-      ORCA_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
-      ORCA_RELAY_DATA_DIR: input.dataDirectory,
-      ORCA_RELAY_ADMIN_AUDIENCE: adminAudience,
-      ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
-      ORCA_RELAY_MONITOR_SERVICE_ACCOUNT: 'monitor@example.com',
-      ORCA_RELAY_FENCE_SERVICE_ACCOUNT: 'fence@example.com',
-      ORCA_RELAY_FENCE_BROKER_SERVICE_ACCOUNT: 'broker@example.com',
-      ORCA_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`
+      KINGU_RELAY_PUBLIC_URL: input.url,
+      KINGU_RELAY_CELL_URL: input.url,
+      KINGU_RELAY_CELL_ID: input.cellId,
+      KINGU_RELAY_CELL_CAPACITY: '10',
+      KINGU_RELAY_CELLS_JSON: JSON.stringify(input.cells ?? []),
+      KINGU_RELAY_ROLE: input.role,
+      KINGU_RELAY_AUTH_ISSUER: issuer,
+      KINGU_RELAY_JWKS_URL: `${issuer}/jwks`,
+      KINGU_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
+      KINGU_RELAY_DATA_DIR: input.dataDirectory,
+      KINGU_RELAY_ADMIN_AUDIENCE: adminAudience,
+      KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
+      KINGU_RELAY_MONITOR_SERVICE_ACCOUNT: 'monitor@example.com',
+      KINGU_RELAY_FENCE_SERVICE_ACCOUNT: 'fence@example.com',
+      KINGU_RELAY_FENCE_BROKER_SERVICE_ACCOUNT: 'broker@example.com',
+      KINGU_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`
     },
     stdio: ['ignore', 'pipe', 'pipe']
   })
@@ -290,7 +290,7 @@ async function openHostControl(input?: {
   const hostId = createHash('sha256').update(keyPair.publicKey).digest('base64url').slice(0, 16)
   const socket = new WebSocket(`${relayUrl.replace('http:', 'ws:')}/v1/host/control`, {
     headers: {
-      authorization: `Bearer ${await relayToken('orca-relay', hostId)}`,
+      authorization: `Bearer ${await relayToken('kingu-relay', hostId)}`,
       ...(input?.capabilities
         ? { [RELAY_HOST_CAPABILITIES_HEADER]: input.capabilities }
         : {})
@@ -374,24 +374,24 @@ beforeAll(async () => {
   const relayPort = await unusedPort()
   relayUrl = `http://127.0.0.1:${relayPort}`
   adminAudience = `${relayUrl}/v1/admin/drain`
-  relayDataDirectory = mkdtempSync(resolve(tmpdir(), 'orca-relay-blackbox-'))
+  relayDataDirectory = mkdtempSync(resolve(tmpdir(), 'kingu-relay-blackbox-'))
   relayProcess = spawn(process.execPath, ['--import', 'tsx', 'src/index.ts'], {
     cwd: appDirectory,
     env: {
       ...process.env,
       PORT: String(relayPort),
-      ORCA_RELAY_PUBLIC_URL: relayUrl,
-      ORCA_RELAY_CELL_URL: relayUrl,
-      ORCA_RELAY_AUTH_ISSUER: issuer,
-      ORCA_RELAY_JWKS_URL: `${issuer}/jwks`,
-      ORCA_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
-      ORCA_RELAY_DATA_DIR: relayDataDirectory,
-      ORCA_RELAY_ADMIN_AUDIENCE: adminAudience,
-      ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
-      ORCA_RELAY_MONITOR_SERVICE_ACCOUNT: 'monitor@example.com',
-      ORCA_RELAY_FENCE_SERVICE_ACCOUNT: 'fence@example.com',
-      ORCA_RELAY_IMAGE_DIGEST: `sha256:${'a'.repeat(64)}`,
-      ORCA_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`
+      KINGU_RELAY_PUBLIC_URL: relayUrl,
+      KINGU_RELAY_CELL_URL: relayUrl,
+      KINGU_RELAY_AUTH_ISSUER: issuer,
+      KINGU_RELAY_JWKS_URL: `${issuer}/jwks`,
+      KINGU_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
+      KINGU_RELAY_DATA_DIR: relayDataDirectory,
+      KINGU_RELAY_ADMIN_AUDIENCE: adminAudience,
+      KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
+      KINGU_RELAY_MONITOR_SERVICE_ACCOUNT: 'monitor@example.com',
+      KINGU_RELAY_FENCE_SERVICE_ACCOUNT: 'fence@example.com',
+      KINGU_RELAY_IMAGE_DIGEST: `sha256:${'a'.repeat(64)}`,
+      KINGU_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`
     },
     stdio: ['ignore', 'pipe', 'pipe']
   })
@@ -417,22 +417,22 @@ describe('served relay URL', () => {
   it('keeps liveness healthy when dependency readiness fails', async () => {
     const port = await unusedPort()
     const url = `http://127.0.0.1:${port}`
-    const dataDirectory = mkdtempSync(resolve(tmpdir(), 'orca-relay-unready-'))
+    const dataDirectory = mkdtempSync(resolve(tmpdir(), 'kingu-relay-unready-'))
     const processUnderTest = spawn(process.execPath, ['--import', 'tsx', 'src/index.ts'], {
       cwd: appDirectory,
       env: {
         ...process.env,
         PORT: String(port),
-        ORCA_RELAY_PUBLIC_URL: url,
-        ORCA_RELAY_CELL_URL: url,
-        ORCA_RELAY_AUTH_ISSUER: issuer,
-        ORCA_RELAY_JWKS_URL: 'http://127.0.0.1:1/jwks',
-        ORCA_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
-        ORCA_RELAY_DATA_DIR: dataDirectory,
-        ORCA_RELAY_ADMIN_AUDIENCE: adminAudience,
-        ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
-        ORCA_RELAY_IMAGE_DIGEST: `sha256:${'a'.repeat(64)}`,
-        ORCA_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`
+        KINGU_RELAY_PUBLIC_URL: url,
+        KINGU_RELAY_CELL_URL: url,
+        KINGU_RELAY_AUTH_ISSUER: issuer,
+        KINGU_RELAY_JWKS_URL: 'http://127.0.0.1:1/jwks',
+        KINGU_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
+        KINGU_RELAY_DATA_DIR: dataDirectory,
+        KINGU_RELAY_ADMIN_AUDIENCE: adminAudience,
+        KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
+        KINGU_RELAY_IMAGE_DIGEST: `sha256:${'a'.repeat(64)}`,
+        KINGU_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`
       },
       stdio: ['ignore', 'pipe', 'pipe']
     })
@@ -454,7 +454,7 @@ describe('served relay URL', () => {
       (
         await fetch(`${relayUrl}/v1/assign`, {
           method: 'POST',
-          headers: { authorization: `Bearer ${await relayToken('orca-cloud')}` },
+          headers: { authorization: `Bearer ${await relayToken('kingu-cloud')}` },
           body
         })
       ).status
@@ -570,7 +570,7 @@ describe('served relay URL', () => {
     const response = await fetch(`${relayUrl}/v1/assign`, {
       method: 'POST',
       headers: {
-        authorization: `Bearer ${await relayToken('orca-relay')}`,
+        authorization: `Bearer ${await relayToken('kingu-relay')}`,
         'content-type': 'application/json'
       },
       body: JSON.stringify({ v: 1, relayHostId: 'abcdefghijklmnop' })
@@ -585,7 +585,7 @@ describe('served relay URL', () => {
     expect(assignment).toMatchObject({ v: 1, cellUrl: relayUrl, assignmentEpoch: 1 })
     const verified = await jwtVerify(assignment.lease, new TextEncoder().encode(assignmentKey), {
       issuer: relayUrl,
-      audience: 'orca-relay-cell',
+      audience: 'kingu-relay-cell',
       algorithms: ['HS256']
     })
     expect(verified.payload).toMatchObject({ relayHostId: 'abcdefghijklmnop' })
@@ -612,7 +612,7 @@ describe('served relay URL', () => {
     const wrongKey = nacl.box.keyPair()
     const hostId = createHash('sha256').update(claimedKey.publicKey).digest('base64url').slice(0, 16)
     const socket = new WebSocket(`${relayUrl.replace('http:', 'ws:')}/v1/host/control`, {
-      headers: { authorization: `Bearer ${await relayToken('orca-relay', hostId)}` }
+      headers: { authorization: `Bearer ${await relayToken('kingu-relay', hostId)}` }
     })
     await new Promise<void>((resolveOpen) => socket.once('open', resolveOpen))
     const closed = new Promise<number>((resolveClose) =>
@@ -635,7 +635,7 @@ describe('served relay URL', () => {
     const keyPair = nacl.box.keyPair()
     const hostId = createHash('sha256').update(keyPair.publicKey).digest('base64url').slice(0, 16)
     const socket = new WebSocket(`${relayUrl.replace('http:', 'ws:')}/v1/host/control`, {
-      headers: { authorization: `Bearer ${await relayToken('orca-relay', hostId)}` }
+      headers: { authorization: `Bearer ${await relayToken('kingu-relay', hostId)}` }
     })
     await new Promise<void>((resolveOpen, reject) => {
       socket.once('open', resolveOpen)
@@ -663,7 +663,7 @@ describe('served relay URL', () => {
 
   it('restates a pending connection to the rebound control, detailed only when advertised', async () => {
     // The one link the unit tests cannot reach: an upgrade that really carries
-    // x-orca-host-capabilities must reach acceptControl and change the ack. A
+    // x-kingu-host-capabilities must reach acceptControl and change the ack. A
     // typo in the header name here passes every other test in the suite.
     const host = await openHostControl()
     const hostId = createHash('sha256')
@@ -957,7 +957,7 @@ describe('served relay URL', () => {
     const originalUrl = relayUrl
     const clockPort = await unusedPort()
     const clockUrl = `http://127.0.0.1:${clockPort}`
-    const clockData = mkdtempSync(resolve(tmpdir(), 'orca-relay-clock-'))
+    const clockData = mkdtempSync(resolve(tmpdir(), 'kingu-relay-clock-'))
     const clockFile = resolve(clockData, 'offset-ms')
     writeFileSync(clockFile, '0')
     const clockProcess = spawn(
@@ -969,16 +969,16 @@ describe('served relay URL', () => {
           ...process.env,
           NODE_ENV: 'test',
           PORT: String(clockPort),
-          ORCA_RELAY_PUBLIC_URL: clockUrl,
-          ORCA_RELAY_CELL_URL: clockUrl,
-          ORCA_RELAY_AUTH_ISSUER: issuer,
-          ORCA_RELAY_JWKS_URL: `${issuer}/jwks`,
-          ORCA_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
-          ORCA_RELAY_DATA_DIR: clockData,
-          ORCA_RELAY_ADMIN_AUDIENCE: adminAudience,
-          ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
-          ORCA_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`,
-          ORCA_RELAY_TEST_CLOCK_FILE: clockFile
+          KINGU_RELAY_PUBLIC_URL: clockUrl,
+          KINGU_RELAY_CELL_URL: clockUrl,
+          KINGU_RELAY_AUTH_ISSUER: issuer,
+          KINGU_RELAY_JWKS_URL: `${issuer}/jwks`,
+          KINGU_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
+          KINGU_RELAY_DATA_DIR: clockData,
+          KINGU_RELAY_ADMIN_AUDIENCE: adminAudience,
+          KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
+          KINGU_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`,
+          KINGU_RELAY_TEST_CLOCK_FILE: clockFile
         },
         stdio: ['ignore', 'pipe', 'pipe']
       }
@@ -1481,7 +1481,7 @@ describe('served relay URL', () => {
     const originalUrl = relayUrl
     const faultPort = await unusedPort()
     const faultUrl = `http://127.0.0.1:${faultPort}`
-    const faultData = mkdtempSync(resolve(tmpdir(), 'orca-relay-fault-'))
+    const faultData = mkdtempSync(resolve(tmpdir(), 'kingu-relay-fault-'))
     const faultProcess = spawn(
       process.execPath,
       ['--import', 'tsx', 'src/fault-injection-test-entry.ts'],
@@ -1491,16 +1491,16 @@ describe('served relay URL', () => {
           ...process.env,
           NODE_ENV: 'test',
           PORT: String(faultPort),
-          ORCA_RELAY_PUBLIC_URL: faultUrl,
-          ORCA_RELAY_CELL_URL: faultUrl,
-          ORCA_RELAY_AUTH_ISSUER: issuer,
-          ORCA_RELAY_JWKS_URL: `${issuer}/jwks`,
-          ORCA_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
-          ORCA_RELAY_DATA_DIR: faultData,
-          ORCA_RELAY_ADMIN_AUDIENCE: adminAudience,
-          ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
-          ORCA_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`,
-          ORCA_RELAY_TEST_FAULT_SQL: 'INSERT INTO relay_install_results'
+          KINGU_RELAY_PUBLIC_URL: faultUrl,
+          KINGU_RELAY_CELL_URL: faultUrl,
+          KINGU_RELAY_AUTH_ISSUER: issuer,
+          KINGU_RELAY_JWKS_URL: `${issuer}/jwks`,
+          KINGU_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
+          KINGU_RELAY_DATA_DIR: faultData,
+          KINGU_RELAY_ADMIN_AUDIENCE: adminAudience,
+          KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
+          KINGU_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`,
+          KINGU_RELAY_TEST_FAULT_SQL: 'INSERT INTO relay_install_results'
         },
         stdio: ['ignore', 'pipe', 'pipe']
       }
@@ -1573,7 +1573,7 @@ describe('served relay URL', () => {
     const originalUrl = relayUrl
     const faultPort = await unusedPort()
     const faultUrl = `http://127.0.0.1:${faultPort}`
-    const faultData = mkdtempSync(resolve(tmpdir(), 'orca-relay-direct-fault-'))
+    const faultData = mkdtempSync(resolve(tmpdir(), 'kingu-relay-direct-fault-'))
     const faultProcess = spawn(
       process.execPath,
       ['--import', 'tsx', 'src/fault-injection-test-entry.ts'],
@@ -1583,16 +1583,16 @@ describe('served relay URL', () => {
           ...process.env,
           NODE_ENV: 'test',
           PORT: String(faultPort),
-          ORCA_RELAY_PUBLIC_URL: faultUrl,
-          ORCA_RELAY_CELL_URL: faultUrl,
-          ORCA_RELAY_AUTH_ISSUER: issuer,
-          ORCA_RELAY_JWKS_URL: `${issuer}/jwks`,
-          ORCA_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
-          ORCA_RELAY_DATA_DIR: faultData,
-          ORCA_RELAY_ADMIN_AUDIENCE: adminAudience,
-          ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
-          ORCA_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`,
-          ORCA_RELAY_TEST_FAULT_SQL: 'INSERT INTO relay_direct_authorizations'
+          KINGU_RELAY_PUBLIC_URL: faultUrl,
+          KINGU_RELAY_CELL_URL: faultUrl,
+          KINGU_RELAY_AUTH_ISSUER: issuer,
+          KINGU_RELAY_JWKS_URL: `${issuer}/jwks`,
+          KINGU_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
+          KINGU_RELAY_DATA_DIR: faultData,
+          KINGU_RELAY_ADMIN_AUDIENCE: adminAudience,
+          KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
+          KINGU_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`,
+          KINGU_RELAY_TEST_FAULT_SQL: 'INSERT INTO relay_direct_authorizations'
         },
         stdio: ['ignore', 'pipe', 'pipe']
       }
@@ -1679,7 +1679,7 @@ describe('served relay URL', () => {
     const originalUrl = relayUrl
     const cellPort = await unusedPort()
     const cellUrl = `http://127.0.0.1:${cellPort}`
-    const cellData = mkdtempSync(resolve(tmpdir(), 'orca-relay-cell-'))
+    const cellData = mkdtempSync(resolve(tmpdir(), 'kingu-relay-cell-'))
     const keyPair = nacl.box.keyPair()
     const hostId = createHash('sha256')
       .update(keyPair.publicKey)
@@ -1695,25 +1695,25 @@ describe('served relay URL', () => {
       env: {
         ...process.env,
         PORT: String(cellPort),
-        ORCA_RELAY_PUBLIC_URL: cellUrl,
-        ORCA_RELAY_CELL_URL: cellUrl,
-        ORCA_RELAY_CELL_ID: 'cell-a',
-        ORCA_RELAY_CELL_CAPACITY: '10',
-        ORCA_RELAY_ROLE: 'cell',
-        ORCA_RELAY_AUTH_ISSUER: issuer,
-        ORCA_RELAY_JWKS_URL: `${issuer}/jwks`,
-        ORCA_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
-        ORCA_RELAY_DATA_DIR: cellData,
-        ORCA_RELAY_ADMIN_AUDIENCE: adminAudience,
-        ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
-        ORCA_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`
+        KINGU_RELAY_PUBLIC_URL: cellUrl,
+        KINGU_RELAY_CELL_URL: cellUrl,
+        KINGU_RELAY_CELL_ID: 'cell-a',
+        KINGU_RELAY_CELL_CAPACITY: '10',
+        KINGU_RELAY_ROLE: 'cell',
+        KINGU_RELAY_AUTH_ISSUER: issuer,
+        KINGU_RELAY_JWKS_URL: `${issuer}/jwks`,
+        KINGU_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
+        KINGU_RELAY_DATA_DIR: cellData,
+        KINGU_RELAY_ADMIN_AUDIENCE: adminAudience,
+        KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
+        KINGU_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`
       },
       stdio: ['ignore', 'pipe', 'pipe']
     })
     relayUrl = cellUrl
     try {
       await waitForRelay(cellProcess)
-      const token = await relayToken('orca-relay', hostId)
+      const token = await relayToken('kingu-relay', hostId)
       const assignmentResponse = await fetch(`${cellUrl}/v1/assign`, {
         method: 'POST',
         headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
@@ -1784,7 +1784,7 @@ describe('served relay URL', () => {
 
   it('runs target-first dual-cell evacuation before releasing the source control', async () => {
     const originalUrl = relayUrl
-    const dataDirectory = mkdtempSync(resolve(tmpdir(), 'orca-relay-topology-'))
+    const dataDirectory = mkdtempSync(resolve(tmpdir(), 'kingu-relay-topology-'))
     const directorUrl = `http://127.0.0.1:${await unusedPort()}`
     const cellAUrl = `http://127.0.0.1:${await unusedPort()}`
     const cellBUrl = `http://127.0.0.1:${await unusedPort()}`
@@ -1876,10 +1876,10 @@ describe('served relay URL', () => {
             environment: 'production',
             cellId: 'cell-a',
             cellIncarnation: '11111111-1111-4111-8111-111111111111',
-            migName: 'orca-relay-c1',
-            instanceGroup: 'https://compute.example/instanceGroups/orca-relay-c1',
+            migName: 'kingu-relay-c1',
+            instanceGroup: 'https://compute.example/instanceGroups/kingu-relay-c1',
             generationIdentity:
-              'https://compute.example/instanceTemplates/orca-relay-c1-abc',
+              'https://compute.example/instanceTemplates/kingu-relay-c1-abc',
             fenceCommit: 'a'.repeat(40),
             planSha256: 'b'.repeat(64),
             planObjectName:
@@ -1890,7 +1890,7 @@ describe('served relay URL', () => {
             terraformStateObjectGeneration: '987654321',
             terraformStateObjectSha256: 'd'.repeat(64),
             requestReason:
-              'orca-relay-fence/44444444-4444-4444-8444-444444444444'
+              'kingu-relay-fence/44444444-4444-4444-8444-444444444444'
           },
           confirmation: 'PREPARE_TERRAFORM_CELL_FENCE',
           expected: { status: 409, body: { error: 'cell_fence_admission_enabled' } }
@@ -1903,10 +1903,10 @@ describe('served relay URL', () => {
             environment: 'production',
             cellId: 'cell-a',
             cellIncarnation: '11111111-1111-4111-8111-111111111111',
-            migName: 'orca-relay-c1',
-            instanceGroup: 'https://compute.example/instanceGroups/orca-relay-c1',
+            migName: 'kingu-relay-c1',
+            instanceGroup: 'https://compute.example/instanceGroups/kingu-relay-c1',
             generationIdentity:
-              'https://compute.example/instanceTemplates/orca-relay-c1-abc',
+              'https://compute.example/instanceTemplates/kingu-relay-c1-abc',
             fenceCommit: 'a'.repeat(40),
             planSha256: 'b'.repeat(64),
             planObjectName:
@@ -1917,7 +1917,7 @@ describe('served relay URL', () => {
             terraformStateObjectGeneration: '987654321',
             terraformStateObjectSha256: 'd'.repeat(64),
             requestReason:
-              'orca-relay-fence/44444444-4444-4444-8444-444444444444'
+              'kingu-relay-fence/44444444-4444-4444-8444-444444444444'
           },
           confirmation: 'ABORT_UNSTARTED_TERRAFORM_CELL_FENCE',
           expected: { status: 409, body: { error: 'cell_fence_attempt_not_found' } }
@@ -2352,23 +2352,23 @@ describe('served relay URL', () => {
       env: {
         ...process.env,
         PORT: String(directorPort),
-        ORCA_RELAY_PUBLIC_URL: relayUrl,
-        ORCA_RELAY_CELL_URL: 'https://relay-c2.onorca.dev',
-        ORCA_RELAY_AUTH_ISSUER: issuer,
-        ORCA_RELAY_JWKS_URL: `${issuer}/jwks`,
-        ORCA_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
-        ORCA_RELAY_DATA_DIR: relayDataDirectory,
-        ORCA_RELAY_ROLE: 'director',
-        ORCA_RELAY_CELLS_JSON: JSON.stringify([
+        KINGU_RELAY_PUBLIC_URL: relayUrl,
+        KINGU_RELAY_CELL_URL: 'https://relay-c2.onkingu.dev',
+        KINGU_RELAY_AUTH_ISSUER: issuer,
+        KINGU_RELAY_JWKS_URL: `${issuer}/jwks`,
+        KINGU_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
+        KINGU_RELAY_DATA_DIR: relayDataDirectory,
+        KINGU_RELAY_ROLE: 'director',
+        KINGU_RELAY_CELLS_JSON: JSON.stringify([
           {
             id: 'cell-c2',
-            url: 'https://relay-c2.onorca.dev',
+            url: 'https://relay-c2.onkingu.dev',
             capacityRequests: 900
           }
         ]),
-        ORCA_RELAY_ADMIN_AUDIENCE: adminAudience,
-        ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
-        ORCA_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`
+        KINGU_RELAY_ADMIN_AUDIENCE: adminAudience,
+        KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
+        KINGU_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`
       },
       stdio: ['ignore', 'pipe', 'pipe']
     })
@@ -2376,7 +2376,7 @@ describe('served relay URL', () => {
     expect(
       await postCellHeartbeat(relayUrl, {
         id: 'cell-c2',
-        url: 'https://relay-c2.onorca.dev'
+        url: 'https://relay-c2.onkingu.dev'
       })
     ).toMatchObject({ status: 200 })
 
@@ -2399,7 +2399,7 @@ describe('served relay URL', () => {
     expect(await movedPromise).toEqual({
       type: 'relay-moved',
       v: 1,
-      cellUrl: 'https://relay-c2.onorca.dev',
+      cellUrl: 'https://relay-c2.onkingu.dev',
       assignmentEpoch: 1
     })
     expect(await closed).toBe(4503)
@@ -2412,19 +2412,19 @@ describe('served relay URL', () => {
       env: {
         ...process.env,
         PORT: new URL(combinedUrl).port,
-        ORCA_RELAY_PUBLIC_URL: combinedUrl,
-        ORCA_RELAY_CELL_URL: combinedUrl,
-        ORCA_RELAY_AUTH_ISSUER: issuer,
-        ORCA_RELAY_JWKS_URL: `${issuer}/jwks`,
-        ORCA_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
-        ORCA_RELAY_DATA_DIR: relayDataDirectory,
-        ORCA_RELAY_ADMIN_AUDIENCE: adminAudience,
-        ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
-        ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT: 'capacity@example.com',
-        ORCA_RELAY_MONITOR_SERVICE_ACCOUNT: 'monitor@example.com',
-        ORCA_RELAY_FENCE_SERVICE_ACCOUNT: 'fence@example.com',
-        ORCA_RELAY_IMAGE_DIGEST: `sha256:${'a'.repeat(64)}`,
-        ORCA_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`
+        KINGU_RELAY_PUBLIC_URL: combinedUrl,
+        KINGU_RELAY_CELL_URL: combinedUrl,
+        KINGU_RELAY_AUTH_ISSUER: issuer,
+        KINGU_RELAY_JWKS_URL: `${issuer}/jwks`,
+        KINGU_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
+        KINGU_RELAY_DATA_DIR: relayDataDirectory,
+        KINGU_RELAY_ADMIN_AUDIENCE: adminAudience,
+        KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
+        KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT: 'capacity@example.com',
+        KINGU_RELAY_MONITOR_SERVICE_ACCOUNT: 'monitor@example.com',
+        KINGU_RELAY_FENCE_SERVICE_ACCOUNT: 'fence@example.com',
+        KINGU_RELAY_IMAGE_DIGEST: `sha256:${'a'.repeat(64)}`,
+        KINGU_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`
       },
       stdio: ['ignore', 'pipe', 'pipe']
     })
@@ -2435,21 +2435,21 @@ describe('served relay URL', () => {
     const originalUrl = relayUrl
     const signalPort = await unusedPort()
     const signalUrl = `http://127.0.0.1:${signalPort}`
-    const signalData = mkdtempSync(resolve(tmpdir(), 'orca-relay-sigterm-'))
+    const signalData = mkdtempSync(resolve(tmpdir(), 'kingu-relay-sigterm-'))
     const signalProcess = spawn(process.execPath, ['--import', 'tsx', 'src/index.ts'], {
       cwd: appDirectory,
       env: {
         ...process.env,
         PORT: String(signalPort),
-        ORCA_RELAY_PUBLIC_URL: signalUrl,
-        ORCA_RELAY_CELL_URL: signalUrl,
-        ORCA_RELAY_AUTH_ISSUER: issuer,
-        ORCA_RELAY_JWKS_URL: `${issuer}/jwks`,
-        ORCA_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
-        ORCA_RELAY_DATA_DIR: signalData,
-        ORCA_RELAY_ADMIN_AUDIENCE: adminAudience,
-        ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
-        ORCA_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`
+        KINGU_RELAY_PUBLIC_URL: signalUrl,
+        KINGU_RELAY_CELL_URL: signalUrl,
+        KINGU_RELAY_AUTH_ISSUER: issuer,
+        KINGU_RELAY_JWKS_URL: `${issuer}/jwks`,
+        KINGU_RELAY_ASSIGNMENT_SIGNING_KEY: assignmentKey,
+        KINGU_RELAY_DATA_DIR: signalData,
+        KINGU_RELAY_ADMIN_AUDIENCE: adminAudience,
+        KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT: 'deploy@example.com',
+        KINGU_RELAY_ADMIN_JWKS_URL: `${issuer}/jwks`
       },
       stdio: ['ignore', 'pipe', 'pipe']
     })
@@ -2566,7 +2566,7 @@ describe('served relay URL', () => {
 
     const directorPort = await unusedPort()
     const directorUrl = `http://127.0.0.1:${directorPort}`
-    const directorData = mkdtempSync(resolve(tmpdir(), 'orca-relay-monitor-auth-'))
+    const directorData = mkdtempSync(resolve(tmpdir(), 'kingu-relay-monitor-auth-'))
     const director = spawnTopologyRelay({
       url: directorUrl,
       dataDirectory: directorData,

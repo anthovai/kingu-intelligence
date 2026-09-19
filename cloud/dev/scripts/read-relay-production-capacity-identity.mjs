@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
 
-const CAPACITY_IDENTITY_NAME = 'ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT'
+const CAPACITY_IDENTITY_NAME = 'KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT'
 
 export function readProductionCapacityIdentity(revision) {
   const env = revision?.spec?.containers?.[0]?.env

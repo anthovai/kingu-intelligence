@@ -10,7 +10,7 @@ function prune(label: string, run: () => Promise<number>, intervalMs: number): N
     void run().catch((error: unknown) => {
       console.warn(
         JSON.stringify({
-          event: 'orca_push_prune_failed',
+          event: 'kingu_push_prune_failed',
           target: label,
           error: error instanceof Error ? error.name : 'unknown'
         })

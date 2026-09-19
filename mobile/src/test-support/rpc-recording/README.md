@@ -355,8 +355,8 @@ Record only from unchanged pinned product sources and lockfile. The fence exempt
 them; every other test-support path is compared against the baseline like product code:
 
 ```sh
-ORCA_BACKGROUND_LAUNCH=1 RPC_FOUNDATION_RECORD=1 pnpm --dir mobile exec tsx scripts/rpc-recording.mts --record
-ORCA_BACKGROUND_LAUNCH=1 pnpm --dir mobile test src/test-support/rpc-recording
+KINGU_BACKGROUND_LAUNCH=1 RPC_FOUNDATION_RECORD=1 pnpm --dir mobile exec tsx scripts/rpc-recording.mts --record
+KINGU_BACKGROUND_LAUNCH=1 pnpm --dir mobile test src/test-support/rpc-recording
 ```
 
 Mutants are the defect evidence. `mutants/operation-mutations.ts` holds one anchored source edit
@@ -481,14 +481,14 @@ a product change with its own re-record.
 
 ```sh
 # 1. Before touching the call site, confirm the oracle is green on your branch.
-ORCA_BACKGROUND_LAUNCH=1 pnpm --dir mobile test src/test-support/rpc-recording
+KINGU_BACKGROUND_LAUNCH=1 pnpm --dir mobile test src/test-support/rpc-recording
 
 # 2. Migrate the call site. Re-run. Any divergence is your diff, reported down to the JSON path.
 
 # 3. If a divergence is intended, say so deliberately. Recording refuses to run unless the
 #    product tree matches the pinned baseline, so bump `baseline` in pilot-scenarios.json to the
 #    commit you are recording from first.
-ORCA_BACKGROUND_LAUNCH=1 RPC_FOUNDATION_RECORD=1 \
+KINGU_BACKGROUND_LAUNCH=1 RPC_FOUNDATION_RECORD=1 \
   pnpm --dir mobile exec tsx scripts/rpc-recording.mts --record
 ```
 

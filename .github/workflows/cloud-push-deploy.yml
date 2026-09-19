@@ -28,18 +28,18 @@ defaults:
 jobs:
   deploy:
     if: >-
-      ${{ vars.ORCA_CLOUD_OPERATIONS_ENABLED == 'true' &&
+      ${{ vars.KINGU_CLOUD_OPERATIONS_ENABLED == 'true' &&
       github.ref == 'refs/heads/main' }}
     runs-on: blacksmith-2vcpu-ubuntu-2204
     environment: production
     env:
-      GCP_PROJECT_ID: onorca-cloud
+      GCP_PROJECT_ID: onkingu-cloud
       GCP_REGION: ${{ vars.PRODUCTION_GCP_REGION }}
-      SERVICE_NAME: orca-cloud-push
-      REPOSITORY_ID: orca-cloud
+      SERVICE_NAME: kingu-cloud-push
+      REPOSITORY_ID: kingu-cloud
       IMAGE_NAME: push
-      PUSH_ORIGIN: https://push.onorca.dev
-      PUSH_RUNTIME_SERVICE_ACCOUNT: orca-cloud-push@onorca-cloud.iam.gserviceaccount.com
+      PUSH_ORIGIN: https://push.onkingu.dev
+      PUSH_RUNTIME_SERVICE_ACCOUNT: kingu-cloud-push@onkingu-cloud.iam.gserviceaccount.com
       # Scaling the serving revision must already hold, matching push_min_instances and
       # push_max_instances. Terraform owns both, and the candidate inherits them from the
       # service, so this deploy never passes a scaling flag: doing so would write a
@@ -106,10 +106,10 @@ jobs:
           set -euo pipefail
           docker run --rm --network none --entrypoint node "${IMAGE}" --input-type=module -e '
             import { loadPushConfig } from "./apps/push/dist/config.js";
-            const env = { ORCA_PUSH_PUBLIC_URL: "https://push.onorca.dev", ORCA_PUSH_MODE: "validation", ORCA_PUSH_FCM_PROJECT_ID: "onorca-cloud" };
+            const env = { KINGU_PUSH_PUBLIC_URL: "https://push.onkingu.dev", KINGU_PUSH_MODE: "validation", KINGU_PUSH_FCM_PROJECT_ID: "onkingu-cloud" };
             if (loadPushConfig(env).mode !== "validation") throw new Error("validation_mode_unsupported");
             let rejected = false;
-            try { loadPushConfig({ ...env, ORCA_PUSH_MODE: "invalid" }); } catch { rejected = true; }
+            try { loadPushConfig({ ...env, KINGU_PUSH_MODE: "invalid" }); } catch { rejected = true; }
             if (!rejected) throw new Error("validation_mode_not_fail_closed");
           '
 
@@ -117,7 +117,7 @@ jobs:
       # applies its schema while the new revision starts, so the revision is the schema step.
       - uses: ./.github/actions/cloud-sql-rollout-lease
         with:
-          bucket: onorca-cloud-terraform-state
+          bucket: onkingu-cloud-terraform-state
           object: terraform/state/push-rollout/production.lock
 
       # Why: the candidate inherits the serving revision's scaling. A serving revision that has
@@ -161,7 +161,7 @@ jobs:
           image="$(jq -er '.status.imageDigest' "${RUNNER_TEMP}/push-rollback-revision.json")"
           [[ "${image}" =~ @sha256:[a-f0-9]{64}$ ]]
           echo "ROLLBACK_IMAGE=${image}" >> "${GITHUB_ENV}"
-          jq -e 'all(.spec.containers[0].env[]?; .name != "ORCA_PUSH_MODE" or .value == "active")' \
+          jq -e 'all(.spec.containers[0].env[]?; .name != "KINGU_PUSH_MODE" or .value == "active")' \
             "${RUNNER_TEMP}/push-rollback-revision.json" > /dev/null
 
       # Validation has no schema writes, HTTP mutations, worker, or pruners; tags alone do not
@@ -185,7 +185,7 @@ jobs:
             --tag "${tag}" \
             --revision-suffix "${tag}" \
             --no-traffic \
-            --update-env-vars ORCA_PUSH_MODE=validation \
+            --update-env-vars KINGU_PUSH_MODE=validation \
             --quiet
           candidate="$(gcloud run services describe "${SERVICE_NAME}" \
             --project "${GCP_PROJECT_ID}" --region "${GCP_REGION}" --format=json \
@@ -249,7 +249,7 @@ jobs:
             --impersonate-service-account "${PUSH_RUNTIME_SERVICE_ACCOUNT}")"
           test -n "${token}"
           echo "::add-mask::${token}"
-          body='{"validate_only":true,"message":{"token":"orca-push-deploy-probe-invalid-token","notification":{"title":"Orca","body":"deploy probe"}}}'
+          body='{"validate_only":true,"message":{"token":"kingu-push-deploy-probe-invalid-token","notification":{"title":"Kingu","body":"deploy probe"}}}'
           for attempt in $(seq 1 5); do
             code="$(curl -sS -o "${RUNNER_TEMP}/push-fcm.json" -w '%{http_code}' --max-time 20 \
               -X POST "https://fcm.googleapis.com/v1/projects/${GCP_PROJECT_ID}/messages:send" \
@@ -285,7 +285,7 @@ jobs:
           gcloud run deploy "${SERVICE_NAME}" \
             --project "${GCP_PROJECT_ID}" --region "${GCP_REGION}" \
             --image "${IMAGE}" --tag "${tag}" --revision-suffix "${tag}" \
-            --remove-env-vars ORCA_PUSH_MODE --no-traffic --quiet
+            --remove-env-vars KINGU_PUSH_MODE --no-traffic --quiet
           gcloud run services update-traffic "${SERVICE_NAME}" \
             --project "${GCP_PROJECT_ID}" --region "${GCP_REGION}" \
             --remove-tags "${VALIDATION_TAG}" --quiet
@@ -299,9 +299,9 @@ jobs:
             --slurpfile prior "${RUNNER_TEMP}/push-rollback-revision.json" '
              def shape: del(.containers[0].image) |
                .containers[0].env = ((.containers[0].env // []) |
-                 map(select(.name != "ORCA_PUSH_MODE")) | sort_by(.name));
+                 map(select(.name != "KINGU_PUSH_MODE")) | sort_by(.name));
              .spec.containers[0].image == $image and .spec.serviceAccountName == $account and
-             all(.spec.containers[0].env[]?; .name != "ORCA_PUSH_MODE") and
+             all(.spec.containers[0].env[]?; .name != "KINGU_PUSH_MODE") and
              (.spec | shape) == ($prior[0].spec | shape) and
              .metadata.annotations["autoscaling.knative.dev/maxScale"] == $ceiling and
              (.metadata.annotations["autoscaling.knative.dev/minScale"] | tonumber) >= ($floor | tonumber)' \
@@ -353,7 +353,7 @@ jobs:
             echo "Known-good image: \`${ROLLBACK_IMAGE}\`"
             echo
             echo "Recovery: deploy \`${ROLLBACK_IMAGE}\` as a new revision with" \
-              "\`--remove-env-vars ORCA_PUSH_MODE --no-traffic --tag <unique-recovery-tag> --revision-suffix <unique-recovery-suffix>\`."
+              "\`--remove-env-vars KINGU_PUSH_MODE --no-traffic --tag <unique-recovery-tag> --revision-suffix <unique-recovery-suffix>\`."
             echo 'Verify its exact digest, configuration, readiness and active mode, then promote and check the public origin.'
             echo 'Only then remove obsolete tags and delete rejected/previous revisions; never delete the latest revision.'
             echo 'The previous revision is retired after public checks; retain this immutable image for recovery under the rollout lease.'
@@ -443,7 +443,7 @@ jobs:
           gcloud run deploy "${SERVICE_NAME}" \
             --project "${GCP_PROJECT_ID}" --region "${GCP_REGION}" \
             --image "${ROLLBACK_IMAGE}" --revision-suffix "${tag}" --tag "${tag}" \
-            --remove-env-vars ORCA_PUSH_MODE --no-traffic --quiet
+            --remove-env-vars KINGU_PUSH_MODE --no-traffic --quiet
           gcloud run services describe "${SERVICE_NAME}" \
             --project "${GCP_PROJECT_ID}" --region "${GCP_REGION}" --format=json \
             > "${RUNNER_TEMP}/push-recovered-service.json"
@@ -456,11 +456,11 @@ jobs:
             --slurpfile recovered "${RUNNER_TEMP}/push-recovery-revision.json" '
               def shape: del(.containers[0].image) |
                 .containers[0].env = ((.containers[0].env // []) |
-                  map(select(.name != "ORCA_PUSH_MODE")) | sort_by(.name));
+                  map(select(.name != "KINGU_PUSH_MODE")) | sort_by(.name));
               .spec.template.spec.containers[0].image == $image and
-              all(.spec.template.spec.containers[0].env[]?; .name != "ORCA_PUSH_MODE") and
+              all(.spec.template.spec.containers[0].env[]?; .name != "KINGU_PUSH_MODE") and
               $recovered[0].spec.containers[0].image == $image and
-              all($recovered[0].spec.containers[0].env[]?; .name != "ORCA_PUSH_MODE") and
+              all($recovered[0].spec.containers[0].env[]?; .name != "KINGU_PUSH_MODE") and
               ($recovered[0].spec | shape) == ($prior[0].spec | shape) and
               .spec.template.metadata.annotations["autoscaling.knative.dev/maxScale"] == $ceiling and
               (.spec.template.metadata.annotations["autoscaling.knative.dev/minScale"] | tonumber) >= ($floor | tonumber) and

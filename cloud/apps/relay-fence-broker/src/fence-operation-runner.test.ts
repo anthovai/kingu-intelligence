@@ -6,9 +6,9 @@ import {
 } from './fence-operation-runner.js'
 
 const config = {
-  project: 'onorca-cloud',
-  directorOrigin: 'https://relay.onorca.dev',
-  adminAudience: 'https://relay.onorca.dev/v1/admin/drain',
+  project: 'onkingu-cloud',
+  directorOrigin: 'https://relay.onkingu.dev',
+  adminAudience: 'https://relay.onkingu.dev/v1/admin/drain',
   sourceCellId: 'production-gce-c3',
   runtimeServiceAccount: 'runtime@example.com',
   imageCommit: 'a'.repeat(40),
@@ -29,9 +29,9 @@ describe('fence operation runner', () => {
     ).toMatchObject({
       PRESERVED: 'yes',
       IAC_TOOL: 'terraform',
-      ORCA_RELAY_ADMIN_ID_TOKEN: 'read.token.value',
-      ORCA_RELAY_FENCE_MUTATION_ID_TOKEN: 'mutation.token.value',
-      ORCA_RELAY_FENCE_IMAGE_COMMIT: 'a'.repeat(40)
+      KINGU_RELAY_ADMIN_ID_TOKEN: 'read.token.value',
+      KINGU_RELAY_FENCE_MUTATION_ID_TOKEN: 'mutation.token.value',
+      KINGU_RELAY_FENCE_IMAGE_COMMIT: 'a'.repeat(40)
     })
   })
 

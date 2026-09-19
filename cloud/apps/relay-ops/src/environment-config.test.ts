@@ -107,30 +107,30 @@ describe('relay operations environment config', () => {
     const cells = RELAY_OPS_ENVIRONMENTS.production.cells
     expect(cells.at(-1)).toMatchObject({
       hostname: `c${cells.length}`,
-      origin: `https://c${cells.length}.relay.onorca.dev`
+      origin: `https://c${cells.length}.relay.onkingu.dev`
     })
   })
 
   it('inventories Asia cells only when they exist in durable Terraform', () => {
     const cells = relayOpsCellsFromTerraform({
       environment: 'production',
-      domain: 'relay.onorca.dev',
+      domain: 'relay.onkingu.dev',
       source: durableAsiaSource
     })
 
     expect(cells.slice(1)).toEqual([
       {
-        cellId: 'production-gce-c27', hostname: 'c27', origin: 'https://c27.relay.onorca.dev',
+        cellId: 'production-gce-c27', hostname: 'c27', origin: 'https://c27.relay.onkingu.dev',
         region: 'asia-east2', zone: 'asia-east2-a', machineType: 'e2-standard-4',
         capacityRequests: 6000, databasePoolMax: 10, configuredAdmission: false
       },
       {
-        cellId: 'production-gce-c28', hostname: 'c28', origin: 'https://c28.relay.onorca.dev',
+        cellId: 'production-gce-c28', hostname: 'c28', origin: 'https://c28.relay.onkingu.dev',
         region: 'asia-east2', zone: 'asia-east2-b', machineType: 'e2-standard-4',
         capacityRequests: 6000, databasePoolMax: 10, configuredAdmission: false
       },
       {
-        cellId: 'production-gce-c29', hostname: 'c29', origin: 'https://c29.relay.onorca.dev',
+        cellId: 'production-gce-c29', hostname: 'c29', origin: 'https://c29.relay.onkingu.dev',
         region: 'asia-east2', zone: 'asia-east2-c', machineType: 'e2-standard-4',
         capacityRequests: 6000, databasePoolMax: 10, configuredAdmission: false
       }
@@ -138,7 +138,7 @@ describe('relay operations environment config', () => {
 
     const usOnlyCells = relayOpsCellsFromTerraform({
       environment: 'production',
-      domain: 'relay.onorca.dev',
+      domain: 'relay.onkingu.dev',
       source: durableUsOnlySource
     })
     expect(usOnlyCells).toHaveLength(1)

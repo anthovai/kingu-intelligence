@@ -273,13 +273,13 @@ export function defaultCommandJson(args) {
 }
 
 export function suppliedAdminIdentityToken(environment = process.env) {
-  const token = environment.ORCA_RELAY_ADMIN_ID_TOKEN
+  const token = environment.KINGU_RELAY_ADMIN_ID_TOKEN
   if (token === undefined) return null
   return validatedIdentityToken(token, 'admin')
 }
 
 export function suppliedFenceMutationIdentityToken(environment = process.env) {
-  const token = environment.ORCA_RELAY_FENCE_MUTATION_ID_TOKEN
+  const token = environment.KINGU_RELAY_FENCE_MUTATION_ID_TOKEN
   if (token === undefined) return null
   return validatedIdentityToken(token, 'fence mutation')
 }
@@ -542,7 +542,7 @@ export async function drainSource(
     headers: {
       authorization: `Bearer ${token}`,
       'content-type': 'application/json',
-      ...(traceValue ? { 'x-orca-drain-trace': traceValue } : {})
+      ...(traceValue ? { 'x-kingu-drain-trace': traceValue } : {})
     },
     body: JSON.stringify({ v: 1, graceMs }),
     signal: AbortSignal.timeout(30_000)
@@ -550,7 +550,7 @@ export async function drainSource(
   await responseJson(response, 'source drain')
   return {
     backendStatus: response.status,
-    backendInstance: response.headers.get('x-orca-backend-instance') ?? undefined
+    backendInstance: response.headers.get('x-kingu-backend-instance') ?? undefined
   }
 }
 

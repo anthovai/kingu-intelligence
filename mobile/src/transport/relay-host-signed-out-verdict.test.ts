@@ -22,7 +22,7 @@ import { MobileRelayE2eeLink, RelayOuterError } from './mobile-relay-e2ee-link'
 import { LogicalClientConnectionPath } from './logical-client-connection-path'
 import { RelayReconnectController } from './mobile-relay-reconnect-controller'
 
-const SIGNED_OUT_LABEL = 'Desktop signed out — sign in to Orca on your desktop to reconnect'
+const SIGNED_OUT_LABEL = 'Desktop signed out — sign in to Kingu on your desktop to reconnect'
 
 class FakeSocket {
   static readonly OPEN = 1
@@ -43,7 +43,7 @@ function linkOver(
   onError: (error: Error) => void
 ): MobileRelayE2eeLink {
   return new MobileRelayE2eeLink({
-    endpoint: { cellUrl: 'https://relay-c1.onorca.dev', relayHostId: 'AbCdEf0123_-xyZ9' },
+    endpoint: { cellUrl: 'https://relay-c1.onkingu.dev', relayHostId: 'AbCdEf0123_-xyZ9' },
     credential: 'credential',
     expectedCredentialKind: 'resume',
     deviceToken: 'device-token',

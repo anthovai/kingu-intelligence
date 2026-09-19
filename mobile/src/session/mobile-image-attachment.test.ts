@@ -34,7 +34,7 @@ describe('attachMobileImageToTerminal', () => {
         error: { code: 'method_not_found', message: 'no' },
         _meta: { runtimeId: 'r' }
       },
-      ok('save', '/tmp/orca-attach.png'),
+      ok('save', '/tmp/kingu-attach.png'),
       ok('send', { send: { accepted: true } })
     ])
 
@@ -52,7 +52,7 @@ describe('attachMobileImageToTerminal', () => {
       terminal: 'term-1',
       // Trailing space: the user types on this same line next, so a bare
       // `…\x1b[201~` would arrive as `…pngadd` (STA-4847).
-      text: '\x1b[200~/tmp/orca-attach.png\x1b[201~ ',
+      text: '\x1b[200~/tmp/kingu-attach.png\x1b[201~ ',
       enter: false,
       client: { id: 'device-9', type: 'mobile' }
     })

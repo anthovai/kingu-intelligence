@@ -5,9 +5,9 @@ const SERVICE_ACCOUNT_EMAIL =
   /^[a-z][a-z0-9-]{4,28}[a-z0-9]@[a-z0-9-]+\.iam\.gserviceaccount\.com$/
 
 const REHOME_CONFIG =
-  /^  printf 'ORCA_RELAY_REHOME_(?:DIRECTOR_SERVICE_ACCOUNT|AUDIENCE)=%s\\n' '[^'\n]+'$/
+  /^  printf 'KINGU_RELAY_REHOME_(?:DIRECTOR_SERVICE_ACCOUNT|AUDIENCE)=%s\\n' '[^'\n]+'$/
 
-const DATABASE_POOL_MAX = /^  printf 'ORCA_RELAY_DATABASE_POOL_MAX=%s\\n' '[0-9]+'$/
+const DATABASE_POOL_MAX = /^  printf 'KINGU_RELAY_DATABASE_POOL_MAX=%s\\n' '[0-9]+'$/
 
 // Only cells listed as regional rehome sources get rehome trust lines in their startup script.
 function rehomeProtocol({ regionalRehomeProtocol }) {
@@ -189,7 +189,7 @@ function relayImage(script) {
     return end < 0 ? [] : lines.slice(start, end + 1)
   })
   const relayCommands = commands.filter((command) =>
-    command.filter((line) => line === '  --name orca-relay \\').length === 1)
+    command.filter((line) => line === '  --name kingu-relay \\').length === 1)
   if (relayCommands.length !== 1) return null
   const command = relayCommands[0]
   const image = /^  '([^'\n]+@sha256:[a-f0-9]{64})'$/.exec(command.at(-1))?.[1]
@@ -208,9 +208,9 @@ function normalizedStartupScript(
   if (!image) throw new Error('cell plan startup script has no Relay image')
   const digest = image.split('@')[1]
   const capacityAssignment =
-    /^  printf 'ORCA_RELAY_CELL_CONNECTION_(?:HARD_CAP|UNOBSERVED_BOUND)=%s\\n' '[0-9]+'$/
+    /^  printf 'KINGU_RELAY_CELL_CONNECTION_(?:HARD_CAP|UNOBSERVED_BOUND)=%s\\n' '[0-9]+'$/
   const capacityIdentity =
-    /^  printf 'ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' '[a-z][a-z0-9-]{4,28}[a-z0-9]@[a-z0-9-]+\.iam\.gserviceaccount\.com'$/
+    /^  printf 'KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' '[a-z][a-z0-9-]{4,28}[a-z0-9]@[a-z0-9-]+\.iam\.gserviceaccount\.com'$/
   return script
     .split('\n')
     .filter(
@@ -234,12 +234,12 @@ function requireDesiredStartupScript(script, config) {
   const lines = typeof script === 'string' ? script.split('\n') : []
   const expected = [
     [
-      /^  printf 'ORCA_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '[0-9]+'$/,
-      `  printf 'ORCA_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '${config.hardCap}'`
+      /^  printf 'KINGU_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '[0-9]+'$/,
+      `  printf 'KINGU_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '${config.hardCap}'`
     ],
     [
-      /^  printf 'ORCA_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '[0-9]+'$/,
-      `  printf 'ORCA_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '${config.unobservedBound}'`
+      /^  printf 'KINGU_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '[0-9]+'$/,
+      `  printf 'KINGU_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '${config.unobservedBound}'`
     ]
   ]
   // A same-cap cell whose template predates this line gains it on its next roll, so the
@@ -247,20 +247,20 @@ function requireDesiredStartupScript(script, config) {
   // and what stops a roll dropping or rewriting the line it lets through.
   if (['bootstrap-cell', 'same-cap-cell'].includes(config.mode)) {
     expected.push([
-      /^  printf 'ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' '[a-z][a-z0-9-]{4,28}[a-z0-9]@[a-z0-9-]+\.iam\.gserviceaccount\.com'$/,
-      `  printf 'ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' '${config.capacityServiceAccount}'`
+      /^  printf 'KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' '[a-z][a-z0-9-]{4,28}[a-z0-9]@[a-z0-9-]+\.iam\.gserviceaccount\.com'$/,
+      `  printf 'KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\\n' '${config.capacityServiceAccount}'`
     ])
   }
   const rehomeTrusted = config.mode === 'same-cap-cell' && rehomeProtocol(config) >= 1
   if (rehomeTrusted) {
     expected.push(
       [
-        /^  printf 'ORCA_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT=%s\\n' '[^'\n]+'$/,
-        `  printf 'ORCA_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT=%s\\n' '${config.rehomeDirectorServiceAccount}'`
+        /^  printf 'KINGU_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT=%s\\n' '[^'\n]+'$/,
+        `  printf 'KINGU_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT=%s\\n' '${config.rehomeDirectorServiceAccount}'`
       ],
       [
-        /^  printf 'ORCA_RELAY_REHOME_AUDIENCE=%s\\n' '[^'\n]+'$/,
-        `  printf 'ORCA_RELAY_REHOME_AUDIENCE=%s\\n' '${config.rehomeAudience}'`
+        /^  printf 'KINGU_RELAY_REHOME_AUDIENCE=%s\\n' '[^'\n]+'$/,
+        `  printf 'KINGU_RELAY_REHOME_AUDIENCE=%s\\n' '${config.rehomeAudience}'`
       ]
     )
   }
@@ -273,7 +273,7 @@ function requireDesiredStartupScript(script, config) {
   if (pool !== undefined) {
     expected.push([
       DATABASE_POOL_MAX,
-      `  printf 'ORCA_RELAY_DATABASE_POOL_MAX=%s\\n' '${pool}'`
+      `  printf 'KINGU_RELAY_DATABASE_POOL_MAX=%s\\n' '${pool}'`
     ])
   }
   // An unpinned cell sits on the root pool default, so gaining a pool line is real drift.

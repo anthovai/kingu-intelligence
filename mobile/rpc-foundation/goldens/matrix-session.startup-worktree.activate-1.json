@@ -47,7 +47,7 @@
       "ordinal": 12,
       "value": {
         "durationMs": 3000,
-        "message": "Open Orca on the host to wake sleeping agents."
+        "message": "Open Kingu on the host to wake sleeping agents."
       }
     },
     "0f13cb25f551": {
@@ -239,7 +239,7 @@
       "ordinal": 26,
       "value": {
         "durationMs": 3000,
-        "message": "Open Orca on the host to wake sleeping agents."
+        "message": "Open Kingu on the host to wake sleeping agents."
       }
     },
     "5dbd71a7b565": {
@@ -571,7 +571,7 @@
       "ordinal": 27,
       "value": {
         "durationMs": 3000,
-        "message": "Open Orca on the host to wake sleeping agents."
+        "message": "Open Kingu on the host to wake sleeping agents."
       }
     },
     "be26ebfb049f": {

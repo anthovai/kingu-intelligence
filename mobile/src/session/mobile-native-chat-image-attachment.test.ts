@@ -41,7 +41,7 @@ describe('uploadMobileNativeChatImages', () => {
   it('uploads the picked image and returns its host path + local preview uri, without any terminal.send', async () => {
     const client = clientWithResponses([
       methodNotFound('start'),
-      ok('save', '/tmp/orca-attach.png')
+      ok('save', '/tmp/kingu-attach.png')
     ])
 
     const result = await uploadMobileNativeChatImages('library', {
@@ -52,7 +52,7 @@ describe('uploadMobileNativeChatImages', () => {
 
     expect(result).toEqual([
       {
-        path: '/tmp/orca-attach.png',
+        path: '/tmp/kingu-attach.png',
         previewUri: 'file:///photo.jpg',
         contentFingerprint: expect.stringMatching(/^[0-9a-f]{64}$/)
       }

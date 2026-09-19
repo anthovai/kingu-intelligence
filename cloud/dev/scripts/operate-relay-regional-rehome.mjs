@@ -2,7 +2,7 @@ import { pathToFileURL } from 'node:url'
 import { fetchAdminOnceMore } from './relay-admin-transient-retry.mjs'
 import { inspectAdmissionSelector } from './relay-admission-selector.mjs'
 
-const DIRECTOR_ORIGIN = 'https://relay.onorca.dev'
+const DIRECTOR_ORIGIN = 'https://relay.onkingu.dev'
 const MODES = new Set(['inspect', 'enable', 'pause', 'disable', 'recover-enable'])
 
 function canonicalCells(value) {
@@ -84,7 +84,7 @@ export function parseRegionalRehomeArguments(argv, environment = process.env) {
       .filter((key) => key !== 'confirmation')
       .some((key) => values[key] !== undefined)
   ) throw new Error('enable recovery cannot carry durable control shape arguments')
-  const token = environment.ORCA_RELAY_ADMIN_ID_TOKEN
+  const token = environment.KINGU_RELAY_ADMIN_ID_TOKEN
   if (!token || token.length > 8_192) throw new Error('admin identity token is unavailable')
   return {
     mode: values.mode,

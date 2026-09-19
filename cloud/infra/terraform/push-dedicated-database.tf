@@ -49,7 +49,7 @@ resource "google_sql_database" "push_dedicated" {
   count = local.push_gateway_count
 
   project  = var.project_id
-  name     = "orca_push"
+  name     = "kingu_push"
   instance = google_sql_database_instance.push_dedicated[0].name
 
   lifecycle {
@@ -67,7 +67,7 @@ resource "google_sql_user" "push_dedicated" {
   count = local.push_gateway_count
 
   project  = var.project_id
-  name     = "orca_push"
+  name     = "kingu_push"
   instance = google_sql_database_instance.push_dedicated[0].name
   password = random_password.push_dedicated_database[0].result
 }

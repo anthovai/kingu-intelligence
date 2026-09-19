@@ -73,7 +73,7 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v7
         with:
-          name: orca-mobile-apk
+          name: kingu-mobile-apk
           path: mobile/android/app/build/outputs/apk/release/*.apk
 
       - name: Ensure GitHub release tag
@@ -126,7 +126,7 @@ jobs:
               fi
             fi
             if [ ! -s "$notes_file" ]; then
-              printf 'Orca Mobile Android %s\n' "$tag" > "$notes_file"
+              printf 'Kingu Mobile Android %s\n' "$tag" > "$notes_file"
             fi
             # Why: reuse the desktop release path's character-safe truncation so a
             # multi-byte character cannot be split at the cap.
@@ -142,7 +142,7 @@ jobs:
 
             gh release create "$tag" \
               --repo "$GITHUB_REPOSITORY" \
-              --title "Orca Mobile Android $tag" \
+              --title "Kingu Mobile Android $tag" \
               --prerelease \
               --latest=false \
               --notes-file "$notes_file" \

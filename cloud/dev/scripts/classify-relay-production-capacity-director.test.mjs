@@ -5,7 +5,7 @@ import {
 } from './classify-relay-production-capacity-director.mjs'
 
 const capacityServiceAccount =
-  'orca-cloud-gha-relay-cap@onorca-cloud.iam.gserviceaccount.com'
+  'kingu-cloud-gha-relay-cap@onkingu-cloud.iam.gserviceaccount.com'
 const capacityCellIds = ['production-gce-c25', 'production-gce-c26']
 const baseCells = [
   { id: 'production-gce-c17', connectionHardCap: 600, connectionUnobservedBound: 60 },
@@ -68,7 +68,7 @@ test('rejects an unknown topology or capacity identity', () => {
   )
   assert.throws(
     () => classifyProductionCapacityDirector(state({
-      currentCapacityServiceAccount: 'unexpected@onorca-cloud.iam.gserviceaccount.com'
+      currentCapacityServiceAccount: 'unexpected@onkingu-cloud.iam.gserviceaccount.com'
     }), capacityServiceAccount),
     /unexpected capacity identity/
   )

@@ -7,8 +7,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { applyPatch, parsePatch, reversePatch } from 'diff'
 import { build } from 'esbuild'
 
-if (process.env.ORCA_BACKGROUND_LAUNCH !== '1') {
-  throw new Error('Run with ORCA_BACKGROUND_LAUNCH=1.')
+if (process.env.KINGU_BACKGROUND_LAUNCH !== '1') {
+  throw new Error('Run with KINGU_BACKGROUND_LAUNCH=1.')
 }
 
 const root = fileURLToPath(new URL('../../../', import.meta.url))
@@ -37,10 +37,10 @@ if (test.split(countAssertion).length !== 2) {
 }
 const observedTest = `import { writeFileSync } from 'node:fs'\n${test.replace(
   countAssertion,
-  `    writeFileSync(process.env.ORCA_BROWSER_REGISTRATION_COUNTS_PATH, JSON.stringify({ liveWebviews: webviewRegistry.size, registeredGuestIds: registeredWebContentsIds.size, lateAnnotationSyncs: sessions.reduce((count, page) => count + page.sync.mock.calls.length, 0), unregisterCalls: unregister.mock.calls.length }))\n${countAssertion}`
+  `    writeFileSync(process.env.KINGU_BROWSER_REGISTRATION_COUNTS_PATH, JSON.stringify({ liveWebviews: webviewRegistry.size, registeredGuestIds: registeredWebContentsIds.size, lateAnnotationSyncs: sessions.reduce((count, page) => count + page.sync.mock.calls.length, 0), unregisterCalls: unregister.mock.calls.length }))\n${countAssertion}`
 )}`
 sourceHashes[testPath] = { current: sha256(test), observed: sha256(observedTest) }
-const scratch = await mkdtemp(join(tmpdir(), 'orca-browser-registration-reply-'))
+const scratch = await mkdtemp(join(tmpdir(), 'kingu-browser-registration-reply-'))
 const require = createRequire(import.meta.url)
 let runnerModuleId
 try {
@@ -92,7 +92,7 @@ export default {...base, test: {...base.test, include: [${JSON.stringify(testPat
       env: {
         ...process.env,
         NODE_OPTIONS: '--max-old-space-size=512',
-        ORCA_BROWSER_REGISTRATION_COUNTS_PATH: countsPath
+        KINGU_BROWSER_REGISTRATION_COUNTS_PATH: countsPath
       },
       timeoutMs: 60_000,
       maxOutputBytes: 2 * 1024 * 1024

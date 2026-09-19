@@ -77,7 +77,7 @@ describe('MobileRichMarkdownEditor', () => {
     act(() => editorRef.current?.dismissKeyboard())
 
     expect(mocks.injectJavaScript).toHaveBeenCalledWith(
-      expect.stringContaining('window.__orcaRichMarkdown.dismissKeyboard()')
+      expect.stringContaining('window.__kinguRichMarkdown.dismissKeyboard()')
     )
     expect(mocks.dismissKeyboard).toHaveBeenCalledOnce()
   })

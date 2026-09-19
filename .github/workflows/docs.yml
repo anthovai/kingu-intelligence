@@ -79,7 +79,7 @@ jobs:
   release_gate:
     name: Authorize release
     if: >-
-      github.repository == 'stablyai/orca' &&
+      github.repository == 'anthovai/kingu-intelligence' &&
       (github.event_name == 'release' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -174,7 +174,7 @@ jobs:
           fi
           echo "commit_sha=$commit_sha" >> "$GITHUB_OUTPUT"
 
-          # Stable tags cut before the docs package was merged are valid Orca
+          # Stable tags cut before the docs package was merged are valid Kingu
           # releases, but cannot produce a docs deployment. Skip them before
           # requesting the protected production environment.
           docs_source_available=false
@@ -210,7 +210,7 @@ jobs:
     timeout-minutes: 15
     environment:
       name: docs-production
-      url: https://www.onorca.dev/docs
+      url: https://www.onkingu.dev/docs
     env:
       VERCEL_TELEMETRY_DISABLED: '1'
     steps:

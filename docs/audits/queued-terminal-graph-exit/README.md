@@ -1,13 +1,13 @@
 # Queued renderer graph restores an exited pane owner
 
-This is a separate source-level explanation for part of [#19018](https://github.com/stablyai/orca/issues/19018). It reproduces an execution host certifying exit, followed by a queued renderer graph restoring that PTY's runtime `connected` flag and making the actual stable-pane resolver throw `terminal_pane_owner_conflict` against the successor's durable binding.
+This is a separate source-level explanation for part of [#19018](https://github.com/anthovai/kingu-intelligence/issues/19018). It reproduces an execution host certifying exit, followed by a queued renderer graph restoring that PTY's runtime `connected` flag and making the actual stable-pane resolver throw `terminal_pane_owner_conflict` against the successor's durable binding.
 
 ## Run
 
 From the checkout, with installed dependencies:
 
 ```sh
-ORCA_BACKGROUND_LAUNCH=1 node docs/audits/queued-terminal-graph-exit/reproduce.mjs /tmp/queued-terminal-graph-exit.json
+KINGU_BACKGROUND_LAUNCH=1 node docs/audits/queued-terminal-graph-exit/reproduce.mjs /tmp/queued-terminal-graph-exit.json
 ```
 
 The script uses the real renderer graph publisher, main `Store.persistPtyBinding`, runtime, daemon server, adapter, and local sockets. Only the subprocess and the IPC dispatch boundary are controlled. It creates temporary data/socket paths, runs hidden Node tests, and removes its scratch files. It does not launch an Electron window or install dependencies. The JSON records source hashes and excludes randomly allocated terminal handles/incarnations.

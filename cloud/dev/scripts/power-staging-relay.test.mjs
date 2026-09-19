@@ -13,27 +13,27 @@ function topologyFile(overrides = {}) {
   const directory = mkdtempSync(join(tmpdir(), 'staging-relay-power-'))
   const topology = {
     'staging-gce-c1': {
-      mig_name: 'orca-cloud-staging-relay-gce-c1',
+      mig_name: 'kingu-cloud-staging-relay-gce-c1',
       zone: 'us-central1-b',
-      origin: 'https://c1.relay-staging.onorca.dev',
+      origin: 'https://c1.relay-staging.onkingu.dev',
       initially_enabled: true
     },
     'staging-gce-c2': {
-      mig_name: 'orca-cloud-staging-relay-gce-c2',
+      mig_name: 'kingu-cloud-staging-relay-gce-c2',
       zone: 'us-central1-c',
-      origin: 'https://c2.relay-staging.onorca.dev',
+      origin: 'https://c2.relay-staging.onkingu.dev',
       initially_enabled: true
     },
     'staging-gce-c3': {
-      mig_name: 'orca-cloud-staging-relay-gce-c3',
+      mig_name: 'kingu-cloud-staging-relay-gce-c3',
       zone: 'us-central1-a',
-      origin: 'https://c3.relay-staging.onorca.dev',
+      origin: 'https://c3.relay-staging.onkingu.dev',
       initially_enabled: false
     },
     'staging-gce-c4': {
-      mig_name: 'orca-cloud-staging-relay-gce-c4',
+      mig_name: 'kingu-cloud-staging-relay-gce-c4',
       zone: 'asia-east2-a',
-      origin: 'https://c4.relay-staging.onorca.dev',
+      origin: 'https://c4.relay-staging.onkingu.dev',
       initially_enabled: false
     },
     ...overrides
@@ -79,8 +79,8 @@ function harness({
     ])
   )
   const revisions = new Map([
-    ['orca-cloud-relay-staging', { active: 'relay-00001', latest: 'relay-00001', min: 1 }],
-    ['orca-cloud-auth-staging', { active: 'auth-00001', latest: 'auth-00001', min: 1 }]
+    ['kingu-cloud-relay-staging', { active: 'relay-00001', latest: 'relay-00001', min: 1 }],
+    ['kingu-cloud-auth-staging', { active: 'auth-00001', latest: 'auth-00001', min: 1 }]
   ])
   const revisionMinimums = new Map([
     ['relay-00001', 1],
@@ -249,9 +249,9 @@ test('accepts only explicit staging power arguments and topology', () => {
 
   const unsafe = topologyFile({
     'staging-gce-c1': {
-      mig_name: 'orca-cloud-relay-gce-c1',
+      mig_name: 'kingu-cloud-relay-gce-c1',
       zone: 'us-central1-a',
-      origin: 'https://c1.relay.onorca.dev',
+      origin: 'https://c1.relay.onkingu.dev',
       initially_enabled: true
     }
   })
@@ -259,9 +259,9 @@ test('accepts only explicit staging power arguments and topology', () => {
 
   const unreviewedRegion = topologyFile({
     'staging-gce-c4': {
-      mig_name: 'orca-cloud-staging-relay-gce-c4',
+      mig_name: 'kingu-cloud-staging-relay-gce-c4',
       zone: 'europe-west1-b',
-      origin: 'https://c4.relay-staging.onorca.dev',
+      origin: 'https://c4.relay-staging.onkingu.dev',
       initially_enabled: false
     }
   })
@@ -353,7 +353,7 @@ test('status is read-only and reports the current billable floor controls', asyn
   const testHarness = harness()
   await runStagingRelayPower(argumentConfig(topologyFile(), 'status'), testHarness.deps)
   assert.equal(testHarness.commands.length, 0)
-  assert.equal(testHarness.events[0].project, 'onorca-cloud-staging')
+  assert.equal(testHarness.events[0].project, 'onkingu-cloud-staging')
   assert.equal(testHarness.events[0].sqlActivationPolicy, 'ALWAYS')
   assert.equal(testHarness.events[0].cells.length, 4)
 })

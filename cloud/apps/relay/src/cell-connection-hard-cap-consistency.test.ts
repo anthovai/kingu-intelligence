@@ -7,7 +7,7 @@ import {
   RELAY_CELL_CONNECTION_HARD_CAP,
   RELAY_CELL_CONNECTION_HARD_CAPS,
   relayCellAdmissionBounds
-} from '@orca-cloud/relay-contract'
+} from '@kingu-cloud/relay-contract'
 import { describe, expect, it } from 'vitest'
 
 // Why: dev scripts run standalone in CI and Terraform cannot read TypeScript, so neither can

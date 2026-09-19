@@ -50,10 +50,10 @@ try {
     item.spec.containers[0].image = option('--image')
     item.status.imageDigest = option('--image')
     item.spec.containers[0].env = item.spec.containers[0].env.filter(
-      (entry) => entry.name !== 'ORCA_PUSH_MODE'
+      (entry) => entry.name !== 'KINGU_PUSH_MODE'
     )
     if (has('--update-env-vars')) {
-      item.spec.containers[0].env.push({ name: 'ORCA_PUSH_MODE', value: 'validation' })
+      item.spec.containers[0].env.push({ name: 'KINGU_PUSH_MODE', value: 'validation' })
     }
     state.revisions[name] = item
     state.latest = name

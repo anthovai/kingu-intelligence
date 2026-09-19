@@ -152,7 +152,7 @@ test('production mutations pass the minted admin token to live preflight', async
   )
   assert.match(
     recheck,
-    /ORCA_RELAY_ADMIN_ID_TOKEN: \$\{\{ steps\.google-auth\.outputs\.id_token \}\}/
+    /KINGU_RELAY_ADMIN_ID_TOKEN: \$\{\{ steps\.google-auth\.outputs\.id_token \}\}/
   )
   const multiTarget = readRelayWorkflow('deploy-relay-production-multi-target.yml')
   const multiTargetRecheck = multiTarget.slice(

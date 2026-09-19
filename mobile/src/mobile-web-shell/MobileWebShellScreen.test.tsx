@@ -39,11 +39,11 @@ vi.mock('react-native-safe-area-context', () => ({
 vi.mock('expo-router', () => ({ router: { replace: vi.fn() } }))
 // A component rather than a host string: the React key is what makes a retry a rebuilt WebView,
 // and a mount/unmount log is the only thing that can tell a remount from a prop update.
-vi.mock('../../modules/orca-mobile-web-shell/src', async () => {
+vi.mock('../../modules/kingu-mobile-web-shell/src', async () => {
   const React = await import('react')
-  const loadState = await import('../../modules/orca-mobile-web-shell/src/load-state')
+  const loadState = await import('../../modules/kingu-mobile-web-shell/src/load-state')
   return {
-    OrcaMobileWebShellView: (props: { sessionId: string }) => {
+    KinguMobileWebShellView: (props: { sessionId: string }) => {
       React.useEffect(() => {
         dependencies.lifecycle.push(`mount:${props.sessionId}`)
         return () => {
@@ -125,7 +125,7 @@ describe('the hybrid shell screen', () => {
       kind: 'wall',
       verdict: { kind: 'blocked', reason: 'bundle-unavailable' }
     })
-    expect(textOf(tree)).toContain('Update Orca on your computer')
+    expect(textOf(tree)).toContain('Update Kingu on your computer')
     expect(byName(tree, 'ShellViewProbe')).toEqual([])
   })
 

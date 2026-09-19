@@ -16,7 +16,7 @@ import {
   validateMig
 } from './deploy-relay-gce-candidate.mjs'
 
-const runtimeServiceAccount = 'orca-relay@example.iam.gserviceaccount.com'
+const runtimeServiceAccount = 'kingu-relay@example.iam.gserviceaccount.com'
 const digestA = `sha256:${'a'.repeat(64)}`
 const digestB = `sha256:${'b'.repeat(64)}`
 
@@ -472,11 +472,11 @@ test('requires explicit dry-run/execute inputs and a distinct disabled candidate
 
 test('accepts only a bounded JWT-shaped supplied admin identity token', () => {
   assert.equal(suppliedAdminIdentityToken({}), null)
-  assert.equal(suppliedAdminIdentityToken({ ORCA_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' }), 'aaa.bbb.ccc')
-  assert.throws(() => suppliedAdminIdentityToken({ ORCA_RELAY_ADMIN_ID_TOKEN: '' }))
-  assert.throws(() => suppliedAdminIdentityToken({ ORCA_RELAY_ADMIN_ID_TOKEN: 'not-a-jwt' }))
+  assert.equal(suppliedAdminIdentityToken({ KINGU_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' }), 'aaa.bbb.ccc')
+  assert.throws(() => suppliedAdminIdentityToken({ KINGU_RELAY_ADMIN_ID_TOKEN: '' }))
+  assert.throws(() => suppliedAdminIdentityToken({ KINGU_RELAY_ADMIN_ID_TOKEN: 'not-a-jwt' }))
   assert.throws(() =>
-    suppliedAdminIdentityToken({ ORCA_RELAY_ADMIN_ID_TOKEN: `aaa.${'b'.repeat(8_190)}.ccc` })
+    suppliedAdminIdentityToken({ KINGU_RELAY_ADMIN_ID_TOKEN: `aaa.${'b'.repeat(8_190)}.ccc` })
   )
 })
 

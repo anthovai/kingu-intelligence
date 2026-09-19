@@ -7,8 +7,8 @@ import {
 } from './prepare-relay-production-capacity-canary.mjs'
 
 const config = {
-  directorOrigin: 'https://relay.onorca.dev',
-  cellOrigin: 'https://c26.relay.onorca.dev',
+  directorOrigin: 'https://relay.onkingu.dev',
+  cellOrigin: 'https://c26.relay.onkingu.dev',
   cellId: 'production-gce-c26'
 }
 
@@ -82,32 +82,32 @@ describe('production Relay capacity cell admission', () => {
       'production-gce-c26'
     ])
     assert.deepEqual(parseProductionCapacityCellArguments([
-      '--director-origin', 'https://relay.onorca.dev',
-      '--cell-origin', 'https://c7.relay.onorca.dev',
+      '--director-origin', 'https://relay.onkingu.dev',
+      '--cell-origin', 'https://c7.relay.onkingu.dev',
       '--cell-id', 'production-gce-c7',
       '--mode', 'isolate'
     ]), {
-      directorOrigin: 'https://relay.onorca.dev',
-      cellOrigin: 'https://c7.relay.onorca.dev',
+      directorOrigin: 'https://relay.onkingu.dev',
+      cellOrigin: 'https://c7.relay.onkingu.dev',
       cellId: 'production-gce-c7',
       mode: 'isolate',
       paceWindowMs: 0
     })
     assert.throws(() => parseProductionCapacityCellArguments([
-      '--director-origin', 'https://relay.onorca.dev',
-      '--cell-origin', 'https://c17.relay.onorca.dev',
+      '--director-origin', 'https://relay.onkingu.dev',
+      '--cell-origin', 'https://c17.relay.onkingu.dev',
       '--cell-id', 'production-gce-c17',
       '--mode', 'isolate'
     ]), /not approved/)
     assert.throws(() => parseProductionCapacityCellArguments([
-      '--director-origin', 'https://relay.onorca.dev',
-      '--cell-origin', 'https://c8.relay.onorca.dev',
+      '--director-origin', 'https://relay.onkingu.dev',
+      '--cell-origin', 'https://c8.relay.onkingu.dev',
       '--cell-id', 'production-gce-c7',
       '--mode', 'isolate'
     ]), /origin is not exact/)
     assert.throws(() => parseProductionCapacityCellArguments([
-      '--director-origin', 'https://relay.onorca.dev',
-      '--cell-origin', 'https://c27.relay.onorca.dev',
+      '--director-origin', 'https://relay.onkingu.dev',
+      '--cell-origin', 'https://c27.relay.onkingu.dev',
       '--cell-id', 'production-gce-c27',
       '--mode', 'isolate'
     ]), /not approved/)
@@ -121,14 +121,14 @@ describe('production Relay capacity cell admission', () => {
     ]) {
       const hostname = cellId.slice('production-gce-'.length)
       assert.deepEqual(parseProductionCapacityCellArguments([
-        '--director-origin', 'https://relay.onorca.dev',
-        '--cell-origin', `https://${hostname}.relay.onorca.dev`,
+        '--director-origin', 'https://relay.onkingu.dev',
+        '--cell-origin', `https://${hostname}.relay.onkingu.dev`,
         '--cell-id', cellId,
         '--approved-cells', 'same-cap',
         '--mode', 'isolate'
       ]), {
-        directorOrigin: 'https://relay.onorca.dev',
-        cellOrigin: `https://${hostname}.relay.onorca.dev`,
+        directorOrigin: 'https://relay.onkingu.dev',
+        cellOrigin: `https://${hostname}.relay.onkingu.dev`,
         cellId,
         mode: 'isolate',
         paceWindowMs: 0
@@ -137,16 +137,16 @@ describe('production Relay capacity cell admission', () => {
     for (const cellId of ['production-gce-c12', 'production-gce-c30']) {
       const hostname = cellId.slice('production-gce-'.length)
       assert.throws(() => parseProductionCapacityCellArguments([
-        '--director-origin', 'https://relay.onorca.dev',
-        '--cell-origin', `https://${hostname}.relay.onorca.dev`,
+        '--director-origin', 'https://relay.onkingu.dev',
+        '--cell-origin', `https://${hostname}.relay.onkingu.dev`,
         '--cell-id', cellId,
         '--approved-cells', 'same-cap',
         '--mode', 'isolate'
       ]), /not approved/)
     }
     assert.throws(() => parseProductionCapacityCellArguments([
-      '--director-origin', 'https://relay.onorca.dev',
-      '--cell-origin', 'https://c27.relay.onorca.dev',
+      '--director-origin', 'https://relay.onkingu.dev',
+      '--cell-origin', 'https://c27.relay.onkingu.dev',
       '--cell-id', 'production-gce-c27',
       '--approved-cells', 'every-cell',
       '--mode', 'isolate'
@@ -233,8 +233,8 @@ describe('production Relay capacity cell admission', () => {
 
   it('refuses a pacing window that is not a bounded integer', () => {
     const argv = (value) => [
-      '--director-origin', 'https://relay.onorca.dev',
-      '--cell-origin', 'https://c26.relay.onorca.dev',
+      '--director-origin', 'https://relay.onkingu.dev',
+      '--cell-origin', 'https://c26.relay.onkingu.dev',
       '--cell-id', 'production-gce-c26',
       '--mode', 'drain',
       '--pace-window-ms', value

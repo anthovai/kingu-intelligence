@@ -75,7 +75,7 @@ upload path. No producer changes or clipboard validation changes were necessary.
 
 ## Validation results
 
-All test/typecheck commands used `ORCA_BACKGROUND_LAUNCH=1`.
+All test/typecheck commands used `KINGU_BACKGROUND_LAUNCH=1`.
 
 - `pnpm tc`: exit 0; all root typecheck projects passed.
 - `pnpm exec vitest run src/main/runtime/rpc`: 277 files passed, one failed;

@@ -1,4 +1,4 @@
-import type { MobileWebShellFailureReason } from '../../modules/orca-mobile-web-shell/src/load-state'
+import type { MobileWebShellFailureReason } from '../../modules/kingu-mobile-web-shell/src/load-state'
 import type {
   MobileWebBundleCompatManifest,
   MobileWebBundleCompatVerdict,

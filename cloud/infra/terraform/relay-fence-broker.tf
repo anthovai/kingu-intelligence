@@ -9,7 +9,7 @@ resource "google_service_account" "relay_fence_broker" {
 
   project      = var.project_id
   account_id   = "${var.name_prefix}-relay-fence"
-  display_name = "Orca Relay fence broker"
+  display_name = "Kingu Relay fence broker"
   description  = "Owns exact reviewed Terraform cell fences behind an authenticated broker."
 }
 
@@ -17,8 +17,8 @@ resource "google_project_iam_custom_role" "relay_fence_broker_mutation" {
   count = local.create_relay_fence_broker ? 1 : 0
 
   project     = var.project_id
-  role_id     = "orcaRelayFenceBroker"
-  title       = "Orca Relay fence broker"
+  role_id     = "kinguRelayFenceBroker"
+  title       = "Kingu Relay fence broker"
   description = "Updates only reviewed Relay MIG sizes and inspects their zone operations."
   permissions = [
     "compute.instanceGroupManagers.update"
@@ -127,57 +127,57 @@ resource "google_cloud_run_v2_service" "relay_fence_broker" {
       }
 
       env {
-        name  = "ORCA_RELAY_FENCE_PROJECT"
+        name  = "KINGU_RELAY_FENCE_PROJECT"
         value = var.project_id
       }
 
       env {
-        name  = "ORCA_RELAY_FENCE_STATE_BUCKET"
+        name  = "KINGU_RELAY_FENCE_STATE_BUCKET"
         value = local.relay_fence_state_bucket
       }
 
       env {
-        name  = "ORCA_RELAY_FENCE_LEASE_OBJECT"
+        name  = "KINGU_RELAY_FENCE_LEASE_OBJECT"
         value = "terraform/state/relay-fence-broker/production.lock"
       }
 
       env {
-        name  = "ORCA_RELAY_FENCE_DIRECTOR_ORIGIN"
+        name  = "KINGU_RELAY_FENCE_DIRECTOR_ORIGIN"
         value = var.relay_base_url
       }
 
       env {
-        name  = "ORCA_RELAY_FENCE_ADMIN_AUDIENCE"
+        name  = "KINGU_RELAY_FENCE_ADMIN_AUDIENCE"
         value = "${var.relay_base_url}/v1/admin/drain"
       }
 
       env {
-        name  = "ORCA_RELAY_FENCE_REQUESTER_SERVICE_ACCOUNT"
+        name  = "KINGU_RELAY_FENCE_REQUESTER_SERVICE_ACCOUNT"
         value = google_service_account.github_fence[0].email
       }
 
       env {
-        name  = "ORCA_RELAY_FENCE_RUNTIME_SERVICE_ACCOUNT"
+        name  = "KINGU_RELAY_FENCE_RUNTIME_SERVICE_ACCOUNT"
         value = google_service_account.relay_runtime.email
       }
 
       env {
-        name  = "ORCA_RELAY_FENCE_SOURCE_CELL_ID"
+        name  = "KINGU_RELAY_FENCE_SOURCE_CELL_ID"
         value = var.relay_fence_source_cell_id
       }
 
       env {
-        name  = "ORCA_RELAY_FENCE_FAILED_TARGET_CELL_ID"
+        name  = "KINGU_RELAY_FENCE_FAILED_TARGET_CELL_ID"
         value = var.relay_fence_failed_target_cell_id
       }
 
       env {
-        name  = "ORCA_RELAY_FENCE_REPLACEMENT_TARGET_CELL_ID"
+        name  = "KINGU_RELAY_FENCE_REPLACEMENT_TARGET_CELL_ID"
         value = var.relay_fence_replacement_target_cell_id
       }
 
       env {
-        name  = "ORCA_RELAY_FENCE_UNOBSERVED_CONNECTION_BOUND"
+        name  = "KINGU_RELAY_FENCE_UNOBSERVED_CONNECTION_BOUND"
         value = tostring(var.relay_fence_unobserved_connection_bound)
       }
 

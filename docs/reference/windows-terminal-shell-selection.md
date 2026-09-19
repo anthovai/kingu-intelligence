@@ -19,10 +19,10 @@ There are two spawn preflights, and they are twins:
 
 - `src/main/ipc/pty/ipc/spawn-preflight.ts` — renderer/IPC spawns (a terminal tab in the app).
 - `src/main/ipc/pty/runtime/spawn-preflight.ts` — runtime spawns: `terminal.create` from the CLI,
-  headless `orca serve`, and every paired remote environment.
+  headless `kingu serve`, and every paired remote environment.
 
 Only the IPC twin read the caller's requested shell. The runtime twin passed a literal `undefined`,
-so a runtime-created terminal could only ever be the host's default shell. `orca terminal create
+so a runtime-created terminal could only ever be the host's default shell. `kingu terminal create
 --command cmd.exe` against a Windows environment had no way to say "be cmd" — it could only type
 `cmd.exe` into Git Bash. `src/main/ipc/pty/pty-spawn-shell-override-parity.test.ts` pins the pair.
 

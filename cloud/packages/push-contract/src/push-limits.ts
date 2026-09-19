@@ -21,8 +21,8 @@ export const PUSH_LIMITS = {
 } as const
 
 export const PUSH_DEFAULTS = {
-  apnsTopic: 'com.stably.orca.mobile',
-  androidChannelId: 'orca-desktop'
+  apnsTopic: 'com.stably.kingu.mobile',
+  androidChannelId: 'kingu-desktop'
 } as const
 
 export const PUSH_HOST_FINGERPRINT_LENGTH = 16

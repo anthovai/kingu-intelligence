@@ -16,7 +16,7 @@ const membership = {
 function argumentsFor(mode, confirmation) {
   return [
     '--mode', mode,
-    '--director-origin', 'https://relay.onorca.dev',
+    '--director-origin', 'https://relay.onkingu.dev',
     '--expected-selector-generation', '11',
     '--expected-existing-only-cells', membership.existingOnly.join(','),
     '--expected-migration-only-cells', membership.migrationOnly.join(','),
@@ -67,7 +67,7 @@ function legacyDirector(controls) {
 test('parses exact selector and typed control confirmation', () => {
   const parsed = parseRegionalRehomeArguments(
     argumentsFor('enable', 'ENABLE_REGIONAL_REHOMING'),
-    { ORCA_RELAY_ADMIN_ID_TOKEN: 'token' }
+    { KINGU_RELAY_ADMIN_ID_TOKEN: 'token' }
   )
   assert.equal(parsed.expectedSelectorGeneration, 11)
   assert.equal(parsed.expectedControlGeneration, 4)
@@ -79,21 +79,21 @@ test('parses exact selector and typed control confirmation', () => {
         (value, index, all) =>
           value !== '--host-cooldown-ms' && all[index - 1] !== '--host-cooldown-ms'
       ),
-      { ORCA_RELAY_ADMIN_ID_TOKEN: 'token' }
+      { KINGU_RELAY_ADMIN_ID_TOKEN: 'token' }
     ),
     /complete durable control shape/
   )
   assert.throws(
     () => parseRegionalRehomeArguments(
       argumentsFor('pause', 'DISABLE_REGIONAL_REHOMING'),
-      { ORCA_RELAY_ADMIN_ID_TOKEN: 'token' }
+      { KINGU_RELAY_ADMIN_ID_TOKEN: 'token' }
     ),
     /confirmation/
   )
   assert.throws(
     () => parseRegionalRehomeArguments(
       argumentsFor('inspect').concat('--rate-per-minute', '10'),
-      { ORCA_RELAY_ADMIN_ID_TOKEN: 'token' }
+      { KINGU_RELAY_ADMIN_ID_TOKEN: 'token' }
     ),
     /inspect cannot/
   )
@@ -116,7 +116,7 @@ test('binds enable to exact selector and durable control generations', async () 
   }))
   const config = parseRegionalRehomeArguments(
     argumentsFor('enable', 'ENABLE_REGIONAL_REHOMING'),
-    { ORCA_RELAY_ADMIN_ID_TOKEN: 'token' }
+    { KINGU_RELAY_ADMIN_ID_TOKEN: 'token' }
   )
   const result = await operateRegionalRehome(config, {
     post: async (path, body) => {
@@ -147,7 +147,7 @@ test('inspects a director that predates the per-host cooldown', async () => {
   const director = legacyDirector([legacyControl(4, true)])
   const config = parseRegionalRehomeArguments(
     argumentsFor('inspect'),
-    { ORCA_RELAY_ADMIN_ID_TOKEN: 'token' }
+    { KINGU_RELAY_ADMIN_ID_TOKEN: 'token' }
   )
 
   const result = await operateRegionalRehome(config, { post: director.post })
@@ -168,7 +168,7 @@ for (const [mode, confirmation, enabledBefore] of [
     ])
     const config = parseRegionalRehomeArguments(
       argumentsFor(mode, confirmation),
-      { ORCA_RELAY_ADMIN_ID_TOKEN: 'token' }
+      { KINGU_RELAY_ADMIN_ID_TOKEN: 'token' }
     )
 
     const result = await operateRegionalRehome(config, { post: director.post })
@@ -201,7 +201,7 @@ test('refuses to enable a director that does not report the cooldown', async () 
   const director = legacyDirector([legacyControl(4, false)])
   const config = parseRegionalRehomeArguments(
     argumentsFor('enable', 'ENABLE_REGIONAL_REHOMING'),
-    { ORCA_RELAY_ADMIN_ID_TOKEN: 'token' }
+    { KINGU_RELAY_ADMIN_ID_TOKEN: 'token' }
   )
 
   await assert.rejects(
@@ -217,7 +217,7 @@ test('fails closed on selector drift before reading or mutating control', async 
   let calls = 0
   const config = parseRegionalRehomeArguments(
     argumentsFor('disable', 'DISABLE_REGIONAL_REHOMING'),
-    { ORCA_RELAY_ADMIN_ID_TOKEN: 'token' }
+    { KINGU_RELAY_ADMIN_ID_TOKEN: 'token' }
   )
   await assert.rejects(
     operateRegionalRehome(config, {
@@ -326,20 +326,20 @@ test('failed-enable recovery rejects an unchanged pre-existing enabled state', a
 test('parses recovery without depending on selector diagnostics', () => {
   const recoveryArguments = [
     '--mode', 'recover-enable',
-    '--director-origin', 'https://relay.onorca.dev',
+    '--director-origin', 'https://relay.onkingu.dev',
     '--expected-control-generation', '4',
     '--confirmation', 'RECOVER_FAILED_REGIONAL_REHOME_ENABLE'
   ]
   const parsed = parseRegionalRehomeArguments(
     recoveryArguments,
-    { ORCA_RELAY_ADMIN_ID_TOKEN: 'token' }
+    { KINGU_RELAY_ADMIN_ID_TOKEN: 'token' }
   )
   assert.equal(parsed.expectedControlGeneration, 4)
   assert.equal(parsed.expectedMembership, undefined)
   assert.throws(
     () => parseRegionalRehomeArguments(
       recoveryArguments.concat('--not-before', '2000000000000'),
-      { ORCA_RELAY_ADMIN_ID_TOKEN: 'token' }
+      { KINGU_RELAY_ADMIN_ID_TOKEN: 'token' }
     ),
     /cannot carry durable control shape/
   )
@@ -350,10 +350,10 @@ test('main executes recovery mode and emits verified disabled control', async ()
   let output = ''
   await main([
     '--mode', 'recover-enable',
-    '--director-origin', 'https://relay.onorca.dev',
+    '--director-origin', 'https://relay.onkingu.dev',
     '--expected-control-generation', '4',
     '--confirmation', 'RECOVER_FAILED_REGIONAL_REHOME_ENABLE'
-  ], { ORCA_RELAY_ADMIN_ID_TOKEN: 'token' }, {
+  ], { KINGU_RELAY_ADMIN_ID_TOKEN: 'token' }, {
     post: async (_path, body) => {
       if (body.action === 'apply') current = control(6, false)
       return { control: current }
@@ -372,7 +372,7 @@ test('main executes recovery mode and emits verified disabled control', async ()
 test('retries a transient 503 on the director control endpoint', async () => {
   const config = parseRegionalRehomeArguments(
     argumentsFor('inspect'),
-    { ORCA_RELAY_ADMIN_ID_TOKEN: 'token' }
+    { KINGU_RELAY_ADMIN_ID_TOKEN: 'token' }
   )
   const paths = []
   let selectorCalls = 0
@@ -405,7 +405,7 @@ test('retries a transient 503 on the director control endpoint', async () => {
 test('fails when both attempts at the director control endpoint return 503', async () => {
   const config = parseRegionalRehomeArguments(
     argumentsFor('inspect'),
-    { ORCA_RELAY_ADMIN_ID_TOKEN: 'token' }
+    { KINGU_RELAY_ADMIN_ID_TOKEN: 'token' }
   )
   let calls = 0
   await assert.rejects(

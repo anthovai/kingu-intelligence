@@ -60,7 +60,7 @@ function installChannel(): { posted: string[]; deliver: (frame: unknown) => void
     },
     onmessage: null
   }
-  Object.defineProperty(globalThis, 'orcaBridge', { value: channel, configurable: true })
+  Object.defineProperty(globalThis, 'kinguBridge', { value: channel, configurable: true })
   return {
     posted,
     deliver: (frame) => {
@@ -85,7 +85,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.useRealTimers()
-  Reflect.deleteProperty(globalThis, 'orcaBridge')
+  Reflect.deleteProperty(globalThis, 'kinguBridge')
 })
 
 describe('the page provider inside the shell', () => {

@@ -37,7 +37,7 @@ from `pnpm install:release`, the Windows addon does not (see below).
 
 Windows packaging requires a Windows host. `@vscode/windows-process-tree` is an
 `os: win32` npm addon, so it is installed only where that matches;
-`@orca/windows-registry` is a workspace package that links on every host, but
+`@kingu/windows-registry` is a workspace package that links on every host, but
 its native binary is still compiled only on Windows. Both are compiled only by
 the Windows-only rebuild in `config/scripts/rebuild-native-deps.mjs`
 (`allowBuilds` in `pnpm-workspace.yaml` keeps pnpm itself from running node-gyp

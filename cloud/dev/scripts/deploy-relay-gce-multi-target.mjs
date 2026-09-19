@@ -390,7 +390,7 @@ function revisionMinimum(revision) {
 function directorInventory(environment, revisionName) {
   let cells
   try {
-    cells = JSON.parse(environment.ORCA_RELAY_CELLS_JSON)
+    cells = JSON.parse(environment.KINGU_RELAY_CELLS_JSON)
   } catch {
     throw new Error(`${revisionName} has an invalid director inventory`)
   }
@@ -465,8 +465,8 @@ export function verifySelectorCompatibleDirector(config, deps) {
     ])
     const environment = revisionEnvironment(revision)
     if (
-      environment.ORCA_RELAY_ROLE !== 'director' ||
-      environment.ORCA_RELAY_ADMISSION_SELECTOR_VERSION !== SELECTOR_REVISION_MARKER
+      environment.KINGU_RELAY_ROLE !== 'director' ||
+      environment.KINGU_RELAY_ADMISSION_SELECTOR_VERSION !== SELECTOR_REVISION_MARKER
     ) {
       throw new Error(`${revisionName} is not selector-compatible`)
     }
@@ -531,8 +531,8 @@ function verifyActiveSelectorDirector(config, deps, cellId) {
   const environment = revisionEnvironment(revision)
   const inventory = JSON.parse(directorInventory(environment, active[0].revisionName))
   if (
-    environment.ORCA_RELAY_ROLE !== 'director' ||
-    environment.ORCA_RELAY_ADMISSION_SELECTOR_VERSION !== SELECTOR_REVISION_MARKER ||
+    environment.KINGU_RELAY_ROLE !== 'director' ||
+    environment.KINGU_RELAY_ADMISSION_SELECTOR_VERSION !== SELECTOR_REVISION_MARKER ||
     !(revisionMinimum(revision) >= config.directorMinimumInstances) ||
     !inventory.some((cell) => cell.id === cellId)
   ) {
@@ -592,11 +592,11 @@ export function pruneIncompatibleDirectorRevisions(config, deps) {
   const activeInventory = directorInventory(activeEnvironment, active[0].revisionName)
   const rollbackInventory = directorInventory(rollbackEnvironment, rollback.revisionName)
   if (
-    activeEnvironment.ORCA_RELAY_ROLE !== 'director' ||
-    rollbackEnvironment.ORCA_RELAY_ROLE !== 'director' ||
-    activeEnvironment.ORCA_RELAY_ADMISSION_SELECTOR_VERSION !==
+    activeEnvironment.KINGU_RELAY_ROLE !== 'director' ||
+    rollbackEnvironment.KINGU_RELAY_ROLE !== 'director' ||
+    activeEnvironment.KINGU_RELAY_ADMISSION_SELECTOR_VERSION !==
       SELECTOR_REVISION_MARKER ||
-    rollbackEnvironment.ORCA_RELAY_ADMISSION_SELECTOR_VERSION !==
+    rollbackEnvironment.KINGU_RELAY_ADMISSION_SELECTOR_VERSION !==
       SELECTOR_REVISION_MARKER ||
     !activeRevision.spec?.containers?.[0]?.image ||
     activeRevision.spec?.containers?.[0]?.image !==
@@ -860,7 +860,7 @@ function processCounts(config, deps, status, cellId) {
   if (status.process) return validatedProcessCounts(status.process, cellId)
   const filter = [
     'resource.type="gce_instance"',
-    'jsonPayload.event="orca_relay_runtime_metrics"',
+    'jsonPayload.event="kingu_relay_runtime_metrics"',
     `jsonPayload.cellId="${cellId}"`
   ].join(' AND ')
   const entries = deps.commandJson([
@@ -1098,7 +1098,7 @@ function validateReviewedInstanceTemplate(template, expected, capacityPredecesso
   const startupScript = (template.properties?.metadata?.items ?? [])
     .find((item) => item.key === 'startup-script')?.value
   const configuredDigest = startupScript?.match(
-    /ORCA_RELAY_IMAGE_DIGEST=%s\\n' '(sha256:[a-f0-9]{64})'/
+    /KINGU_RELAY_IMAGE_DIGEST=%s\\n' '(sha256:[a-f0-9]{64})'/
   )?.[1]
   const configuredImages = [
     ...String(startupScript ?? '').matchAll(
@@ -1114,12 +1114,12 @@ function validateReviewedInstanceTemplate(template, expected, capacityPredecesso
   }
   const hardCaps = [
     ...String(startupScript ?? '').matchAll(
-      /^  printf 'ORCA_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '([0-9]+)'$/gm
+      /^  printf 'KINGU_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '([0-9]+)'$/gm
     )
   ].map((match) => Number(match[1]))
   const unobservedBounds = [
     ...String(startupScript ?? '').matchAll(
-      /^  printf 'ORCA_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '([0-9]+)'$/gm
+      /^  printf 'KINGU_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '([0-9]+)'$/gm
     )
   ].map((match) => Number(match[1]))
   const hardCap = hardCaps[0]

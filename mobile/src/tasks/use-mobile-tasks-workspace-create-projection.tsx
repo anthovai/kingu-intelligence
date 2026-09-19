@@ -27,7 +27,7 @@ export function useMobileTasksWorkspaceCreateProjection(model: ProjectMetadataLo
     repos,
     runtimeTaskSettings,
     setError,
-    setOrcaYamlTrustPrompt,
+    setKinguYamlTrustPrompt,
     setShowWorkspaceAdvanced,
     setShowWorkspaceAgentPicker,
     setShowWorkspaceBaseBranchPicker,
@@ -190,7 +190,7 @@ export function useMobileTasksWorkspaceCreateProjection(model: ProjectMetadataLo
     setWorkspaceSparseSaving(false)
     setWorkspaceAgentOverridden(false)
     setWorkspaceAgent(null)
-    setOrcaYamlTrustPrompt(null)
+    setKinguYamlTrustPrompt(null)
     setShowWorkspaceAgentPicker(false)
     setShowWorkspaceCreateRepoPicker(false)
     setShowWorkspaceAdvanced(false)

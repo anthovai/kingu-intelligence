@@ -1,15 +1,15 @@
 import { readNativeNotificationData } from './native-notification-data'
 import * as Notifications from 'expo-notifications'
-import { readOrcaPushPayload, type OrcaPushPayload } from './push-payload'
+import { readKinguPushPayload, type KinguPushPayload } from './push-payload'
 import { rememberPushDismissal, wasPushDismissed } from './push-dismissal-watermarks'
 
 async function dismissMatchingPresentedPushes(
-  matches: (payload: OrcaPushPayload) => boolean | Promise<boolean>
+  matches: (payload: KinguPushPayload) => boolean | Promise<boolean>
 ): Promise<void> {
   const presented = await Notifications.getPresentedNotificationsAsync()
   await Promise.all(
     presented.map(async (notification) => {
-      const payload = readOrcaPushPayload(readNativeNotificationData(notification.request))
+      const payload = readKinguPushPayload(readNativeNotificationData(notification.request))
       if (payload && (await matches(payload))) {
         await Notifications.dismissNotificationAsync(notification.request.identifier)
       }
@@ -19,7 +19,7 @@ async function dismissMatchingPresentedPushes(
 
 export function dismissRememberedPushNotifications(
   hostFingerprint: string,
-  confirmed: readonly OrcaPushPayload[]
+  confirmed: readonly KinguPushPayload[]
 ): Promise<void> {
   return dismissMatchingPresentedPushes(async (payload) => {
     if (payload.hostFingerprint !== hostFingerprint) {
@@ -38,7 +38,7 @@ export function dismissRememberedPushNotifications(
   })
 }
 
-// Pushes shown while Orca was closed are absent from the local scheduling registry.
+// Pushes shown while Kingu was closed are absent from the local scheduling registry.
 export async function dismissPresentedPushNotification(
   notificationId: string,
   hostFingerprint: string,

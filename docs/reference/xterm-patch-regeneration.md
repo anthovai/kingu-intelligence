@@ -2,7 +2,7 @@
 
 ## Scope
 
-Orca ships `@xterm/xterm` with four source changes it needs and upstream has
+Kingu ships `@xterm/xterm` with four source changes it needs and upstream has
 not taken: the IME composition hooks, the `xterm-composition-*` custom events
 they raise, the `ICompositionHelper` surface those hooks widen, and a `SortedList`
 fix. pnpm applies them through `config/patches/@xterm__xterm@<version>.patch`.
@@ -100,7 +100,7 @@ re-diff, so a hand-produced `git diff` gets normalized on the first run rather
 than fighting `--check` forever.
 
 Run the checkout outside this repository. A build tree underneath it makes
-`tsgo` walk up into Orca's own `node_modules` and fail with `TS2300: Duplicate
+`tsgo` walk up into Kingu's own `node_modules` and fail with `TS2300: Duplicate
 identifier`, which is a symptom of where the tree sits and not of the patch.
 
 ## How the Commit Is Known
@@ -240,9 +240,9 @@ rerun. The bundle hunks need no attention at any point.
 
 ## Why Not Vendor a Fork
 
-A vendored `@xterm/xterm` fork removes the patch entirely, but it moves Orca off
+A vendored `@xterm/xterm` fork removes the patch entirely, but it moves Kingu off
 the published package, so every upstream beta becomes a merge rather than a
-version bump, and Orca inherits responsibility for building and publishing a
+version bump, and Kingu inherits responsibility for building and publishing a
 package it does not own. The patch is four small source hunks against a commit
 that reproduces byte for byte; a fork is a much larger standing cost for the
 same result.
@@ -277,7 +277,7 @@ patch is a fifteen-line `package.json` edit that repoints `module` and adds an
 generated, so there is nothing for this harness to verify.
 
 The addons were folded into this manifest on 2026-08-29. Before that they were
-hand-edited minified bundles carrying a literal `/* PATCH(orca): ... */` comment
+hand-edited minified bundles carrying a literal `/* PATCH(kingu): ... */` comment
 inside minified code, parser round-trip artifacts (`!0` printed back as `true`,
 locals renamed `i` → `i5`), and no `.map` hunks at all — so both shipped
 sourcemaps whose offsets did not match the bundle beside them. All four

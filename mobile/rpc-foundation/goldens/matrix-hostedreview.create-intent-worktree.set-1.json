@@ -362,7 +362,7 @@
           }
         },
         "url": "https://review.test/5",
-        "warning": "Pull Request created, but Orca could not refresh it yet."
+        "warning": "Pull Request created, but Kingu could not refresh it yet."
       }
     },
     "395c47c3d42e": {
@@ -1147,7 +1147,7 @@
           }
         },
         "url": "https://review.test/5",
-        "warning": "Pull Request created, but Orca could not refresh it yet."
+        "warning": "Pull Request created, but Kingu could not refresh it yet."
       }
     },
     "c9569b29c1f2": {

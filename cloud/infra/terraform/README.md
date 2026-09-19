@@ -1,11 +1,11 @@
 # Terraform
 
-This root manages the Orca Cloud relay and nothing else. It requires Terraform >= 1.7
+This root manages the Kingu Cloud relay and nothing else. It requires Terraform >= 1.7
 (`removed` blocks); OpenTofu at that floor works too.
 
 ## Three roots
 
-Orca Cloud is three Terraform roots sharing one project and one state bucket per environment,
+Kingu Cloud is three Terraform roots sharing one project and one state bucket per environment,
 with a different prefix each. They are separate so the relay can be extracted into a public
 repository without carrying the app plane, its database passwords, or its Cloudflare credential
 with it.
@@ -40,11 +40,11 @@ plan is orderable again; the `Plan:` line still reflects the standing cell-templ
 ### Workload Identity trusts the public repository
 
 The cutover closed on 2026-09-03. Every relay Workload Identity provider now accepts exactly one
-repository, `stablyai/orca` (`1183888342`, owner `127256420`), and every workflow ref it names is
+repository, `anthovai/kingu-intelligence` (`1183888342`, owner `127256420`), and every workflow ref it names is
 built from `github_workflow_file_prefix` (`cloud-`), which is the rename the public repo applies to
 the workflow files it carries. `github_repo`, `github_repo_id`, and that prefix are set in both
 `environments/*.tfvars` as well as defaulted here, and `github_accepted_repositories` is empty.
-Nothing in this root trusts `stablyai/orca-cloud` any more; the apps and foundation roots still do,
+Nothing in this root trusts `anthovai/kingu-intelligence-cloud` any more; the apps and foundation roots still do,
 because the app workflows still live there.
 
 `github_accepted_repositories` stays available for the next repository move. Each entry renders its
@@ -58,9 +58,9 @@ block change. The rendered strings are pinned by
 Repointing the primary and emptying the list must land in the same apply: dropping the accepted
 entry before repointing the primary would revoke the surviving repository mid-flight.
 
-### `ORCA_RELAY_IMAGE_DIGEST` is not Terraform-owned
+### `KINGU_RELAY_IMAGE_DIGEST` is not Terraform-owned
 
-`deploy-relay-blue-green.mjs` sets `ORCA_RELAY_IMAGE_DIGEST` on the director container at deploy
+`deploy-relay-blue-green.mjs` sets `KINGU_RELAY_IMAGE_DIGEST` on the director container at deploy
 time, but `relay.tf` does not declare it and the director's `ignore_changes` cannot name a single
 list element. A director apply from this root therefore strips that variable. Terraform is not the
 owner today: deploy through the director workflow, and treat any direct
@@ -82,15 +82,15 @@ The GCS backend bucket must exist before `init`.
 Staging:
 
 ```sh
-gcloud storage buckets create gs://onorca-cloud-staging-terraform-state --project onorca-cloud-staging --location us
-gcloud storage buckets update gs://onorca-cloud-staging-terraform-state --versioning
+gcloud storage buckets create gs://onkingu-cloud-staging-terraform-state --project onkingu-cloud-staging --location us
+gcloud storage buckets update gs://onkingu-cloud-staging-terraform-state --versioning
 ```
 
 Production:
 
 ```sh
-gcloud storage buckets create gs://onorca-cloud-terraform-state --project onorca-cloud --location us
-gcloud storage buckets update gs://onorca-cloud-terraform-state --versioning
+gcloud storage buckets create gs://onkingu-cloud-terraform-state --project onkingu-cloud --location us
+gcloud storage buckets update gs://onkingu-cloud-terraform-state --versioning
 ```
 
 One bucket per environment holds all three roots' state under separate prefixes, so this is a
@@ -299,7 +299,7 @@ activation policy. Terraform does not create that role in production.
 
 `relay_gce_domain` creates the shared private network/NAT, LB address, and Certificate Manager
 wildcard authorization used by fixed-one GCE cell MIGs. Cells use exact hosts one label below the
-domain, such as `c1.relay-staging.onorca.dev`; future cells therefore reuse one DNS-only wildcard
+domain, such as `c1.relay-staging.onkingu.dev`; future cells therefore reuse one DNS-only wildcard
 A record while the HTTPS URL map still admits only Terraform-configured exact hosts.
 
 After the foundation apply, publish both Terraform outputs and leave them in place for renewal:

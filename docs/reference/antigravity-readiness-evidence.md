@@ -60,7 +60,7 @@ Each remains as a named, skipping case in the suite so it is visible rather than
 ### 1. The ready screen's model row is not at the start of a line
 
 The ready screen prints a block-glyph logo down the left, and the identity, model and path rows are
-painted **on the same physical lines as the logo**. What Orca derives is:
+painted **on the same physical lines as the logo**. What Kingu derives is:
 
 ```
 ▀▀▀▀▀▀       Gemini API key

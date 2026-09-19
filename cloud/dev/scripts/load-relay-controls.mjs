@@ -132,9 +132,9 @@ function report(state, final = false) {
 }
 
 const config = parseRelayLoadArguments(process.argv.slice(2))
-let accessToken = process.env.ORCA_RELAY_LOAD_ACCESS_TOKEN
+let accessToken = process.env.KINGU_RELAY_LOAD_ACCESS_TOKEN
 let accessTokenProviderForIndex
-const adminToken = process.env.ORCA_RELAY_ADMIN_ID_TOKEN
+const adminToken = process.env.KINGU_RELAY_ADMIN_ID_TOKEN
 if (
   config.placementOverflowProbes > 0 || config.regionalFallbackProbes > 0 ||
   config.slowReaderSplices + config.wedgedReaderSplices > 0 ||
@@ -194,7 +194,7 @@ if (!accessToken && !key.signingKey && process.env.ACTIONS_ID_TOKEN_REQUEST_URL 
   await smokeTokens()
 }
 if (!accessToken && !accessTokenProviderForIndex && !key.signingKey) {
-  throw new Error('provide GitHub OIDC, ORCA_RELAY_LOAD_ACCESS_TOKEN, or --signing-key-file')
+  throw new Error('provide GitHub OIDC, KINGU_RELAY_LOAD_ACCESS_TOKEN, or --signing-key-file')
 }
 const eventLoopDelay = monitorEventLoopDelay({ resolution: 20 })
 eventLoopDelay.enable()

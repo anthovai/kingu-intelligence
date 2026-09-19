@@ -15,11 +15,11 @@ import {
   verifySelectorCompatibleDirector
 } from './deploy-relay-gce-multi-target.mjs'
 
-const runtimeServiceAccount = 'orca-relay@example.iam.gserviceaccount.com'
+const runtimeServiceAccount = 'kingu-relay@example.iam.gserviceaccount.com'
 const digest = (value) => `sha256:${value.repeat(64)}`
 
 test('matches only exact canonical backend-service resource forms', () => {
-  const resource = 'projects/onorca-cloud/global/backendServices/orca-cloud-relay-gce-c11'
+  const resource = 'projects/onkingu-cloud/global/backendServices/kingu-cloud-relay-gce-c11'
   assert.equal(
     sameBackendServiceResource(
       `https://www.googleapis.com/compute/v1/${resource}`,
@@ -54,10 +54,10 @@ test('requires only compatible active and rollback director revisions', () => {
         {
           image: 'registry.example/relay@sha256:abc',
           env: [
-            { name: 'ORCA_RELAY_ROLE', value: 'director' },
-            { name: 'ORCA_RELAY_ADMISSION_SELECTOR_VERSION', value: '3' },
+            { name: 'KINGU_RELAY_ROLE', value: 'director' },
+            { name: 'KINGU_RELAY_ADMISSION_SELECTOR_VERSION', value: '3' },
             {
-              name: 'ORCA_RELAY_CELLS_JSON',
+              name: 'KINGU_RELAY_CELLS_JSON',
               value: JSON.stringify(inventory.map((id) => ({ id })))
             }
           ]
@@ -144,10 +144,10 @@ test('requires the active director to meet the configured floor', () => {
         {
           image: 'registry.example/relay@sha256:abc',
           env: [
-            { name: 'ORCA_RELAY_ROLE', value: 'director' },
-            { name: 'ORCA_RELAY_ADMISSION_SELECTOR_VERSION', value: '3' },
+            { name: 'KINGU_RELAY_ROLE', value: 'director' },
+            { name: 'KINGU_RELAY_ADMISSION_SELECTOR_VERSION', value: '3' },
             {
-              name: 'ORCA_RELAY_CELLS_JSON',
+              name: 'KINGU_RELAY_CELLS_JSON',
               value: JSON.stringify([{ id: 'c1' }])
             }
           ]
@@ -228,7 +228,7 @@ function topology() {
     instance_group: `https://compute.example/instanceGroups/relay-${hostname}`,
     backend_name: `relay-${hostname}`,
     backend_id: `https://compute.example/backendServices/relay-${hostname}`,
-    url_map_name: 'orca-relay',
+    url_map_name: 'kingu-relay',
     generation_identity: `https://compute.example/instanceTemplates/relay-${hostname}-abc`,
     image: `us-central1-docker.pkg.dev/project/repo/relay@${digest(id)}`,
     capacity_requests: 4_000,
@@ -499,7 +499,7 @@ function harness({
         terraformStateObjectGeneration: '987654321',
         terraformStateObjectSha256: 'f'.repeat(64),
         requestReason:
-          'orca-relay-fence/44444444-4444-4444-8444-444444444444',
+          'kingu-relay-fence/44444444-4444-4444-8444-444444444444',
         createdAt: Date.now(),
         expiresAt: Date.now() + 3_600_000,
         ...(completedFenceAttempt
@@ -509,7 +509,7 @@ function harness({
                 {
                   invocationId: '66666666-6666-4666-8666-666666666666',
                   requestReason:
-                    'orca-relay-fence/44444444-4444-4444-8444-444444444444/66666666-6666-4666-8666-666666666666',
+                    'kingu-relay-fence/44444444-4444-4444-8444-444444444444/66666666-6666-4666-8666-666666666666',
                   startedAt: 101
                 }
               ]
@@ -557,10 +557,10 @@ function harness({
             {
               image: 'registry.example/relay@sha256:abc',
               env: [
-                { name: 'ORCA_RELAY_ROLE', value: 'director' },
-                { name: 'ORCA_RELAY_ADMISSION_SELECTOR_VERSION', value: '3' },
+                { name: 'KINGU_RELAY_ROLE', value: 'director' },
+                { name: 'KINGU_RELAY_ADMISSION_SELECTOR_VERSION', value: '3' },
                 {
-                  name: 'ORCA_RELAY_CELLS_JSON',
+                  name: 'KINGU_RELAY_CELLS_JSON',
                   value: JSON.stringify(
                     Object.keys(topologyValue).map((id) => ({ id }))
                   )
@@ -584,9 +584,9 @@ function harness({
               {
                 key: 'startup-script',
                 value: [
-                  `printf 'ORCA_RELAY_IMAGE_DIGEST=%s\\n' '${expected.image.split('@')[1]}'`,
-                  `  printf 'ORCA_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '${templateHardCap}'`,
-                  `  printf 'ORCA_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '${templateUnobservedBound}'`,
+                  `printf 'KINGU_RELAY_IMAGE_DIGEST=%s\\n' '${expected.image.split('@')[1]}'`,
+                  `  printf 'KINGU_RELAY_CELL_CONNECTION_HARD_CAP=%s\\n' '${templateHardCap}'`,
+                  `  printf 'KINGU_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\\n' '${templateUnobservedBound}'`,
                   `docker pull '${expected.image}'`,
                   `docker run '${expected.image}'`
                 ].join('\n')
@@ -650,32 +650,32 @@ function harness({
     }
     if (args.includes('target-https-proxies')) {
       return {
-        name: 'orca-relay',
+        name: 'kingu-relay',
         selfLink:
-          'https://www.googleapis.com/compute/v1/projects/test-project/global/targetHttpsProxies/orca-relay',
+          'https://www.googleapis.com/compute/v1/projects/test-project/global/targetHttpsProxies/kingu-relay',
         urlMap: frontendMisbound
           ? 'https://www.googleapis.com/compute/v1/projects/test-project/global/urlMaps/other'
-          : 'https://www.googleapis.com/compute/v1/projects/test-project/global/urlMaps/orca-relay'
+          : 'https://www.googleapis.com/compute/v1/projects/test-project/global/urlMaps/kingu-relay'
       }
     }
     if (args.includes('forwarding-rules')) {
       return {
-        name: 'orca-relay',
+        name: 'kingu-relay',
         target:
-          'https://www.googleapis.com/compute/v1/projects/test-project/global/targetHttpsProxies/orca-relay',
+          'https://www.googleapis.com/compute/v1/projects/test-project/global/targetHttpsProxies/kingu-relay',
         IPAddress: '203.0.113.10',
         portRange: '443-443',
         loadBalancingScheme: 'EXTERNAL_MANAGED'
       }
     }
     if (args.includes('addresses')) {
-      return { name: 'orca-relay', address: '203.0.113.10' }
+      return { name: 'kingu-relay', address: '203.0.113.10' }
     }
     if (args.includes('url-maps')) {
       return {
-        name: 'orca-relay',
+        name: 'kingu-relay',
         selfLink:
-          'https://www.googleapis.com/compute/v1/projects/test-project/global/urlMaps/orca-relay',
+          'https://www.googleapis.com/compute/v1/projects/test-project/global/urlMaps/kingu-relay',
         hostRules: Object.entries(topologyValue).map(([cellId, cell]) => ({
           hosts: [new URL(cell.origin).hostname],
           pathMatcher: cellId
@@ -1124,7 +1124,7 @@ function harness({
           terraformStateObjectGeneration: '987654321',
           terraformStateObjectSha256: 'f'.repeat(64),
           requestReason:
-            'orca-relay-fence/44444444-4444-4444-8444-444444444444'
+            'kingu-relay-fence/44444444-4444-4444-8444-444444444444'
         }
         await callbacks.prepareAttempt(attempt)
         await callbacks.preApplyGuard()
@@ -3146,8 +3146,8 @@ test('reads the broker mutation token without treating the audience as the envir
   await withTopology(async (file) => {
     const testHarness = harness({ supersede: true })
     delete testHarness.overrides.mutationIdentityToken
-    const previous = process.env.ORCA_RELAY_FENCE_MUTATION_ID_TOKEN
-    process.env.ORCA_RELAY_FENCE_MUTATION_ID_TOKEN = 'ddd.eee.fff'
+    const previous = process.env.KINGU_RELAY_FENCE_MUTATION_ID_TOKEN
+    process.env.KINGU_RELAY_FENCE_MUTATION_ID_TOKEN = 'ddd.eee.fff'
     try {
       await runMultiTargetDeployment(
         config(file, 'supersede-target'),
@@ -3155,9 +3155,9 @@ test('reads the broker mutation token without treating the audience as the envir
       )
     } finally {
       if (previous === undefined) {
-        delete process.env.ORCA_RELAY_FENCE_MUTATION_ID_TOKEN
+        delete process.env.KINGU_RELAY_FENCE_MUTATION_ID_TOKEN
       } else {
-        process.env.ORCA_RELAY_FENCE_MUTATION_ID_TOKEN = previous
+        process.env.KINGU_RELAY_FENCE_MUTATION_ID_TOKEN = previous
       }
     }
     assert.equal(testHarness.events.at(-1).event, 'registered_target_superseded')
@@ -3168,8 +3168,8 @@ test('fails closed when the broker child has no mutation token', async () => {
   await withTopology(async (file) => {
     const testHarness = harness({ supersede: true })
     delete testHarness.overrides.mutationIdentityToken
-    const previous = process.env.ORCA_RELAY_FENCE_MUTATION_ID_TOKEN
-    delete process.env.ORCA_RELAY_FENCE_MUTATION_ID_TOKEN
+    const previous = process.env.KINGU_RELAY_FENCE_MUTATION_ID_TOKEN
+    delete process.env.KINGU_RELAY_FENCE_MUTATION_ID_TOKEN
     try {
       await assert.rejects(
         runMultiTargetDeployment(
@@ -3180,7 +3180,7 @@ test('fails closed when the broker child has no mutation token', async () => {
       )
     } finally {
       if (previous !== undefined) {
-        process.env.ORCA_RELAY_FENCE_MUTATION_ID_TOKEN = previous
+        process.env.KINGU_RELAY_FENCE_MUTATION_ID_TOKEN = previous
       }
     }
     assert.equal(testHarness.events.length, 0)

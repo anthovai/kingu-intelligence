@@ -254,7 +254,7 @@
     "85d826c606ff": {
       "registry": {
         "exhaustedTiers": 2,
-        "names": ["marlin", "orca"]
+        "names": ["marlin", "kingu"]
       }
     },
     "90d43035c093": {
@@ -325,7 +325,7 @@
               "repo-1": 2
             },
             "retiredNamesByRepo": {
-              "repo-1": ["marlin", "orca"]
+              "repo-1": ["marlin", "kingu"]
             }
           }
         }

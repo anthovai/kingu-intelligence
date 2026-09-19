@@ -11,7 +11,7 @@
     "google_storage_bucket_iam_member.cloud_sql_rollout_lease_bucket_reader"
   ],
   "apps": [
-    "cloudflare_record.artifact_onorca",
+    "cloudflare_record.artifact_onkingu",
     "cloudflare_record.artifact_usercontent",
     "cloudflare_record.auth",
     "google_artifact_registry_repository_iam_member.github_production_app_deploy_writer",

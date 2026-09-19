@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 // Single place naming the repository the Relay workflows live in and where their files sit. The
 // public-repo copy moves this tree under cloud/, prefixes every workflow filename, and changes the
 // owning repository, so only this module changes: nothing else may restate any of the three.
-export const RELAY_GITHUB_REPOSITORY = 'stablyai/orca'
+export const RELAY_GITHUB_REPOSITORY = 'anthovai/kingu-intelligence'
 
 export const RELAY_WORKFLOW_FILE_PREFIX = 'cloud-'
 

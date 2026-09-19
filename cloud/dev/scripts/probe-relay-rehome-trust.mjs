@@ -4,7 +4,7 @@ import { fetchAdminOnceMore } from './relay-admin-transient-retry.mjs'
 // Every general cell that carries the rehome identity: the sixteen US cells and the
 // three asia-east2 cells that drain mis-homed hosts back the other way.
 const PRODUCTION_CELL = /^production-gce-c(?:7|8|9|10|13|14|15|16|19|20|21|22|23|24|25|26|27|28|29)$/
-const DIRECTOR_ORIGIN = 'https://relay.onorca.dev'
+const DIRECTOR_ORIGIN = 'https://relay.onkingu.dev'
 
 export function parseRehomeTrustProbeArguments(argv, environment = process.env) {
   const values = {}
@@ -24,7 +24,7 @@ export function parseRehomeTrustProbeArguments(argv, environment = process.env) 
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
     values['cell-incarnation']
   )) throw new Error('--cell-incarnation is invalid')
-  const token = environment.ORCA_RELAY_ADMIN_ID_TOKEN
+  const token = environment.KINGU_RELAY_ADMIN_ID_TOKEN
   if (!token || token.length > 8_192 || !/^[^.]+\.[^.]+\.[^.]+$/.test(token)) {
     throw new Error('admin identity token is unavailable')
   }

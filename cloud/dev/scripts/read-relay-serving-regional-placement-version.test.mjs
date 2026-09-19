@@ -6,9 +6,9 @@ import {
 } from './read-relay-serving-regional-placement-version.mjs'
 
 const input = {
-  project: 'onorca-cloud',
+  project: 'onkingu-cloud',
   region: 'us-central1',
-  service: 'orca-cloud-relay',
+  service: 'kingu-cloud-relay',
   bootstrap_version: '7'
 }
 
@@ -17,10 +17,10 @@ function revision(version = '11') {
     spec: {
       containers: [{
         env: [{
-          name: 'ORCA_RELAY_REGIONAL_PLACEMENT_ENABLED',
+          name: 'KINGU_RELAY_REGIONAL_PLACEMENT_ENABLED',
           valueSource: {
             secretKeyRef: {
-              secret: 'orca-cloud-relay-regional-placement-enabled',
+              secret: 'kingu-cloud-relay-regional-placement-enabled',
               version
             }
           }
@@ -37,7 +37,7 @@ function v1Revision(name, key) {
     spec: {
       containers: [{
         env: [{
-          name: 'ORCA_RELAY_REGIONAL_PLACEMENT_ENABLED',
+          name: 'KINGU_RELAY_REGIONAL_PLACEMENT_ENABLED',
           valueFrom: { secretKeyRef: { name, key } }
         }]
       }]
@@ -73,8 +73,8 @@ test('reads the exact version from the sole traffic-serving revision', () => {
 
 test('reads the gcloud v1 secret reference shape by bare id and by full resource path', () => {
   for (const name of [
-    'orca-cloud-relay-regional-placement-enabled',
-    'projects/120364513935/secrets/orca-cloud-relay-regional-placement-enabled'
+    'kingu-cloud-relay-regional-placement-enabled',
+    'projects/120364513935/secrets/kingu-cloud-relay-regional-placement-enabled'
   ]) {
     assert.deepEqual(readRelayServingRegionalPlacementVersion(input, {
       run: (args) => args[1] === 'services' ? serving() : v1Revision(name, '1')
@@ -91,7 +91,7 @@ test('rejects a v1 reference that names another secret or a floating version', (
   assert.throws(() => readRelayServingRegionalPlacementVersion(input, {
     run: (args) => args[1] === 'services'
       ? serving()
-      : v1Revision('orca-cloud-relay-regional-placement-enabled', 'latest')
+      : v1Revision('kingu-cloud-relay-regional-placement-enabled', 'latest')
   }), /secret reference is invalid/)
 })
 
@@ -141,7 +141,7 @@ test('rejects ambiguous traffic, malformed references, and read failures', () =>
 test('preserves the serving cohort including explicit disable across later Terraform plans', () => {
   for (const value of ['0', '1', '17', '100']) {
     const servingRevision = revision()
-    servingRevision.spec.containers[0].env.push({ name: 'ORCA_RELAY_REGION_CORRECTION_COHORT_PERCENT', value })
+    servingRevision.spec.containers[0].env.push({ name: 'KINGU_RELAY_REGION_CORRECTION_COHORT_PERCENT', value })
     assert.deepEqual(readRelayServingRegionalPlacementVersion(input, {
       run: (args) => args[1] === 'services' ? serving() : servingRevision
     }), { version: '11', cohort_percent: value })
@@ -149,7 +149,7 @@ test('preserves the serving cohort including explicit disable across later Terra
 })
 
 test('fails closed on malformed, secret-backed or duplicate cohorts rather than resetting them', () => {
-  const name = 'ORCA_RELAY_REGION_CORRECTION_COHORT_PERCENT'
+  const name = 'KINGU_RELAY_REGION_CORRECTION_COHORT_PERCENT'
   const cases = [
     [{ name, value: '101' }], [{ name, value: '-1' }], [{ name, value: '1.5' }],
     [{ name, value: '' }], [{ name, value: '01' }], [{ name, value: 1 }],

@@ -2,7 +2,7 @@ import type { ProjectRepositoryResolutionModel } from './use-mobile-tasks-projec
 import {
   type GitHubProjectSettings,
   type TaskProvider,
-  trustedOrcaHooksWithSetupApproval,
+  trustedKinguHooksWithSetupApproval,
   useCallback,
   useLayoutEffect,
   useState
@@ -28,14 +28,14 @@ export function useMobileTasksClientSettingsActions(model: ProjectRepositoryReso
     setGithubSourceFallbacks,
     setGithubTotalCount,
     setItems,
-    setOrcaYamlTrustPrompt,
+    setKinguYamlTrustPrompt,
     setSetupPrompt,
     setShowWorkspaceAdvanced,
     setShowWorkspaceAgentPicker,
     setShowWorkspaceBaseBranchPicker,
     setShowWorkspaceCreateRepoPicker,
     setShowWorkspaceSparsePicker,
-    setTrustedOrcaHooks,
+    setTrustedKinguHooks,
     setWorkspaceAgent,
     setWorkspaceAgentOverridden,
     setWorkspaceBaseBranch,
@@ -62,7 +62,7 @@ export function useMobileTasksClientSettingsActions(model: ProjectRepositoryReso
     setWorkspaceSshState,
     taskResumeRef,
     taskUiReady,
-    trustedOrcaHooks
+    trustedKinguHooks
   } = model
   // Why: task-loading effects use this as a stale-client guard, so the ref
   // must be current before those passive effects can run after commit.
@@ -192,16 +192,16 @@ export function useMobileTasksClientSettingsActions(model: ProjectRepositoryReso
       if (!client) {
         return
       }
-      const next = trustedOrcaHooksWithSetupApproval({
-        trust: trustedOrcaHooks,
+      const next = trustedKinguHooksWithSetupApproval({
+        trust: trustedKinguHooks,
         repoId,
         contentHash,
         alwaysTrust
       })
-      taskUiStateWrite.interpret(await taskUiStateWrite.request(client, { trustedOrcaHooks: next }))
-      setTrustedOrcaHooks(next)
+      taskUiStateWrite.interpret(await taskUiStateWrite.request(client, { trustedKinguHooks: next }))
+      setTrustedKinguHooks(next)
     },
-    [client, trustedOrcaHooks]
+    [client, trustedKinguHooks]
   )
 
   const resetWorkspaceCreateState = useCallback((): void => {
@@ -235,7 +235,7 @@ export function useMobileTasksClientSettingsActions(model: ProjectRepositoryReso
     setShowWorkspaceBaseBranchPicker(false)
     setShowWorkspaceSparsePicker(false)
     setSetupPrompt(null)
-    setOrcaYamlTrustPrompt(null)
+    setKinguYamlTrustPrompt(null)
   }, [])
   return Object.assign(model, {
     resetGitHubItemsState,

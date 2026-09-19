@@ -9,7 +9,7 @@ RUN pnpm install --frozen-lockfile
 COPY packages/relay-contract packages/relay-contract
 COPY apps/relay apps/relay
 COPY packages/postgres-schema packages/postgres-schema
-RUN pnpm --filter @orca-cloud/postgres-schema build && pnpm --filter @orca-cloud/relay-contract build && pnpm --filter @orca-cloud/relay build
+RUN pnpm --filter @kingu-cloud/postgres-schema build && pnpm --filter @kingu-cloud/relay-contract build && pnpm --filter @kingu-cloud/relay build
 
 FROM node:24-alpine AS runtime
 ENV NODE_ENV=production
@@ -23,7 +23,7 @@ COPY apps/relay/package.json apps/relay/package.json
 COPY --from=build /app/packages/relay-contract/dist packages/relay-contract/dist
 COPY --from=build /app/packages/postgres-schema/dist packages/postgres-schema/dist
 COPY --from=build /app/apps/relay/dist apps/relay/dist
-RUN pnpm install --prod --frozen-lockfile --filter @orca-cloud/relay...
+RUN pnpm install --prod --frozen-lockfile --filter @kingu-cloud/relay...
 USER node
 EXPOSE 8080
 CMD ["node", "apps/relay/dist/index.js"]

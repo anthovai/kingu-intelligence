@@ -4,7 +4,7 @@ import {
 } from './mobile-dictation-pending-audio-budget'
 import { bytesToBase64 } from './mobile-dictation-session-state'
 import { dictationAudioChunkSend } from '../dictation/mobile-dictation-operations'
-import type { MicrophoneDataEvent } from '@orca/expo-two-way-audio'
+import type { MicrophoneDataEvent } from '@kingu/expo-two-way-audio'
 import type { MobileDictationPendingAudioBudget } from './mobile-dictation-pending-audio-budget'
 import type { RpcClient } from '../transport/rpc-client'
 

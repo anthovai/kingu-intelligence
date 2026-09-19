@@ -376,7 +376,7 @@ export async function verifyCapacityTransition(config, overrides = {}) {
   const fetchImpl = overrides.fetch ?? fetch
   const wait = overrides.wait ?? ((ms) => new Promise((resolve) => setTimeout(resolve, ms)))
   const now = overrides.now ?? Date.now
-  const token = overrides.token ?? process.env.ORCA_RELAY_ADMIN_ID_TOKEN
+  const token = overrides.token ?? process.env.KINGU_RELAY_ADMIN_ID_TOKEN
   if (!token || token.length > 8_192) throw new Error('admin identity token is unavailable')
   const health = await responseJson(
     await fetchAdminOnceMore(

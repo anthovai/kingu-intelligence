@@ -47,10 +47,10 @@ jobs:
     timeout-minutes: 75
     environment: production
     env:
-      GCP_PROJECT_ID: onorca-cloud
+      GCP_PROJECT_ID: onkingu-cloud
       GCP_REGION: ${{ vars.PRODUCTION_GCP_REGION }}
-      DIRECTOR_SERVICE_NAME: orca-cloud-relay
-      DIRECTOR_ORIGIN: https://relay.onorca.dev
+      DIRECTOR_SERVICE_NAME: kingu-cloud-relay
+      DIRECTOR_ORIGIN: https://relay.onkingu.dev
       TARGET_CELL_ID: ${{ inputs.target-cell-id }}
       CAPACITY_CELL_IDS: production-gce-c7,production-gce-c8,production-gce-c9,production-gce-c10,production-gce-c13,production-gce-c14,production-gce-c15,production-gce-c16,production-gce-c19,production-gce-c20,production-gce-c21,production-gce-c22,production-gce-c23,production-gce-c24,production-gce-c25,production-gce-c26
       PREDECESSOR_IMAGE_DIGEST: sha256:0e83408b0dc08531f1e8182019dc151afc38d63ddde4ad5cc01e40247ef3681d
@@ -233,14 +233,14 @@ jobs:
           workload_identity_provider: ${{ vars.PRODUCTION_GCP_RELAY_DEPLOY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.PRODUCTION_GCP_RELAY_DEPLOY_SERVICE_ACCOUNT }}
           token_format: id_token
-          id_token_audience: https://relay.onorca.dev/v1/admin/drain
+          id_token_audience: https://relay.onkingu.dev/v1/admin/drain
           id_token_include_email: true
 
       - uses: google-github-actions/setup-gcloud@v2
 
       - uses: ./.github/actions/cloud-sql-rollout-lease
         with:
-          bucket: onorca-cloud-terraform-state
+          bucket: onkingu-cloud-terraform-state
           object: terraform/state/cloud-sql-rollout/production.lock
           release: 'false'
 
@@ -271,7 +271,7 @@ jobs:
           TARGET_UNOBSERVED_BOUND=60
           TARGET_HOSTNAME="${TARGET_CELL_ID#production-gce-}"
           [[ "${TARGET_HOSTNAME}" =~ ^c(7|8|9|10|13|14|15|16|19|20|21|22|23|24|25|26)$ ]]
-          CELL_ORIGIN="https://${TARGET_HOSTNAME}.relay.onorca.dev"
+          CELL_ORIGIN="https://${TARGET_HOSTNAME}.relay.onkingu.dev"
           CELLS_JSON="$(terraform -chdir=infra/terraform console \
             -var-file=environments/production.tfvars \
             <<< 'jsonencode(var.relay_gce_cells)' | jq -er '.')"
@@ -306,7 +306,7 @@ jobs:
           [[ "${DESIRED_IMAGE}" =~ @sha256:[0-9a-f]{64}$ ]]
           DESIRED_IMAGE_DIGEST="${DESIRED_IMAGE##*@}"
           [[ "${TARGET_ZONE}" =~ ^[a-z0-9-]+$ ]]
-          test "${MIG_NAME}" = "orca-cloud-relay-gce-${TARGET_HOSTNAME}"
+          test "${MIG_NAME}" = "kingu-cloud-relay-gce-${TARGET_HOSTNAME}"
           {
             echo "CELL_ORIGIN=${CELL_ORIGIN}"
             echo "TARGET_HOSTNAME=${TARGET_HOSTNAME}"
@@ -338,7 +338,7 @@ jobs:
             test "${DESIRED_IMAGE_DIGEST}" = "${COMPATIBLE_CELL_IMAGE_DIGEST}"
           fi
           CURRENT_CELLS_JSON="$(jq -cer '[.spec.containers[0].env[]? |
-                select(.name == "ORCA_RELAY_CELLS_JSON") | .value] |
+                select(.name == "KINGU_RELAY_CELLS_JSON") | .value] |
               if length == 1 then .[0] | fromjson else error("missing director topology") end' \
             <<< "${ACTIVE_REVISION_JSON}")"
           CURRENT_CAPACITY_SERVICE_ACCOUNT_JSON="$(
@@ -380,7 +380,7 @@ jobs:
       - name: Verify fresh dry-run evidence against the live selector
         if: ${{ inputs.mode == 'apply' && inputs.evidence-mode == 'single' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.deploy-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.deploy-auth.outputs.id_token }}
         run: |
           node dev/scripts/relay-monitor-evidence.mjs verify-mutation \
             --directory "${RUNNER_TEMP}/relay-monitor-evidence" \
@@ -396,7 +396,7 @@ jobs:
       - name: Recheck every live safety signal
         if: ${{ inputs.mode == 'apply' && inputs.evidence-mode == 'single' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.deploy-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.deploy-auth.outputs.id_token }}
         run: |
           pnpm incident:relay-preflight -- \
             --state-file "${RUNNER_TEMP}/relay-monitor-evidence/relay-${MONITOR_RUN_ID}-dry-run.state.json"
@@ -404,7 +404,7 @@ jobs:
       - name: Recheck exact wave state and every live safety signal
         if: ${{ inputs.mode == 'apply' && inputs.evidence-mode == 'continuation' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.deploy-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.deploy-auth.outputs.id_token }}
         run: |
           node dev/scripts/relay-production-capacity-wave.mjs build-preflight \
             --state-file "${RUNNER_TEMP}/relay-monitor-evidence/relay-${MONITOR_RUN_ID}-dry-run.state.json" \
@@ -421,7 +421,7 @@ jobs:
       - name: Recheck exact isolated resume state and every live safety signal
         if: ${{ inputs.mode == 'apply' && inputs.evidence-mode == 'resume' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.deploy-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.deploy-auth.outputs.id_token }}
         run: |
           node dev/scripts/relay-production-capacity-wave.mjs build-resume-preflight \
             --state-file "${RUNNER_TEMP}/relay-monitor-evidence/relay-${MONITOR_RUN_ID}-dry-run.state.json" \
@@ -464,7 +464,7 @@ jobs:
       - name: Verify current selected-cell capacity
         if: ${{ inputs.mode == 'verify' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.deploy-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.deploy-auth.outputs.id_token }}
         run: |
           CURRENT_CAP="${TARGET_HARD_CAP}"
           CURRENT_IMAGE_DIGEST="${DESIRED_IMAGE_DIGEST}"
@@ -491,7 +491,7 @@ jobs:
       - name: Reversibly isolate only the selected cell
         if: ${{ inputs.mode != 'verify' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.deploy-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.deploy-auth.outputs.id_token }}
         run: |
           test "${MUTATION_STARTED:-false}" = true || exit 0
           node dev/scripts/prepare-relay-production-capacity-canary.mjs \
@@ -503,7 +503,7 @@ jobs:
       - name: Drain the selected cell or prove an offline rollback
         if: ${{ inputs.mode != 'verify' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.deploy-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.deploy-auth.outputs.id_token }}
         run: |
           if node dev/scripts/prepare-relay-production-capacity-canary.mjs \
             --director-origin "${DIRECTOR_ORIGIN}" \
@@ -524,14 +524,14 @@ jobs:
           workload_identity_provider: ${{ vars.PRODUCTION_GCP_RELAY_DEPLOY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.PRODUCTION_GCP_RELAY_DEPLOY_SERVICE_ACCOUNT }}
           token_format: id_token
-          id_token_audience: https://relay.onorca.dev/v1/admin/drain
+          id_token_audience: https://relay.onkingu.dev/v1/admin/drain
           id_token_include_email: true
 
       - id: restart-gate-one
         name: Require restart-safe selected-cell activity
         if: ${{ inputs.mode != 'verify' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.restart-auth-one.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.restart-auth-one.outputs.id_token }}
         run: |
           if test "${OFFLINE_ROLLBACK:-false}" = true; then
             node dev/scripts/verify-relay-capacity-transition.mjs \
@@ -590,13 +590,13 @@ jobs:
           workload_identity_provider: ${{ vars.PRODUCTION_GCP_RELAY_DEPLOY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.PRODUCTION_GCP_RELAY_DEPLOY_SERVICE_ACCOUNT }}
           token_format: id_token
-          id_token_audience: https://relay.onorca.dev/v1/admin/drain
+          id_token_audience: https://relay.onkingu.dev/v1/admin/drain
           id_token_include_email: true
 
       - name: Require extended restart-safe selected-cell activity
         if: ${{ steps.restart-gate-one.outputs.settled == 'false' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.restart-auth-two.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.restart-auth-two.outputs.id_token }}
         run: |
           CURRENT_CAP=600
           if test "${TOPOLOGY_PHASE}" = desired; then
@@ -645,13 +645,13 @@ jobs:
           workload_identity_provider: ${{ vars.PRODUCTION_GCP_RELAY_DEPLOY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.PRODUCTION_GCP_RELAY_DEPLOY_SERVICE_ACCOUNT }}
           token_format: id_token
-          id_token_audience: https://relay.onorca.dev/v1/admin/drain
+          id_token_audience: https://relay.onkingu.dev/v1/admin/drain
           id_token_include_email: true
 
       - name: Require fail-closed director transition
         if: ${{ inputs.mode != 'verify' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.director-transition-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.director-transition-auth.outputs.id_token }}
         run: |
           if test "${OFFLINE_ROLLBACK:-false}" = true; then
             node dev/scripts/verify-relay-capacity-transition.mjs \
@@ -686,7 +686,7 @@ jobs:
           workload_identity_provider: ${{ vars.PRODUCTION_GCP_RELAY_CAPACITY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.PRODUCTION_GCP_RELAY_CAPACITY_SERVICE_ACCOUNT }}
           token_format: id_token
-          id_token_audience: https://relay.onorca.dev/v1/admin/drain
+          id_token_audience: https://relay.onkingu.dev/v1/admin/drain
           id_token_include_email: true
 
       - name: Plan and apply only the empty selected cell
@@ -736,13 +736,13 @@ jobs:
           workload_identity_provider: ${{ vars.PRODUCTION_GCP_RELAY_CAPACITY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.PRODUCTION_GCP_RELAY_CAPACITY_SERVICE_ACCOUNT }}
           token_format: id_token
-          id_token_audience: https://relay.onorca.dev/v1/admin/drain
+          id_token_audience: https://relay.onkingu.dev/v1/admin/drain
           id_token_include_email: true
 
       - name: Verify fresh exact selected-cell heartbeat before admission
         if: ${{ inputs.mode != 'verify' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.capacity-transition-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.capacity-transition-auth.outputs.id_token }}
         run: |
           node dev/scripts/verify-relay-capacity-transition.mjs \
             --director-origin "${DIRECTOR_ORIGIN}" \
@@ -759,7 +759,7 @@ jobs:
       - name: Restore only the selected cell to general admission
         if: ${{ inputs.mode != 'verify' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.capacity-transition-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.capacity-transition-auth.outputs.id_token }}
         run: |
           node dev/scripts/prepare-relay-production-capacity-canary.mjs \
             --director-origin "${DIRECTOR_ORIGIN}" \
@@ -770,7 +770,7 @@ jobs:
       - name: Verify the live general selected cell
         if: ${{ inputs.mode != 'verify' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.capacity-transition-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.capacity-transition-auth.outputs.id_token }}
         run: |
           node dev/scripts/verify-relay-capacity-transition.mjs \
             --director-origin "${DIRECTOR_ORIGIN}" \
@@ -791,14 +791,14 @@ jobs:
           workload_identity_provider: ${{ vars.PRODUCTION_GCP_RELAY_DEPLOY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.PRODUCTION_GCP_RELAY_DEPLOY_SERVICE_ACCOUNT }}
           token_format: id_token
-          id_token_audience: https://relay.onorca.dev/v1/admin/drain
+          id_token_audience: https://relay.onkingu.dev/v1/admin/drain
           id_token_include_email: true
 
       - name: Keep the selected cell isolated after a failed mutation
         if: ${{ failure() && inputs.mode != 'verify' }}
         continue-on-error: true
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.cleanup-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.cleanup-auth.outputs.id_token }}
         run: |
           test "${MUTATION_STARTED:-false}" = true || exit 0
           CLEANUP_STATUS=0

@@ -13,8 +13,8 @@ import { colors, radii, spacing, typography } from '../theme/mobile-theme'
 
 const LINK_MODE_OPTIONS: PickerOption<MobileTerminalLinkOpenMode>[] = [
   {
-    value: 'orca-browser',
-    label: 'Orca browser on desktop',
+    value: 'kingu-browser',
+    label: 'Kingu browser on desktop',
     subtitle: 'Open in the streamed browser from your paired desktop.'
   },
   {
@@ -37,7 +37,7 @@ export default function BrowserSettingsScreen({
 }): React.JSX.Element {
   const router = useRouter()
   const insets = useSafeAreaInsets()
-  const [linkMode, setLinkMode] = useState<MobileTerminalLinkOpenMode>('orca-browser')
+  const [linkMode, setLinkMode] = useState<MobileTerminalLinkOpenMode>('kingu-browser')
   const [pickerOpen, setPickerOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
 

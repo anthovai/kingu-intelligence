@@ -156,8 +156,8 @@
     },
     "573943fdb37d": {
       "assets": {
-        "assets/app.js": "orca.boot()",
-        "index.html": "<!doctype html><p>orca</p>"
+        "assets/app.js": "kingu.boot()",
+        "index.html": "<!doctype html><p>kingu</p>"
       },
       "outcome": {
         "assetCount": 2,

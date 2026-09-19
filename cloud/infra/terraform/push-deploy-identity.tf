@@ -13,7 +13,7 @@ locals {
 resource "google_service_account" "github_push_deploy" {
   count        = local.push_gateway_deploy_count
   account_id   = "${var.name_prefix}-gha-push"
-  display_name = "Orca push production deploy"
+  display_name = "Kingu push production deploy"
 }
 
 resource "google_iam_workload_identity_pool_provider" "github_push" {

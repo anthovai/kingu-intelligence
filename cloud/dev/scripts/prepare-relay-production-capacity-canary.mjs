@@ -8,7 +8,7 @@ import {
 } from './relay-admission-selector.mjs'
 import { SAME_CAP_CELLS } from './relay-production-same-cap-wave.mjs'
 
-const DIRECTOR_ORIGIN = 'https://relay.onorca.dev'
+const DIRECTOR_ORIGIN = 'https://relay.onkingu.dev'
 export const PRODUCTION_CAPACITY_CELL_IDS = [
   'production-gce-c7',
   'production-gce-c8',
@@ -29,7 +29,7 @@ export const PRODUCTION_CAPACITY_CELL_IDS = [
 ]
 
 function cellOrigin(cellId) {
-  return `https://${cellId.slice('production-gce-'.length)}.relay.onorca.dev`
+  return `https://${cellId.slice('production-gce-'.length)}.relay.onkingu.dev`
 }
 
 // The same-cap roll covers the Asia cells the US-only capacity rollout never touches.
@@ -94,7 +94,7 @@ async function responseJson(response, label) {
 
 export async function prepareProductionCapacityCell(config, overrides = {}) {
   const fetchImpl = overrides.fetch ?? fetch
-  const token = overrides.token ?? process.env.ORCA_RELAY_ADMIN_ID_TOKEN
+  const token = overrides.token ?? process.env.KINGU_RELAY_ADMIN_ID_TOKEN
   if (!token || token.length > 8_192) throw new Error('admin identity token is unavailable')
   const postRaw = async (origin, path, body) =>
     await fetchAdminOnceMore(

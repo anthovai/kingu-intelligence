@@ -4,7 +4,7 @@ Validated on September 7, 2026 in a background Electron dev instance of
 `pr19217-review-r2`, based on `ce1024096b` with the source-adapter refactor.
 CDP app identity confirmed the checkout; CDP screenshots of the full hidden renderer
 were reviewed at the time and are not retained here.
-The command output is the real `orca worktree ps --json` response reduced to status,
+The command output is the real `kingu worktree ps --json` response reduced to status,
 agent state, provider, and pane key for readability.
 
 ## Functional correctness

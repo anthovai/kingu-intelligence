@@ -32,13 +32,13 @@ defaults:
 
 jobs:
   publish:
-    if: ${{ vars.ORCA_CLOUD_OPERATIONS_ENABLED == 'true' }}
+    if: ${{ vars.KINGU_CLOUD_OPERATIONS_ENABLED == 'true' }}
     runs-on: blacksmith-2vcpu-ubuntu-2204
     environment: production
     env:
-      GCP_PROJECT_ID: onorca-cloud
+      GCP_PROJECT_ID: onkingu-cloud
       GCP_REGION: ${{ vars.PRODUCTION_GCP_REGION }}
-      REPOSITORY_ID: orca-cloud
+      REPOSITORY_ID: kingu-cloud
       IMAGE_NAME: relay
       PUBLISH_MODE: ${{ inputs.mode }}
       MIRROR_DIGEST: ${{ inputs.image-digest }}
@@ -93,7 +93,7 @@ jobs:
         run: |
           IMAGE_TAG="${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${REPOSITORY_ID}/relay-fence-broker:sha-${GITHUB_SHA}"
           docker build \
-            --build-arg "ORCA_RELAY_FENCE_IMAGE_COMMIT=${GITHUB_SHA}" \
+            --build-arg "KINGU_RELAY_FENCE_IMAGE_COMMIT=${GITHUB_SHA}" \
             -f apps/relay-fence-broker/Dockerfile \
             -t "${IMAGE_TAG}" .
           docker push "${IMAGE_TAG}"
@@ -113,7 +113,7 @@ jobs:
         run: |
           set -euo pipefail
           source_image="${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${REPOSITORY_ID}/${IMAGE_NAME}@${MIRROR_DIGEST}"
-          target_tag="${GCP_REGION}-docker.pkg.dev/onorca-cloud-staging/${REPOSITORY_ID}/${IMAGE_NAME}:production-${MIRROR_DIGEST#sha256:}"
+          target_tag="${GCP_REGION}-docker.pkg.dev/onkingu-cloud-staging/${REPOSITORY_ID}/${IMAGE_NAME}:production-${MIRROR_DIGEST#sha256:}"
           source_digest="$(gcloud artifacts docker images describe "${source_image}" \
             --project "${GCP_PROJECT_ID}" --format='value(image_summary.digest)')"
           test "${source_digest}" = "${MIRROR_DIGEST}"
@@ -121,7 +121,7 @@ jobs:
           docker tag "${source_image}" "${target_tag}"
           docker push "${target_tag}"
           target_digest="$(gcloud artifacts docker images describe "${target_tag}" \
-            --project onorca-cloud-staging --format='value(image_summary.digest)')"
+            --project onkingu-cloud-staging --format='value(image_summary.digest)')"
           test "${target_digest}" = "${MIRROR_DIGEST}"
           {
             echo '### Mirrored Relay image'

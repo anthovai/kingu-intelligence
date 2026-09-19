@@ -119,7 +119,7 @@ test('requires fresh green evidence and rechecks the live selector', async () =>
           '--director-origin',
           'https://relay.example'
         ],
-        { ORCA_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
+        { KINGU_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
         fetchImpl,
         () => now
       )
@@ -146,7 +146,7 @@ test('requires fresh green evidence and rechecks the live selector', async () =>
           '--director-origin',
           'https://relay.example'
         ],
-        { ORCA_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
+        { KINGU_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
         fetchImpl,
         () => now
       ),
@@ -169,7 +169,7 @@ test('requires fresh green evidence and rechecks the live selector', async () =>
           '--director-origin',
           'https://relay.example'
         ],
-        { ORCA_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
+        { KINGU_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
         fetchImpl,
         () => now
       ),
@@ -196,7 +196,7 @@ test('requires fresh green evidence and rechecks the live selector', async () =>
           '--director-origin',
           'https://relay.example'
         ],
-        { ORCA_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
+        { KINGU_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
         fetchImpl,
         () => now
       ),
@@ -298,7 +298,7 @@ test('binds migration policies to their exact mutations', async () => {
         '--director-origin',
         'https://relay.example'
       ],
-      { ORCA_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
+      { KINGU_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
       fetchImpl,
       () => now
     )
@@ -323,7 +323,7 @@ test('binds migration policies to their exact mutations', async () => {
           '--director-origin',
           'https://relay.example'
         ],
-        { ORCA_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
+        { KINGU_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
         fetchImpl,
         () => now
       )
@@ -343,7 +343,7 @@ test('binds migration policies to their exact mutations', async () => {
           '--director-origin',
           'https://relay.example'
         ],
-        { ORCA_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
+        { KINGU_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
         fetchImpl,
         () => now
       )
@@ -377,7 +377,7 @@ test('binds migration policies to their exact mutations', async () => {
           '--director-origin',
           'https://relay.example'
         ],
-        { ORCA_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
+        { KINGU_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
         fetchImpl,
         () => now
       ),
@@ -398,7 +398,7 @@ test('binds migration policies to their exact mutations', async () => {
           '--director-origin',
           'https://relay.example'
         ],
-        { ORCA_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
+        { KINGU_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
         fetchImpl,
         () => now
       ),
@@ -419,7 +419,7 @@ test('binds migration policies to their exact mutations', async () => {
           '--director-origin',
           'https://relay.example'
         ],
-        { ORCA_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
+        { KINGU_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
         fetchImpl,
         () => now
       ),
@@ -483,7 +483,7 @@ test('production mutation workflows consume and live-recheck dry-run evidence', 
     assert.match(workflow, /Reject previously consumed dry-run evidence/)
     assert.match(workflow, /actions\/upload-artifact@v4/)
     assert.match(workflow, /relay-monitor-consumed-/)
-    assert.match(workflow, /ORCA_RELAY_ADMIN_ID_TOKEN/)
+    assert.match(workflow, /KINGU_RELAY_ADMIN_ID_TOKEN/)
     assert.match(workflow, /github\.ref == 'refs\/heads\/main'/)
     assert.ok(
       workflow.indexOf('pnpm install --frozen-lockfile') <
@@ -652,7 +652,7 @@ test('keeps restore and mutation bound to the exact sealing commit', async () =>
           '--director-origin',
           'https://relay.example'
         ],
-        { ORCA_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
+        { KINGU_RELAY_ADMIN_ID_TOKEN: 'aaa.bbb.ccc' },
         async () => Response.json({ selector }),
         () => now
       ),

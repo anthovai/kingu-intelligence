@@ -1,17 +1,17 @@
 resource "google_service_account" "relay_runtime" {
   project      = var.project_id
   account_id   = "${var.name_prefix}-relay"
-  display_name = var.environment == "staging" ? "Orca Relay" : "Orca Relay cells"
+  display_name = var.environment == "staging" ? "Kingu Relay" : "Kingu Relay cells"
   description = var.environment == "staging" ? (
-    "Runtime identity for the Orca Relay director and stamped cells."
-  ) : "Runtime identity for stamped Orca Relay cells."
+    "Runtime identity for the Kingu Relay director and stamped cells."
+  ) : "Runtime identity for stamped Kingu Relay cells."
 }
 
 resource "google_service_account" "relay_director_runtime" {
   project      = var.project_id
   account_id   = "${var.name_prefix}-relay-dir"
-  display_name = "Orca Relay director"
-  description  = "Runtime and regional rehoming caller identity for the Orca Relay director."
+  display_name = "Kingu Relay director"
+  description  = "Runtime and regional rehoming caller identity for the Kingu Relay director."
 }
 
 resource "google_project_iam_member" "relay_runtime_cloudsql_client" {
@@ -33,7 +33,7 @@ resource "random_password" "relay_assignment_signing_key" {
 
 resource "google_secret_manager_secret" "relay_assignment_signing_key" {
   project   = var.project_id
-  secret_id = "orca-cloud-relay-assignment-signing-key"
+  secret_id = "kingu-cloud-relay-assignment-signing-key"
   labels    = local.relay_shared_labels
 
   replication {
@@ -62,7 +62,7 @@ resource "google_secret_manager_secret_iam_member" "relay_assignment_signing_key
 
 resource "google_secret_manager_secret" "relay_regional_placement_enabled" {
   project   = var.project_id
-  secret_id = "orca-cloud-relay-regional-placement-enabled"
+  secret_id = "kingu-cloud-relay-regional-placement-enabled"
   labels    = local.relay_shared_labels
 
   replication {
@@ -159,7 +159,7 @@ resource "google_cloud_run_v2_service" "relay" {
       image = var.relay_cloud_run_image
 
       env {
-        name = "ORCA_RELAY_REGIONAL_PLACEMENT_ENABLED"
+        name = "KINGU_RELAY_REGIONAL_PLACEMENT_ENABLED"
 
         value_source {
           secret_key_ref {
@@ -170,7 +170,7 @@ resource "google_cloud_run_v2_service" "relay" {
       }
 
       env {
-        name  = "ORCA_RELAY_REGION_CORRECTION_COHORT_PERCENT"
+        name  = "KINGU_RELAY_REGION_CORRECTION_COHORT_PERCENT"
         value = data.external.relay_serving_regional_placement_version.result.cohort_percent
       }
 
@@ -195,7 +195,7 @@ resource "google_cloud_run_v2_service" "relay" {
       }
 
       env {
-        name = "ORCA_RELAY_ASSIGNMENT_SIGNING_KEY"
+        name = "KINGU_RELAY_ASSIGNMENT_SIGNING_KEY"
 
         value_source {
           secret_key_ref {
@@ -206,152 +206,152 @@ resource "google_cloud_run_v2_service" "relay" {
       }
 
       env {
-        name  = "ORCA_RELAY_PUBLIC_URL"
+        name  = "KINGU_RELAY_PUBLIC_URL"
         value = var.relay_base_url
       }
 
       env {
-        name  = "ORCA_RELAY_CELL_URL"
+        name  = "KINGU_RELAY_CELL_URL"
         value = var.relay_base_url
       }
 
       env {
-        name  = "ORCA_RELAY_AUTH_ISSUER"
+        name  = "KINGU_RELAY_AUTH_ISSUER"
         value = var.auth_base_url
       }
 
       env {
-        name  = "ORCA_RELAY_AUTH_AUDIENCE"
-        value = "orca-relay"
+        name  = "KINGU_RELAY_AUTH_AUDIENCE"
+        value = "kingu-relay"
       }
 
       env {
-        name  = "ORCA_RELAY_JWKS_URL"
+        name  = "KINGU_RELAY_JWKS_URL"
         value = "${var.auth_base_url}/.well-known/jwks.json"
       }
 
       env {
-        name  = "ORCA_RELAY_ROLE"
+        name  = "KINGU_RELAY_ROLE"
         value = "director"
       }
 
       env {
-        name  = "ORCA_RELAY_ADMISSION_SELECTOR_VERSION"
+        name  = "KINGU_RELAY_ADMISSION_SELECTOR_VERSION"
         value = "3"
       }
 
       env {
-        name  = "ORCA_RELAY_CELL_ID"
+        name  = "KINGU_RELAY_CELL_ID"
         value = "director"
       }
 
       env {
-        name  = "ORCA_RELAY_CELLS_JSON"
+        name  = "KINGU_RELAY_CELLS_JSON"
         value = local.relay_director_cells_json
       }
 
       env {
-        name  = "ORCA_RELAY_ADMIN_AUDIENCE"
+        name  = "KINGU_RELAY_ADMIN_AUDIENCE"
         value = "${var.relay_base_url}/v1/admin/drain"
       }
 
       env {
-        name  = "ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT"
+        name  = "KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT"
         value = local.relay_github_deploy_service_account_email
       }
 
       env {
-        name  = "ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT"
+        name  = "KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT"
         value = local.relay_capacity_service_account_email
       }
 
       env {
-        name  = "ORCA_RELAY_ASIA_PROOF_SERVICE_ACCOUNT"
+        name  = "KINGU_RELAY_ASIA_PROOF_SERVICE_ACCOUNT"
         value = local.relay_asia_proof_service_account_email
       }
 
       env {
-        name  = "ORCA_RELAY_MONITOR_SERVICE_ACCOUNT"
+        name  = "KINGU_RELAY_MONITOR_SERVICE_ACCOUNT"
         value = try(google_service_account.github_monitor[0].email, "")
       }
 
       env {
-        name  = "ORCA_RELAY_FENCE_SERVICE_ACCOUNT"
+        name  = "KINGU_RELAY_FENCE_SERVICE_ACCOUNT"
         value = try(google_service_account.github_fence[0].email, "")
       }
 
       env {
-        name  = "ORCA_RELAY_FENCE_BROKER_SERVICE_ACCOUNT"
+        name  = "KINGU_RELAY_FENCE_BROKER_SERVICE_ACCOUNT"
         value = try(google_service_account.relay_fence_broker[0].email, "")
       }
 
       env {
-        name  = "ORCA_RELAY_RUNTIME_SERVICE_ACCOUNT"
+        name  = "KINGU_RELAY_RUNTIME_SERVICE_ACCOUNT"
         value = google_service_account.relay_runtime.email
       }
 
       env {
-        name  = "ORCA_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT"
+        name  = "KINGU_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT"
         value = google_service_account.relay_director_runtime.email
       }
 
       env {
-        name  = "ORCA_RELAY_REHOME_AUDIENCE"
+        name  = "KINGU_RELAY_REHOME_AUDIENCE"
         value = "${var.relay_base_url}/v1/admin/host-drain"
       }
 
       env {
-        name  = "ORCA_RELAY_HEARTBEAT_AUDIENCE"
+        name  = "KINGU_RELAY_HEARTBEAT_AUDIENCE"
         value = "${var.relay_base_url}/v1/admin/cell-heartbeat"
       }
 
       env {
-        name  = "ORCA_RELAY_PUBLIC_ASSIGNMENTS_ENABLED"
+        name  = "KINGU_RELAY_PUBLIC_ASSIGNMENTS_ENABLED"
         value = tostring(var.relay_public_assignments_enabled)
       }
 
       env {
-        name  = "ORCA_RELAY_PUBLIC_ASSIGNMENT_CONCURRENCY"
+        name  = "KINGU_RELAY_PUBLIC_ASSIGNMENT_CONCURRENCY"
         value = tostring(var.relay_public_assignment_concurrency)
       }
 
       env {
-        name  = "ORCA_RELAY_PUBLIC_ASSIGNMENT_RETRY_AFTER_SECONDS"
+        name  = "KINGU_RELAY_PUBLIC_ASSIGNMENT_RETRY_AFTER_SECONDS"
         value = tostring(var.relay_public_assignment_retry_after_seconds)
       }
 
       env {
-        name  = "ORCA_RELAY_PUBLIC_ASSIGNMENT_QUEUE_MAX"
+        name  = "KINGU_RELAY_PUBLIC_ASSIGNMENT_QUEUE_MAX"
         value = tostring(var.relay_public_assignment_queue_max)
       }
 
       env {
-        name  = "ORCA_RELAY_PUBLIC_ASSIGNMENT_WAIT_MS"
+        name  = "KINGU_RELAY_PUBLIC_ASSIGNMENT_WAIT_MS"
         value = tostring(var.relay_public_assignment_wait_ms)
       }
 
       env {
-        name  = "ORCA_RELAY_DATABASE_POOL_MAX"
+        name  = "KINGU_RELAY_DATABASE_POOL_MAX"
         value = tostring(var.relay_director_database_pool_max)
       }
 
       env {
-        name  = "ORCA_RELAY_PUBLIC_STICKY_CONCURRENCY"
+        name  = "KINGU_RELAY_PUBLIC_STICKY_CONCURRENCY"
         value = tostring(var.relay_public_sticky_concurrency)
       }
 
       env {
-        name  = "ORCA_RELAY_PUBLIC_STICKY_QUEUE_MAX"
+        name  = "KINGU_RELAY_PUBLIC_STICKY_QUEUE_MAX"
         value = tostring(var.relay_public_sticky_queue_max)
       }
 
       env {
-        name  = "ORCA_RELAY_PUBLIC_STICKY_WAIT_MS"
+        name  = "KINGU_RELAY_PUBLIC_STICKY_WAIT_MS"
         value = tostring(var.relay_public_sticky_wait_ms)
       }
 
       env {
-        name  = "ORCA_RELAY_PUBLIC_STICKY_RETRY_AFTER_SECONDS"
+        name  = "KINGU_RELAY_PUBLIC_STICKY_RETRY_AFTER_SECONDS"
         value = tostring(var.relay_public_sticky_retry_after_seconds)
       }
 
@@ -406,8 +406,8 @@ resource "google_cloud_run_v2_service" "relay_cell" {
   # Require an explicit configuration change before a stamped cell can be decommissioned.
   deletion_protection = each.value.deletion_protection
   labels = merge(local.relay_shared_labels, {
-    "orca-relay-role" = "cell"
-    "orca-relay-cell" = each.key
+    "kingu-relay-role" = "cell"
+    "kingu-relay-cell" = each.key
   })
 
   template {
@@ -452,7 +452,7 @@ resource "google_cloud_run_v2_service" "relay_cell" {
       }
 
       env {
-        name = "ORCA_RELAY_ASSIGNMENT_SIGNING_KEY"
+        name = "KINGU_RELAY_ASSIGNMENT_SIGNING_KEY"
 
         value_source {
           secret_key_ref {
@@ -463,92 +463,92 @@ resource "google_cloud_run_v2_service" "relay_cell" {
       }
 
       env {
-        name  = "ORCA_RELAY_PUBLIC_URL"
+        name  = "KINGU_RELAY_PUBLIC_URL"
         value = each.value.url
       }
 
       env {
-        name  = "ORCA_RELAY_CELL_URL"
+        name  = "KINGU_RELAY_CELL_URL"
         value = each.value.url
       }
 
       env {
-        name  = "ORCA_RELAY_AUTH_ISSUER"
+        name  = "KINGU_RELAY_AUTH_ISSUER"
         value = var.auth_base_url
       }
 
       env {
-        name  = "ORCA_RELAY_AUTH_AUDIENCE"
-        value = "orca-relay"
+        name  = "KINGU_RELAY_AUTH_AUDIENCE"
+        value = "kingu-relay"
       }
 
       env {
-        name  = "ORCA_RELAY_JWKS_URL"
+        name  = "KINGU_RELAY_JWKS_URL"
         value = "${var.auth_base_url}/.well-known/jwks.json"
       }
 
       env {
-        name  = "ORCA_RELAY_ROLE"
+        name  = "KINGU_RELAY_ROLE"
         value = "cell"
       }
 
       env {
-        name  = "ORCA_RELAY_CELL_ID"
+        name  = "KINGU_RELAY_CELL_ID"
         value = each.key
       }
 
       env {
-        name  = "ORCA_RELAY_CELL_CAPACITY"
+        name  = "KINGU_RELAY_CELL_CAPACITY"
         value = tostring(each.value.capacity_requests)
       }
 
       env {
-        name  = "ORCA_RELAY_CELLS_JSON"
+        name  = "KINGU_RELAY_CELLS_JSON"
         value = "[]"
       }
 
       env {
-        name  = "ORCA_RELAY_ADMIN_AUDIENCE"
+        name  = "KINGU_RELAY_ADMIN_AUDIENCE"
         value = "${var.relay_base_url}/v1/admin/drain"
       }
 
       env {
-        name  = "ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT"
+        name  = "KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT"
         value = local.relay_github_deploy_service_account_email
       }
 
       env {
-        name  = "ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT"
+        name  = "KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT"
         value = local.relay_capacity_service_account_email
       }
 
       env {
-        name  = "ORCA_RELAY_ASIA_PROOF_SERVICE_ACCOUNT"
+        name  = "KINGU_RELAY_ASIA_PROOF_SERVICE_ACCOUNT"
         value = local.relay_asia_proof_service_account_email
       }
 
       env {
-        name  = "ORCA_RELAY_RUNTIME_SERVICE_ACCOUNT"
+        name  = "KINGU_RELAY_RUNTIME_SERVICE_ACCOUNT"
         value = google_service_account.relay_runtime.email
       }
 
       env {
-        name  = "ORCA_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT"
+        name  = "KINGU_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT"
         value = contains(var.relay_region_rehome_source_cell_ids, each.key) ? google_service_account.relay_director_runtime.email : ""
       }
 
       env {
-        name  = "ORCA_RELAY_REHOME_AUDIENCE"
+        name  = "KINGU_RELAY_REHOME_AUDIENCE"
         value = contains(var.relay_region_rehome_source_cell_ids, each.key) ? "${var.relay_base_url}/v1/admin/host-drain" : ""
       }
 
       env {
-        name  = "ORCA_RELAY_DIRECTOR_URL"
+        name  = "KINGU_RELAY_DIRECTOR_URL"
         value = var.relay_base_url
       }
 
       env {
-        name  = "ORCA_RELAY_HEARTBEAT_AUDIENCE"
+        name  = "KINGU_RELAY_HEARTBEAT_AUDIENCE"
         value = "${var.relay_base_url}/v1/admin/cell-heartbeat"
       }
 

@@ -1,13 +1,13 @@
 # Computer Use
 
-This discovery stub loads the version-matched guide from the Orca executable used for this session.
+This discovery stub loads the version-matched guide from the Kingu executable used for this session.
 
 <!-- shared: resolver -->
 
-## Load the version-matched guide before running Orca commands
+## Load the version-matched guide before running Kingu commands
 
 ```text
-ORCA skills get computer-use
+KINGU skills get computer-use
 ```
 
 <!-- shared: no-guessing -->

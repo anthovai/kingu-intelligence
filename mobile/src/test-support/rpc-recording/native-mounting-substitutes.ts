@@ -95,8 +95,8 @@ export function nativeMountingSubstitutes(): Map<string, unknown> {
       })
     ],
     [
-      '@orca/expo-two-way-audio',
-      partialNativeModule('@orca/expo-two-way-audio', {
+      '@kingu/expo-two-way-audio',
+      partialNativeModule('@kingu/expo-two-way-audio', {
         addExpoTwoWayAudioEventListener: silentNativeSubscription,
         initialize: () => Promise.resolve(true),
         requestMicrophonePermissionsAsync: () => Promise.resolve({ granted: true }),

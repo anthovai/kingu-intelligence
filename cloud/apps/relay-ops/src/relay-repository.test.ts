@@ -25,7 +25,7 @@ describe('relay repository identity', () => {
   // be one edit, so no other module may restate either.
   it('is the only module naming a GitHub repository', () => {
     for (const { name, text } of sources) {
-      expect(text, `${name} restates a GitHub repository`).not.toMatch(/stablyai\//)
+      expect(text, `${name} restates a GitHub repository`).not.toMatch(/anthovai\//)
     }
   })
 

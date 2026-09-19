@@ -332,7 +332,7 @@ export async function verifyMutationEvidence(
   ) {
     throw new Error('relay monitor dry-run evidence is incomplete or stale')
   }
-  const token = environment.ORCA_RELAY_ADMIN_ID_TOKEN
+  const token = environment.KINGU_RELAY_ADMIN_ID_TOKEN
   const origin = values['director-origin']
   if (!token || !JWT.test(token) || !origin?.startsWith('https://')) {
     throw new Error('relay monitor live selector verification is unavailable')

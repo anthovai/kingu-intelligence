@@ -77,7 +77,7 @@ test('production capacity mutation is restricted to the exact serving rollout se
   for (const cellId of capacityCells) {
     assert.match(dispatchWorkflow, new RegExp(`^\\s+- ${cellId}$`, 'm'))
   }
-  assert.match(workflow, /CELL_ORIGIN="https:\/\/\$\{TARGET_HOSTNAME\}\.relay\.onorca\.dev"/)
+  assert.match(workflow, /CELL_ORIGIN="https:\/\/\$\{TARGET_HOSTNAME\}\.relay\.onkingu\.dev"/)
   assert.match(workflow, /echo "TARGET_HOSTNAME=\$\{TARGET_HOSTNAME\}"/)
   assert.match(workflow, /\} >> "\$\{GITHUB_ENV\}"/)
   assert.match(workflow, /RAISE_SELECTED_CELL_TO_1000/)
@@ -157,7 +157,7 @@ test('production configuration selects only serving cells for 1,000 and the comp
 })
 
 test('director and cell image compatibility is an exact reviewed pair', () => {
-  const repository = 'us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@'
+  const repository = 'us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@'
   const director = `${repository}sha256:01b7fc3e6dce66180034f268a2dc92c05458706c5b3a0dc4450dcdd6161f6e73`
   const cell = `${repository}sha256:c77ec7aef565009fdb645b0989806859bfa40a7aa14e4a57ab55ac92fee6c34f`
   const other = `${repository}sha256:${'a'.repeat(64)}`

@@ -23,8 +23,8 @@ const relayOffer: PairingOffer = {
   ...directOffer,
   relay: {
     v: 1,
-    directorUrl: 'https://relay.onorca.dev',
-    cellUrl: 'https://relay-c1.onorca.dev',
+    directorUrl: 'https://relay.onkingu.dev',
+    cellUrl: 'https://relay-c1.onkingu.dev',
     assignmentEpoch: 7,
     relayHostId: 'AbCdEf0123_-xyZ9',
     inviteToken: 'abcdefghijklmnopqrstuvwxyzABCDEFGH012345678',
@@ -285,7 +285,7 @@ describe('pre-profile pairing coordinator', () => {
           {
             id: 'relay-primary',
             kind: 'relay',
-            url: `wss://relay-c1.onorca.dev/v1/connect/${relayOffer.relay!.relayHostId}`
+            url: `wss://relay-c1.onkingu.dev/v1/connect/${relayOffer.relay!.relayHostId}`
           }
         ]
       })
@@ -399,7 +399,7 @@ describe('pre-profile pairing coordinator', () => {
         ts: now,
         level: 'info',
         message: 'Relay: dialing cell',
-        detail: 'relay-c1.onorca.dev'
+        detail: 'relay-c1.onkingu.dev'
       })
       return relay
     })
@@ -417,7 +417,7 @@ describe('pre-profile pairing coordinator', () => {
       'Relay: dialing cell',
       'Pairing path selected'
     ])
-    expect(entries[0]!.detail).toBe('relay-c1.onorca.dev')
+    expect(entries[0]!.detail).toBe('relay-c1.onkingu.dev')
     expect(entries[2]).toMatchObject({ level: 'success', detail: 'winner: relay' })
   })
 
@@ -452,7 +452,7 @@ describe('pre-profile pairing coordinator', () => {
         ts: now,
         level: 'info',
         message: 'Relay: dialing cell',
-        detail: 'relay-c1.onorca.dev'
+        detail: 'relay-c1.onkingu.dev'
       })
       connectArgs.onLog?.({ id: 'relay-open', ts: now, level: 'info', message: 'Cell socket open' })
       return relay

@@ -1,5 +1,5 @@
 import { expect, it, vi } from 'vitest'
-import { OrcaRuntimeService } from '../../../src/main/runtime/orca-runtime'
+import { KinguRuntimeService } from '../../../src/main/runtime/kingu-runtime'
 import { preparePendingRuntimeClose } from '../../../src/renderer/src/components/terminal-pane/pending-runtime-pane-close-test-fixture'
 
 it.each([false, true])(
@@ -7,9 +7,9 @@ it.each([false, true])(
   async (replacement) => {
     // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: This fixture supplies the only store method used by the exercised register/resolve/close path.
     const store = { getRepos: () => [] } as unknown as ConstructorParameters<
-      typeof OrcaRuntimeService
+      typeof KinguRuntimeService
     >[0]
-    const runtime = new OrcaRuntimeService(store)
+    const runtime = new KinguRuntimeService(store)
     const kill = vi.fn((id: string) => {
       runtime.onPtyExit(id, 0)
       return true

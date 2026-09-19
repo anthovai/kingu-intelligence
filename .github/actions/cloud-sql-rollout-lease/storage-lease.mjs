@@ -1,7 +1,7 @@
 // Compare-and-swap lease over a single Cloud Storage object.
 //
 // Ported from apps/relay-fence-broker/src/mutation-lease.ts rather than imported: this action is
-// duplicated verbatim into stablyai/orca, so it must carry no repo-local imports. Only the
+// duplicated verbatim into anthovai/kingu-intelligence, so it must carry no repo-local imports. Only the
 // algorithm is shared (read metadata -> write with ifGenerationMatch -> 412 is a conflict ->
 // generation-matched delete -> an expired record is free). The broker's token path is NOT shared;
 // it reads the GCE metadata server, which does not exist on Actions runners.

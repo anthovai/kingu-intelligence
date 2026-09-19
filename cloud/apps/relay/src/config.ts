@@ -8,7 +8,7 @@ import {
   relayCellAdmissionBounds,
   type RelayCellConnectionHardCap,
   type RelayRegion
-} from '@orca-cloud/relay-contract'
+} from '@kingu-cloud/relay-contract'
 import {
   RELAY_MAX_READINESS_GRACE_MS,
   RELAY_READINESS_JWKS_GRACE_MS,
@@ -46,89 +46,89 @@ const readinessGraceSchema = (defaultMs: number) =>
 
 const EnvSchema = z.object({
   PORT: z.coerce.number().int().positive().default(8080),
-  ORCA_RELAY_PUBLIC_URL: z.string().url(),
-  ORCA_RELAY_CELL_URL: z.string().url(),
-  ORCA_RELAY_AUTH_ISSUER: z.string().url(),
-  ORCA_RELAY_AUTH_AUDIENCE: z.literal('orca-relay').default('orca-relay'),
-  ORCA_RELAY_JWKS_URL: z.string().url(),
-  ORCA_RELAY_ASSIGNMENT_SIGNING_KEY: z.string().min(32),
-  ORCA_RELAY_ROLE: z.enum(['combined', 'director', 'cell']).default('combined'),
-  ORCA_RELAY_CELL_ID: z.string().min(1).max(128).default('combined'),
-  ORCA_RELAY_REGION: RelayRegionSchema.default(RELAY_DEFAULT_REGION),
-  ORCA_RELAY_CELL_CAPACITY: z.coerce
+  KINGU_RELAY_PUBLIC_URL: z.string().url(),
+  KINGU_RELAY_CELL_URL: z.string().url(),
+  KINGU_RELAY_AUTH_ISSUER: z.string().url(),
+  KINGU_RELAY_AUTH_AUDIENCE: z.literal('kingu-relay').default('kingu-relay'),
+  KINGU_RELAY_JWKS_URL: z.string().url(),
+  KINGU_RELAY_ASSIGNMENT_SIGNING_KEY: z.string().min(32),
+  KINGU_RELAY_ROLE: z.enum(['combined', 'director', 'cell']).default('combined'),
+  KINGU_RELAY_CELL_ID: z.string().min(1).max(128).default('combined'),
+  KINGU_RELAY_REGION: RelayRegionSchema.default(RELAY_DEFAULT_REGION),
+  KINGU_RELAY_CELL_CAPACITY: z.coerce
     .number()
     .int()
     .positive()
     .max(RELAY_MAX_CELL_CAPACITY_REQUESTS)
     .default(900),
-  ORCA_RELAY_CELL_CONNECTION_HARD_CAP: z.coerce
+  KINGU_RELAY_CELL_CONNECTION_HARD_CAP: z.coerce
     .number()
     .int()
     .pipe(RelayCellConnectionHardCapSchema)
     .optional(),
-  ORCA_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND: z.coerce
+  KINGU_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND: z.coerce
     .number()
     .int()
     .nonnegative()
     .max(RELAY_MAX_CELL_CONNECTION_UNOBSERVED_BOUND)
     .optional(),
-  ORCA_RELAY_CELLS_JSON: z.string().default('[]'),
-  ORCA_RELAY_ADMIN_AUDIENCE: z.string().url(),
-  ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT: z.string().email(),
-  ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT: OptionalServiceAccountSchema,
-  ORCA_RELAY_ASIA_PROOF_SERVICE_ACCOUNT: OptionalServiceAccountSchema,
-  ORCA_RELAY_MONITOR_SERVICE_ACCOUNT: OptionalServiceAccountSchema,
-  ORCA_RELAY_FENCE_SERVICE_ACCOUNT: OptionalServiceAccountSchema,
-  ORCA_RELAY_FENCE_BROKER_SERVICE_ACCOUNT: OptionalServiceAccountSchema,
-  ORCA_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT: OptionalServiceAccountSchema,
-  ORCA_RELAY_REHOME_AUDIENCE: z.preprocess(
+  KINGU_RELAY_CELLS_JSON: z.string().default('[]'),
+  KINGU_RELAY_ADMIN_AUDIENCE: z.string().url(),
+  KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT: z.string().email(),
+  KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT: OptionalServiceAccountSchema,
+  KINGU_RELAY_ASIA_PROOF_SERVICE_ACCOUNT: OptionalServiceAccountSchema,
+  KINGU_RELAY_MONITOR_SERVICE_ACCOUNT: OptionalServiceAccountSchema,
+  KINGU_RELAY_FENCE_SERVICE_ACCOUNT: OptionalServiceAccountSchema,
+  KINGU_RELAY_FENCE_BROKER_SERVICE_ACCOUNT: OptionalServiceAccountSchema,
+  KINGU_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT: OptionalServiceAccountSchema,
+  KINGU_RELAY_REHOME_AUDIENCE: z.preprocess(
     (value) => (value === '' ? undefined : value),
     z.string().url().optional()
   ),
-  ORCA_RELAY_RUNTIME_SERVICE_ACCOUNT: z.string().email().optional(),
-  ORCA_RELAY_DIRECTOR_URL: z.string().url().optional(),
-  ORCA_RELAY_HEARTBEAT_AUDIENCE: z.string().url().optional(),
-  ORCA_RELAY_IMAGE_DIGEST: z
+  KINGU_RELAY_RUNTIME_SERVICE_ACCOUNT: z.string().email().optional(),
+  KINGU_RELAY_DIRECTOR_URL: z.string().url().optional(),
+  KINGU_RELAY_HEARTBEAT_AUDIENCE: z.string().url().optional(),
+  KINGU_RELAY_IMAGE_DIGEST: z
     .string()
     .regex(/^sha256:[a-f0-9]{64}$/)
     .optional(),
-  ORCA_RELAY_ADMIN_JWKS_URL: z.string().url().default('https://www.googleapis.com/oauth2/v3/certs'),
-  ORCA_RELAY_DATABASE_POOL_MAX: z.coerce.number().int().positive().max(100).optional(),
-  ORCA_RELAY_READINESS_JWKS_GRACE_MS: readinessGraceSchema(RELAY_READINESS_JWKS_GRACE_MS),
-  ORCA_RELAY_READINESS_SQL_GRACE_MS: readinessGraceSchema(RELAY_READINESS_SQL_GRACE_MS),
-  ORCA_RELAY_PUBLIC_ASSIGNMENTS_ENABLED: EnvironmentBooleanSchema,
-  ORCA_RELAY_REGIONAL_PLACEMENT_ENABLED: EnvironmentBooleanSchema,
-  ORCA_RELAY_REGION_CORRECTION_COHORT_PERCENT: z.coerce.number().int().min(0).max(100).default(0),
-  ORCA_RELAY_PUBLIC_ASSIGNMENT_CONCURRENCY: z.coerce.number().int().positive().max(100).default(2),
-  ORCA_RELAY_PUBLIC_STICKY_CONCURRENCY: z.coerce.number().int().positive().max(100).default(1),
-  ORCA_RELAY_PUBLIC_STICKY_QUEUE_MAX: z.coerce.number().int().positive().max(4_096).default(64),
-  ORCA_RELAY_PUBLIC_STICKY_WAIT_MS: z.coerce.number().int().positive().max(30_000).default(2_000),
-  ORCA_RELAY_PUBLIC_STICKY_RETRY_AFTER_SECONDS: z.coerce
+  KINGU_RELAY_ADMIN_JWKS_URL: z.string().url().default('https://www.googleapis.com/oauth2/v3/certs'),
+  KINGU_RELAY_DATABASE_POOL_MAX: z.coerce.number().int().positive().max(100).optional(),
+  KINGU_RELAY_READINESS_JWKS_GRACE_MS: readinessGraceSchema(RELAY_READINESS_JWKS_GRACE_MS),
+  KINGU_RELAY_READINESS_SQL_GRACE_MS: readinessGraceSchema(RELAY_READINESS_SQL_GRACE_MS),
+  KINGU_RELAY_PUBLIC_ASSIGNMENTS_ENABLED: EnvironmentBooleanSchema,
+  KINGU_RELAY_REGIONAL_PLACEMENT_ENABLED: EnvironmentBooleanSchema,
+  KINGU_RELAY_REGION_CORRECTION_COHORT_PERCENT: z.coerce.number().int().min(0).max(100).default(0),
+  KINGU_RELAY_PUBLIC_ASSIGNMENT_CONCURRENCY: z.coerce.number().int().positive().max(100).default(2),
+  KINGU_RELAY_PUBLIC_STICKY_CONCURRENCY: z.coerce.number().int().positive().max(100).default(1),
+  KINGU_RELAY_PUBLIC_STICKY_QUEUE_MAX: z.coerce.number().int().positive().max(4_096).default(64),
+  KINGU_RELAY_PUBLIC_STICKY_WAIT_MS: z.coerce.number().int().positive().max(30_000).default(2_000),
+  KINGU_RELAY_PUBLIC_STICKY_RETRY_AFTER_SECONDS: z.coerce
     .number()
     .int()
     .positive()
     .max(60)
     .default(2),
-  ORCA_RELAY_PUBLIC_ASSIGNMENT_QUEUE_MAX: z.coerce
+  KINGU_RELAY_PUBLIC_ASSIGNMENT_QUEUE_MAX: z.coerce
     .number()
     .int()
     .positive()
     .max(4_096)
     .default(128),
-  ORCA_RELAY_PUBLIC_ASSIGNMENT_WAIT_MS: z.coerce
+  KINGU_RELAY_PUBLIC_ASSIGNMENT_WAIT_MS: z.coerce
     .number()
     .int()
     .positive()
     .max(30_000)
     .default(4_000),
-  ORCA_RELAY_PUBLIC_ASSIGNMENT_RETRY_AFTER_SECONDS: z.coerce
+  KINGU_RELAY_PUBLIC_ASSIGNMENT_RETRY_AFTER_SECONDS: z.coerce
     .number()
     .int()
     .positive()
     .max(300)
     .default(5),
   DATABASE_URL: z.string().optional(),
-  ORCA_RELAY_DATA_DIR: z.string().default('./data/relay')
+  KINGU_RELAY_DATA_DIR: z.string().default('./data/relay')
 })
 
 const RelayCellConfigSchema = z
@@ -178,7 +178,7 @@ export type RelayConfig = {
   publicUrl: string
   cellUrl: string
   authIssuer: string
-  authAudience: 'orca-relay'
+  authAudience: 'kingu-relay'
   jwksUrl: string
   assignmentSigningKey: Uint8Array
   role: 'combined' | 'director' | 'cell'
@@ -234,52 +234,52 @@ function canonicalOrigin(value: string, name: string): string {
 export function loadRelayConfig(env: NodeJS.ProcessEnv = process.env): RelayConfig {
   const parsed = EnvSchema.parse(env)
   const adminServiceAccounts = [
-    parsed.ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT,
-    parsed.ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT,
-    parsed.ORCA_RELAY_ASIA_PROOF_SERVICE_ACCOUNT,
-    parsed.ORCA_RELAY_MONITOR_SERVICE_ACCOUNT,
-    parsed.ORCA_RELAY_FENCE_SERVICE_ACCOUNT,
-    parsed.ORCA_RELAY_FENCE_BROKER_SERVICE_ACCOUNT,
-    parsed.ORCA_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT
+    parsed.KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT,
+    parsed.KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT,
+    parsed.KINGU_RELAY_ASIA_PROOF_SERVICE_ACCOUNT,
+    parsed.KINGU_RELAY_MONITOR_SERVICE_ACCOUNT,
+    parsed.KINGU_RELAY_FENCE_SERVICE_ACCOUNT,
+    parsed.KINGU_RELAY_FENCE_BROKER_SERVICE_ACCOUNT,
+    parsed.KINGU_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT
   ].filter((value): value is string => value !== undefined)
   if (new Set(adminServiceAccounts).size !== adminServiceAccounts.length) {
     throw new Error('relay admin service accounts must be distinct')
   }
   if (
-    (parsed.ORCA_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT === undefined) !==
-    (parsed.ORCA_RELAY_REHOME_AUDIENCE === undefined)
+    (parsed.KINGU_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT === undefined) !==
+    (parsed.KINGU_RELAY_REHOME_AUDIENCE === undefined)
   ) {
     throw new Error('relay rehome identity and audience must be configured together')
   }
   if (
-    parsed.ORCA_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT &&
-    parsed.ORCA_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT ===
-      (parsed.ORCA_RELAY_RUNTIME_SERVICE_ACCOUNT ?? parsed.ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT)
+    parsed.KINGU_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT &&
+    parsed.KINGU_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT ===
+      (parsed.KINGU_RELAY_RUNTIME_SERVICE_ACCOUNT ?? parsed.KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT)
   ) {
     throw new Error('relay rehome director identity must differ from the cell runtime identity')
   }
   if (
-    parsed.ORCA_RELAY_REHOME_AUDIENCE &&
-    new URL(parsed.ORCA_RELAY_REHOME_AUDIENCE).pathname !== '/v1/admin/host-drain'
+    parsed.KINGU_RELAY_REHOME_AUDIENCE &&
+    new URL(parsed.KINGU_RELAY_REHOME_AUDIENCE).pathname !== '/v1/admin/host-drain'
   ) {
     throw new Error('relay rehome audience must target the host drain route')
   }
-  const directorUrl = parsed.ORCA_RELAY_DIRECTOR_URL
-    ? canonicalOrigin(parsed.ORCA_RELAY_DIRECTOR_URL, 'ORCA_RELAY_DIRECTOR_URL')
+  const directorUrl = parsed.KINGU_RELAY_DIRECTOR_URL
+    ? canonicalOrigin(parsed.KINGU_RELAY_DIRECTOR_URL, 'KINGU_RELAY_DIRECTOR_URL')
     : undefined
-  const publicUrl = canonicalOrigin(parsed.ORCA_RELAY_PUBLIC_URL, 'ORCA_RELAY_PUBLIC_URL')
+  const publicUrl = canonicalOrigin(parsed.KINGU_RELAY_PUBLIC_URL, 'KINGU_RELAY_PUBLIC_URL')
   const configuredCells = z
     .array(RelayCellConfigSchema)
     .max(128)
-    .parse(JSON.parse(parsed.ORCA_RELAY_CELLS_JSON) as unknown)
+    .parse(JSON.parse(parsed.KINGU_RELAY_CELLS_JSON) as unknown)
     .map((cell) => ({ ...cell, url: canonicalOrigin(cell.url, `cell ${cell.id}`) }))
   const ownCell = {
-    id: parsed.ORCA_RELAY_CELL_ID,
-    region: parsed.ORCA_RELAY_REGION,
-    url: canonicalOrigin(parsed.ORCA_RELAY_CELL_URL, 'ORCA_RELAY_CELL_URL'),
-    capacityRequests: parsed.ORCA_RELAY_CELL_CAPACITY,
-    connectionHardCap: parsed.ORCA_RELAY_CELL_CONNECTION_HARD_CAP,
-    connectionUnobservedBound: parsed.ORCA_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND,
+    id: parsed.KINGU_RELAY_CELL_ID,
+    region: parsed.KINGU_RELAY_REGION,
+    url: canonicalOrigin(parsed.KINGU_RELAY_CELL_URL, 'KINGU_RELAY_CELL_URL'),
+    capacityRequests: parsed.KINGU_RELAY_CELL_CAPACITY,
+    connectionHardCap: parsed.KINGU_RELAY_CELL_CONNECTION_HARD_CAP,
+    connectionUnobservedBound: parsed.KINGU_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND,
     initiallyEnabled: true
   }
   if (
@@ -295,25 +295,25 @@ export function loadRelayConfig(env: NodeJS.ProcessEnv = process.env): RelayConf
   ) {
     throw new Error('connection unobserved bound must leave ordinary admission capacity')
   }
-  const cells = parsed.ORCA_RELAY_ROLE === 'director' ? configuredCells : [ownCell]
+  const cells = parsed.KINGU_RELAY_ROLE === 'director' ? configuredCells : [ownCell]
   if (cells.length === 0) throw new Error('director requires at least one configured cell')
   if (new Set(cells.map(({ id }) => id)).size !== cells.length) {
     throw new Error('relay cell ids must be unique')
   }
   const databasePoolMax =
-    parsed.ORCA_RELAY_DATABASE_POOL_MAX ??
-    (parsed.ORCA_RELAY_ROLE === 'director'
+    parsed.KINGU_RELAY_DATABASE_POOL_MAX ??
+    (parsed.KINGU_RELAY_ROLE === 'director'
       ? RELAY_DIRECTOR_DATABASE_POOL_MAX
       : RELAY_DATABASE_POOL_MAX)
   if (
-    parsed.ORCA_RELAY_ROLE !== 'cell' &&
-    parsed.ORCA_RELAY_PUBLIC_ASSIGNMENT_CONCURRENCY >= databasePoolMax
+    parsed.KINGU_RELAY_ROLE !== 'cell' &&
+    parsed.KINGU_RELAY_PUBLIC_ASSIGNMENT_CONCURRENCY >= databasePoolMax
   ) {
     throw new Error('public relay admission must leave database pool headroom')
   }
   if (
-    parsed.ORCA_RELAY_ROLE !== 'cell' &&
-    parsed.ORCA_RELAY_PUBLIC_ASSIGNMENT_CONCURRENCY + parsed.ORCA_RELAY_PUBLIC_STICKY_CONCURRENCY >
+    parsed.KINGU_RELAY_ROLE !== 'cell' &&
+    parsed.KINGU_RELAY_PUBLIC_ASSIGNMENT_CONCURRENCY + parsed.KINGU_RELAY_PUBLIC_STICKY_CONCURRENCY >
       databasePoolMax
   ) {
     throw new Error('sticky and placement admission together must fit the database pool')
@@ -322,52 +322,52 @@ export function loadRelayConfig(env: NodeJS.ProcessEnv = process.env): RelayConf
     port: parsed.PORT,
     publicUrl,
     cellUrl: ownCell.url,
-    authIssuer: canonicalOrigin(parsed.ORCA_RELAY_AUTH_ISSUER, 'ORCA_RELAY_AUTH_ISSUER'),
-    authAudience: parsed.ORCA_RELAY_AUTH_AUDIENCE,
-    jwksUrl: parsed.ORCA_RELAY_JWKS_URL,
-    assignmentSigningKey: new TextEncoder().encode(parsed.ORCA_RELAY_ASSIGNMENT_SIGNING_KEY),
-    role: parsed.ORCA_RELAY_ROLE,
+    authIssuer: canonicalOrigin(parsed.KINGU_RELAY_AUTH_ISSUER, 'KINGU_RELAY_AUTH_ISSUER'),
+    authAudience: parsed.KINGU_RELAY_AUTH_AUDIENCE,
+    jwksUrl: parsed.KINGU_RELAY_JWKS_URL,
+    assignmentSigningKey: new TextEncoder().encode(parsed.KINGU_RELAY_ASSIGNMENT_SIGNING_KEY),
+    role: parsed.KINGU_RELAY_ROLE,
     cellId: ownCell.id,
     region: ownCell.region,
     cells,
-    adminAudience: parsed.ORCA_RELAY_ADMIN_AUDIENCE,
-    deployServiceAccount: parsed.ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT,
-    capacityServiceAccount: parsed.ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT,
-    asiaProofServiceAccount: parsed.ORCA_RELAY_ASIA_PROOF_SERVICE_ACCOUNT,
-    monitorServiceAccount: parsed.ORCA_RELAY_MONITOR_SERVICE_ACCOUNT,
-    fenceServiceAccount: parsed.ORCA_RELAY_FENCE_SERVICE_ACCOUNT,
-    fenceBrokerServiceAccount: parsed.ORCA_RELAY_FENCE_BROKER_SERVICE_ACCOUNT,
-    rehomeDirectorServiceAccount: parsed.ORCA_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT,
-    rehomeAudience: parsed.ORCA_RELAY_REHOME_AUDIENCE,
+    adminAudience: parsed.KINGU_RELAY_ADMIN_AUDIENCE,
+    deployServiceAccount: parsed.KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT,
+    capacityServiceAccount: parsed.KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT,
+    asiaProofServiceAccount: parsed.KINGU_RELAY_ASIA_PROOF_SERVICE_ACCOUNT,
+    monitorServiceAccount: parsed.KINGU_RELAY_MONITOR_SERVICE_ACCOUNT,
+    fenceServiceAccount: parsed.KINGU_RELAY_FENCE_SERVICE_ACCOUNT,
+    fenceBrokerServiceAccount: parsed.KINGU_RELAY_FENCE_BROKER_SERVICE_ACCOUNT,
+    rehomeDirectorServiceAccount: parsed.KINGU_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT,
+    rehomeAudience: parsed.KINGU_RELAY_REHOME_AUDIENCE,
     runtimeServiceAccount:
-      parsed.ORCA_RELAY_RUNTIME_SERVICE_ACCOUNT ?? parsed.ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT,
+      parsed.KINGU_RELAY_RUNTIME_SERVICE_ACCOUNT ?? parsed.KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT,
     directorUrl,
     heartbeatAudience:
-      parsed.ORCA_RELAY_HEARTBEAT_AUDIENCE ??
-      (directorUrl || parsed.ORCA_RELAY_ROLE === 'director'
+      parsed.KINGU_RELAY_HEARTBEAT_AUDIENCE ??
+      (directorUrl || parsed.KINGU_RELAY_ROLE === 'director'
         ? new URL('/v1/admin/cell-heartbeat', directorUrl ?? publicUrl).toString()
         : undefined),
-    imageDigest: parsed.ORCA_RELAY_IMAGE_DIGEST,
+    imageDigest: parsed.KINGU_RELAY_IMAGE_DIGEST,
     connectionHardCap: ownCell.connectionHardCap,
     connectionUnobservedBound: ownCell.connectionUnobservedBound,
-    adminJwksUrl: parsed.ORCA_RELAY_ADMIN_JWKS_URL,
+    adminJwksUrl: parsed.KINGU_RELAY_ADMIN_JWKS_URL,
     databasePoolMax,
-    readinessJwksGraceMs: parsed.ORCA_RELAY_READINESS_JWKS_GRACE_MS,
-    readinessSqlGraceMs: parsed.ORCA_RELAY_READINESS_SQL_GRACE_MS,
-    publicAssignmentsEnabled: parsed.ORCA_RELAY_PUBLIC_ASSIGNMENTS_ENABLED,
-    regionalPlacementEnabled: parsed.ORCA_RELAY_REGIONAL_PLACEMENT_ENABLED,
-    regionCorrectionCohortPercent: parsed.ORCA_RELAY_REGION_CORRECTION_COHORT_PERCENT,
-    publicAssignmentConcurrency: parsed.ORCA_RELAY_PUBLIC_ASSIGNMENT_CONCURRENCY,
-    publicAssignmentQueueMax: parsed.ORCA_RELAY_PUBLIC_ASSIGNMENT_QUEUE_MAX,
-    publicAssignmentWaitMs: parsed.ORCA_RELAY_PUBLIC_ASSIGNMENT_WAIT_MS,
+    readinessJwksGraceMs: parsed.KINGU_RELAY_READINESS_JWKS_GRACE_MS,
+    readinessSqlGraceMs: parsed.KINGU_RELAY_READINESS_SQL_GRACE_MS,
+    publicAssignmentsEnabled: parsed.KINGU_RELAY_PUBLIC_ASSIGNMENTS_ENABLED,
+    regionalPlacementEnabled: parsed.KINGU_RELAY_REGIONAL_PLACEMENT_ENABLED,
+    regionCorrectionCohortPercent: parsed.KINGU_RELAY_REGION_CORRECTION_COHORT_PERCENT,
+    publicAssignmentConcurrency: parsed.KINGU_RELAY_PUBLIC_ASSIGNMENT_CONCURRENCY,
+    publicAssignmentQueueMax: parsed.KINGU_RELAY_PUBLIC_ASSIGNMENT_QUEUE_MAX,
+    publicAssignmentWaitMs: parsed.KINGU_RELAY_PUBLIC_ASSIGNMENT_WAIT_MS,
     publicResolveConcurrency: RELAY_PUBLIC_RESOLVE_CONCURRENCY,
     publicResolveWaitMs: RELAY_PUBLIC_RESOLVE_WAIT_MS,
-    publicAssignmentRetryAfterSeconds: parsed.ORCA_RELAY_PUBLIC_ASSIGNMENT_RETRY_AFTER_SECONDS,
-    publicStickyConcurrency: parsed.ORCA_RELAY_PUBLIC_STICKY_CONCURRENCY,
-    publicStickyQueueMax: parsed.ORCA_RELAY_PUBLIC_STICKY_QUEUE_MAX,
-    publicStickyWaitMs: parsed.ORCA_RELAY_PUBLIC_STICKY_WAIT_MS,
-    publicStickyRetryAfterSeconds: parsed.ORCA_RELAY_PUBLIC_STICKY_RETRY_AFTER_SECONDS,
+    publicAssignmentRetryAfterSeconds: parsed.KINGU_RELAY_PUBLIC_ASSIGNMENT_RETRY_AFTER_SECONDS,
+    publicStickyConcurrency: parsed.KINGU_RELAY_PUBLIC_STICKY_CONCURRENCY,
+    publicStickyQueueMax: parsed.KINGU_RELAY_PUBLIC_STICKY_QUEUE_MAX,
+    publicStickyWaitMs: parsed.KINGU_RELAY_PUBLIC_STICKY_WAIT_MS,
+    publicStickyRetryAfterSeconds: parsed.KINGU_RELAY_PUBLIC_STICKY_RETRY_AFTER_SECONDS,
     databaseUrl: parsed.DATABASE_URL,
-    dataDir: parsed.ORCA_RELAY_DATA_DIR
+    dataDir: parsed.KINGU_RELAY_DATA_DIR
   }
 }

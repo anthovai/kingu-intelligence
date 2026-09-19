@@ -11,7 +11,7 @@ import {
 import { openInMemoryPushDatabase, type PushDatabase } from './push-database.js'
 import { createPushServer } from './push-server.js'
 
-export const GATEWAY_ORIGIN = 'https://push.onorca.dev'
+export const GATEWAY_ORIGIN = 'https://push.onkingu.dev'
 export const APNS_TOKEN = 'a'.repeat(64)
 export const FCM_TOKEN = 'cQ1abcDEF_gh:APA91bZZ-zz0123456789abcdefghijklmnopqrstuvwxyz'
 
@@ -42,8 +42,8 @@ export function testPushConfig(): PushConfig {
     dataDir: './data/push-test',
     databasePoolMax: 10,
     apns: { keyPem: privateKey, keyId: 'ABCDE12345', teamId: 'TEAM123456' },
-    apnsTopic: 'com.stably.orca.mobile',
-    fcmProjectId: 'onorca-cloud',
+    apnsTopic: 'com.stably.kingu.mobile',
+    fcmProjectId: 'onkingu-cloud',
     trustedProxyHops: 0
   }
 }

@@ -142,8 +142,8 @@ test('capacity identity has bounded mutation and state permissions', () => {
     new URL('../../infra/terraform/relay-gce-startup.sh.tftpl', import.meta.url),
     'utf8'
   )
-  assert.match(relay, /ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT/)
-  assert.match(startup, /ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT/)
+  assert.match(relay, /KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT/)
+  assert.match(startup, /KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT/)
 })
 
 test('capacity identity exposes only its provider and service account', () => {
@@ -183,7 +183,7 @@ test('mirrors the exact production manifest through the production deploy identi
   assert.match(mirrorWriter, /roles\/artifactregistry\.writer/)
   assert.match(
     mirrorWriter,
-    /serviceAccount:orca-cloud-gha-deploy@onorca-cloud\.iam\.gserviceaccount\.com/
+    /serviceAccount:kingu-cloud-gha-deploy@onkingu-cloud\.iam\.gserviceaccount\.com/
   )
 })
 

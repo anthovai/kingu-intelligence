@@ -1,7 +1,7 @@
 import { isDismissedAlert, reconcileQueuedDismissal } from './push-queued-dismissal.js'
 import { parsePushDeliveryPayload } from './push-delivery-payload.js'
 import { createHash, randomUUID } from 'node:crypto'
-import { PUSH_LIMITS, type PushNotification } from '@orca-cloud/push-contract'
+import { PUSH_LIMITS, type PushNotification } from '@kingu-cloud/push-contract'
 import type { PushDatabase, SqlRow } from './push-database.js'
 
 const RETENTION_MS = 24 * 60 * 60_000

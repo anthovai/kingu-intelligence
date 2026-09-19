@@ -7,8 +7,8 @@ import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { build } from 'esbuild'
 
-if (process.env.ORCA_BACKGROUND_LAUNCH !== '1') {
-  throw new Error('Run with ORCA_BACKGROUND_LAUNCH=1')
+if (process.env.KINGU_BACKGROUND_LAUNCH !== '1') {
+  throw new Error('Run with KINGU_BACKGROUND_LAUNCH=1')
 }
 
 const root = fileURLToPath(new URL('../../../', import.meta.url))

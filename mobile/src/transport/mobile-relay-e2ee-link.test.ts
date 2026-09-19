@@ -39,7 +39,7 @@ describe('MobileRelayE2eeLink', () => {
     const onError = vi.fn()
     new MobileRelayE2eeLink({
       endpoint: {
-        cellUrl: 'https://relay-c1.onorca.dev',
+        cellUrl: 'https://relay-c1.onkingu.dev',
         relayHostId: 'AbCdEf0123_-xyZ9'
       },
       credential: 'credential',
@@ -69,7 +69,7 @@ describe('MobileRelayE2eeLink', () => {
     })
     new MobileRelayE2eeLink({
       endpoint: {
-        cellUrl: 'https://relay-c1.onorca.dev',
+        cellUrl: 'https://relay-c1.onkingu.dev',
         relayHostId: 'AbCdEf0123_-xyZ9'
       },
       credential: 'credential',
@@ -96,7 +96,7 @@ describe('MobileRelayE2eeLink', () => {
     const onOpen = vi.fn()
     new MobileRelayE2eeLink({
       endpoint: {
-        cellUrl: 'https://relay-c1.onorca.dev',
+        cellUrl: 'https://relay-c1.onkingu.dev',
         relayHostId: 'AbCdEf0123_-xyZ9'
       },
       credential: 'credential',
@@ -120,7 +120,7 @@ describe('MobileRelayE2eeLink', () => {
     const onError = vi.fn()
     new MobileRelayE2eeLink({
       endpoint: {
-        cellUrl: 'https://relay-c1.onorca.dev',
+        cellUrl: 'https://relay-c1.onkingu.dev',
         relayHostId: 'AbCdEf0123_-xyZ9'
       },
       credential: 'credential',
@@ -145,7 +145,7 @@ describe('MobileRelayE2eeLink', () => {
     const onError = vi.fn()
     new MobileRelayE2eeLink({
       endpoint: {
-        cellUrl: 'https://relay-c1.onorca.dev',
+        cellUrl: 'https://relay-c1.onkingu.dev',
         relayHostId: 'AbCdEf0123_-xyZ9'
       },
       credential: 'credential',
@@ -172,7 +172,7 @@ describe('MobileRelayE2eeLink', () => {
       const onError = vi.fn()
       const link = new MobileRelayE2eeLink({
         endpoint: {
-          cellUrl: 'https://relay-c1.onorca.dev',
+          cellUrl: 'https://relay-c1.onkingu.dev',
           relayHostId: 'AbCdEf0123_-xyZ9'
         },
         credential: 'credential',
@@ -202,7 +202,7 @@ describe('MobileRelayE2eeLink', () => {
       const onError = vi.fn()
       const link = new MobileRelayE2eeLink({
         endpoint: {
-          cellUrl: 'https://relay-c1.onorca.dev',
+          cellUrl: 'https://relay-c1.onkingu.dev',
           relayHostId: 'AbCdEf0123_-xyZ9'
         },
         credential: 'credential',

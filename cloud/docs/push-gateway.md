@@ -1,6 +1,6 @@
-# Orca mobile push gateway
+# Kingu mobile push gateway
 
-`orca-cloud-push` is a public Cloud Run service in `onorca-cloud` that turns a desktop
+`kingu-cloud-push` is a public Cloud Run service in `onkingu-cloud` that turns a desktop
 notification into an APNs or FCM push for a paired phone. The desktop registers each phone's
 native token with it and calls `POST /v1/send` after the socket fan-out it already does; the
 phone treats APNs/FCM as the sole ordinary OS-banner path. The notification socket is retained only
@@ -20,16 +20,16 @@ edit plus a second set of Apple credentials.
 
 | Setting           | Value                                                  | Where                                        |
 | ----------------- | ------------------------------------------------------ | -------------------------------------------- |
-| Cloud Run service | `orca-cloud-push`                                      | `push_cloud_run_service_name`                |
+| Cloud Run service | `kingu-cloud-push`                                      | `push_cloud_run_service_name`                |
 | Region            | `us-central1`                                          | `region`                                     |
 | Instances         | min 1, max 2                                           | `push_min_instances`, `push_max_instances`   |
 | Database pool     | 2 per instance                                         | `push_database_pool_max`                     |
 | Concurrency       | 80                                                     | `push_concurrency`                           |
 | Ingress           | all                                                    | `INGRESS_TRAFFIC_ALL`                        |
 | Invoker           | IAM disabled                                           | `invoker_iam_disabled = true` on the service |
-| Runtime identity  | `orca-cloud-push@onorca-cloud.iam.gserviceaccount.com` | `google_service_account.push_runtime`        |
-| Database          | `orca_push` on dedicated HA PostgreSQL 17           | `google_sql_database.push_dedicated`                   |
-| Hostname          | `push.onorca.dev`                                      | `push_base_url`                              |
+| Runtime identity  | `kingu-cloud-push@onkingu-cloud.iam.gserviceaccount.com` | `google_service_account.push_runtime`        |
+| Database          | `kingu_push` on dedicated HA PostgreSQL 17           | `google_sql_database.push_dedicated`                   |
+| Hostname          | `push.onkingu.dev`                                      | `push_base_url`                              |
 
 The minimum of one instance is deliberate and did not move when the ceiling came down to two. A
 cold start delays a notification past the point where it is worth showing, so the floor is what
@@ -54,15 +54,15 @@ Set on the container by Terraform:
 | Variable                      | Source                                                   |
 | ----------------------------- | -------------------------------------------------------- |
 | `PORT`                        | Cloud Run, container port 8080                           |
-| `ORCA_PUSH_PUBLIC_URL`        | `push_base_url`                                          |
-| `ORCA_PUSH_FCM_PROJECT_ID`    | `project_id` (required for standalone runtime)          |
-| `ORCA_PUSH_DATABASE_URL`      | Secret `orca-cloud-push-dedicated-database-url`, pinned version  |
-| `ORCA_PUSH_DATABASE_POOL_MAX` | `push_database_pool_max`, 2 per instance                 |
-| `ORCA_PUSH_APNS_KEY`          | Secret `orca-cloud-push-apns-key`, version `latest`      |
-| `ORCA_PUSH_APNS_KEY_ID`       | Secret `orca-cloud-push-apns-key-id`, version `latest`   |
-| `ORCA_PUSH_APPLE_TEAM_ID`     | Secret `orca-cloud-push-apple-team-id`, version `latest` |
+| `KINGU_PUSH_PUBLIC_URL`        | `push_base_url`                                          |
+| `KINGU_PUSH_FCM_PROJECT_ID`    | `project_id` (required for standalone runtime)          |
+| `KINGU_PUSH_DATABASE_URL`      | Secret `kingu-cloud-push-dedicated-database-url`, pinned version  |
+| `KINGU_PUSH_DATABASE_POOL_MAX` | `push_database_pool_max`, 2 per instance                 |
+| `KINGU_PUSH_APNS_KEY`          | Secret `kingu-cloud-push-apns-key`, version `latest`      |
+| `KINGU_PUSH_APNS_KEY_ID`       | Secret `kingu-cloud-push-apns-key-id`, version `latest`   |
+| `KINGU_PUSH_APPLE_TEAM_ID`     | Secret `kingu-cloud-push-apple-team-id`, version `latest` |
 
-`ORCA_PUSH_APNS_TOPIC` is left to its application default (`com.stably.orca.mobile`). Add it here
+`KINGU_PUSH_APNS_TOPIC` is left to its application default (`com.stably.kingu.mobile`). Add it here
 only when it has to differ from the code default, so that a code-side change stays visible rather
 than silently overridden.
 
@@ -72,7 +72,7 @@ private key in state and would fight the rotation below. The database URL secret
 Terraform generates that password, so it owns that version, exactly as `relay-database.tf` does.
 That puts the generated password and the full database URL in the state bucket, which the shared
 deploy identity can read; the Apple key never appears there. The three Apple secrets and the
-`orca_push` database carry `prevent_destroy`, so disabling the gateway fails the plan instead
+`kingu_push` database carry `prevent_destroy`, so disabling the gateway fails the plan instead
 of deleting the only copy of the signing key or every live device token.
 
 ## Importing what already exists
@@ -85,39 +85,39 @@ expect the imported resources to show no changes.
 ```sh
 terraform -chdir=infra/terraform import -var-file=environments/production.tfvars \
   'google_service_account.push_runtime[0]' \
-  projects/onorca-cloud/serviceAccounts/orca-cloud-push@onorca-cloud.iam.gserviceaccount.com
+  projects/onkingu-cloud/serviceAccounts/kingu-cloud-push@onkingu-cloud.iam.gserviceaccount.com
 
 terraform -chdir=infra/terraform import -var-file=environments/production.tfvars \
   'google_project_iam_member.push_runtime_fcm_admin[0]' \
-  'onorca-cloud roles/firebasecloudmessaging.admin serviceAccount:orca-cloud-push@onorca-cloud.iam.gserviceaccount.com'
+  'onkingu-cloud roles/firebasecloudmessaging.admin serviceAccount:kingu-cloud-push@onkingu-cloud.iam.gserviceaccount.com'
 
 terraform -chdir=infra/terraform import -var-file=environments/production.tfvars \
   'google_project_iam_member.push_runtime_service_usage_consumer[0]' \
-  'onorca-cloud roles/serviceusage.serviceUsageConsumer serviceAccount:orca-cloud-push@onorca-cloud.iam.gserviceaccount.com'
+  'onkingu-cloud roles/serviceusage.serviceUsageConsumer serviceAccount:kingu-cloud-push@onkingu-cloud.iam.gserviceaccount.com'
 
 terraform -chdir=infra/terraform import -var-file=environments/production.tfvars \
-  'google_secret_manager_secret.push_provider["orca-cloud-push-apns-key"]' \
-  projects/onorca-cloud/secrets/orca-cloud-push-apns-key
+  'google_secret_manager_secret.push_provider["kingu-cloud-push-apns-key"]' \
+  projects/onkingu-cloud/secrets/kingu-cloud-push-apns-key
 
 terraform -chdir=infra/terraform import -var-file=environments/production.tfvars \
-  'google_secret_manager_secret.push_provider["orca-cloud-push-apns-key-id"]' \
-  projects/onorca-cloud/secrets/orca-cloud-push-apns-key-id
+  'google_secret_manager_secret.push_provider["kingu-cloud-push-apns-key-id"]' \
+  projects/onkingu-cloud/secrets/kingu-cloud-push-apns-key-id
 
 terraform -chdir=infra/terraform import -var-file=environments/production.tfvars \
-  'google_secret_manager_secret.push_provider["orca-cloud-push-apple-team-id"]' \
-  projects/onorca-cloud/secrets/orca-cloud-push-apple-team-id
+  'google_secret_manager_secret.push_provider["kingu-cloud-push-apple-team-id"]' \
+  projects/onkingu-cloud/secrets/kingu-cloud-push-apple-team-id
 
 terraform -chdir=infra/terraform import -var-file=environments/production.tfvars \
-  'google_secret_manager_secret_iam_member.push_provider_runtime_accessor["orca-cloud-push-apns-key"]' \
-  'projects/onorca-cloud/secrets/orca-cloud-push-apns-key roles/secretmanager.secretAccessor serviceAccount:orca-cloud-push@onorca-cloud.iam.gserviceaccount.com'
+  'google_secret_manager_secret_iam_member.push_provider_runtime_accessor["kingu-cloud-push-apns-key"]' \
+  'projects/onkingu-cloud/secrets/kingu-cloud-push-apns-key roles/secretmanager.secretAccessor serviceAccount:kingu-cloud-push@onkingu-cloud.iam.gserviceaccount.com'
 
 terraform -chdir=infra/terraform import -var-file=environments/production.tfvars \
-  'google_secret_manager_secret_iam_member.push_provider_runtime_accessor["orca-cloud-push-apns-key-id"]' \
-  'projects/onorca-cloud/secrets/orca-cloud-push-apns-key-id roles/secretmanager.secretAccessor serviceAccount:orca-cloud-push@onorca-cloud.iam.gserviceaccount.com'
+  'google_secret_manager_secret_iam_member.push_provider_runtime_accessor["kingu-cloud-push-apns-key-id"]' \
+  'projects/onkingu-cloud/secrets/kingu-cloud-push-apns-key-id roles/secretmanager.secretAccessor serviceAccount:kingu-cloud-push@onkingu-cloud.iam.gserviceaccount.com'
 
 terraform -chdir=infra/terraform import -var-file=environments/production.tfvars \
-  'google_secret_manager_secret_iam_member.push_provider_runtime_accessor["orca-cloud-push-apple-team-id"]' \
-  'projects/onorca-cloud/secrets/orca-cloud-push-apple-team-id roles/secretmanager.secretAccessor serviceAccount:orca-cloud-push@onorca-cloud.iam.gserviceaccount.com'
+  'google_secret_manager_secret_iam_member.push_provider_runtime_accessor["kingu-cloud-push-apple-team-id"]' \
+  'projects/onkingu-cloud/secrets/kingu-cloud-push-apple-team-id roles/secretmanager.secretAccessor serviceAccount:kingu-cloud-push@onkingu-cloud.iam.gserviceaccount.com'
 ```
 
 The push resources already exist in production. Preserve their addresses, dedicated database
@@ -130,16 +130,16 @@ affects whether this root's plan is clean, since an undeclared resource is invis
 - `firebase.googleapis.com` and `fcm.googleapis.com` are project service enablement, which is
   `google_project_service.required` in the foundation root. They are already enabled; add them
   to the foundation root's list so a foundation plan stays clean.
-- The Firebase attachment on `onorca-cloud` is project-level and belongs with foundation for the
+- The Firebase attachment on `onkingu-cloud` is project-level and belongs with foundation for the
   same reason. It exists already.
 
 ## Deploying
 
 `Deploy Push Gateway Production` (`.github/workflows/cloud-push-deploy.yml`) is the only
-supported path. Like every `cloud-*` workflow it does nothing until `ORCA_CLOUD_OPERATIONS_ENABLED`
+supported path. Like every `cloud-*` workflow it does nothing until `KINGU_CLOUD_OPERATIONS_ENABLED`
 is `true`, it runs only on `main`, and it needs the confirmation string `DEPLOY_PUSH_GATEWAY`.
 
-It authenticates as the dedicated `orca-cloud-gha-push` identity through
+It authenticates as the dedicated `kingu-cloud-gha-push` identity through
 `PRODUCTION_GCP_PUSH_DEPLOY_WORKLOAD_IDENTITY_PROVIDER` and
 `PRODUCTION_GCP_PUSH_DEPLOY_SERVICE_ACCOUNT`. `push-deploy-identity.tf` restricts Workload Identity
 to this exact dispatch workflow on main in the production environment. Its distinct principal
@@ -160,7 +160,7 @@ IAM transition and removal of any obsolete foundation-owned push membership.
 The run builds the reviewed `source_sha` while the workflow stays on `main`. Buildx returns
 its own pushed digest (no mutable-tag lookup); every subsequent check and deployment uses that
 same digest. Before any production boot, a network-isolated container checks that the image
-recognizes `ORCA_PUSH_MODE=validation` and rejects invalid modes. Older images that lack this
+recognizes `KINGU_PUSH_MODE=validation` and rejects invalid modes. Older images that lack this
 capability are refused before they can connect to production.
 
 Under the production push rollout lease, it records the serving rollback revision and
@@ -218,18 +218,18 @@ Manual recovery must preserve the three-resource bound and keep the successor se
 # Hold the rollout lease; inspect latest, traffic, tags and existing revisions first.
 # If three resources remain after partial activation, retire non-latest inert validation first.
 # Restore previous traffic if its revision still exists and a failed candidate took traffic.
-gcloud run deploy orca-cloud-push \
-  --project onorca-cloud --region us-central1 --image <known-good-image-at-digest> \
-  --remove-env-vars ORCA_PUSH_MODE --no-traffic \
+gcloud run deploy kingu-cloud-push \
+  --project onkingu-cloud --region us-central1 --image <known-good-image-at-digest> \
+  --remove-env-vars KINGU_PUSH_MODE --no-traffic \
   --tag <unique-recovery-tag> --revision-suffix <unique-recovery-suffix>
 # Verify exact digest, template spec/secret references/scaling, tagged /ready and active /health.
-gcloud run services update-traffic orca-cloud-push \
-  --project onorca-cloud --region us-central1 --to-revisions <recovery-revision>=100
+gcloud run services update-traffic kingu-cloud-push \
+  --project onkingu-cloud --region us-central1 --to-revisions <recovery-revision>=100
 # Verify traffic and public /ready and /health before retiring old consumers.
-gcloud run services update-traffic orca-cloud-push \
-  --project onorca-cloud --region us-central1 --clear-tags
+gcloud run services update-traffic kingu-cloud-push \
+  --project onkingu-cloud --region us-central1 --clear-tags
 gcloud run revisions delete <rejected-or-previous-revision> \
-  --project onorca-cloud --region us-central1
+  --project onkingu-cloud --region us-central1
 # Repeat only for reviewed obsolete revisions; retain the latest serving recovery revision.
 ```
 
@@ -254,7 +254,7 @@ production mutation is implied by this prerequisite.
 
 A gateway that boots and answers `/ready` can still be unable to send: the FCM grant lives on
 the runtime service account, not on anything the readiness check touches. The probe therefore
-mints an access token for `orca-cloud-push@onorca-cloud.iam.gserviceaccount.com` and posts
+mints an access token for `kingu-cloud-push@onkingu-cloud.iam.gserviceaccount.com` and posts
 `validate_only: true` with a token that cannot exist. `validate_only` stops Google before any
 delivery, and a healthy credential answers `INVALID_ARGUMENT` because the device token is
 garbage. `PERMISSION_DENIED`, `401`, and `403` are the failures the step exists to catch, and
@@ -275,13 +275,13 @@ the window between.
 2. Add a version to each changed secret, without printing the value:
 
    ```sh
-   gcloud secrets versions add orca-cloud-push-apns-key \
-     --project onorca-cloud --data-file /path/to/AuthKey_NEW.p8
-   printf '%s' '<new key id>' | gcloud secrets versions add orca-cloud-push-apns-key-id \
-     --project onorca-cloud --data-file=-
+   gcloud secrets versions add kingu-cloud-push-apns-key \
+     --project onkingu-cloud --data-file /path/to/AuthKey_NEW.p8
+   printf '%s' '<new key id>' | gcloud secrets versions add kingu-cloud-push-apns-key-id \
+     --project onkingu-cloud --data-file=-
    ```
 
-   The team ID does not change, so `orca-cloud-push-apple-team-id` is untouched.
+   The team ID does not change, so `kingu-cloud-push-apple-team-id` is untouched.
 
 3. Dispatch `Deploy Push Gateway Production`. The container reads `latest` at start, so only a
    new revision picks the key up; there is no in-place reload.
@@ -291,7 +291,7 @@ the window between.
 
    ```sh
    gcloud secrets versions disable <old-version> \
-     --project onorca-cloud --secret orca-cloud-push-apns-key
+     --project onkingu-cloud --secret kingu-cloud-push-apns-key
    ```
 
    Disable rather than destroy, so a rollback to the previous revision still works. Destroy
@@ -346,12 +346,12 @@ the first four characters of a fingerprint are the most that may appear.
 ## DNS: one hand-managed record
 
 The Cloud Run domain mapping is created here, and Google issues and renews the certificate. The
-`onorca.dev` zone is not in this root: it is a Cloudflare zone whose Terraform-managed records
-live in the apps root in `stablyai/orca-cloud`, and whose relay and auth records are managed by
+`onkingu.dev` zone is not in this root: it is a Cloudflare zone whose Terraform-managed records
+live in the apps root in `anthovai/kingu-intelligence-cloud`, and whose relay and auth records are managed by
 hand. The push record follows the relay's precedent and was created by hand on 2026-09-04:
 
 ```text
-push.onorca.dev.  CNAME  ghs.googlehosted.com.   (DNS only, not proxied)
+push.onkingu.dev.  CNAME  ghs.googlehosted.com.   (DNS only, not proxied)
 ```
 
 `terraform -chdir=infra/terraform output push_dns_record` prints the same three fields. If the
@@ -367,7 +367,7 @@ After verified recovery promotion and public checks, rejected and previous consu
 the recovery revision remains serving. Failed cleanup blocks subsequent rollout admission.
 The summary runs even if candidate discovery or traffic verification fails.
 
-Push uses the relay's schema-startup retry implementation through `@orca-cloud/postgres-schema`.
+Push uses the relay's schema-startup retry implementation through `@kingu-cloud/postgres-schema`.
 Session replacement is serialized per host and a unique host index upgrades older databases by
 retaining their newest session. Cloud Verify runs push concurrency tests against PostgreSQL.
 

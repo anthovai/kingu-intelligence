@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 
-const SECRET = 'orca-cloud-relay-regional-placement-enabled'
+const SECRET = 'kingu-cloud-relay-regional-placement-enabled'
 
 function validate(input) {
   for (const key of ['project', 'region', 'service', 'bootstrap_version']) {
@@ -69,7 +69,7 @@ export function readRelayServingRegionalPlacementVersion(input, dependencies = {
   const revision = run(gcloudArguments('revisions', input, serving[0].revisionName))
   const cohortSettings = (revision.spec?.containers ?? []).flatMap((container) =>
     (container.env ?? []).filter((environment) =>
-      environment.name === 'ORCA_RELAY_REGION_CORRECTION_COHORT_PERCENT')
+      environment.name === 'KINGU_RELAY_REGION_CORRECTION_COHORT_PERCENT')
   )
   if (cohortSettings.length > 1 || (cohortSettings.length === 1 &&
       (typeof cohortSettings[0].value !== 'string' ||
@@ -79,7 +79,7 @@ export function readRelayServingRegionalPlacementVersion(input, dependencies = {
   const cohort_percent = cohortSettings[0]?.value ?? '0'
   const references = (revision.spec?.containers ?? []).flatMap((container) =>
     (container.env ?? []).filter(
-      (environment) => environment.name === 'ORCA_RELAY_REGIONAL_PLACEMENT_ENABLED'
+      (environment) => environment.name === 'KINGU_RELAY_REGIONAL_PLACEMENT_ENABLED'
     )
   )
   if (references.length === 0) return { version: input.bootstrap_version, cohort_percent }

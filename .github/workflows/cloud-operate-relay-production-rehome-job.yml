@@ -39,11 +39,11 @@ jobs:
     timeout-minutes: 30
     environment: production
     env:
-      GCP_PROJECT_ID: onorca-cloud
+      GCP_PROJECT_ID: onkingu-cloud
       GCP_REGION: ${{ vars.PRODUCTION_GCP_REGION }}
-      DIRECTOR_SERVICE: orca-cloud-relay
-      DIRECTOR_ORIGIN: https://relay.onorca.dev
-      REHOME_AUDIENCE: https://relay.onorca.dev/v1/admin/host-drain
+      DIRECTOR_SERVICE: kingu-cloud-relay
+      DIRECTOR_ORIGIN: https://relay.onkingu.dev
+      REHOME_AUDIENCE: https://relay.onkingu.dev/v1/admin/host-drain
       MODE: ${{ inputs.mode }}
       DIRECTOR_IMAGE_DIGEST: ${{ inputs.director-image-digest }}
       ROLLBACK_IMAGE_DIGEST: ${{ inputs.rollback-image-digest }}
@@ -113,13 +113,13 @@ jobs:
           workload_identity_provider: ${{ vars.PRODUCTION_GCP_RELAY_DEPLOY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.PRODUCTION_GCP_RELAY_DEPLOY_SERVICE_ACCOUNT }}
           token_format: id_token
-          id_token_audience: https://relay.onorca.dev/v1/admin/drain
+          id_token_audience: https://relay.onkingu.dev/v1/admin/drain
           id_token_include_email: true
 
       - name: Apply emergency durable pause or disable before diagnostics
         if: ${{ inputs.mode == 'pause' || inputs.mode == 'disable' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
         run: |
           node dev/scripts/operate-relay-regional-rehome.mjs \
             --mode "${MODE}" --director-origin "${DIRECTOR_ORIGIN}" \
@@ -176,7 +176,7 @@ jobs:
 
       - uses: ./.github/actions/cloud-sql-rollout-lease
         with:
-          bucket: onorca-cloud-terraform-state
+          bucket: onkingu-cloud-terraform-state
           object: terraform/state/cloud-sql-rollout/production.lock
 
       - name: Verify exact serving and rollback director identities
@@ -205,10 +205,10 @@ jobs:
             test "$(jq -r '.spec.containers[0].image | split("@") | last' <<< "${json}")" = \
               "${expected_digest}"
             test "$(jq -r '[.spec.containers[0].env[] | select(.name ==
-              "ORCA_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT") | .value] | if length == 1
+              "KINGU_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT") | .value] | if length == 1
               then .[0] else empty end' <<< "${json}")" = "${DIRECTOR_RUNTIME_SERVICE_ACCOUNT}"
             test "$(jq -r '[.spec.containers[0].env[] | select(.name ==
-              "ORCA_RELAY_REHOME_AUDIENCE") | .value] | if length == 1 then .[0]
+              "KINGU_RELAY_REHOME_AUDIENCE") | .value] | if length == 1 then .[0]
               else empty end' <<< "${json}")" = "${REHOME_AUDIENCE}"
           }
           verify_revision "${SERVING_REVISION}" "${DIRECTOR_IMAGE_DIGEST}"
@@ -221,7 +221,7 @@ jobs:
           # 6 director instances x 120 samples/hour x 25h = 18000; a clipped
           # read empties the oldest hourly buckets and fails the seal.
           gcloud logging read \
-            'resource.type="cloud_run_revision" AND resource.labels.service_name="orca-cloud-relay" AND jsonPayload.event="orca_relay_runtime_metrics" AND jsonPayload.role="director"' \
+            'resource.type="cloud_run_revision" AND resource.labels.service_name="kingu-cloud-relay" AND jsonPayload.event="kingu_relay_runtime_metrics" AND jsonPayload.role="director"' \
             --project "${GCP_PROJECT_ID}" --freshness=25h --limit=30000 --format=json \
             | node dev/scripts/relay-region-observation-evidence.mjs create \
                 --commit-sha "${GITHUB_SHA}" \
@@ -252,7 +252,7 @@ jobs:
       - name: Recheck every aggregate safety signal before enable
         if: ${{ inputs.mode == 'enable' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
         run: |
           pnpm incident:relay-preflight -- \
             --state-file "${OUTPUT_DIRECTORY}/relay-${MONITOR_RUN_ID}-dry-run.state.json"
@@ -277,7 +277,7 @@ jobs:
       - name: Inspect regional rehome control
         if: ${{ inputs.mode == 'inspect' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
         run: |
           node dev/scripts/operate-relay-regional-rehome.mjs \
             --mode inspect --director-origin "${DIRECTOR_ORIGIN}" \
@@ -291,7 +291,7 @@ jobs:
       - name: Apply exact durable regional rehome enable
         if: ${{ inputs.mode == 'enable' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
         run: |
           node dev/scripts/operate-relay-regional-rehome.mjs \
             --mode "${MODE}" --director-origin "${DIRECTOR_ORIGIN}" \
@@ -309,7 +309,7 @@ jobs:
       - name: Read fresh aggregate completion and abort evidence
         run: |
           gcloud logging read \
-            'resource.type="cloud_run_revision" AND resource.labels.service_name="orca-cloud-relay" AND textPayload:"[orca-relay] regional rehome inventory"' \
+            'resource.type="cloud_run_revision" AND resource.labels.service_name="kingu-cloud-relay" AND textPayload:"[kingu-relay] regional rehome inventory"' \
             --project "${GCP_PROJECT_ID}" --freshness=15m --limit=20 --format=json \
             | node dev/scripts/relay-rehome-aggregate-evidence.mjs --max-age-ms 900000 \
             | tee "${RUNNER_TEMP}/relay-rehome-inventory.json"
@@ -327,7 +327,7 @@ jobs:
       - name: Fail closed after an unsuccessful enable run
         if: ${{ failure() && inputs.mode == 'enable' && steps.google-auth.outcome == 'success' }}
         env:
-          ORCA_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
+          KINGU_RELAY_ADMIN_ID_TOKEN: ${{ steps.google-auth.outputs.id_token }}
         run: |
           node dev/scripts/operate-relay-regional-rehome.mjs \
             --mode recover-enable --director-origin "${DIRECTOR_ORIGIN}" \

@@ -44,7 +44,7 @@ jobs:
       - name: Exercise real WSL launch and paste
         env:
           SKIP_BUILD: '1'
-          ORCA_E2E_FORWARD_APP_LOGS: '1'
+          KINGU_E2E_FORWARD_APP_LOGS: '1'
           PLAYWRIGHT_JSON_OUTPUT_FILE: test-results/wsl-results.json
         run: >-
           pnpm exec playwright test

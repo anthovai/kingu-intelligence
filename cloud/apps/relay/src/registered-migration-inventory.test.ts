@@ -31,8 +31,8 @@ describe('registered migration inventory', () => {
       ]
     })
     expect(formatRegisteredMigrationInventory(fresh)).toEqual([
-      '[orca-relay] migration inventory open=1 expiredRegisteredInactive=1 abandonedRegistered=1',
-      '[orca-relay] migration pair sourceCellId=cell-a targetCellId=cell-b open=1 expiredRegisteredInactive=1 abandoned=1'
+      '[kingu-relay] migration inventory open=1 expiredRegisteredInactive=1 abandonedRegistered=1',
+      '[kingu-relay] migration pair sourceCellId=cell-a targetCellId=cell-b open=1 expiredRegisteredInactive=1 abandoned=1'
     ])
     expect(
       (

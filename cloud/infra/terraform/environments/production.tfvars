@@ -1,22 +1,22 @@
-project_id  = "onorca-cloud"
+project_id  = "onkingu-cloud"
 environment = "production"
-name_prefix = "orca-cloud"
+name_prefix = "kingu-cloud"
 region      = "us-central1"
 
-artifact_repository_id = "orca-cloud"
+artifact_repository_id = "kingu-cloud"
 
-# The relay source lives in the public stablyai/orca repository, where the workflows carry a
+# The relay source lives in the public anthovai/kingu-intelligence repository, where the workflows carry a
 # `cloud-` file prefix. github_owner and github_owner_id keep their defaults.
-github_repo                 = "orca"
+github_repo                 = "kingu"
 github_repo_id              = "1183888342"
 github_workflow_file_prefix = "cloud-"
 
-# Our first-party auth service. auth.onorca.dev is PropelAuth's prod domain, so
-# our service lives at login.onorca.dev (desktop points ORCA_CLOUD_API_URL here).
-auth_base_url = "https://login.onorca.dev"
+# Our first-party auth service. auth.onkingu.dev is PropelAuth's prod domain, so
+# our service lives at login.onkingu.dev (desktop points KINGU_CLOUD_API_URL here).
+auth_base_url = "https://login.onkingu.dev"
 
-relay_cloud_run_service_name = "orca-cloud-relay"
-relay_base_url               = "https://relay.onorca.dev"
+relay_cloud_run_service_name = "kingu-cloud-relay"
+relay_base_url               = "https://relay.onkingu.dev"
 # Why: public admission is a per-instance semaphore, so fleet assignment capacity is
 # concurrency x instances. Scaling to 2 instances took placement failures 35% -> 70%.
 relay_min_instances = 5
@@ -25,9 +25,9 @@ relay_max_instances = 5
 relay_cells                 = {}
 manage_relay_domain_mapping = true
 
-# Production GCE cells use exact hosts such as c1.relay.onorca.dev.
+# Production GCE cells use exact hosts such as c1.relay.onkingu.dev.
 # The wildcard only handles DNS/TLS; the load balancer rejects unknown hosts.
-relay_gce_domain          = "relay.onorca.dev"
+relay_gce_domain          = "relay.onkingu.dev"
 relay_gce_subnetwork_cidr = "10.42.0.0/24"
 relay_gce_additional_region_subnetwork_cidrs = {
   "asia-east2" = "10.42.1.0/24"
@@ -51,7 +51,7 @@ relay_gce_cells = {
     boot_disk_gb      = 30
     boot_image        = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-7"
     capacity_requests = 4000
-    image             = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:36a56b106c9e6d5897135c6af829085ab8fd53c85466406d9e887a7a5cfe9a02"
+    image             = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:36a56b106c9e6d5897135c6af829085ab8fd53c85466406d9e887a7a5cfe9a02"
     initially_enabled = false
   }
   "production-gce-c2" = {
@@ -61,7 +61,7 @@ relay_gce_cells = {
     boot_disk_gb      = 30
     boot_image        = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-7"
     capacity_requests = 4000
-    image             = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:36a56b106c9e6d5897135c6af829085ab8fd53c85466406d9e887a7a5cfe9a02"
+    image             = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:36a56b106c9e6d5897135c6af829085ab8fd53c85466406d9e887a7a5cfe9a02"
     initially_enabled = false
   }
   "production-gce-c3" = {
@@ -71,7 +71,7 @@ relay_gce_cells = {
     boot_disk_gb      = 30
     boot_image        = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-7"
     capacity_requests = 4000
-    image             = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:19ef4e6e4a043f63d78011d1c29a395a9002ec077d03ee6931f25479fe66f349"
+    image             = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:19ef4e6e4a043f63d78011d1c29a395a9002ec077d03ee6931f25479fe66f349"
     initially_enabled = false
   }
   # Distinct origins let each existing cell drain without an in-place image swap.
@@ -82,7 +82,7 @@ relay_gce_cells = {
     boot_disk_gb      = 30
     boot_image        = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests = 4000
-    image             = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:36a56b106c9e6d5897135c6af829085ab8fd53c85466406d9e887a7a5cfe9a02"
+    image             = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:36a56b106c9e6d5897135c6af829085ab8fd53c85466406d9e887a7a5cfe9a02"
     initially_enabled = false
   }
   "production-gce-c5" = {
@@ -92,7 +92,7 @@ relay_gce_cells = {
     boot_disk_gb      = 30
     boot_image        = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests = 4000
-    image             = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:0e83408b0dc08531f1e8182019dc151afc38d63ddde4ad5cc01e40247ef3681d"
+    image             = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:0e83408b0dc08531f1e8182019dc151afc38d63ddde4ad5cc01e40247ef3681d"
     initially_enabled = false
   }
   "production-gce-c6" = {
@@ -102,7 +102,7 @@ relay_gce_cells = {
     boot_disk_gb      = 30
     boot_image        = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests = 4000
-    image             = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:36a56b106c9e6d5897135c6af829085ab8fd53c85466406d9e887a7a5cfe9a02"
+    image             = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:36a56b106c9e6d5897135c6af829085ab8fd53c85466406d9e887a7a5cfe9a02"
     initially_enabled = false
   }
   "production-gce-c7" = {
@@ -112,7 +112,7 @@ relay_gce_cells = {
     boot_disk_gb                = 30
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 4000
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
     initially_enabled           = false
     connection_hard_cap         = 1000
     connection_unobserved_bound = 60
@@ -124,7 +124,7 @@ relay_gce_cells = {
     boot_disk_gb                = 30
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 4000
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
     initially_enabled           = false
     connection_hard_cap         = 1000
     connection_unobserved_bound = 60
@@ -137,7 +137,7 @@ relay_gce_cells = {
     boot_image        = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests = 4000
     # Canary for the control-activation fence (PR #207, main b253fcd).
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
     initially_enabled           = false
     connection_hard_cap         = 1000
     connection_unobserved_bound = 60
@@ -149,7 +149,7 @@ relay_gce_cells = {
     boot_disk_gb                = 30
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 4000
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
     initially_enabled           = false
     connection_hard_cap         = 1000
     connection_unobserved_bound = 60
@@ -161,7 +161,7 @@ relay_gce_cells = {
     boot_disk_gb                = 30
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 4000
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:e592371013188b8297e395979c70a8b42c39f4bb5f90b01190f0778279cbaef5"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:e592371013188b8297e395979c70a8b42c39f4bb5f90b01190f0778279cbaef5"
     initially_enabled           = false
     connection_hard_cap         = 600
     connection_unobserved_bound = 60
@@ -173,7 +173,7 @@ relay_gce_cells = {
     boot_disk_gb                = 30
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 4000
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:3d8b388dcbf190be20491ce9c14eeafa0dccd0afbb2725712f6f9d9a754838dc"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:3d8b388dcbf190be20491ce9c14eeafa0dccd0afbb2725712f6f9d9a754838dc"
     initially_enabled           = false
     connection_hard_cap         = 600
     connection_unobserved_bound = 60
@@ -185,7 +185,7 @@ relay_gce_cells = {
     boot_disk_gb                = 30
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 4000
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
     initially_enabled           = false
     connection_hard_cap         = 1000
     connection_unobserved_bound = 60
@@ -197,7 +197,7 @@ relay_gce_cells = {
     boot_disk_gb                = 30
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 4000
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
     initially_enabled           = false
     connection_hard_cap         = 1000
     connection_unobserved_bound = 60
@@ -209,7 +209,7 @@ relay_gce_cells = {
     boot_disk_gb                = 30
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 4000
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
     initially_enabled           = false
     connection_hard_cap         = 1000
     connection_unobserved_bound = 60
@@ -221,7 +221,7 @@ relay_gce_cells = {
     boot_disk_gb                = 30
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 4000
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
     initially_enabled           = false
     connection_hard_cap         = 1000
     connection_unobserved_bound = 60
@@ -233,7 +233,7 @@ relay_gce_cells = {
     boot_disk_gb                = 30
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 4000
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:0e83408b0dc08531f1e8182019dc151afc38d63ddde4ad5cc01e40247ef3681d"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:0e83408b0dc08531f1e8182019dc151afc38d63ddde4ad5cc01e40247ef3681d"
     initially_enabled           = false
     connection_hard_cap         = 600
     connection_unobserved_bound = 60
@@ -247,7 +247,7 @@ relay_gce_cells = {
     boot_disk_gb                = 30
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 4000
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:0e83408b0dc08531f1e8182019dc151afc38d63ddde4ad5cc01e40247ef3681d"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:0e83408b0dc08531f1e8182019dc151afc38d63ddde4ad5cc01e40247ef3681d"
     initially_enabled           = false
     connection_hard_cap         = 600
     connection_unobserved_bound = 60
@@ -259,7 +259,7 @@ relay_gce_cells = {
     boot_disk_gb                = 30
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 4000
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
     initially_enabled           = false
     connection_hard_cap         = 1000
     connection_unobserved_bound = 60
@@ -271,7 +271,7 @@ relay_gce_cells = {
     boot_disk_gb                = 30
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 4000
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
     initially_enabled           = false
     connection_hard_cap         = 1000
     connection_unobserved_bound = 60
@@ -286,7 +286,7 @@ relay_gce_cells = {
     boot_disk_gb                = 30
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 4000
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
     initially_enabled           = false
     connection_hard_cap         = 1000
     connection_unobserved_bound = 60
@@ -298,7 +298,7 @@ relay_gce_cells = {
     boot_disk_gb                = 30
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 4000
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
     initially_enabled           = false
     connection_hard_cap         = 1000
     connection_unobserved_bound = 60
@@ -310,7 +310,7 @@ relay_gce_cells = {
     boot_disk_gb                = 30
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 4000
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
     initially_enabled           = false
     connection_hard_cap         = 1000
     connection_unobserved_bound = 60
@@ -322,7 +322,7 @@ relay_gce_cells = {
     boot_disk_gb                = 30
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 4000
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
     initially_enabled           = false
     connection_hard_cap         = 1000
     connection_unobserved_bound = 60
@@ -334,7 +334,7 @@ relay_gce_cells = {
     boot_disk_gb                = 30
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 4000
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
     initially_enabled           = false
     connection_hard_cap         = 1000
     connection_unobserved_bound = 60
@@ -346,7 +346,7 @@ relay_gce_cells = {
     boot_disk_gb                = 30
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 4000
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
     initially_enabled           = false
     connection_hard_cap         = 1000
     connection_unobserved_bound = 60
@@ -360,7 +360,7 @@ relay_gce_cells = {
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 6000
     database_pool_max           = 16 # 176 ms from us-central1 Postgres saturates 10 (94-156 waiters).
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
     initially_enabled           = false
     connection_hard_cap         = 3000
     connection_unobserved_bound = 60
@@ -374,7 +374,7 @@ relay_gce_cells = {
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 6000
     database_pool_max           = 16 # 176 ms from us-central1 Postgres saturates 10 (94-156 waiters).
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
     initially_enabled           = false
     connection_hard_cap         = 3000
     connection_unobserved_bound = 60
@@ -388,7 +388,7 @@ relay_gce_cells = {
     boot_image                  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-stable-121-18867-528-21"
     capacity_requests           = 6000
     database_pool_max           = 16 # 176 ms from us-central1 Postgres saturates 10 (94-156 waiters).
-    image                       = "us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
+    image                       = "us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay@sha256:5aedbca5c86de24c8b4d4bf7e3b444b76c712f281ede916cb9d90f70cad1e563"
     initially_enabled           = false
     connection_hard_cap         = 3000
     connection_unobserved_bound = 60
@@ -418,15 +418,15 @@ relay_region_rehome_source_cell_ids = [
   "production-gce-c29"
 ]
 
-# Slack #orca-relay-alerts, created out of band on 2026-08-05. Declared here because an apply
+# Slack #kingu-relay-alerts, created out of band on 2026-08-05. Declared here because an apply
 # was otherwise going to strip it from every policy, leaving the alerts firing at nobody.
-relay_alert_notification_channels = ["projects/onorca-cloud/notificationChannels/4879431412695417284"]
+relay_alert_notification_channels = ["projects/onkingu-cloud/notificationChannels/4879431412695417284"]
 
 # Mobile push gateway. Production is the only environment that runs one; the runtime account,
 # the three Apple secrets, and their accessor bindings already exist and are imported once
 # (see docs/push-gateway.md).
 push_gateway_enabled = true
-push_base_url        = "https://push.onorca.dev"
+push_base_url        = "https://push.onkingu.dev"
 # Dedicated push pools allow three revision resources during validation and recovery.
 push_max_instances         = 2
 manage_push_domain_mapping = true

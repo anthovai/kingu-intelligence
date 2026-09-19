@@ -76,14 +76,14 @@ describe('the hybrid shell route', () => {
   })
 
   it('redirects with the flag explicitly off', async () => {
-    dependencies.storage.set('orca:mobileWebShellEnabled', 'false')
+    dependencies.storage.set('kingu:mobileWebShellEnabled', 'false')
     const tree = await renderRoute()
     expect(byName(tree, 'Redirect')).toHaveLength(1)
     expect(dependencies.mounted).toEqual([])
   })
 
   it('mounts the shell screen for this host with the flag on', async () => {
-    dependencies.storage.set('orca:mobileWebShellEnabled', 'true')
+    dependencies.storage.set('kingu:mobileWebShellEnabled', 'true')
     const tree = await renderRoute()
     expect(byName(tree, 'Redirect')).toEqual([])
     expect(dependencies.mounted).toEqual(['host-1'])
@@ -91,14 +91,14 @@ describe('the hybrid shell route', () => {
 
   it('redirects a store build whose container kept a flag a development build set', async () => {
     setDevelopmentBuild(undefined)
-    dependencies.storage.set('orca:mobileWebShellEnabled', 'true')
+    dependencies.storage.set('kingu:mobileWebShellEnabled', 'true')
     const tree = await renderRoute()
     expect(byName(tree, 'Redirect')).toHaveLength(1)
     expect(dependencies.mounted).toEqual([])
   })
 
   it('neither redirects nor mounts until the flag has been read', async () => {
-    dependencies.storage.set('orca:mobileWebShellEnabled', 'true')
+    dependencies.storage.set('kingu:mobileWebShellEnabled', 'true')
     const rendered: { tree: ReactTestRenderer | null } = { tree: null }
     // No `await` inside act: the effect's promise is deliberately left unsettled.
     act(() => {

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 readonly metadata_url="http://metadata.google.internal/computeMetadata/v1"
-readonly state_dir="/var/lib/orca-relay"
+readonly state_dir="/var/lib/kingu-relay"
 readonly cloudsql_dir="$${state_dir}/cloudsql"
 readonly docker_config_dir="$${state_dir}/docker"
 readonly env_file="$${state_dir}/relay.env"
@@ -53,40 +53,40 @@ assignment_key="$(read_secret '${assignment_secret}' "$${access_token}")"
 umask 077
 {
   printf 'DATABASE_URL=%s\n' "$${database_url}"
-  printf 'ORCA_RELAY_ASSIGNMENT_SIGNING_KEY=%s\n' "$${assignment_key}"
-  printf 'ORCA_RELAY_PUBLIC_URL=%s\n' '${cell_url}'
-  printf 'ORCA_RELAY_CELL_URL=%s\n' '${cell_url}'
-  printf 'ORCA_RELAY_AUTH_ISSUER=%s\n' '${auth_issuer}'
-  printf 'ORCA_RELAY_AUTH_AUDIENCE=orca-relay\n'
-  printf 'ORCA_RELAY_JWKS_URL=%s/.well-known/jwks.json\n' '${auth_issuer}'
-  printf 'ORCA_RELAY_ROLE=cell\n'
-  printf 'ORCA_RELAY_CELL_ID=%s\n' '${cell_id}'
+  printf 'KINGU_RELAY_ASSIGNMENT_SIGNING_KEY=%s\n' "$${assignment_key}"
+  printf 'KINGU_RELAY_PUBLIC_URL=%s\n' '${cell_url}'
+  printf 'KINGU_RELAY_CELL_URL=%s\n' '${cell_url}'
+  printf 'KINGU_RELAY_AUTH_ISSUER=%s\n' '${auth_issuer}'
+  printf 'KINGU_RELAY_AUTH_AUDIENCE=kingu-relay\n'
+  printf 'KINGU_RELAY_JWKS_URL=%s/.well-known/jwks.json\n' '${auth_issuer}'
+  printf 'KINGU_RELAY_ROLE=cell\n'
+  printf 'KINGU_RELAY_CELL_ID=%s\n' '${cell_id}'
 %{ if include_cell_region ~}
-  printf 'ORCA_RELAY_REGION=%s\n' '${cell_region}'
+  printf 'KINGU_RELAY_REGION=%s\n' '${cell_region}'
 %{ endif ~}
-  printf 'ORCA_RELAY_CELL_CAPACITY=%s\n' '${capacity_requests}'
+  printf 'KINGU_RELAY_CELL_CAPACITY=%s\n' '${capacity_requests}'
 %{ if include_database_pool_max ~}
-  printf 'ORCA_RELAY_DATABASE_POOL_MAX=%s\n' '${database_pool_max}'
+  printf 'KINGU_RELAY_DATABASE_POOL_MAX=%s\n' '${database_pool_max}'
 %{ endif ~}
 %{ if connection_hard_cap != null ~}
-  printf 'ORCA_RELAY_CELL_CONNECTION_HARD_CAP=%s\n' '${connection_hard_cap}'
-  printf 'ORCA_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\n' '${connection_unobserved_bound}'
+  printf 'KINGU_RELAY_CELL_CONNECTION_HARD_CAP=%s\n' '${connection_hard_cap}'
+  printf 'KINGU_RELAY_CELL_CONNECTION_UNOBSERVED_BOUND=%s\n' '${connection_unobserved_bound}'
 %{ endif ~}
-  printf 'ORCA_RELAY_CELLS_JSON=[]\n'
-  printf 'ORCA_RELAY_ADMIN_AUDIENCE=%s/v1/admin/drain\n' '${director_url}'
-  printf 'ORCA_RELAY_DEPLOY_SERVICE_ACCOUNT=%s\n' '${deploy_service_account}'
-  printf 'ORCA_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\n' '${capacity_service_account}'
+  printf 'KINGU_RELAY_CELLS_JSON=[]\n'
+  printf 'KINGU_RELAY_ADMIN_AUDIENCE=%s/v1/admin/drain\n' '${director_url}'
+  printf 'KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT=%s\n' '${deploy_service_account}'
+  printf 'KINGU_RELAY_CAPACITY_SERVICE_ACCOUNT=%s\n' '${capacity_service_account}'
 %{ if asia_proof_service_account != "" ~}
-  printf 'ORCA_RELAY_ASIA_PROOF_SERVICE_ACCOUNT=%s\n' '${asia_proof_service_account}'
+  printf 'KINGU_RELAY_ASIA_PROOF_SERVICE_ACCOUNT=%s\n' '${asia_proof_service_account}'
 %{ endif ~}
-  printf 'ORCA_RELAY_RUNTIME_SERVICE_ACCOUNT=%s\n' '${runtime_service_account}'
+  printf 'KINGU_RELAY_RUNTIME_SERVICE_ACCOUNT=%s\n' '${runtime_service_account}'
 %{ if rehome_source_enabled ~}
-  printf 'ORCA_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT=%s\n' '${rehome_director_service_account}'
-  printf 'ORCA_RELAY_REHOME_AUDIENCE=%s\n' '${rehome_audience}'
+  printf 'KINGU_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT=%s\n' '${rehome_director_service_account}'
+  printf 'KINGU_RELAY_REHOME_AUDIENCE=%s\n' '${rehome_audience}'
 %{ endif ~}
-  printf 'ORCA_RELAY_DIRECTOR_URL=%s\n' '${director_url}'
-  printf 'ORCA_RELAY_HEARTBEAT_AUDIENCE=%s/v1/admin/cell-heartbeat\n' '${director_url}'
-  printf 'ORCA_RELAY_IMAGE_DIGEST=%s\n' '${trimprefix(regex("@sha256:[a-f0-9]{64}$", relay_image), "@")}'
+  printf 'KINGU_RELAY_DIRECTOR_URL=%s\n' '${director_url}'
+  printf 'KINGU_RELAY_HEARTBEAT_AUDIENCE=%s/v1/admin/cell-heartbeat\n' '${director_url}'
+  printf 'KINGU_RELAY_IMAGE_DIGEST=%s\n' '${trimprefix(regex("@sha256:[a-f0-9]{64}$", relay_image), "@")}'
 } > "$${env_file}"
 unset database_url assignment_key
 
@@ -98,7 +98,7 @@ docker logout '${artifact_registry_host}' >/dev/null 2>&1 || true
 unset access_token
 docker pull '${cloud_sql_proxy_image}'
 
-docker rm --force orca-relay cloud-sql-proxy >/dev/null 2>&1 || true
+docker rm --force kingu-relay cloud-sql-proxy >/dev/null 2>&1 || true
 # The persistent COS state directory can retain a dead proxy's socket across VM reboots.
 find "$${cloudsql_dir}" -type s -name '.s.PGSQL.5432' -delete
 docker run --detach \
@@ -125,7 +125,7 @@ done
 find "$${cloudsql_dir}" -type s -name '.s.PGSQL.5432' -print -quit | grep -q .
 
 docker run --detach \
-  --name orca-relay \
+  --name kingu-relay \
   --restart always \
   --stop-timeout 300 \
   --security-opt no-new-privileges \

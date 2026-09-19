@@ -8,21 +8,21 @@ never raw ids. Nothing here is a production mutation record unless the "Mutation
 
 | Item | State | Where |
 |---|---|---|
-| PR #18565 relay accept abandonment + lease jitter + desktop rotation spread + phone probe fail-fast | Open, CI fully green again after the doc move (05:45Z), CodeRabbit + Pullfrog cleared, 3 review rounds; not merged (owner has not asked) | https://github.com/stablyai/orca/pull/18565 |
-| PR #18569 monitor `relayPostgresRetryExhausted` 0 -> 300 | **Merged** 2026-09-04 ~04:20Z as 4101505b6b | https://github.com/stablyai/orca/pull/18569 |
+| PR #18565 relay accept abandonment + lease jitter + desktop rotation spread + phone probe fail-fast | Open, CI fully green again after the doc move (05:45Z), CodeRabbit + Pullfrog cleared, 3 review rounds; not merged (owner has not asked) | https://github.com/anthovai/kingu-intelligence/pull/18565 |
+| PR #18569 monitor `relayPostgresRetryExhausted` 0 -> 300 | **Merged** 2026-09-04 ~04:20Z as 4101505b6b | https://github.com/anthovai/kingu-intelligence/pull/18569 |
 | Same-cap `verify` of c7 (read-only) | **Passed** run 33836527159 | confirms identities, selector gen 110, rehome gen 12, protocol 1, digests |
 | Monitor dry-run #1 | Froze min 5: `relay.postgres_retries` 380 > 300 | run 33836470590 |
 | Monitor dry-run #2 | Green to min 13, froze 04:49Z: `director.concurrency` 76.7 > 64 (six-cell crash storm, Finding 6) | run 33837160275 |
 | Monitor dry-run #3 | Froze min 3 at 05:01Z: `relay.postgres_retries` 339 > 300; no crash, concurrency 5–8 | run 33838698725 |
 | Owner decision 2026-09-04 ~05:10Z | **Option B approved**: "you can raise the bar. or remove it altogether ... whats the most logical move". Kept the bar (removal would leave contention unwatched during the roll) and recalibrated from measured data. | this thread |
-| PR #18580 monitor `relayPostgresRetries` 300 -> 2000 | Open, awaiting CI; mutation-checked (300 fails the new test) | https://github.com/stablyai/orca/pull/18580 |
+| PR #18580 monitor `relayPostgresRetries` 300 -> 2000 | Open, awaiting CI; mutation-checked (300 fails the new test) | https://github.com/anthovai/kingu-intelligence/pull/18580 |
 | PR #18565 CI | Was red on `root directory guard` because this findings file sat at repo root; moved to `cloud/docs/` in 8ebff89106 | |
 | PR #18580 | **Merged** 2026-09-04 05:23Z as 79d5fb469a (Pullfrog cancelled by the merge; independent Opus review requested instead, per owner) | |
 | Monitor dry-run #4 | Froze min 12 at 05:37:35Z: `cell.production-gce-c27.health`/`.ready` = 0. Retries green all 12 samples under the new 2000 bar. Cause: c27 (asia-east2) container died 3x 05:37:00–05:38:01Z, Finding 6 crash class. | run 33840364323 |
 | Monitor dry-run #5 | Froze at sample 1 (05:41Z): c27 health/ready still 0. MIG autoheal `recreateInstance` on c27 fired 05:38:12Z after the 3 crashes; instance RECREATING, process up with 0 controls (was ~395). Second c27 recreate in 7 h (Finding 3 seed pattern). Waiting for c27 to settle before dry-run #6. | run 33841327879 |
 | Monitor dry-run #6 | **Passed** 06:06:31Z: 16 samples, no freeze (started 05:47:42Z) | run 33841783747 attempt 1 |
 | c7 `canary-apply` | **Succeeded.** Dispatched 06:07:15Z; drain 06:10Z; MIG recreate 06:16–06:23Z; new image listening 06:23:42Z; verify + trust proof passed; restored to `admission=general` 06:25:21Z; canary authority sealed. c7 is on `85bf6799…`. | run 33843071283 |
-| PR #18581 doc reconcile (Aug 23 figure: 2,200–3,000 raw log lines vs 1,510 on the gate metric) | **Merged** | https://github.com/stablyai/orca/pull/18581 |
+| PR #18581 doc reconcile (Aug 23 figure: 2,200–3,000 raw log lines vs 1,510 on the gate metric) | **Merged** | https://github.com/anthovai/kingu-intelligence/pull/18581 |
 | Same-cap `verify` c7 target=519f4914 rollback=85bf6799, gen 112 | **Passed** (read-only) | run 33856355648 |
 | Monitor dry-run #7 (gen 112) | Froze at sample 1 (09:05:31Z): `director.errors` 4 > 0, the four 2.0 s pg-connect 500s from the 09:00 cascade still inside the 5-min delta window. Dispatched 4 min too early. | run 33856521278 |
 | Monitor dry-run #8 (gen 112) | Green for 15 of 16 samples (09:09:38–09:24), froze on the final sample 09:25:22Z: `director.errors` 1 > 0. The one 500 was `/v1/admin/evacuation-status` at 09:23:50Z, 2.01 s latency = director pg-connect timeout, called by **the monitor's own collector** (`incident-monitor-sources.ts:492`). First evacuation-status 500 since Sep 1. The gate froze on a request it made itself. | run 33856905229 |
@@ -46,9 +46,9 @@ ordinary (49/29/13 per min). Best reading: a ~5 s Postgres-side wait event share
 | Monitor dry-run #18 | **Dispatched by mistake 13:48:56Z into the outage**: my gcloud credentials expired ~13:45Z, every guard query returned empty, and the waiter's `grep -c . || true` read empty as "quiet". Froze at sample 1 (13:49:43Z) on `director.ready=0`, `auth.health=0`, and cell probes; no canary dispatched, no production mutation. All waiter loops killed at 13:51Z. Lesson: a quiet-window check must fail closed when its data source errors. Waiter had been re-armed 12:53Z. |
 | Gate decision | Owner asked at 09:36Z to choose: A keep looping / B recalibrate `directorErrors` 0 -> small n / C human bypass. Ten dry-runs, four froze on this bar. Recommendation B+A. Note: B alone would not have passed #9 or #10 (cell health probes and a 12-error burst); it fixes the single-500 false freezes (#7, #8) only. | |
 | Batch roll | **Deferred by plan**: roll once with the lock-fix image instead of twice. | |
-| PR #18606 lock removal (root cause) | **Merged** 09:2xZ as 7b108abf71 after review, fix, re-verify; CI green | https://github.com/stablyai/orca/pull/18606 |
+| PR #18606 lock removal (root cause) | **Merged** 09:2xZ as 7b108abf71 after review, fix, re-verify; CI green | https://github.com/anthovai/kingu-intelligence/pull/18606 |
 | Image publish for 7b108abf71 | **Done** 08:36:49Z run 33854111305: `sha256:519f4914217f08cabcdcd34825965db8473ec37c6591553a3af0d65dcdeeb183` | |
-| Director deploy on 519f4914 | **Succeeded** 08:45Z run 33854355791; serving `orca-cloud-relay-00570-siv`, rollback tag on 00569-ret (also 519f4914), 00565-fes (85bf6799) still deployable. Dispatched 08:37:45Z (blue/green; prior revision 00565-fes on 85bf6799 kept as rollback). Note: `predecessor-image-digest` is a required input even with bootstrap=false; pass the serving digest. | `cloud-deploy-relay-production-director.yml` |
+| Director deploy on 519f4914 | **Succeeded** 08:45Z run 33854355791; serving `kingu-cloud-relay-00570-siv`, rollback tag on 00569-ret (also 519f4914), 00565-fes (85bf6799) still deployable. Dispatched 08:37:45Z (blue/green; prior revision 00565-fes on 85bf6799 kept as rollback). Note: `predecessor-image-digest` is a required input even with bootstrap=false; pass the serving digest. | `cloud-deploy-relay-production-director.yml` |
 | c7 on new image, 2 h in | 817 controls, **0 container die** since restore (was ~1 per 15 min on old image); `sqlLatencyMsMax` still 1.0 s = lock wait unchanged, which #18606 targets | |
 | Terraform alert `relay_postgres_retry_exhausted` at `> 0` | Firing continuously since #18521; recalibration not done (own change) | `cloud/infra/terraform/relay-observability.tf:447,469` |
 
@@ -58,13 +58,13 @@ ordinary (49/29/13 per min). Best reading: a ~5 s Postgres-side wait event share
 2. Merged PR #18580 and #18581 to main (monitor bar + docs).
 2b. Merged PR #18606 to main (relay lock change; no serving effect until the image is deployed).
 2c. Dispatched `cloud-publish-relay-production` for 7b108abf71 (builds and pushes an image; changes nothing serving). Done: 519f4914.
-2d. Dispatched `cloud-deploy-relay-production-director` on 519f4914 (preserve placement, no prune, rehome gen 12). Succeeded 08:45Z; serving revision 00570-siv. Rollback: `gcloud run services update-traffic orca-cloud-relay --region us-central1 --to-revisions orca-cloud-relay-00565-fes=100` (85bf6799, still Ready). Not needed so far.
+2d. Dispatched `cloud-deploy-relay-production-director` on 519f4914 (preserve placement, no prune, rehome gen 12). Succeeded 08:45Z; serving revision 00570-siv. Rollback: `gcloud run services update-traffic kingu-cloud-relay --region us-central1 --to-revisions kingu-cloud-relay-00565-fes=100` (85bf6799, still Ready). Not needed so far.
 3. 2026-09-04 06:07:15Z: dispatched `cloud-deploy-relay-production-same-cap` `canary-apply` for production-gce-c7 only (run 33843071283). Completed successfully 06:26Z: c7 isolated, drained (807 controls re-dialed), template + MIG rolled to 85bf6799, verified, restored to general admission. Selector generation advanced 110 -> 112 (isolate + restore).
 4. Nothing else. Both monitor dispatches were `mode=dry-run` (read-only). The same-cap dispatch was `mode=verify` (read-only, confirmed by step gates `if: inputs.mode != 'verify'` on every mutating step).
 
 ## Finding 6 (2026-09-04 ~05:00Z): the old cell image crashes the whole process on a Postgres connect timeout
 
-**This is the most important open finding.** The 23 GCE cells run image `sha256:5aedbca5…` = orca-cloud
+**This is the most important open finding.** The 23 GCE cells run image `sha256:5aedbca5…` = kingu-cloud
 commit e3e92d95d3 (2026-08-14). In that build `beginProof` is called as `void this.beginProof(...)`.
 When `verifyCellAssignment` inside it throws (pg-pool `timeout exceeded when trying to connect`, 2 s
 `connectionTimeoutMillis`), the rejection is unhandled and Node exits 1. Docker restarts the container
@@ -73,7 +73,7 @@ in ~1 s, but every control on that cell (~800 hosts) drops and re-dials `/v1/ass
 Evidence, cell c7 instance 4545742188814054238, 2026-09-04:
 
 ```
-04:46:47.951 stderr [orca-relay] control activity renewal failed   (x5)
+04:46:47.951 stderr [kingu-relay] control activity renewal failed   (x5)
 04:46:49.527 stderr Error: timeout exceeded when trying to connect
              at pg-pool/index.js:45:11
              at async PostgresPoolPressure.connect (postgres-pool-pressure.js:30:20)
@@ -83,7 +83,7 @@ Evidence, cell c7 instance 4545742188814054238, 2026-09-04:
 04:46:49.527 stderr Node.js v24.19.0
 04:46:49.835 dockerd: container die … exitCode=1 image=…relay@sha256:5aed…
 04:46:50.258 dockerd: container start
-04:46:52.761 stdout [orca-relay] listening on https://c7.relay.onorca.dev
+04:46:52.761 stdout [kingu-relay] listening on https://c7.relay.onkingu.dev
 ```
 
 2026-09-04 05:36:59–05:38:01Z: c27 died 3x in 62 s plus one other instance (5464389947731541178); this froze dry-run #4 on c27's health probe.
@@ -95,7 +95,7 @@ Every one has the same `Node.js v24…` crash banner. On 2026-09-04 04:46:35–0
 503s in one minute (baseline ~20), director concurrency hit 85 (Cloud Run cap 80), Cloud SQL
 `new_connection_count` 119 -> 287/min. Fleet recovered by 04:51Z. That is what froze dry-run #2.
 
-Fix status: `guardSessionTask` wrapping `beginProof` landed in orca-cloud #436 (2026-08-27) and is in
+Fix status: `guardSessionTask` wrapping `beginProof` landed in kingu-cloud #436 (2026-08-27) and is in
 the target image `sha256:85bf6799…` (main 11aace8dec). The roll is the fix. Not caused by anything in
 this session: the same-cap verify finished ~04:25Z and never reached a mutating step; no compute
 operations exist for those instances; heap/event-loop were flat before the crash.
@@ -157,7 +157,7 @@ global lock. Under contention the cell finishes after the phone's 12 s bound, th
 `PendingHostDataReservation.bind` throws `host_data_reservation_already_bound` because the phone's
 close already released the reservation. Every "first frame handler failed already_bound" line is that
 post-mortem (31 events 23:06–01:01Z across 12 instances). Fix in #18565: abandon the accept after each
-DB step once the socket is closed; new event `orca_relay_client_accept_abandoned {stage, elapsedMs}`
+DB step once the socket is closed; new event `kingu_relay_client_accept_abandoned {stage, elapsedMs}`
 and metric fields `clientAcceptsAbandonedByStageDelta` / `clientAcceptAbandonedMsMax`. Phone side:
 direct probe now fails fast on `reconnecting` so relay recovery is not queued behind three doomed
 LAN redials (~3.5 s saved per foreground). #18518 (merged, not yet on the phone) covers the
@@ -169,7 +169,7 @@ splices intact. No drain/4404/wrong-cell.
 
 ## Finding 7 (2026-09-04 ~05:10Z): retries bar recalibration basis (PR #18580)
 
-Chose 2000 over removal. The metric is the gate's own source (`orca_relay_postgres_retries`
+Chose 2000 over removal. The metric is the gate's own source (`kingu_relay_postgres_retries`
 log metric, director + cells summed per five minutes, ALIGN_DELTA 300 s):
 
 | window | p50 | p90 | p99 | max | > 300 |
@@ -206,9 +206,9 @@ immediately so the bar can be re-tightened after the fleet is on the 500 ms lock
 ## Finding 12 (2026-09-04 13:12Z): **INCIDENT IN PROGRESS. The auth service is at its 2-instance cap and rejecting 90% of desktop token calls with 429; the relay fleet has emptied.**
 
 Timeline: 13:04–13:06 the old-image cascades and NAT stalls drove ~1,400 desktops to re-dial. Their relay
-JWTs (5-min TTL) expired mid-storm, so they hit `orca-cloud-auth` `/v1/desktop/auth/refresh` and
+JWTs (5-min TTL) expired mid-storm, so they hit `kingu-cloud-auth` `/v1/desktop/auth/refresh` and
 `/v1/desktop/auth/relay-token` together. The auth service is Cloud Run `maxScale=2`, `concurrency=80`,
-1 vCPU throttled (`auth_max_instances = 2` in orca-cloud `infra/terraform-apps/environments/production.tfvars`,
+1 vCPU throttled (`auth_max_instances = 2` in kingu-cloud `infra/terraform-apps/environments/production.tfvars`,
 applied by `deploy-auth-production.yml`). Both instances pinned at concurrency 85 from 13:02; from 13:07
 Cloud Run's front door returns **429 "no available instance"** (0 s latency, never reaches the container):
 12,045 at 13:07, 54,292 at 13:08, 46,025 at 13:08, 42,529 at 13:09. Sep 3 total auth 429s: **0**.
@@ -220,11 +220,11 @@ this is a self-sustaining thundering herd and will not clear on its own. At 13:1
 across 23 cells; successful relay-token issuance 5,000–6,500/min until 13:05, then 1,059 / 734 / 733 /
 443 / 220 / 214 / 148 / **4** per minute through 13:13; auth 429s 54k -> 25k/min only because desktops
 are backing off, not because the service recovered. Note `AUTH_MAX_INSTANCES: 2` is also hardcoded in
-orca-cloud `.github/workflows/deploy-auth-production.yml` (lines 33–34), so a redeploy would re-pin it;
+kingu-cloud `.github/workflows/deploy-auth-production.yml` (lines 33–34), so a redeploy would re-pin it;
 change both the workflow env and the tfvars.
 
 **Immediate mitigation (owner action, not applied):** raise the auth service's max instances. Fastest:
-`gcloud run services update orca-cloud-auth --region us-central1 --max-instances 20` (or `10`, matching
+`gcloud run services update kingu-cloud-auth --region us-central1 --max-instances 20` (or `10`, matching
 the other apps' `max_instances = 10`), then land the same in `auth_max_instances` so Terraform does not
 revert it. Auth is stateless behind Cloud SQL (`refresh_tokens` table); backends 210 of 400, so 20
 instances x a small pool is within budget. Also consider the desktop's refresh backoff: it re-dials on
@@ -236,19 +236,19 @@ controls, auth maxScale 2, 7,600 auth 429/min. All autonomous dispatch loops are
 
 **17:19Z–17:21Z MITIGATION APPLIED (owner said "fix it NOW").** State at 17:19Z, four hours in: all 23
 cells at 0 controls, auth 429 ~2,000/min, auth 2xx ~40/min, and the 2xx that got through took 13–28 s
-(both instances saturated). Mutation 1: `gcloud run services update orca-cloud-auth --max-instances 20`
-created revision `orca-cloud-auth-00018-4jc` (same image `auth@sha256:1710ff6c`, same env/concurrency,
+(both instances saturated). Mutation 1: `gcloud run services update kingu-cloud-auth --max-instances 20`
+created revision `kingu-cloud-auth-00018-4jc` (same image `auth@sha256:1710ff6c`, same env/concurrency,
 only maxScale 2 -> 20) but the service pins traffic to `00023-qud` **by revision name**, so the new revision
 was immediately `Retired` and nothing changed. Mutation 2 (17:21:30Z): `gcloud run services update-traffic
---to-revisions orca-cloud-auth-00018-4jc=100`. Lesson: the auth service's traffic block is name-pinned
+--to-revisions kingu-cloud-auth-00018-4jc=100`. Lesson: the auth service's traffic block is name-pinned
 (the deploy workflow does an explicit traffic switch), so a bare `services update` never reaches users.
 Terraform still says `auth_max_instances = 2`; the next `deploy-auth-production.yml` run will revert this
 unless the tfvars and the workflow's `AUTH_MAX_INSTANCES` are changed first.
 
 ## Finding 13 (2026-09-04 17:19Z–18:10Z): **the auth outage is a database problem, not (only) a Cloud Run cap; `refresh_tokens` has 63 M rows and reuse-revokes scan whole families**
 
-Mutations this window (all online, no restarts, all by hand in project onorca-cloud):
-1. 17:19Z `gcloud run services update orca-cloud-auth --max-instances 20` → new revision `00018-4jc`, but traffic is
+Mutations this window (all online, no restarts, all by hand in project onkingu-cloud):
+1. 17:19Z `gcloud run services update kingu-cloud-auth --max-instances 20` → new revision `00018-4jc`, but traffic is
    pinned by revision name so it was `Retired`; 17:21:30Z `update-traffic --to-revisions 00018-4jc=100`.
 2. Still 2 instances at 17:31Z: the SERVICE has its own `scaling.maxInstanceCount=2` in **manual scaling mode**
    (`run.googleapis.com/maxScale: '2'` on service metadata, set by Terraform `infra/terraform-apps/auth.tf`), which
@@ -267,16 +267,16 @@ Evidence: `refresh_tokens` = 63.3 M live tuples, 16 GB table + 10 GB indexes; ev
 nothing ever deletes (30-day TTL rows are never pruned). Query Insights 17:33–17:39Z: `UPDATE refresh_tokens SET
 revoked_at = $1 WHERE family_id = $2 AND revoked_at IS NULL` = 21,000 s of execution per 6 min, ~90–120 k rows
 updated per minute; io_time 15,000 s read; pg_stat_activity 180+ backends in `IO/DataFileRead` on that statement,
-200 backends total for orca_auth (20 instances × pool max 10). `session-refresh-reuse-detected` audit events per
+200 backends total for kingu_auth (20 instances × pool max 10). `session-refresh-reuse-detected` audit events per
 hour: ~100 all day → 8,805 (13Z), 15,511, 19,486, 24,897, 26,935 (17Z). Mechanism: a desktop's refresh times out
 client-side at 30 s, the server had already rotated the token, the desktop retries with the same token, the
 server calls that reuse and revokes the family (Bitmap scan on `refresh_tokens_family` + heap filter over every
 row the family ever had), then the desktop retries the dead token again, and each retry re-runs the same
 full-family scan (already-revoked families short-circuit nowhere). Reuse-detected 401 also **signs the user out**
-on the desktop (`isOrcaCloudAuthFailure` → `clearCloudSessionIfUnchanged`), so every user who hit this during the
+on the desktop (`isKinguCloudAuthFailure` → `clearCloudSessionIfUnchanged`), so every user who hit this during the
 outage must sign in again.
 
-Durable fixes (orca-cloud PR in preparation on branch `auth-revoke-only-live-tokens`): `AUTH_MAX_INSTANCES` and
+Durable fixes (kingu-cloud PR in preparation on branch `auth-revoke-only-live-tokens`): `AUTH_MAX_INSTANCES` and
 `auth_max_instances` → 20; Terraform disk 250 + `max_wal_size=16384`; the partial index in the schema; an
 `already-revoked` short-circuit in `rotateRefreshToken` that skips the family UPDATE and the audit insert. Still
 open after that: prune `refresh_tokens` (expired or revoked rows older than N days), a server-side statement
@@ -284,7 +284,7 @@ timeout shorter than the desktop's 30 s so the client and server agree on failur
 
 **19:11Z RESOLVED at the database layer.** `refresh_tokens_family_unrevoked` went valid at 19:11:17Z (build
 18:07–19:11, two full table scans of 2.1 M blocks under load). Within 60 s: refresh latency 100 s → 0.1 s, auth 429
-→ 0, active orca_auth backends 200 → 2, checkpoints back on the 5-min timer (`checkpoint starting: time` at 18:35,
+→ 0, active kingu_auth backends 200 → 2, checkpoints back on the 5-min timer (`checkpoint starting: time` at 18:35,
 18:41, 19:00, 19:11). Director `/v1/assign` returning 200. Fleet controls 0 → 17 by 19:14Z.
 
 **Residual: mass sign-out.** 19:11–19:14Z: 3,857 refresh 401s from 3,829 distinct IPs, then near zero. Every one is
@@ -298,20 +298,20 @@ signing in, not by infrastructure. Total `session-refresh-reuse-detected` events
 and will find themselves signed out on next launch, so sign-ins will trickle for days.
 
 **Desktop UX finding (owner's own Mac, 19:22Z):** a revoked desktop keeps showing the account card as
-"Connected" and the pairing pane as "Orca Relay: Unavailable" / `relay_control_not_active` indefinitely; the
+"Connected" and the pairing pane as "Kingu Relay: Unavailable" / `relay_control_not_active` indefinitely; the
 local trace writes no relay events. Only quit + relaunch surfaced the sign-out prompt, after which sign-in →
 relay-token → `/v1/assign` 200 (0.15 s) → working pairing, all within 10 s. Follow-ups: the relay coordinator's
 401 path should flip the account card to reconnect-required immediately, and the pairing error should say "Sign
 in again to use Relay" when the cause is an auth failure. Announcement wording: "If Relay shows Unavailable, quit
-and reopen Orca, then sign in when prompted."
+and reopen Kingu, then sign in when prompted."
 
-orca-cloud PR #474 (branch `auth-revoke-only-live-tokens`): caps → 20, disk 250 / max_wal_size 16384 in
+kingu-cloud PR #474 (branch `auth-revoke-only-live-tokens`): caps → 20, disk 250 / max_wal_size 16384 in
 Terraform, partial index in the schema, `already-revoked` short-circuit. Do not deploy auth to any environment
 with a large `refresh_tokens` before building the index concurrently there.
 
 **Wave 1 of the roadmap (2026-09-04 21:35Z onward):** five Opus agents in isolated worktrees: 3.1 grace window
-(orca-cloud), 4.1+2.3 relay locks + pool timeout, 3.2+4.3 desktop refresh/jitter, 5.1+5.4 observability,
-2.1 private IP (plan only, both repos). First back: stablyai/orca PR #18717 (crash alert + dashboard). Its key
+(kingu-cloud), 4.1+2.3 relay locks + pool timeout, 3.2+4.3 desktop refresh/jitter, 5.1+5.4 observability,
+2.1 private IP (plan only, both repos). First back: anthovai/kingu-intelligence PR #18717 (crash alert + dashboard). Its key
 finding: cell exits log to `cos_system` with uppercase `jsonPayload.MESSAGE` and `SYSLOG_IDENTIFIER=docker`,
 so every earlier `jsonPayload.message:"container die"` count in this doc that read 0 was querying the wrong
 field. Verified: 87 exits 12–13Z on the agent's filter, 0 in the last 6 h. Monitor dry-run 33922255205
@@ -331,26 +331,26 @@ does not require `/ready`). **Sequencing constraint for Roll 1:** monitor eviden
 canary dispatch, so the owner's go must precede the dry-run, and a green dry-run must be followed by the
 canary dispatch immediately.
 
-stablyai/orca PR #18719 (3.2 + 4.3, desktop): the replay engine was not the refresh function but
+anthovai/kingu-intelligence PR #18719 (3.2 + 4.3, desktop): the replay engine was not the refresh function but
 `RelayAuthCoordinator.scheduleRetry`, since `shouldRetryRelayConnectionError` treats any non-HTTP error
 (including a refresh `TimeoutError`) as retryable and re-reads the same stored token on backoff. Fix: refresh
 gets one 60 s attempt; an ambiguous failure (no status line) records the token and blocks re-sending it for
 30 s (bounded, not permanent); definitive 5xx gets exactly one retry after re-reading the store; a 401 on an
-ambiguously-attempted token logs `orca_cloud_refresh_possible_replay`. Lease renewal gets ±10 % full jitter
+ambiguously-attempted token logs `kingu_cloud_refresh_possible_replay`. Lease renewal gets ±10 % full jitter
 (base shrunk so the latest sample stays ≥ 90 s before expiry); server resets the full 55-min TTL on any rebind
 (`host-session-registry.ts:736-743`) so early renewal is free. Verified the retry-path claim and both server
 cites against main.
 
-2.1 private IP: orca-cloud PR #477 (foundation: servicenetworking API, /24 peering range 10.42.128.0, private
+2.1 private IP: kingu-cloud PR #477 (foundation: servicenetworking API, /24 peering range 10.42.128.0, private
 network on the instance, `prevent_destroy`; real production plan 3 add / 1 in-place change, staging unchanged)
-and stablyai/orca PR #18720 (relay: `relay_cloud_sql_private_ip` variable, conditional `--private-ip` in the
+and anthovai/kingu-intelligence PR #18720 (relay: `relay_cloud_sql_private_ip` variable, conditional `--private-ip` in the
 cell startup template; default false renders byte-identical to main). Findings that change the plan: Google
 states the private-IP change **restarts the instance** with no in-place path, and it is a one-way door (cannot
 disable private IP or remove the network link). The director uses the Cloud Run built-in connector, not the
 relay VPC NAT, so it never consumed the exhausted ports and is out of scope. Disabling public IP later breaks
 the local proxy workflow and the director. #18720 merges (inert); #477 held for owner decision.
 
-4.1 + 2.3 relay: stablyai/orca PR #18722. Premise correction: #18521 and #18606 had already bounded and
+4.1 + 2.3 relay: anthovai/kingu-intelligence PR #18722. Premise correction: #18521 and #18606 had already bounded and
 narrowed most of the fleet-wide lock before today; what remained were the sticky-refresh retry (all 23 rows →
 the one pinned row), reservation reconciliation (23 → the 2 involved rows), a dead pool-default fallback, and
 an absolute counter write (→ delta with capacity guard). Placement (`assignOnce`) deliberately keeps the
@@ -360,14 +360,14 @@ follow-up. Pool `statement_timeout` was already 5 s but hardcoded; now env-confi
 retryable set (it was terminal before), schema DDL on an untimed max:1 pool. Independently re-ran the new and
 adjacent suites here against 55440: 66/66. Harness note: 55440 is not idempotent across full runs (2
 pre-existing failures on a second run); reset the schema between runs. Rollout: director first, watch
-`orca_relay_postgres_transaction_exhausted` and `cellInventoryHoldMsP95` before cells.
+`kingu_relay_postgres_transaction_exhausted` and `cellInventoryHoldMsP95` before cells.
 
 #18719 first CI run failed only on `windows-host-job.win32.test.ts` (EPERM on temp-dir cleanup), a Windows
 PTY test the PR does not touch and which no other recent run failed on; rerun dispatched rather than waved.
 
-3.1 grace window: orca-cloud PR #478 merged (not yet deployed; deploy is an owner gate because the startup
+3.1 grace window: kingu-cloud PR #478 merged (not yet deployed; deploy is an owner gate because the startup
 schema apply adds a nullable column to `refresh_tokens` with a brief ACCESS EXCLUSIVE). Semantics: within
-`ORCA_CLOUD_REFRESH_ROTATION_GRACE_MS` (60 s default, 300 s cap, 0 = off) a re-presented rotated token gets the
+`KINGU_CLOUD_REFRESH_ROTATION_GRACE_MS` (60 s default, 300 s cap, 0 = off) a re-presented rotated token gets the
 SAME successor refresh token + a fresh access token, no revoke, no audit, provided the successor is still the
 live head. Third presentation / outside window / revoked family: unchanged (revoke + audit). Successor plaintext
 is stored sealed (AES-256-GCM, key = HKDF of the predecessor token; the DB never holds the key). Cost stated
@@ -377,17 +377,17 @@ forced-INSERT-failure rollback test; the 8-way race alone did not kill the non-t
 locally 27/27 incl. the Postgres suite against 55440, and CI ran it on PG 16 and 17 (4/4 each, not skipped).
 Deploy wiring: env is set by BOTH Terraform and the deploy workflow, with a test pinning all three sources to
 one value. **Pre-existing bug surfaced:** the deploy script strips every env var it does not own, so the
-Terraform-set `ORCA_CLOUD_REFRESH_TOKEN_TTL_DAYS` (from #476) silently reverts to the compiled default on each
+Terraform-set `KINGU_CLOUD_REFRESH_TOKEN_TTL_DAYS` (from #476) silently reverts to the compiled default on each
 release. Latent only because both defaults are 30. Follow-up: add it to `authEnvironment` + the workflow env.
 
-Monitor probe fix: stablyai/orca PR #18723. A thrown fetch (DNS/TCP/TLS/8 s abort) is now "no reading" and is
+Monitor probe fix: anthovai/kingu-intelligence PR #18723. A thrown fetch (DNS/TCP/TLS/8 s abort) is now "no reading" and is
 re-asked once after 1 s; only a second throw is `false`. A non-ok HTTP answer is still `false` with no extra
 retry. `latencyMs` is the slowest answering round trip, never a sleep. `requiresReady` is per endpoint: auth
 (no `/ready` by design) is judged on `/health` + latency; director and cells unchanged. No threshold or rule
 touched; `auth.ready` had no consumer. 81/81 relay-ops tests and 9/9 evidence-script tests locally. The monitor
 runs at `main` head, so once merged the next dry-run uses it.
 
-Applying #18717 (22:10Z): the cell-exit log metric `orca_relay_cell_process_exit` is created; the alert policy
+Applying #18717 (22:10Z): the cell-exit log metric `kingu_relay_cell_process_exit` is created; the alert policy
 raced descriptor propagation (404) and is being retried. **Not applied, deliberately:** the dashboard. Its
 targeted plan drags in `google_logging_metric.relay_snapshot[*]`, and that plan is `32 to add, 21 to destroy`:
 the Terraform source adds a `region` label to every runtime metric (`EXTRACT(jsonPayload.region)`) which the
@@ -397,17 +397,17 @@ pre-existing drift in the relay root (unapplied since the region work), not some
 needs its own reviewed apply in a quiet window, ideally with the runtime-metric replacement acknowledged as
 intentional. Dashboard apply waits on that.
 
-**Wave 1 closed 22:20Z.** Merged: orca-cloud #478 (grace window); stablyai/orca #18717 (crash alert +
+**Wave 1 closed 22:20Z.** Merged: kingu-cloud #478 (grace window); anthovai/kingu-intelligence #18717 (crash alert +
 dashboard TF), #18719 (desktop no-replay + jitter), #18720 (private-IP flag, off), #18722 (relay per-cell
 locks + pool timeout), #18723 (monitor probe fix). Applied to production: cell-exit log metric + alert policy.
-Held for owner: orca-cloud #477 private IP (restart, one-way); the dashboard apply (behind the runtime-metric
+Held for owner: kingu-cloud #477 private IP (restart, one-way); the dashboard apply (behind the runtime-metric
 label drift); the auth deploy carrying #478; Roll 1. Every wave-1 code change now sits on main un-deployed:
 the next relay image build carries #18722 + #18723's monitor runs at main head already; the next auth deploy
 carries #478.
 
 **Landing (2026-09-04 20:50Z–21:02Z, owner: "if you are confident the cloud changes are valid, you can land them"):**
 
-- Merged: orca-cloud #474, #475, #476; stablyai/orca #18693, #18694, #18698. Neither repo has branch
+- Merged: kingu-cloud #474, #475, #476; anthovai/kingu-intelligence #18693, #18694, #18698. Neither repo has branch
   protection or environment reviewers; `verify` / `cloud-verify` green on main after each.
 - Applied to production by targeted saved plans (each plan asserted create-only / exact-attribute before
   apply, via `terraform show -json`): 4 relay resources (WAL-checkpoint log metric + 3 alert policies), 8 auth
@@ -415,13 +415,13 @@ carries #478.
   (`enable_dynamic_port_allocation` false→true, ports 64..4096). Google's docs: switching to dynamic does not
   break existing connections when max ≥ 1024 and max ≥ old min; only lowering max or reverting to static is
   disruptive. asia-east2 NAT deliberately left for after a US soak.
-- Not applied: the untargeted apps-root plan also carries 4 unrelated drifts (`ORCA_CLOUD_REFRESH_TOKEN_TTL_DAYS`
+- Not applied: the untargeted apps-root plan also carries 4 unrelated drifts (`KINGU_CLOUD_REFRESH_TOKEN_TTL_DAYS`
   env on the auth service from #476, a skill log exclusion filter change, skill pressure threshold 16→8, an
   artifacts bucket lifecycle rule) and fails on the 1Password Cloudflare data source locally. The foundation
   root plans clean (disk 250 / max_wal_size already match). Those drifts belong to whoever runs the next full
   apps apply in CI.
 - `deploy-auth-production` on main 8034955 (run 33919143723) **succeeded 21:04Z**: serving revision
-  `orca-cloud-auth-00031-tox` at 100%, previous `00018-4jc`, cap 20, smoke passed on both URLs. First 15 min on
+  `kingu-cloud-auth-00031-tox` at 100%, previous `00018-4jc`, cap 20, smoke passed on both URLs. First 15 min on
   the new revision: 31×200 / 1×401 on `/refresh`, max latency 56 ms, no 5xx. The new
   `refresh_token_prune_cursor` table exists, so the new schema applied.
 - US NAT soak (21:01–21:06Z): 0 drops, 0 proxy dial errors, 0 cell exits, port_usage 11, sqlMax ~1.07 s.
@@ -431,19 +431,19 @@ carries #478.
 
 **Alerting + NAT follow-ups (19:58Z, superseded by the landing block above):**
 
-- stablyai/orca PR #18693 (`relay-nat-ports-and-sql-alerts`): both relay NATs switch to dynamic port
+- anthovai/kingu-intelligence PR #18693 (`relay-nat-ports-and-sql-alerts`): both relay NATs switch to dynamic port
   allocation (64–4096 per VM); new relay-channel alerts for the Cloud SQL WAL checkpoint loop (log metric on
   `checkpoint starting: wal`, > 3 per 5 min), Cloud SQL disk > 70%, and NAT `OUT_OF_RESOURCES` drops. No
   existing workflow applies these resources; the PR body carries the targeted plan.
-- orca-cloud PR #475 (`auth-observability-alerts`): log metrics + policies for auth refresh 401 (> 100 per 5
+- kingu-cloud PR #475 (`auth-observability-alerts`): log metrics + policies for auth refresh 401 (> 100 per 5
   min; Sep 3 baseline 20–80 per hour), 429 (> 20 per 5 min; baseline 0), 5xx (> 10 per 5 min), and Cloud Run
   p99 latency > 10 s. Production routes to the relay Slack channel.
-- Desktop stale auth-status fix: stablyai/orca PR #18694 (`desktop-cloud-session-revoked-status`). Main pushes
+- Desktop stale auth-status fix: anthovai/kingu-intelligence PR #18694 (`desktop-cloud-session-revoked-status`). Main pushes
   an auth-status-changed IPC when a 401 clears the session; panes re-fetch on mount; the pairing notice says
-  "Your Orca account session expired. Sign in again to use Orca Relay" and hides Retry. StrictMode regression
+  "Your Kingu account session expired. Sign in again to use Kingu Relay" and hides Retry. StrictMode regression
   test verified red on the old guard. Does not help desktops already revoked today (session cleared before
   this code); it fixes every future revocation.
-- orca-cloud PR #476 (`auth-refresh-token-pruning`): batched `refresh_tokens` pruner as a scheduled Cloud Run
+- kingu-cloud PR #476 (`auth-refresh-token-pruning`): batched `refresh_tokens` pruner as a scheduled Cloud Run
   job (revoked rows kept 30 d, rotated rows 60 d against a 30 d TTL, 5k-row batches, 200 ms pauses, persisted
   cursor, per-run budget) plus a 10 s `statement_timeout` on the auth request pool with schema DDL on an
   untimed connection. Merges cleanly onto #474 and does not need its index (walks the primary key;
@@ -453,14 +453,14 @@ carries #478.
   `deletedRows`, not the exit code (a run that only ever times out exits 0); ~48 M rows drain in ~10 days at
   200k/hour; deleting them leaves dead tuples, so the 16 GB is not reclaimed without a separate VACUUM FULL or
   pg_repack pass, which is its own change.
-- Phone-side copy when the desktop is signed out: stablyai/orca PR #18698 (`phone-desktop-signed-out-reason`).
+- Phone-side copy when the desktop is signed out: anthovai/kingu-intelligence PR #18698 (`phone-desktop-signed-out-reason`).
   Real path traced: the director resolves the phone to the host's last cell (durable assignment row), and the
   cell's `acceptClient` rejects with 4404. The only additive slot every shipped peer tolerates is the WebSocket
   close *reason* (relay-hello and resolve schemas are zod strict; a new close code drops old phones off the
   host-offline cadence). Desktop closes its control with reason `signed-out` only when the cloud session is gone
   (null context after a 401, or explicit sign-out); quit and relaunch stay reasonless. Cell remembers it per
   host for the dormant-assignment TTL, forgets on re-auth, and echoes it as the 4404 close reason; phone
-  renders "Desktop signed out — sign in to Orca on your desktop to reconnect" with the same retry cadence.
+  renders "Desktop signed out — sign in to Kingu on your desktop to reconnect" with the same retry cadence.
   Old×new matrix in the PR body; nothing changes for any old peer. Merges cleanly with #18694.
 
 ## What actually blocks the roll now (12:58Z summary for the owner)
@@ -472,7 +472,7 @@ carries #478.
    `google_compute_router_nat.relay_gce` in `cloud/infra/terraform/relay-gce-foundation.tf`, targeted
    apply; durable fix is a private IP on the Cloud SQL instance. Online, no VM restart.
 1. **Cloud SQL disk** (Finding 10): 49 GB PD-SSD saturated since 11:58Z, checkpoint loop, fleet-wide
-   4–6 s stalls every ~45 s. Fix: bigger disk and/or `max_wal_size`. Owner: `stablyai/orca-cloud`
+   4–6 s stalls every ~45 s. Fix: bigger disk and/or `max_wal_size`. Owner: `anthovai/kingu-intelligence-cloud`
    `infra/terraform-foundation/database.tf` `google_sql_database_instance.auth` (no `disk_size`,
    `disk_autoresize`, or `database_flags` set today, so Terraform is at defaults: 10 GB initial, autoresize
    grew it to 49 GB). Add `disk_size = 200` (+ `disk_autoresize = true`) and optionally
@@ -593,7 +593,7 @@ image.
   already absorbs this exact event 201 times / 48 h uncontrolled (Finding 6); the controlled version
   isolates first, so no new assignment lands on c7 mid-roll. Expect a director concurrency blip, not
   a freeze-class one (six cells at once gave 85; one cell should stay well under 64).
-- Precedent: the identical workflow (pre-move, in orca-cloud) ran 9 successful `apply` canaries and
+- Precedent: the identical workflow (pre-move, in kingu-cloud) ran 9 successful `apply` canaries and
   batches on 2026-08-27 (last: c20 -> 5aedbca5). Its failures that day all stopped at the read-only
   "Recheck aggregate SQL..." or "Require durable rehome disabled" step, before `MUTATION_STARTED`.
   The moved copy in this repo has one run: the read-only `verify` of c7 (passed, including WIF auth).
@@ -641,12 +641,12 @@ image.
 
 1. `gh workflow run cloud-publish-relay-production.yml --ref main -f mode=publish` (after the squash lands
    on main). Resolve the digest by tag, never by parsing the log (it mixes relay and fence-broker digests):
-   `gcloud artifacts docker images describe us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay:sha-<merge-sha> --format='value(image_summary.digest)'`.
+   `gcloud artifacts docker images describe us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay:sha-<merge-sha> --format='value(image_summary.digest)'`.
 2. Director: `gh workflow run cloud-deploy-relay-production-director.yml --ref main -f image-digest=<new>
    -f regional-placement-mode=preserve -f prune-incompatible-revisions=false -f expected-rehome-generation=12
    -f bootstrap-runtime-identity=false -f predecessor-image-digest=<currently serving digest>`
    (no monitor evidence needed; requires rehome disabled at gen 12, which it is). Last run 33826514754 used
-   the same shape. Watch director `orca_relay_postgres_transaction_retry` per minute before/after.
+   the same shape. Watch director `kingu_relay_postgres_transaction_retry` per minute before/after.
 3. Cells: same-cap `verify` c7 with target=<new>, rollback=85bf6799; fresh dry-run; `canary-apply` c7;
    then batches (3 per batch, Asia c27/c29/c28 first). Each batch: new dry-run unless the batch-reuse
    change (design section above) has shipped.
@@ -668,7 +668,7 @@ the plausible tipping point under a busy database. Every cell still on 5aedbca5 
 
 ## Finding 9 (2026-09-04 08:56Z): #18606 on the director cut lock retries ~10x
 
-`orca_relay_postgres_retries` per 5 min, director only: 08:21–08:41 windows 419–689 (old image, incl. the
+`kingu_relay_postgres_retries` per 5 min, director only: 08:21–08:41 windows 419–689 (old image, incl. the
 crash storm); 08:46/08:51/08:56 (new image 519f4914, refilling ~7k hosts): **61 / 69 / 54**. Exhausted:
 104–178 -> **11 / 14 / 12**. Inventory hold p95 ~200 ms, max 255 ms, ~366 holds/min. Cells (still old
 image) 17–44 -> 0–3, because the director no longer holds the 23-row lock on their behalf. This is the
@@ -743,7 +743,7 @@ outside the relay code (Cloud SQL proxy or instance); not chased further here.
 
 ## Finding 10 (2026-09-04 12:40Z): Cloud SQL disk write saturation since 11:58Z is driving the stalls
 
-`orca-cloud-auth-db` is `db-custom-4-15360` on a **49 GB PD-SSD** (81% used). PD-SSD performance scales
+`kingu-cloud-auth-db` is `db-custom-4-15360` on a **49 GB PD-SSD** (81% used). PD-SSD performance scales
 with size: 49 GB gives roughly 1,470 write IOPS and ~23 MB/s write throughput. Measured:
 
 | | before 11:58Z | 11:59Z onward |
@@ -773,8 +773,8 @@ write amplification inside Postgres (full-page writes after each of the now-freq
 hot pages, plus autovacuum on every relay table each minute) on a disk too small for its IOPS ceiling,
 not new relay load. Instance label `managed_by=terraform`, created 2026-07-09; the instance resource is
 **not** in `cloud/infra/terraform` (only the database, user, and secret are, via
-`local.relay_database_instance_name`), so it lives in the other Terraform root (orca-cloud, per
-[[orca-cloud-terraform-split-findings]]). `storageAutoResize=true` with limit 0, so Cloud SQL will grow
+`local.relay_database_instance_name`), so it lives in the other Terraform root (kingu-cloud, per
+[[kingu-cloud-terraform-split-findings]]). `storageAutoResize=true` with limit 0, so Cloud SQL will grow
 the disk only when it fills, not when IOPS saturate; disk is 81% full.
 
 Onset precisely: the 11:55:37 `time` checkpoint wrote 67,258 buffers (10.5% of shared_buffers, the
@@ -789,7 +789,7 @@ it there. Query Insights: io_time +30% in the 12:00 bucket, lock_time flat.
 
 **Owning workflow / mitigation (not applied):** raise the Cloud SQL data disk (PD-SSD IOPS and MB/s scale
 linearly with GB; 49 -> 200 GB roughly quadruples the ceiling, online, no restart) in the Terraform root
-that owns `google_sql_database_instance` for `orca-cloud-auth-db`, applied through that root's workflow.
+that owns `google_sql_database_instance` for `kingu-cloud-auth-db`, applied through that root's workflow.
 A second, flag-level lever is raising `max_wal_size` (default 1 GB) so timed checkpoints resume; that is
 also a Cloud SQL instance setting in the owning Terraform root. Per the standing rule, not applied from
 this session. Until then the fleet-wide 4–6 s stalls recur on
@@ -820,7 +820,7 @@ loop broke at 12:39.
 `enable_dynamic_port_allocation = true` with `max_ports_per_vm = 4096`) and, if needed, add manual NAT IPs
 (each IP supplies 64,512 ports across VMs). Online change, no VM restart. The durable fix is giving the
 Cloud SQL instance a **private IP** and pointing the proxy at `--private-ip`, which takes DB traffic off
-NAT entirely; that is a Cloud SQL instance change in the orca-cloud foundation root plus a startup-script
+NAT entirely; that is a Cloud SQL instance change in the kingu-cloud foundation root plus a startup-script
 flag here. Per the standing rule, not applied from this session.
 
 Direct proof: `resource.type="nat_gateway" AND jsonPayload.allocation_status="DROPPED"` shows **1,514
@@ -873,10 +873,10 @@ require owner go.
 
 ## Queries that worked (copy-paste)
 
-- Cell metrics: `resource.type="gce_instance" AND jsonPayload.event="orca_relay_runtime_metrics"`
+- Cell metrics: `resource.type="gce_instance" AND jsonPayload.event="kingu_relay_runtime_metrics"`
 - Container crashes: `resource.type="gce_instance" AND jsonPayload.MESSAGE:"container die" AND jsonPayload.MESSAGE:"relay@sha256"`
 - Crash banner: `resource.type="gce_instance" AND jsonPayload.message:"Node.js v24"`
-- Retries: `jsonPayload.event="orca_relay_postgres_transaction_retry"` (no resource filter to get both)
+- Retries: `jsonPayload.event="kingu_relay_postgres_transaction_retry"` (no resource filter to get both)
 - Director lines are `textPayload`; cell lines are `jsonPayload.message`
 - Cloud Run concurrency: Monitoring API `run.googleapis.com/container/max_request_concurrencies`
 - Dry-run final state: download artifact `relay-monitor-dry-run-<run>-<attempt>`, read `*.state.json` (the log's `schemaVersion` lines are only checkpoints, not the final verdict)
@@ -890,19 +890,19 @@ Owner: "sure, feel free to drive these." Sequence chosen: Roll 1 first (highest 
 | --- | --- |
 | Monitor dry-run #19 (gen 112, strict) | **Passed** 23:07:53Z, run 33927238469 attempt 1. First green since the probe fix (#18723). 16 samples, no freeze. Dispatched 22:51:33Z after confirming: 0 `container die` in 3 h, director 5xx in the last 4 h were all 503s (excluded by the `director.errors` filter). |
 | c8 `canary-apply` onto 519f4914 (rollback 5aedbca5) | **Failed at 23:09:07Z before any mutation**: `relay monitor evidence provenance does not match` in `verify-authority`. Run 33928330631. Gate job passed, `cell_1 / rollout` failed on the manifest check, `seal_canary` skipped, lease released. Cause: the manifest binds `commitSha`; the dry-run ran at main `264c9ed8d2`, the canary dispatched at `--ref main` resolved to `4fab8e2f15` because unrelated PRs merged to main during the 15-minute gate. Verified no side effects: c8 MIG still on template `…c8-20260827…` (5aedbca5), stable, 25 controls; no `/v1/admin/drain` or isolate calls in the director log. |
-| Constraint learned | Both workflows must run at the **same main commit**. The production environment's deployment branch policy allows only `main`, and the job gates on `github.ref == 'refs/heads/main'`, so a pinned tag/branch is not an option. Any merge to stablyai/orca main during the 15-minute dry-run invalidates the evidence. Mitigation for the retry: dispatch the canary within seconds of the green, and do not merge anything to stablyai/orca main myself during the window. A durable fix (accept evidence whose commit is an ancestor with identical workflow/script content) is a follow-up, not a same-day change to a safety check. |
-| Label drift (5.x) | Resolved by dropping the `region` label from Terraform to match the 21 live metrics (stablyai/orca #18734, merged). Targeted plan asserted `27 no-op, 9 create, 0 destroy`; applied 23:11Z: 8 `orca_relay_control_*` renewal metrics that had never been applied, plus `google_monitoring_dashboard.relay_incident`. `orca_relay_controls` createTime unchanged (2026-07-13), label extractors unchanged. |
-| Pruner enable (1.2) | orca-cloud #479 merged: `auth_token_pruner_enabled = true`, image digest of `00031-tox`, `max_rows_per_run = 20000`. Targeted plan asserted 9 create / 0 change / 0 destroy (job, scheduler at `41 * * * *` UTC, two service accounts, five IAM grants). **Not yet applied**: waiting until the roll canary has landed so the first hourly run does not overlap a drain. |
-| Auth deploy with #478 (3.1) | Dispatched 23:13Z from orca-cloud main `f0fa4b5` (run 33928663526). Candidate startup adds nullable `successor_material` under a brief ACCESS EXCLUSIVE lock. |
-| Auth deploy result | **Succeeded** 23:15:37Z: `orca-cloud-auth-00035-gos` serving 100 %, cap 20 preserved, 0 5xx. `refresh_tokens.successor_material` present (nullable text); 298 sealed successors written in the first 15 min against 924 rotations; `session-refresh-reuse-detected` at baseline (5 / 15 min). Grace window is live. |
-| Monitor dry-run #20 | Froze 23:35:38Z on `runtime_power_unknown cell.production-gce-c11.powered`. Two window restarts earlier (23:24, 23:25) on `signal_stale auth.errors` (Cloud Monitoring publish lag 181–255 s vs 180 s bar). Cause: one transient rejection of the per-cell MIG GET in `readResourceInventory` yields `targetSize: null` → `runtimeKnown=false` → hard freeze. c11 is a parked existing-only cell (MIG size 0, stable) and was fine. Not fleet health. Fix delegated: stablyai/orca #18740 (retry the MIG read once, mirroring #18723). Run 33928912676. |
+| Constraint learned | Both workflows must run at the **same main commit**. The production environment's deployment branch policy allows only `main`, and the job gates on `github.ref == 'refs/heads/main'`, so a pinned tag/branch is not an option. Any merge to anthovai/kingu-intelligence main during the 15-minute dry-run invalidates the evidence. Mitigation for the retry: dispatch the canary within seconds of the green, and do not merge anything to anthovai/kingu-intelligence main myself during the window. A durable fix (accept evidence whose commit is an ancestor with identical workflow/script content) is a follow-up, not a same-day change to a safety check. |
+| Label drift (5.x) | Resolved by dropping the `region` label from Terraform to match the 21 live metrics (anthovai/kingu-intelligence #18734, merged). Targeted plan asserted `27 no-op, 9 create, 0 destroy`; applied 23:11Z: 8 `kingu_relay_control_*` renewal metrics that had never been applied, plus `google_monitoring_dashboard.relay_incident`. `kingu_relay_controls` createTime unchanged (2026-07-13), label extractors unchanged. |
+| Pruner enable (1.2) | kingu-cloud #479 merged: `auth_token_pruner_enabled = true`, image digest of `00031-tox`, `max_rows_per_run = 20000`. Targeted plan asserted 9 create / 0 change / 0 destroy (job, scheduler at `41 * * * *` UTC, two service accounts, five IAM grants). **Not yet applied**: waiting until the roll canary has landed so the first hourly run does not overlap a drain. |
+| Auth deploy with #478 (3.1) | Dispatched 23:13Z from kingu-cloud main `f0fa4b5` (run 33928663526). Candidate startup adds nullable `successor_material` under a brief ACCESS EXCLUSIVE lock. |
+| Auth deploy result | **Succeeded** 23:15:37Z: `kingu-cloud-auth-00035-gos` serving 100 %, cap 20 preserved, 0 5xx. `refresh_tokens.successor_material` present (nullable text); 298 sealed successors written in the first 15 min against 924 rotations; `session-refresh-reuse-detected` at baseline (5 / 15 min). Grace window is live. |
+| Monitor dry-run #20 | Froze 23:35:38Z on `runtime_power_unknown cell.production-gce-c11.powered`. Two window restarts earlier (23:24, 23:25) on `signal_stale auth.errors` (Cloud Monitoring publish lag 181–255 s vs 180 s bar). Cause: one transient rejection of the per-cell MIG GET in `readResourceInventory` yields `targetSize: null` → `runtimeKnown=false` → hard freeze. c11 is a parked existing-only cell (MIG size 0, stable) and was fine. Not fleet health. Fix delegated: anthovai/kingu-intelligence #18740 (retry the MIG read once, mirroring #18723). Run 33928912676. |
 | Monitor dry-run #21 | **Green** 23:54Z at main `8064d1f991`, but main had moved to `0a821e5bc8` during the window; the chain re-gated instead of dispatching (the canary would have failed provenance again). Run 33930229711. |
 | Monitor dry-run #22 | **Green** 00:10Z at `0a821e5bc8`; main moved to `2e80972450`. Re-gated. Run 33931177390. |
 | Monitor dry-run #23 | Froze 00:18:31Z on `cell.production-gce-c29.latency_ms` 2635 > 2000, the probe's own round-trip from a US runner to asia-east2; c29 controls 17→19 and `sqlLatencyMsMax` flat ~1050 through the minute, no crash, no checkpoint stall. c29 probe max was 0 in the three previous gates, so a one-off. Run 33932092775. |
 | Blocking constraint | Main receives unrelated merges every 5–10 min (23:08, 23:15, 23:17, 23:40, 23:42, …). A 15-min gate bound to an exact commit cannot be consumed under that traffic. Delegated a durable fix: `verify-authority` accepts evidence whose commit is an ancestor of the canary commit **and** has no diff on the monitor/deployer trusted paths; fails closed on shallow clones or unknown commits. Chain re-armed on dry-run #24 (run 33932679796) meanwhile. |
 | Monitor dry-run #24 | Froze 00:28:00Z on `director.instances` 4 < 5. Cloud Run active-instance count read 4 for exactly one minute (00:27), 5 in every other minute for 3 h; min/max scale is pinned at 5; no new revision. A routine single-instance recycle. Not fleet health. Bar `directorInstancesMin: 5` with `latest-sum` cannot tolerate that; recalibrate to 4 or use a 3-min window minimum (follow-up, not same-day). Run 33932679796. Chain dispatched #25 (run 33933193511) at `86cd327749`. |
 | Monitor dry-run #25 | **Green** 00:46Z at `86cd327749`; main moved to `8096cb2803`. Fourth green gate lost to unrelated main traffic (#19, #21, #22, #25). Run 33933193511. Chain's re-gate #26 (run 33934079533) cancelled by me. |
-| Fixes merged 00:55Z | stablyai/orca #18740 (MIG inventory read retried once before `runtime_power_unknown`; 2 tests) and #18754 (`verify-authority` and the batch canary authority accept evidence sealed at an **ancestor** commit when every trusted monitor/deployer path is byte-identical; fails closed on shallow clones and unknown commits; deploy/rehome jobs now check out with `fetch-depth: 0`; 5 new tests, 18/18 pass). Reviewed both diffs; trusted-path set verified to exist on main. |
+| Fixes merged 00:55Z | anthovai/kingu-intelligence #18740 (MIG inventory read retried once before `runtime_power_unknown`; 2 tests) and #18754 (`verify-authority` and the batch canary authority accept evidence sealed at an **ancestor** commit when every trusted monitor/deployer path is byte-identical; fails closed on shallow clones and unknown commits; deploy/rehome jobs now check out with `fetch-depth: 0`; 5 new tests, 18/18 pass). Reviewed both diffs; trusted-path set verified to exist on main. |
 | Monitor dry-run #27 | Dispatched 00:56Z at `74ad08ec66` (first gate whose evidence the new rule can consume). Run 33934541092. Chain re-armed with the same ancestor + identical-trusted-code rule so an unrelated merge no longer forces a re-gate. |
 | Monitor dry-run #27 | **Green** 01:11:35Z at `74ad08ec66`; main had moved to `38bde20121` with identical trusted code, so the new rule (#18754) let the chain dispatch. Run 33934541092. |
 | c8 `canary-apply` #2 (run 33935407461) | Provenance check **passed** (first consumption of ancestor evidence). Isolate → gen 113, drain, template+MIG applied 01:14–01:22, new c8 came up on `519f4914` and `relay_capacity_transition_verified` (migration-only, image exact, heartbeat fresh) at 01:23:50. Then the step's next call, `curl --fail-with-body` to c8 `/v1/admin/runtime-status`, got a **503 with a 27-byte body** at 01:23:51 and the step exited 22. Director `cell-status` at 01:23:50.8 returned 200; c8's own logs show nothing at that second; c8 health/ready both 200 seconds later; backend HEALTHY (the health check had just flipped TIMEOUT→HEALTHY at 01:22:16 and UNKNOWN→HEALTHY at 01:23:47 as the new instance warmed). Read: a single 503 at the load-balancer/warm-up edge on a curl with no retry, on a cell that was already verified healthy one line earlier. Failsafe ran: c8 kept **migration-only**, rehome control disabled, selector gen 113. c8 is serving (40 controls at 01:39, sqlLatencyMsMax ~30 ms) on the target image, just not admitted for general traffic. Nothing to roll back. |
@@ -910,8 +910,8 @@ Owner: "sure, feel free to drive these." Sequence chosen: Roll 1 first (highest 
 | Follow-up | The verify step's bare `curl --fail-with-body` needs the same "no reading is not a verdict" retry the monitor got (#18723/#18740); a 503 immediately after `verify-relay-capacity-transition` passed is not evidence of a bad cell. |
 | Monitor dry-run #28 | **Green** 01:58:59Z at gen 113 with c8 in migration-only. Run 33936966508. |
 | c8 recovery (run 33937756402, `mode=rollback`, rollback digest = 519f4914) | **Succeeded** 02:02Z. `ROLLBACK_RESUME=true` path: isolate/apply skipped, converged-Terraform check passed, verify passed (`relay_capacity_transition_verified` general, image `519f4914`, heartbeat fresh), activate → **gen 114**, c8 general. No restart, no drain. c8 at 43 controls, sqlLatencyMsMax 36 ms. **c8 is the second cell on 519f4914** (with c7 on 85bf6799). Because the recovery ran as `rollback`, `seal_canary` was skipped, so no canary authority exists for a `batch-apply`; the next cell runs as another `canary-apply`. |
-| Merged 02:05Z | stablyai/orca #18769: bounded retries on every admin-endpoint curl/fetch in the same-cap job and the rehome/canary/verify scripts (`--retry 3 --retry-delay 2 --retry-connrefused`, per-attempt bodies to a file; script helper 2 attempts on network error or 500/502/503/504 only; 4xx never retried; 650/650 tests). Trusted-path change, so the next gate runs at a commit containing it. |
-| Pruner enabled (1.2) | Terraform applied 02:06Z (8 creates, then the deploy-identity job IAM grant after a propagation 404, 9/9). Job `orca-cloud-auth-token-pruner`, image `343a0915…`, scheduler `41 * * * *` UTC, budget 20 000 rows/run. First run by hand (exec `sf5ct`): cold start 3m20s, then `stopReason: time-budget` at 480 s: 73 batches, 365 000 scanned, **1 040 deleted** (1 021 revoked, 19 expired, 0 rotated), ~6.4 s/batch of 5 000, `completedFullPass: false`. No errors, no lock-wait or checkpoint alert. Scan-bound, not budget-bound: at this pace a full pass over the table takes many hourly runs, and the row budget is never the limiter. Leave the budget alone; watch hourly runs for `stopReason` and a rising `deletedRows` as the cursor reaches the rotated backlog. |
+| Merged 02:05Z | anthovai/kingu-intelligence #18769: bounded retries on every admin-endpoint curl/fetch in the same-cap job and the rehome/canary/verify scripts (`--retry 3 --retry-delay 2 --retry-connrefused`, per-attempt bodies to a file; script helper 2 attempts on network error or 500/502/503/504 only; 4xx never retried; 650/650 tests). Trusted-path change, so the next gate runs at a commit containing it. |
+| Pruner enabled (1.2) | Terraform applied 02:06Z (8 creates, then the deploy-identity job IAM grant after a propagation 404, 9/9). Job `kingu-cloud-auth-token-pruner`, image `343a0915…`, scheduler `41 * * * *` UTC, budget 20 000 rows/run. First run by hand (exec `sf5ct`): cold start 3m20s, then `stopReason: time-budget` at 480 s: 73 batches, 365 000 scanned, **1 040 deleted** (1 021 revoked, 19 expired, 0 rotated), ~6.4 s/batch of 5 000, `completedFullPass: false`. No errors, no lock-wait or checkpoint alert. Scan-bound, not budget-bound: at this pace a full pass over the table takes many hourly runs, and the row budget is never the limiter. Leave the budget alone; watch hourly runs for `stopReason` and a rising `deletedRows` as the cursor reaches the rotated backlog. |
 | Monitor dry-run #29 | **Green** 02:20:58Z at gen 114, main `e2b70a5eba` (contains #18740, #18754, #18769). Run 33938052374. |
 | c9 `canary-apply` (run 33938818286) | **Succeeded end to end** 02:21–02:34Z: isolate → gen 115, drain, template+MIG to `519f4914`, verify passed on the first try (retry-hardened step), trust proof, activate → **gen 116**, general. `seal_canary` **succeeded**: batch authority now exists. c9 at 38 controls, sqlLatencyMsMax 33 ms. No `container die` in 30 min. Three cells on new images (c7 `85bf6799`, c8 and c9 `519f4914`); 17 serving cells still on `5aedbca5`. |
 | Monitor dry-run #30 | Dispatched 02:36Z at gen 116 (run 33939533990). On green the chain dispatches **batch 1**: `batch-apply` c10,c13,c14,c15 bound to canary run 33938818286 (sealed at gen 116, same commit `e2b70a5eba`). Preflight: all four on `5aedbca5`, MIGs stable, no crash in 20 min. Sequential cells inside the job (wave-index 0..3), each with its own isolate/drain/apply/verify/restore, so ~12 min per cell, ~50 min total. |
@@ -920,7 +920,7 @@ Owner: "sure, feel free to drive these." Sequence chosen: Roll 1 first (highest 
 | Batch 1 attempt 1 (run 33940290163) | **Failed at 02:54:39Z in the live preflight, before any mutation**: `relay live preflight failed: cloud-monitoring/signal_stale`. The step's `--retry-freshness` (5 attempts, 15 s apart, freshness-only codes) is passed only for `WAVE_INDEX != 0`; the first cell takes a single sample, so one Cloud Monitoring publish lag > 180 s at that instant fails the batch. Every candidate series was current again by the time I checked. c10 untouched (template `…c10-20260827…`, 47 controls), no selector write, gen still 116, failsafe no-op. Gate #31 dispatched 02:57Z (run 33940508865); chain re-dispatches the same batch (canary authority 33938818286 still valid: same gen 116, same commit). Fix delegated: wave 0 gets the same freshness retry. |
 | Monitor dry-run #31 | **Green** 03:13:26Z at gen 116; main at `cb7f7dd11a` with identical trusted code. Run 33940508865. |
 | Batch 1 attempt 2 (run 33941253533) | Dispatched 03:13:38Z: c10,c13,c14,c15, canary authority 33938818286. Runs at `cb7f7dd11a` (batch authority is accepted across the ancestor since trusted paths are unchanged). |
-| Merged 03:14Z | stablyai/orca #18778: `--retry-freshness` on every same-cap wave including the first, and the retry loop now stops before the next wait would push evidence past the wave's age bound (it was checked only at entry before). Twin carve-out in the capacity job filed as a follow-up. |
+| Merged 03:14Z | anthovai/kingu-intelligence #18778: `--retry-freshness` on every same-cap wave including the first, and the retry loop now stops before the next wait would push evidence past the wave's age bound (it was checked only at entry before). Twin carve-out in the capacity job filed as a follow-up. |
 | Batch 1 cell 1 (c10) | **Succeeded** 03:14–03:27Z (preflight, drain, apply, verify, restore). c13 started 03:27Z. |
 | Batch 1 cell 2 (c13) | **Succeeded** 03:27–03:38Z. c14 started 03:38Z. |
 | Batch 1 cell 3 (c14) | **Succeeded** 03:38–03:50Z. c15 started 03:50Z. |
@@ -929,10 +929,10 @@ Owner: "sure, feel free to drive these." Sequence chosen: Roll 1 first (highest 
 | c16 `canary-apply` (run 33944255902) | Dispatched 04:20:02Z. On success it seals the authority for batch 2 (c19,c20,c21,c22). |
 | c16 canary (run 33944255902) | **Succeeded** 04:20–04:32Z, activate → gen 126, batch authority sealed. 9 cells on new images. |
 | Monitor dry-run #33 | Failed 04:58:56Z on `continuity_deadline_exceeded` (1 500 004 ms > 1 500 000 ms). One `signal_stale cloud_sql.lock_waits` at 04:46 (189 s vs 180 s bar, Cloud Monitoring publish lag) restarted the 15-min window at sample 12; the restart could not complete inside the 25-min continuity cap. No health failure at any sample; no `container die` since c16's own boot race at 04:30. Run 33944873727. Chain re-gates. Note for recalibration: `cloudDataMaxAgeMs: 180000` vs observed Cloud Monitoring publish lag of 181–255 s has now cost three gates (#20 twice, #33). |
-| Freshness recalibration | stablyai/orca #18798 (open, merge after batch 2 dispatch): `cloudDataMaxAgeMs` 180 s → 330 s, derived from Google's documented visibility delays (Cloud Run 60+120 s, Cloud SQL 60+165 s) and the 5-min window-sum query (a label series that stops emitting reads as up to 300 s old while its sum is complete, which is the 255 s `auth.errors` case) plus ~30 s collect latency. Director-admin and the lock-wait carry keep their own 180 s pins. A freshness-only failure may miss 2 consecutive samples without restarting the window; the sample still counts and is still threshold-checked; a 3rd miss, collector failure, runner gap, or any breach restarts/freezes as before. 92/92 tests. |
+| Freshness recalibration | anthovai/kingu-intelligence #18798 (open, merge after batch 2 dispatch): `cloudDataMaxAgeMs` 180 s → 330 s, derived from Google's documented visibility delays (Cloud Run 60+120 s, Cloud SQL 60+165 s) and the 5-min window-sum query (a label series that stops emitting reads as up to 300 s old while its sum is complete, which is the 255 s `auth.errors` case) plus ~30 s collect latency. Director-admin and the lock-wait carry keep their own 180 s pins. A freshness-only failure may miss 2 consecutive samples without restarting the window; the sample still counts and is still threshold-checked; a 3rd miss, collector failure, runner gap, or any breach restarts/freezes as before. 92/92 tests. |
 | Monitor dry-run #34 | **Green** 05:17:31Z at gen 126, `436ef827dd`. Run 33946093029. |
 | Batch 2 (run 33946819345) | Dispatched 05:17:43Z: c19,c20,c21,c22, canary authority 33944255902 (c16). |
-| Merged 05:19Z | stablyai/orca #18798 (freshness bar 330 s + two-sample tolerance). Next gate runs at a commit containing it. |
+| Merged 05:19Z | anthovai/kingu-intelligence #18798 (freshness bar 330 s + two-sample tolerance). Next gate runs at a commit containing it. |
 | Batch 2 cell 1 (c19) | **Succeeded** 05:19–05:32Z. c20 started. |
 | Batch 2 cell 2 (c20) | **Succeeded** 05:32–05:43Z. c21 started. |
 | Batch 2 cell 3 (c21) | **Succeeded** 05:43–05:59Z. c22 started. |
@@ -949,18 +949,18 @@ Owner: "sure, feel free to drive these." Sequence chosen: Roll 1 first (highest 
 | Monitor dry-run #37 | Dispatched 07:48Z at gen 142, run 33953555224 (`4c5077d57a`). On green the chain dispatches the c27 canary (first Asia cell). |
 | Monitor dry-run #37 result | **Green** 08:04:24Z at gen 142, `4c5077d57a`. |
 | c27 `canary-apply` (run 33954264945) | Dispatched 08:04Z, first Asia cell (asia-east2-a). On success it seals the authority for batch 4 (c28,c29). |
-| c27 canary (run 33954264945) | **Failed closed before any mutation** 08:07:25Z at "Verify exact current generation, digest, cap, and rollback point": `runtime predecessor mismatch fields=regionalRehomeProtocol`. **Operator input error, not a cell fault**: the chain script hardcoded `target-rehome-protocol=1 / rollback-rehome-protocol=1` for every cell, but `relay_region_rehome_source_cell_ids` lists only the 16 US cells (c7–c10, c13–c16, c19–c26), so the Asia startup template omits `ORCA_RELAY_REHOME_*` and c27–c29 report protocol 0 by design. `MUTATION_STARTED` never set, failsafe no-op, selector stays gen 142, c27 still serving on `5aedbca5`, no `container die`. Gate #37 evidence consumed. Fix: chain script now takes `PROTO`; Asia round dispatches with protocol 0 (the per-host trust proof step is protocol-gated and skips, as designed for non-source cells). Follow-up: the job already reads `relay_region_rehome_source_cell_ids`; it could derive the expected protocol from membership instead of trusting the operator input. |
+| c27 canary (run 33954264945) | **Failed closed before any mutation** 08:07:25Z at "Verify exact current generation, digest, cap, and rollback point": `runtime predecessor mismatch fields=regionalRehomeProtocol`. **Operator input error, not a cell fault**: the chain script hardcoded `target-rehome-protocol=1 / rollback-rehome-protocol=1` for every cell, but `relay_region_rehome_source_cell_ids` lists only the 16 US cells (c7–c10, c13–c16, c19–c26), so the Asia startup template omits `KINGU_RELAY_REHOME_*` and c27–c29 report protocol 0 by design. `MUTATION_STARTED` never set, failsafe no-op, selector stays gen 142, c27 still serving on `5aedbca5`, no `container die`. Gate #37 evidence consumed. Fix: chain script now takes `PROTO`; Asia round dispatches with protocol 0 (the per-host trust proof step is protocol-gated and skips, as designed for non-source cells). Follow-up: the job already reads `relay_region_rehome_source_cell_ids`; it could derive the expected protocol from membership instead of trusting the operator input. |
 | Monitor dry-run #38 | Dispatched 08:12Z at gen 142, run 33954621425 (`e95d247be1`). On green the chain dispatches the c27 canary with protocol 0. |
 | Monitor dry-run #38 result | **Green** 08:28:36Z at gen 142, `e95d247be1`. |
 | c27 `canary-apply` #2 (run 33955359385) | Dispatched 08:28Z with `target/rollback-rehome-protocol=0`. |
-| c27 canary #2 (run 33955359385) | **Failed closed, no mutation** 08:31:19Z. Predecessor check passed with protocol 0; the isolate step then died at argument parsing: `production capacity target is not approved`. The same-cap job shells out to `prepare-relay-production-capacity-canary.mjs` for isolate/drain/activate, whose `PRODUCTION_CAPACITY_CELL_IDS` allowlist is the 16 US capacity cells (c7–c26), while the same-cap wave validator (`SAME_CAP_CELLS`) approves all 19 serving cells including c27–c29. The Asia cells have never been through this job (their Aug 14 rollout used the asia-topology workflow). Both the isolate step and the failsafe threw before any HTTP call, so `MUTATION_STARTED=true` was written but nothing was isolated: selector stays gen 142, c27 general and serving on `5aedbca5`, no `container die`. Gate #38 evidence consumed. Fix: stablyai/orca #18811 (`--approved-cells same-cap` on all four invocations, default unchanged for the US capacity job, census test over every `SAME_CAP_CELLS` member × isolate/drain/activate + the job's cell-shape bash block; 525/525 script tests). Sweep of the other job scripts found no further Asia blocker; gate #39 (run 33955668701) dispatched at gen 142 to prove the selector is unchanged before the next attempt. |
+| c27 canary #2 (run 33955359385) | **Failed closed, no mutation** 08:31:19Z. Predecessor check passed with protocol 0; the isolate step then died at argument parsing: `production capacity target is not approved`. The same-cap job shells out to `prepare-relay-production-capacity-canary.mjs` for isolate/drain/activate, whose `PRODUCTION_CAPACITY_CELL_IDS` allowlist is the 16 US capacity cells (c7–c26), while the same-cap wave validator (`SAME_CAP_CELLS`) approves all 19 serving cells including c27–c29. The Asia cells have never been through this job (their Aug 14 rollout used the asia-topology workflow). Both the isolate step and the failsafe threw before any HTTP call, so `MUTATION_STARTED=true` was written but nothing was isolated: selector stays gen 142, c27 general and serving on `5aedbca5`, no `container die`. Gate #38 evidence consumed. Fix: anthovai/kingu-intelligence #18811 (`--approved-cells same-cap` on all four invocations, default unchanged for the US capacity job, census test over every `SAME_CAP_CELLS` member × isolate/drain/activate + the job's cell-shape bash block; 525/525 script tests). Sweep of the other job scripts found no further Asia blocker; gate #39 (run 33955668701) dispatched at gen 142 to prove the selector is unchanged before the next attempt. |
 | Monitor dry-run #39 | **Green** 08:51:28Z at gen 142: independent proof the selector was untouched by both failed c27 attempts. Not used for dispatch (its commit predates #18811). |
-| Merged 08:51Z | stablyai/orca #18811 → main `12e05203a4`. |
+| Merged 08:51Z | anthovai/kingu-intelligence #18811 → main `12e05203a4`. |
 | Monitor dry-run #40 | Dispatched 08:51Z at gen 142 on main `12e05203a4` (contains #18811), run 33956408337. On green the chain dispatches the c27 canary, protocol 0, third attempt. |
 | Monitor dry-run #40 result | **Green** 09:08:03Z at gen 142, `12e05203a4`. |
 | c27 `canary-apply` #3 (run 33957151726) | Dispatched 09:08Z, protocol 0, on main containing #18811. |
-| c27 canary #3 (run 33957151726) | **Failed after isolate; failsafe held** 09:17:21Z. Live check 09:26Z: c27 at 0 controls (drained), template still `…20260814235757`, c28/c29 absorbed the hosts (37 each), fleet 1 404 controls / 23 cells, refresh 401s baseline, no `container die` in 60 m. Predecessor check and allowlist passed; isolate → **gen 143** (c27 migration-only), drain sent (graceMs 0, hosts reconnected via director to c28/c29/US). Terraform plan built correctly (template replace + MIG update to `519f4914`), then `validate-relay-capacity-plan.mjs --mode same-cap-cell` rejected it: `cell plan does not contain the reviewed image and capacity`. Its same-cap rule demands exactly one `ORCA_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT` and one `ORCA_RELAY_REHOME_AUDIENCE` printf in the startup script; Asia templates omit both because c27–c29 are not rehome sources (same root as attempt 1, third US-only assumption in the job). **No apply ran**: c27 template unchanged, still `5aedbca5`, isolated and draining (drain is one-way in-process; only a restart clears it). Failsafe re-asserted migration-only at gen 143 and rehome disabled. Recovery plan: fix validator (protocol-0 path: require the rehome lines *absent*), merge, gate at gen 143, then `mode=rollback` with rollback-image=`519f4914` (the failed-canary re-entry path; accepts draining + migration-only) to restart c27 onto the target image and restore it; then single-cell canaries for c28 and c29 (batch needs ≥2 cells). |
-| Plan-validator fix | stablyai/orca #18818 (merged 09:41Z → main `9f2a9a248e`): `validate-relay-capacity-plan.mjs --regional-rehome-protocol 0|1` in same-cap-cell mode; protocol 0 requires the rehome lines *absent*, protocol 1 unchanged; both plan-validation calls in the job pass `DESIRED_REHOME_PROTOCOL`; census test now validates a correct plan for every `SAME_CAP_CELLS` member at its tfvars-derived protocol. 529/529. Residual: the operator-supplied protocol is still unbound for Asia cells (no `SOURCE_CELLS` cross-check outside us-central1), so a wrong value fails late at plan validation rather than early; deriving it from membership is the checklist follow-up. |
+| c27 canary #3 (run 33957151726) | **Failed after isolate; failsafe held** 09:17:21Z. Live check 09:26Z: c27 at 0 controls (drained), template still `…20260814235757`, c28/c29 absorbed the hosts (37 each), fleet 1 404 controls / 23 cells, refresh 401s baseline, no `container die` in 60 m. Predecessor check and allowlist passed; isolate → **gen 143** (c27 migration-only), drain sent (graceMs 0, hosts reconnected via director to c28/c29/US). Terraform plan built correctly (template replace + MIG update to `519f4914`), then `validate-relay-capacity-plan.mjs --mode same-cap-cell` rejected it: `cell plan does not contain the reviewed image and capacity`. Its same-cap rule demands exactly one `KINGU_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT` and one `KINGU_RELAY_REHOME_AUDIENCE` printf in the startup script; Asia templates omit both because c27–c29 are not rehome sources (same root as attempt 1, third US-only assumption in the job). **No apply ran**: c27 template unchanged, still `5aedbca5`, isolated and draining (drain is one-way in-process; only a restart clears it). Failsafe re-asserted migration-only at gen 143 and rehome disabled. Recovery plan: fix validator (protocol-0 path: require the rehome lines *absent*), merge, gate at gen 143, then `mode=rollback` with rollback-image=`519f4914` (the failed-canary re-entry path; accepts draining + migration-only) to restart c27 onto the target image and restore it; then single-cell canaries for c28 and c29 (batch needs ≥2 cells). |
+| Plan-validator fix | anthovai/kingu-intelligence #18818 (merged 09:41Z → main `9f2a9a248e`): `validate-relay-capacity-plan.mjs --regional-rehome-protocol 0|1` in same-cap-cell mode; protocol 0 requires the rehome lines *absent*, protocol 1 unchanged; both plan-validation calls in the job pass `DESIRED_REHOME_PROTOCOL`; census test now validates a correct plan for every `SAME_CAP_CELLS` member at its tfvars-derived protocol. 529/529. Residual: the operator-supplied protocol is still unbound for Asia cells (no `SOURCE_CELLS` cross-check outside us-central1), so a wrong value fails late at plan validation rather than early; deriving it from membership is the checklist follow-up. |
 | Monitor dry-run #41 | Dispatched 09:42Z at gen 143 (c27 expected migration-only) on main `9f2a9a248e` (contains #18811 + #18818), run 33958728141. On green: c27 recovery via `mode=rollback`, rollback-image `519f4914`, protocol 0, confirmation `ROLL_BACK_RELAY_SAME_CAP`. |
 | Monitor dry-run #41 result | **Green** 09:58:51Z at gen 143, `9f2a9a248e`. |
 | c27 recovery #1 (run 33959789773, `mode=rollback`) | **Failed closed, no mutation** 10:09:21Z at `Verify monitor evidence provenance`: `relay monitor dry-run authority is incomplete or stale`. The dry-run authority is valid for 5 min after `completedAt` at wave 0 (`EVIDENCE_MAX_AGE_MS`); the gate completed 09:58:51Z but the operator poller (20 s `gh run view` loop) only observed completion at 10:07:09Z during a local network outage, so the dispatch landed at 10:07:11Z, 8 m 20 s after completion. Failed before the rollout lease, isolate, or any Terraform step; c27 unchanged (migration-only, drained, `5aedbca5`, gen 143). Every prior canary dispatched ≤15 s after gate green, so this is a dispatch-latency miss, not a job defect; the freshness bound behaved as designed. |
@@ -977,7 +977,7 @@ Owner: "sure, feel free to drive these." Sequence chosen: Roll 1 first (highest 
 | c27 `/ready` tail analysis | `/health` is static; `/ready` (`relay-readiness.ts`) fetches the auth JWKS (2 s timeout) then runs `SELECT 1`, cached 10 s. Operator probes 19:57Z–20:00Z, 15 each from the US: c27 and c28 have the **same** tail (0.27 s / 0.88 s modes, then 1.3 s, then 2.17–2.27 s at the top); US cells c8/c20 sit at 0.08–0.18 s. Auth JWKS latency over the last hour: 400 requests, max 20 ms, none over 1 s. So the tail is cell→Cloud SQL (US) round trips plus the runner→Asia hop, not auth and not c27-specific; c27 is drained (0 controls) so nothing local competes. Cloud SQL `could not obtain lock on row in relation "relay_cells"` runs at 17–78 per 10 min all day (NOWAIT inventory locks, expected under placement bursts) with no spike in the failing minutes. The bar (`endpointLatencyMs` 2 000 ms, one shot per minute, max of two paths) leaves Asia cells ~10% of samples from tripping; the gate got unlucky twice on c27 and lucky on c28/c29. Not a health finding. |
 | Monitor dry-run #46 | Dispatched 20:01Z at gen 143 on main `062db77118`, run 33988810139. Recovery re-armed behind it. If this also freezes on an Asia probe, the next move is a per-region latency bar (or p50 over the window) in `incident-monitor.ts`, reviewed and merged before further Asia gates rather than retrying blindly. |
 | Monitor dry-run #46 result | **Frozen red** 20:07:44Z after 7 samples, third time on `cell.production-gce-c27.latency_ms` (observed 2 685). Operator 40-sample `/ready` probe per Asia cell at 20:10Z: c27 p50 0.88 s / p90 2.15 s / max 2.26 s / 6 over 2 s; c28 p50 0.88 / p90 1.25 / max 2.25 / 1 over; c29 p50 0.88 / p90 0.89 / max 1.27 / 0 over. All 200. `/ready` (`relay-readiness.ts`) fetches the auth JWKS in us-central1 then `SELECT 1` on Cloud SQL in us-central1, so an Asia cell's readiness is two trans-Pacific hops plus the runner→Asia hop; the fleet-wide 2 000 ms bar was calibrated on US cells (0.08–0.5 s). c27 being drained and idle has no local load, so this is path latency, not health. **Stopped retrying gates.** Fix in flight: per-region `cell.<id>.latency_ms` bar (us-central1 stays 2 000, asia-east2 4 000; hard faults still caught by the health/ready equal-1 checks and the 8 s probe timeout) plus attributable preflight failure messages, via review + CI before the next Asia gate. |
-| Merged 20:33Z | stablyai/orca #18877 → main `a3c1d32995`: per-region `cellEndpointLatencyMs` (us-central1 2 000, asia-east2 4 000; director/auth rules and the `endpointLatencyMs` key unchanged), region carried from tfvars onto every cell expectation, preflight failures now print `source/code signal observed= threshold=`. relay-ops 95/95, cloud suite 633 + 529 + 148 green. |
+| Merged 20:33Z | anthovai/kingu-intelligence #18877 → main `a3c1d32995`: per-region `cellEndpointLatencyMs` (us-central1 2 000, asia-east2 4 000; director/auth rules and the `endpointLatencyMs` key unchanged), region carried from tfvars onto every cell expectation, preflight failures now print `source/code signal observed= threshold=`. relay-ops 95/95, cloud suite 633 + 529 + 148 green. |
 | Monitor dry-run #47 | Dispatched 20:34Z at gen 143 on main `a3c1d32995` (first gate with the per-region bar), run 33989896150. Recovery re-armed behind it. |
 | Monitor dry-run #47 result | **Green** 20:38:09Z at gen 143 on `a3c1d32995`: first gate under the per-region bar, 16/16 samples, no Asia latency failure. |
 | c27 recovery #4 (run 33990715317, `mode=rollback`) | **Success** 20:51Z. Dispatched 13 s after gate green. Isolate re-asserted migration-only at gen 143 (already isolated, no change), Terraform applied the same-cap template `…20260905204141` and the MIG replaced the instance, new incarnation on `519f4914`, protocol 0, transition verifier passed at migration-only (1 180 assignments carried, hard cap 3 000, heartbeat fresh), then activate → **gen 144**, c27 general, verifier passed again. No `container die` fleet-wide 19:55Z–20:52Z. c27 now runs the target image; c28/c29 remain on `5aedbca5` (template `…20260814235757`). |
@@ -998,7 +998,7 @@ Owner: "sure, feel free to drive these." Sequence chosen: Roll 1 first (highest 
 | Code PR | #18959 merged `61b09b7a02` (rebase of #18565 onto main; desktop rotation change dropped since #18719 shipped a proportional version). Two Opus review rounds: round 1 caught the mobile fail-fast rejecting on any socket close (one AP flap would book the 60 s cooldown) → 2 s grace, re-armed once on `handshaking`; round 2 caught a removed jitter assertion that let a one-sided jitter pass → exact pin on the top of the band. Control lease 55 min → 6 h ± 30 min. | |
 | Image publish | run 34002233801 → `sha256:4916ed676d8389f694a648e750f1112d9002d68c84a1e0c7af828d5af129de62`; mirrored to staging (run 34002326150). | |
 | Staging cell smoke | **Dropped.** Staging C4 is pinned to the Asia launch digest by `relay-staging-c4-refresh-workflow.test.mjs` (with production c27–c29 tfvars and the C4 recovery workflow) and the only C4 image-refresh path pins its accepted predecessor to an older digest. Re-pinning all of it for a smoke widens into the Asia launch machinery; #18969 closed. Roll 2 follows the Roll 1 path: director first, c7 as the rehearsal cell. | |
-| Director deploy | run 34002673626 **success** 01:02Z: serving `orca-cloud-relay-00575-leq` on `4916ed67`, `00574-wag` (same image) tagged `selector-rollback`, `00569-ret` (`519f4914`) still deployable. Baseline before: 1 director Postgres retry in the prior hour, 0 `container die`. | |
+| Director deploy | run 34002673626 **success** 01:02Z: serving `kingu-cloud-relay-00575-leq` on `4916ed67`, `00574-wag` (same image) tagged `selector-rollback`, `00569-ret` (`519f4914`) still deployable. Baseline before: 1 director Postgres retry in the prior hour, 0 `container die`. | |
 | c7 `verify` (read-only) | run 34002885408 **success** (gate success, cell_1 rollout success, release_lease success), target `4916ed67`, rollback `85bf6799`, protocol 1, gen 148. | |
 | Director go/no-go (01:02Z–07:00Z, 6 h on `00575-leq`) | **Go.** Presence confirmed (13.8k assign 200s, 410 cell + 90 director `runtime_metrics` rows/30 min). Postgres retries 13 (all `55P03` lock_timeout) vs 85 on `00570-siv` in the prior 6 h. `/v1/assign` mix 200/401/503 = 13820/5557/623 vs 14081/5256/663 before the deploy; 503s are the placement/sticky admission `Retry-After` path and cluster by source (top source 351), same shape as before. 0 `container die`, cell `sqlFailuresDelta` sum 0. The earlier all-zero read at 01:28Z was a dead gcloud credential, not a quiet fleet, and was discarded. | |
 | Monitor dry-run (Roll 2 gate 1) | run 34018071984 dispatched 07:03Z at gen 148, **green** 07:18Z at `1326d6b40c`; main had moved to `b51bbf3fc6` with identical trusted code. | |
@@ -1016,7 +1016,7 @@ Owner: "sure, feel free to drive these." Sequence chosen: Roll 1 first (highest 
 | Monitor dry-run (Roll 2 gate 7) | run 34030557166 dispatched 11:33Z at gen 168, **green** 11:48Z at `adcc30be3b`. | |
 | c22 `canary-apply` (run 34031304526) | **Succeeded** 11:48–12:02Z, protocol 1, trust-proven, gen 168 → 170, canary authority sealed. No boot exits, 134 controls by 12:03Z. One correlated 1 s lock-timeout blip at 11:35:17–27Z (c10, c13, c19, c25, c28: one `sqlFailuresDelta` each, `sqlLatencyMsMax` ≈1 000 ms) spanning old and new images, the known lock-wait shape, not roll-related. Director retries 4 in the last hour. | |
 | Monitor dry-run (Roll 2 gate 8) | run 34032011250 dispatched 12:05Z at gen 170, **green** 12:20Z at `adcc30be3b`. | |
-| Batch 3 `batch-apply` c23,c24,c25,c26 (run 34032799574, canary 34031304526) | **Failed on cell 4 (c26); c23, c24, c25 succeeded** (12:20–13:11Z, gen 170 → 176, three trust proofs). c26: isolate → gen 177, drain, template `…-20260906131159…` on `4916ed67`, one boot-race exit 13:19:17Z, readiness 13:19:19Z, transition verifier passed at migration-only 13:20:42Z (2 604 assignments, heartbeat fresh, `4916ed67`), then the very next call, `admin_post target-runtime` to `c26.relay.onorca.dev/v1/admin/runtime-status`, got **503 `unconditional drop overload`** (27-byte body) and the step failed. That string is not in the relay codebase and c26 logged nothing at 13:20:42Z (readiness at 13:19:19Z, metrics steady), so it is a front-end/LB shed on one request; curl's `--retry 3` logged no retry attempt. Failsafe re-asserted migration-only at gen 177 (no change). c26 is serving on the new image but isolated: 166 controls by 13:25Z and climbing, `sqlFailuresDelta` 0. Residual: the post-apply `admin_post` should retry on 503 (the pre-apply one already tolerates a transient 5xx by comment). | |
+| Batch 3 `batch-apply` c23,c24,c25,c26 (run 34032799574, canary 34031304526) | **Failed on cell 4 (c26); c23, c24, c25 succeeded** (12:20–13:11Z, gen 170 → 176, three trust proofs). c26: isolate → gen 177, drain, template `…-20260906131159…` on `4916ed67`, one boot-race exit 13:19:17Z, readiness 13:19:19Z, transition verifier passed at migration-only 13:20:42Z (2 604 assignments, heartbeat fresh, `4916ed67`), then the very next call, `admin_post target-runtime` to `c26.relay.onkingu.dev/v1/admin/runtime-status`, got **503 `unconditional drop overload`** (27-byte body) and the step failed. That string is not in the relay codebase and c26 logged nothing at 13:20:42Z (readiness at 13:19:19Z, metrics steady), so it is a front-end/LB shed on one request; curl's `--retry 3` logged no retry attempt. Failsafe re-asserted migration-only at gen 177 (no change). c26 is serving on the new image but isolated: 166 controls by 13:25Z and climbing, `sqlFailuresDelta` 0. Residual: the post-apply `admin_post` should retry on 503 (the pre-apply one already tolerates a transient 5xx by comment). | |
 | c26 recovery (run 34036875433, `mode=rollback`) | Gate 9 (run 34036059275) **green** 13:41Z at gen 177 with c26 migration-only. Recovery **succeeded** 13:42–13:46Z: `ROLLBACK_RESUME=true`, no restart, verifier + trust probe passed, activate → **gen 178**, c26 general. 176 controls, `sqlFailuresDelta` 0, no exits since 13:25Z. **All 16 US general cells are on `4916ed67`.** | |
 | Monitor dry-run (Roll 2 gate 10) | run 34037169783 dispatched 13:48Z at gen 178, **green** 14:03Z at `f952f1ac96`. | |
 | c27 `canary-apply` (run 34037973681, Asia, protocol 0) | **Succeeded** 14:03–14:19Z, gen 178 → 180, canary authority sealed (unused; Asia cells roll as single canaries). Template on `4916ed67`, no boot exits, 51 controls by 14:20Z (Asia cell, refilling), `sqlFailuresDelta` 0, `sqlLatencyMsMax` ~1 040 ms (cross-region baseline, c28 on the old image reads ~1 055 ms). Fleet `sqlFailuresDelta` 5 over 30 min: c28 ×3 (~1.17 s), c8 and c9 ×1 (1 s bar), the known lock-wait singles. | |

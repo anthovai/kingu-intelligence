@@ -8,7 +8,7 @@ const production = source('infra/terraform/environments/production.tfvars')
 const dispatchWorkflow = readRelayWorkflow('deploy-relay-production-capacity.yml')
 const jobWorkflow = readRelayWorkflow('deploy-relay-production-capacity-job.yml')
 
-const RELAY_REPOSITORY = 'us-central1-docker.pkg.dev/onorca-cloud/orca-cloud/relay'
+const RELAY_REPOSITORY = 'us-central1-docker.pkg.dev/onkingu-cloud/kingu-cloud/relay'
 
 function source(path) {
   return readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8')

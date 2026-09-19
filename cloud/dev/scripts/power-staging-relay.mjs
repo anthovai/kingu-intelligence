@@ -6,14 +6,14 @@ import {
   selectorCellState
 } from './relay-admission-selector.mjs'
 
-const PROJECT = 'onorca-cloud-staging'
+const PROJECT = 'onkingu-cloud-staging'
 const REGION = 'us-central1'
-const DIRECTOR_ORIGIN = 'https://relay-staging.onorca.dev'
+const DIRECTOR_ORIGIN = 'https://relay-staging.onkingu.dev'
 const ADMIN_AUDIENCE = `${DIRECTOR_ORIGIN}/v1/admin/drain`
-const SQL_INSTANCE = 'orca-cloud-staging-auth-db'
+const SQL_INSTANCE = 'kingu-cloud-staging-auth-db'
 const CLOUD_RUN_SERVICES = [
-  { name: 'orca-cloud-relay-staging', healthOrigin: DIRECTOR_ORIGIN },
-  { name: 'orca-cloud-auth-staging', healthOrigin: 'https://auth-staging.onorca.dev' }
+  { name: 'kingu-cloud-relay-staging', healthOrigin: DIRECTOR_ORIGIN },
+  { name: 'kingu-cloud-auth-staging', healthOrigin: 'https://auth-staging.onkingu.dev' }
 ]
 const POLL_INTERVAL_MS = 5_000
 const WAKE_TIMEOUT_MS = 12 * 60 * 1_000
@@ -54,7 +54,7 @@ function canonicalStagingCell(cellId, value) {
     origin: String(value.origin ?? ''),
     initiallyEnabled: value.initially_enabled
   }
-  if (!/^orca-cloud-staging-relay-gce-[a-z0-9-]+$/.test(cell.migName)) {
+  if (!/^kingu-cloud-staging-relay-gce-[a-z0-9-]+$/.test(cell.migName)) {
     throw new Error(`${cellId} has an unsafe MIG name`)
   }
   if (!/^(?:us-central1|asia-east2)-[a-z]$/.test(cell.zone)) {
@@ -64,7 +64,7 @@ function canonicalStagingCell(cellId, value) {
   if (
     origin.protocol !== 'https:' ||
     origin.origin !== cell.origin ||
-    !origin.hostname.endsWith('.relay-staging.onorca.dev')
+    !origin.hostname.endsWith('.relay-staging.onkingu.dev')
   ) {
     throw new Error(`${cellId} has an unsafe origin`)
   }
@@ -103,7 +103,7 @@ function defaultCommand(args, json) {
 }
 
 function suppliedAdminToken(environment = process.env) {
-  const token = environment.ORCA_RELAY_ADMIN_ID_TOKEN
+  const token = environment.KINGU_RELAY_ADMIN_ID_TOKEN
   if (!token || token.length > 8_192 || !/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(token)) {
     throw new Error('workflow did not supply a valid masked staging admin token')
   }

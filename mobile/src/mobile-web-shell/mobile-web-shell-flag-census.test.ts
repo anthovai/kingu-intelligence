@@ -9,14 +9,14 @@ import { describe, expect, it } from 'vitest'
  * build the moment anything flipped it, and none of those would fail a type check.
  */
 const MOBILE_ROOT = join(import.meta.dirname, '..', '..')
-const FLAG_KEY = 'orca:mobileWebShellEnabled'
+const FLAG_KEY = 'kingu:mobileWebShellEnabled'
 const DEFINITION = 'src/storage/preferences.ts'
 const ROUTE = 'app/h/[hostId]/web.tsx'
 const DEVELOPER_ROW = 'src/diagnostics/mobile-web-shell-dev-row.tsx'
 /** Every tree that ships in the app bundle, with the floor each must clear. `modules` is two files,
  *  but it is where the native view lives and so the easiest place for a second reader to hide. */
 const TREES = { src: 200, app: 10, modules: 1 }
-const SHELL_VIEW = 'modules/orca-mobile-web-shell/src/index.ts'
+const SHELL_VIEW = 'modules/kingu-mobile-web-shell/src/index.ts'
 
 function sourceFiles(directory: string): string[] {
   const found: string[] = []

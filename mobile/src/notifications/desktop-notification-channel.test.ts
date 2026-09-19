@@ -28,10 +28,10 @@ describe('ensureDesktopNotificationChannel', () => {
     await ensureDesktopNotificationChannel()
 
     expect(Notifications.setNotificationChannelAsync).toHaveBeenCalledWith(
-      'orca-desktop',
+      'kingu-desktop',
       expect.objectContaining({ importance: 'high' })
     )
-    expect(DESKTOP_NOTIFICATION_CHANNEL_ID).toBe('orca-desktop')
+    expect(DESKTOP_NOTIFICATION_CHANNEL_ID).toBe('kingu-desktop')
   })
 
   it('does nothing on iOS, which has no notification channels', () => {
@@ -51,7 +51,7 @@ describe('ensureDesktopNotificationChannel', () => {
 
 describe('app boot', () => {
   it('creates the channel at startup, not only once a socket subscribes', () => {
-    // A background push can be the first thing to target 'orca-desktop', and Android
+    // A background push can be the first thing to target 'kingu-desktop', and Android
     // drops a notification whose channel does not exist. Asserted against the source
     // because vitest only collects src/, so app/_layout.tsx has no runtime coverage.
     const layout = readFileSync(new URL('../../app/_layout.tsx', import.meta.url), 'utf8')

@@ -241,7 +241,7 @@ function imageDigest(template: z.infer<typeof TemplateSchema>): string | null {
     (item) => item.key === 'startup-script'
   )?.value
   // Return only the immutable digest; startup metadata contains secret names and operational detail.
-  return startupScript?.match(/ORCA_RELAY_IMAGE_DIGEST=%s\\n' '(sha256:[a-f0-9]{64})'/)?.[1] ?? null
+  return startupScript?.match(/KINGU_RELAY_IMAGE_DIGEST=%s\\n' '(sha256:[a-f0-9]{64})'/)?.[1] ?? null
 }
 
 function backendState(value: unknown): CellInventory['backendHealth'] {

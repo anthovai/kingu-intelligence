@@ -40,11 +40,11 @@ const otherHostFingerprint = Buffer.from(sha256(Buffer.alloc(32, 2)))
   .toString('base64url')
   .slice(0, 16)
 
-function apnsData(orca: Record<string, unknown>): unknown {
-  return { aps: { alert: { title: 'Orca', body: 'Agent needs input' } }, orca }
+function apnsData(kingu: Record<string, unknown>): unknown {
+  return { aps: { alert: { title: 'Kingu', body: 'Agent needs input' } }, kingu }
 }
-function fcmData(orca: Record<string, unknown>): unknown {
-  return Object.fromEntries(Object.entries(orca).map(([key, value]) => [key, String(value)]))
+function fcmData(kingu: Record<string, unknown>): unknown {
+  return Object.fromEntries(Object.entries(kingu).map(([key, value]) => [key, String(value)]))
 }
 
 beforeEach(() => {
@@ -52,7 +52,7 @@ beforeEach(() => {
   AppState.currentState = 'background'
   setNotificationViewingWorkspace(null)
   storage.clear()
-  storage.set('orca:pushServiceNotificationsEnabled', 'true')
+  storage.set('kingu:pushServiceNotificationsEnabled', 'true')
   resetForegroundPushClaimsForTests()
   vi.mocked(loadHostCatalog).mockResolvedValue([
     ...hosts,
@@ -190,7 +190,7 @@ describe('pushNotificationRouteData', () => {
     expect(pushNotificationRouteData(local, hosts)).toBe(local)
     expect(
       pushNotificationRouteData(
-        { hostId: 'host-1', orca: { hostFingerprint: 'unknown' } },
+        { hostId: 'host-1', kingu: { hostFingerprint: 'unknown' } },
         hosts,
         true
       )
@@ -207,7 +207,7 @@ it('uses one delivery snapshot for sound and viewing even when settings change d
   AppState.currentState = 'active'
   setNotificationViewingWorkspace({ hostId: 'host-1', worktreeId: 'folder' })
   storage.set(
-    'orca:notificationDeliveryPreferences',
+    'kingu:notificationDeliveryPreferences',
     JSON.stringify({
       sound: false,
       suppressWhileViewing: false
@@ -215,7 +215,7 @@ it('uses one delivery snapshot for sound and viewing even when settings change d
   )
   vi.mocked(loadHostCatalog).mockImplementationOnce(async () => {
     storage.set(
-      'orca:notificationDeliveryPreferences',
+      'kingu:notificationDeliveryPreferences',
       JSON.stringify({
         sound: true,
         suppressWhileViewing: true
@@ -239,7 +239,7 @@ it('uses one delivery snapshot for sound and viewing even when settings change d
   expect(
     vi
       .mocked(AsyncStorage.getItem)
-      .mock.calls.filter(([key]) => key === 'orca:notificationDeliveryPreferences')
+      .mock.calls.filter(([key]) => key === 'kingu:notificationDeliveryPreferences')
   ).toHaveLength(1)
 })
 
@@ -248,7 +248,7 @@ it.each(['apns', 'fcm'])(
   (provider) => {
     const paneKey = 'tab-b:11111111-1111-4111-8111-111111111111'
     const payload = { hostFingerprint, worktreeId: 'folder:/work', paneKey }
-    const data = provider === 'apns' ? { orca: payload } : payload
+    const data = provider === 'apns' ? { kingu: payload } : payload
     const routed = pushNotificationRouteData(data, [{ id: 'host', publicKeyB64 }], true)
     expect(getNotificationNavigationTarget(routed)?.sessionTarget?.params).toEqual({
       hostId: 'host',

@@ -1,4 +1,4 @@
-import type { MobileWebShellFailureReason } from '../../modules/orca-mobile-web-shell/src/load-state'
+import type { MobileWebShellFailureReason } from '../../modules/kingu-mobile-web-shell/src/load-state'
 import type { RpcClient } from '../transport/rpc-client'
 import type { ConnectionState } from '../transport/types'
 import { evaluateMobileWebBundleCompat } from '../transport/mobile-web-bundle-compat'

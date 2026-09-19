@@ -38,7 +38,7 @@ export function livePreflightGcloud(
   gcloud: ReturnType<typeof createGcloudClient>,
   environment: NodeJS.ProcessEnv = process.env
 ): ReturnType<typeof createGcloudClient> {
-  const token = suppliedIdentityToken(environment.ORCA_RELAY_ADMIN_ID_TOKEN)
+  const token = suppliedIdentityToken(environment.KINGU_RELAY_ADMIN_ID_TOKEN)
   return token ? { ...gcloud, identityToken: async () => token } : gcloud
 }
 

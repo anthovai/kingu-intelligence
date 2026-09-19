@@ -1,7 +1,7 @@
-// Why two shapes: APNs nests Orca's fields under `orca` beside `aps`, while FCM
+// Why two shapes: APNs nests Kingu's fields under `kingu` beside `aps`, while FCM
 // carries them flat in `data` as strings. Both reach JS as the notification's
 // `content.data`, so the reader accepts either and coerces the numeric fields.
-export type OrcaPushPayload = {
+export type KinguPushPayload = {
   readonly kind?: 'alert' | 'dismiss'
   readonly hostFingerprint: string
   readonly notificationId?: string
@@ -20,11 +20,11 @@ function readSeq(value: unknown): number | undefined {
   return Number.isFinite(raw) ? raw : undefined
 }
 
-export function readOrcaPushPayload(data: unknown): OrcaPushPayload | null {
+export function readKinguPushPayload(data: unknown): KinguPushPayload | null {
   if (!data || typeof data !== 'object') {
     return null
   }
-  const nested = (data as { orca?: unknown }).orca
+  const nested = (data as { kingu?: unknown }).kingu
   const record = (nested && typeof nested === 'object' ? nested : data) as Record<string, unknown>
   // The fingerprint is what makes this a gateway push; locally scheduled data never has one.
   const hostFingerprint = readString(record.hostFingerprint)

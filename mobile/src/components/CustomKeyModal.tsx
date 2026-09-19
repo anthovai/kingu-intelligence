@@ -13,7 +13,7 @@ import {
 } from '../terminal/terminal-accessory-keys'
 import { customKeyModalStyles as styles } from './CustomKeyModal.styles'
 
-const CUSTOM_ACCESSORY_KEYS_STORAGE_KEY = 'orca:custom-accessory-keys'
+const CUSTOM_ACCESSORY_KEYS_STORAGE_KEY = 'kingu:custom-accessory-keys'
 
 export type CustomKey = {
   id: string

@@ -8,15 +8,15 @@ it('fails closed on an invalid validation mode', () => {
   for (const mode of ['typo', '', ' ']) {
     expect(() =>
       loadPushConfig({
-        ORCA_PUSH_FCM_PROJECT_ID: 'onorca-cloud',
-        ORCA_PUSH_PUBLIC_URL: 'https://push.onorca.dev',
-        ORCA_PUSH_MODE: mode
+        KINGU_PUSH_FCM_PROJECT_ID: 'onkingu-cloud',
+        KINGU_PUSH_PUBLIC_URL: 'https://push.onkingu.dev',
+        KINGU_PUSH_MODE: mode
       })
     ).toThrow()
   }
 })
 
-const databaseUrl = process.env.ORCA_PUSH_TEST_DATABASE_URL
+const databaseUrl = process.env.KINGU_PUSH_TEST_DATABASE_URL
 it.skipIf(!databaseUrl)(
   'validation cannot write PostgreSQL and starts no consumers or pruners',
   async () => {
@@ -39,9 +39,9 @@ it.skipIf(!databaseUrl)(
       readOnly: true
     })
     const config = loadPushConfig({
-      ORCA_PUSH_FCM_PROJECT_ID: 'onorca-cloud',
-      ORCA_PUSH_PUBLIC_URL: 'https://push.onorca.dev',
-      ORCA_PUSH_MODE: 'validation'
+      KINGU_PUSH_FCM_PROJECT_ID: 'onkingu-cloud',
+      KINGU_PUSH_PUBLIC_URL: 'https://push.onkingu.dev',
+      KINGU_PUSH_MODE: 'validation'
     })
     const runtime = createPushServer(config, database)
     let stop: (() => Promise<void>) | undefined

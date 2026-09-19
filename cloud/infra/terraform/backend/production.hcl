@@ -1,3 +1,3 @@
-bucket = "onorca-cloud-terraform-state"
+bucket = "onkingu-cloud-terraform-state"
 prefix = "terraform/state"
 

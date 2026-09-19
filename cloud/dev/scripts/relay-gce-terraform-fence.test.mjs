@@ -34,10 +34,10 @@ import {
 
 const cell = {
   cellId: 'production-gce-c1',
-  migName: 'orca-relay-c1',
+  migName: 'kingu-relay-c1',
   zone: 'us-central1-a',
-  instanceGroup: 'https://compute.example/instanceGroups/orca-relay-c1',
-  generationIdentity: 'https://compute.example/instanceTemplates/orca-relay-c1-abc',
+  instanceGroup: 'https://compute.example/instanceGroups/kingu-relay-c1',
+  generationIdentity: 'https://compute.example/instanceTemplates/kingu-relay-c1-abc',
   fenced: true,
   desiredTargetSize: 0
 }
@@ -64,7 +64,7 @@ test('adopts a legacy fence only after repeated no-op and live guards', async ()
       cell
     },
     {
-      environment: { ORCA_RELAY_FENCE_IMAGE_COMMIT: 'a'.repeat(40) },
+      environment: { KINGU_RELAY_FENCE_IMAGE_COMMIT: 'a'.repeat(40) },
       readFile: () => Buffer.from('reviewed variables'),
       loadAttempt: async () => {
         calls.push('attempt')
@@ -109,7 +109,7 @@ test('refuses legacy adoption when a durable attempt appears during proof', asyn
         cell
       },
       {
-        environment: { ORCA_RELAY_FENCE_IMAGE_COMMIT: 'a'.repeat(40) },
+        environment: { KINGU_RELAY_FENCE_IMAGE_COMMIT: 'a'.repeat(40) },
         readFile: () => Buffer.from('reviewed variables'),
         loadAttempt: async () => (++reads === 1 ? null : { attemptId: 'new' }),
         assertCommittedFenceSet: async () => {},
@@ -141,7 +141,7 @@ test('does not commit legacy adoption when the final guard fails', async () => {
         cell
       },
       {
-        environment: { ORCA_RELAY_FENCE_IMAGE_COMMIT: 'a'.repeat(40) },
+        environment: { KINGU_RELAY_FENCE_IMAGE_COMMIT: 'a'.repeat(40) },
         readFile: () => Buffer.from('reviewed variables'),
         loadAttempt: async () => null,
         assertCommittedFenceSet: async () => {},
@@ -210,7 +210,7 @@ test('binds a gitless broker checkout to its immutable image commit', () => {
   }
   const contents = Buffer.from('reviewed production variables')
   const digest = assertReviewedFenceCheckout(config, {
-    environment: { ORCA_RELAY_FENCE_IMAGE_COMMIT: config.fenceCommit },
+    environment: { KINGU_RELAY_FENCE_IMAGE_COMMIT: config.fenceCommit },
     readFile: () => contents,
     git: () => {
       throw new Error('git must not run inside the immutable broker image')
@@ -229,7 +229,7 @@ test('rejects a broker image built for a different fence commit', () => {
           varFile: 'environments/production.tfvars'
         },
         {
-          environment: { ORCA_RELAY_FENCE_IMAGE_COMMIT: 'b'.repeat(40) },
+          environment: { KINGU_RELAY_FENCE_IMAGE_COMMIT: 'b'.repeat(40) },
           readFile: () => Buffer.from('reviewed production variables')
         }
       ),
@@ -519,7 +519,7 @@ function applyHarness({
             {
               invocationId: '11111111-1111-4111-8111-111111111111',
               requestReason:
-                'orca-relay-fence/11111111-1111-4111-8111-111111111111/11111111-1111-4111-8111-111111111111',
+                'kingu-relay-fence/11111111-1111-4111-8111-111111111111/11111111-1111-4111-8111-111111111111',
               startedAt: 101,
               gceOperation: 'operation-1',
               operationStatus: 'DONE',
@@ -609,7 +609,7 @@ function durableAttempt(config = applyConfig(), overrides = {}) {
     terraformStateObjectSha256: createHash('sha256')
       .update('pre-state object')
       .digest('hex'),
-    requestReason: `orca-relay-fence/${attemptId}`,
+    requestReason: `kingu-relay-fence/${attemptId}`,
     createdAt: 100,
     expiresAt: 3_600_100,
     ...overrides
@@ -641,7 +641,7 @@ test('applies and attests the exact private saved plan', async () => {
     assert.equal(planArgs.includes('-refresh=false'), true)
     assert.equal(
       harness.applyEnvironments[0].GOOGLE_REQUEST_REASON,
-      'orca-relay-fence/11111111-1111-4111-8111-111111111111/11111111-1111-4111-8111-111111111111'
+      'kingu-relay-fence/11111111-1111-4111-8111-111111111111/11111111-1111-4111-8111-111111111111'
     )
     assert.equal(harness.events[0].event, 'terraform_cell_fenced')
     assert.equal(existsSync(harness.planPath()), false)
