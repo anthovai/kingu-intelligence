@@ -21,11 +21,11 @@ function remoteRepo(id: string, path = `/repos/${id}`): Repo {
 function setup(overrides: Partial<ProjectHostSetup> = {}): ProjectHostSetup {
   return {
     id: 'setup-builder',
-    projectId: 'github:stablyai/orca',
+    projectId: 'github:anthovai/kingu-intelligence',
     hostId: 'ssh:builder',
     repoId: 'repo-builder',
-    path: '/remote/orca',
-    displayName: 'orca',
+    path: '/remote/kingu',
+    displayName: 'kingu',
     setupState: 'ready',
     setupMethod: 'cloned',
     createdAt: 1,
@@ -40,26 +40,26 @@ describe('buildAutomationRunContextForRepo', () => {
       buildAutomationRunContextForRepo({
         repoId: 'repo-builder',
         repos: [
-          repo('repo-local', '/local/orca'),
-          repo('repo-builder', '/remote/orca', 'ssh:builder')
+          repo('repo-local', '/local/kingu'),
+          repo('repo-builder', '/remote/kingu', 'ssh:builder')
         ],
         projectHostSetups: [
           setup({
             id: 'setup-local',
             hostId: 'local',
             repoId: 'repo-local',
-            path: '/local/orca'
+            path: '/local/kingu'
           }),
           setup()
         ]
       })
     ).toEqual({
       kind: 'workspace-run',
-      projectId: 'github:stablyai/orca',
+      projectId: 'github:anthovai/kingu-intelligence',
       hostId: 'ssh:builder',
       projectHostSetupId: 'setup-builder',
       repoId: 'repo-builder',
-      path: '/remote/orca'
+      path: '/remote/kingu'
     })
   })
 
@@ -85,7 +85,7 @@ describe('buildAutomationRunContextForRepo', () => {
     expect(
       buildAutomationRunContextForRepo({
         repoId: 'same-id',
-        repos: [repo('same-id', '/local/orca'), remoteRepo('same-id', '/remote/orca')],
+        repos: [repo('same-id', '/local/kingu'), remoteRepo('same-id', '/remote/kingu')],
         projectHostSetups: []
       })
     ).toBeNull()

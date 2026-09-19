@@ -3,9 +3,15 @@ import { isWorkItemLookupText } from './work-item-lookup-text'
 
 describe('isWorkItemLookupText', () => {
   it('detects GitHub PR and issue URLs', () => {
-    expect(isWorkItemLookupText('https://github.com/stablyai/orca/pull/4900')).toBe(true)
-    expect(isWorkItemLookupText('https://github.com/stablyai/orca/issues/123')).toBe(true)
-    expect(isWorkItemLookupText('  https://www.github.com/stablyai/orca/pull/1 ')).toBe(true)
+    expect(isWorkItemLookupText('https://github.com/anthovai/kingu-intelligence/pull/4900')).toBe(
+      true
+    )
+    expect(isWorkItemLookupText('https://github.com/anthovai/kingu-intelligence/issues/123')).toBe(
+      true
+    )
+    expect(
+      isWorkItemLookupText('  https://www.github.com/anthovai/kingu-intelligence/pull/1 ')
+    ).toBe(true)
   })
 
   it('detects hash-number shorthand', () => {

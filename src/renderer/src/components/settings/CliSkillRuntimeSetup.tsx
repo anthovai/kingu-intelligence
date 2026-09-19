@@ -16,8 +16,8 @@ import { buildAgentFeatureSkillInstallCommand } from '../../../../shared/agent-f
 import { toast } from 'sonner'
 import type { CliInstallStatus } from '../../../../shared/cli-install-types'
 import {
-  isOrcaCliAvailableOnPath,
-  showOrcaCliRegistrationPromptToast
+  isKinguCliAvailableOnPath,
+  showKinguCliRegistrationPromptToast
 } from '@/lib/agent-skill-cli-prerequisite'
 import { translate } from '@/i18n/i18n'
 
@@ -122,12 +122,12 @@ function normalizeWindowsSkillUpdateCommand(
 
 /**
  * Where a built skill command is going: the user's clipboard (their own shell)
- * or the setup terminal Orca spawns itself.
+ * or the setup terminal Kingu spawns itself.
  */
-type SkillCommandTarget = 'copied-command' | 'orca-setup-terminal'
+type SkillCommandTarget = 'copied-command' | 'kingu-setup-terminal'
 
 /**
- * Adapts a copied skill command for Orca's inline setup terminal auto-paste.
+ * Adapts a copied skill command for Kingu's inline setup terminal auto-paste.
  * Host Windows installs may gain an npx preflight; WSL-targeted PowerShell wrappers
  * must become bash-native because the daemon forces wsl.exe for WSL worktrees.
  */
@@ -153,7 +153,7 @@ export function buildSkillSetupTerminalCommand(
   return wrapWindowsSkillCommandWithNpxPrerequisite(
     copiedCommand,
     currentPlatform,
-    'orca-setup-terminal'
+    'kingu-setup-terminal'
   )
 }
 
@@ -339,9 +339,9 @@ export async function ensureWslCliAvailableForAgentSkillTerminal(
       return status
     }
     if (status.state !== 'installed' || status.pathConfigured === false) {
-      await showOrcaCliRegistrationPromptToast()
+      await showKinguCliRegistrationPromptToast()
       const next = await window.api.cli.installWsl(args)
-      if (!isOrcaCliAvailableOnPath(next)) {
+      if (!isKinguCliAvailableOnPath(next)) {
         toast.warning(
           translate(
             'auto.components.settings.CliSkillRuntimeSetup.3728a94fb6',

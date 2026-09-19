@@ -5,7 +5,7 @@ import {
 } from '../../../../shared/structured-agent-session-outbox'
 import { createStructuredAgentSessionOperationId } from '../../../../shared/structured-agent-session-mutation'
 
-const OUTBOX_PREFIX = 'orca:desktopStructuredAgentSessionOutbox:v1:'
+const OUTBOX_PREFIX = 'kingu:desktopStructuredAgentSessionOutbox:v1:'
 
 function storageKey(sessionId: string): string {
   return `${OUTBOX_PREFIX}${encodeURIComponent(sessionId)}`

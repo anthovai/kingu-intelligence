@@ -135,7 +135,7 @@ export function webRuntimeSessionWindowApi(
 }
 
 export function stubBrowserTabCreateEnvironment(mocks: WebRuntimeSessionMocks): void {
-  vi.stubGlobal('__ORCA_WEB_CLIENT__', true)
+  vi.stubGlobal('__KINGU_WEB_CLIENT__', true)
   mocks.getState.mockReturnValue({
     settings: {
       activeRuntimeEnvironmentId: ENVIRONMENT_ID
@@ -198,7 +198,7 @@ export function resetBrowserTabCreateEnvironment(): void {
 }
 
 export function stubTerminalCreateEnvironment(mocks: WebRuntimeSessionMocks): void {
-  vi.stubGlobal('__ORCA_WEB_CLIENT__', true)
+  vi.stubGlobal('__KINGU_WEB_CLIENT__', true)
   mocks.getState.mockReturnValue({
     settings: {
       activeRuntimeEnvironmentId: ENVIRONMENT_ID

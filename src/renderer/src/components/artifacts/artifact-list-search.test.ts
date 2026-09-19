@@ -23,7 +23,7 @@ function item(overrides: Partial<ArtifactListItem['artifact']> = {}): ArtifactLi
       deletedAt: null,
       ...overrides
     },
-    shareUrl: 'https://share.onorca.dev/a/report-123'
+    shareUrl: 'https://share.onkingu.dev/a/report-123'
   }
 }
 

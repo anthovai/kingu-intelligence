@@ -1,27 +1,28 @@
 import { track } from '@/lib/telemetry'
 import type { EventProps } from '../../../../shared/telemetry-events'
 
-export type OrcaCliFeatureTipSource = EventProps<'orca_cli_feature_tip_shown'>['source']
-export type OrcaCliFeatureTipSetupResult = EventProps<'orca_cli_feature_tip_setup_result'>['result']
+export type KinguCliFeatureTipSource = EventProps<'kingu_cli_feature_tip_shown'>['source']
+export type KinguCliFeatureTipSetupResult =
+  EventProps<'kingu_cli_feature_tip_setup_result'>['result']
 export type CmdJPaletteFeatureTipSource = EventProps<'cmd_j_palette_feature_tip_shown'>['source']
 
-export function getOrcaCliFeatureTipTelemetrySource(value: unknown): OrcaCliFeatureTipSource {
+export function getKinguCliFeatureTipTelemetrySource(value: unknown): KinguCliFeatureTipSource {
   return value === 'app_open' ? 'app_open' : 'manual'
 }
 
-export function trackOrcaCliFeatureTipShown(source: OrcaCliFeatureTipSource): void {
-  track('orca_cli_feature_tip_shown', { source })
+export function trackKinguCliFeatureTipShown(source: KinguCliFeatureTipSource): void {
+  track('kingu_cli_feature_tip_shown', { source })
 }
 
-export function trackOrcaCliFeatureTipSetupClicked(source: OrcaCliFeatureTipSource): void {
-  track('orca_cli_feature_tip_setup_clicked', { source })
+export function trackKinguCliFeatureTipSetupClicked(source: KinguCliFeatureTipSource): void {
+  track('kingu_cli_feature_tip_setup_clicked', { source })
 }
 
-export function trackOrcaCliFeatureTipSetupResult(
-  source: OrcaCliFeatureTipSource,
-  result: OrcaCliFeatureTipSetupResult
+export function trackKinguCliFeatureTipSetupResult(
+  source: KinguCliFeatureTipSource,
+  result: KinguCliFeatureTipSetupResult
 ): void {
-  track('orca_cli_feature_tip_setup_result', { source, result })
+  track('kingu_cli_feature_tip_setup_result', { source, result })
 }
 
 export function trackCmdJPaletteFeatureTipShown(source: CmdJPaletteFeatureTipSource): void {

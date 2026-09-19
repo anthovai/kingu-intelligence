@@ -5,7 +5,7 @@ import type { ReactNode } from 'react'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { OrcaProfileAuthStatus } from '../../../../shared/orca-profiles'
+import type { KinguProfileAuthStatus } from '../../../../shared/kingu-profiles'
 
 const mocks = vi.hoisted(() => ({
   authStatus: {
@@ -61,9 +61,9 @@ vi.mock('@/store', () => ({
 function storeState(): Record<string, unknown> {
   return {
     closeArtifactsPage: mocks.closePage,
-    connectCurrentOrcaProfile: mocks.connect,
-    orcaProfileAuthStatus: mocks.authStatus,
-    refreshCurrentOrcaProfileAuth: mocks.refreshAuth,
+    connectCurrentKinguProfile: mocks.connect,
+    kinguProfileAuthStatus: mocks.authStatus,
+    refreshCurrentKinguProfileAuth: mocks.refreshAuth,
     settings: mocks.settings,
     updateSettings: mocks.updateSettings,
     openSettingsPage: mocks.openSettingsPage,
@@ -91,7 +91,7 @@ describe('ArtifactsPage', () => {
     mocks.updateSettings.mockReset().mockResolvedValue(undefined)
     mocks.openSettingsPage.mockReset()
     mocks.openSettingsTarget.mockReset()
-    mocks.resolvePartition.mockReset().mockResolvedValue('persist:orca-default')
+    mocks.resolvePartition.mockReset().mockResolvedValue('persist:kingu-default')
     mocks.writeClipboardText.mockReset().mockResolvedValue(undefined)
     mocks.openUrl.mockReset().mockResolvedValue(undefined)
     mocks.toastSuccess.mockReset()
@@ -121,7 +121,7 @@ describe('ArtifactsPage', () => {
               updatedAt: '2026-08-02T12:00:00.000Z',
               version: 1
             },
-            shareUrl: 'https://share.onorca.dev/a/report-123'
+            shareUrl: 'https://share.onkingu.dev/a/report-123'
           }
         ]
       }
@@ -169,18 +169,20 @@ describe('ArtifactsPage', () => {
 
     await waitFor(() => {
       const preview = document.querySelector('webview[aria-label="Artifact preview"]')
-      expect(preview).toHaveAttribute('partition', 'persist:orca-default')
-      expect(preview).toHaveAttribute('src', 'https://share.onorca.dev/a/report-123?embed=1')
+      expect(preview).toHaveAttribute('partition', 'persist:kingu-default')
+      expect(preview).toHaveAttribute('src', 'https://share.onkingu.dev/a/report-123?embed=1')
     })
 
     fireEvent.click(copyButton)
     await waitFor(() =>
-      expect(mocks.writeClipboardText).toHaveBeenCalledWith('https://share.onorca.dev/a/report-123')
+      expect(mocks.writeClipboardText).toHaveBeenCalledWith(
+        'https://share.onkingu.dev/a/report-123'
+      )
     )
     expect(mocks.toastSuccess).toHaveBeenCalledWith('Artifact link copied')
 
     fireEvent.click(screen.getByRole('button', { name: 'Open in browser' }))
-    expect(mocks.openUrl).toHaveBeenCalledWith('https://share.onorca.dev/a/report-123')
+    expect(mocks.openUrl).toHaveBeenCalledWith('https://share.onkingu.dev/a/report-123')
   })
 
   it('shows a fallback when the desktop preview session is unavailable', async () => {
@@ -223,7 +225,7 @@ describe('ArtifactsPage', () => {
         'Open an HTML or Markdown file and select Share as artifact, or ask your agent to share it.'
       )
     ).toBeInTheDocument()
-    expect(screen.queryByText(/orca artifacts share/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/kingu artifacts share/)).not.toBeInTheDocument()
     expect(
       screen.queryByRole('button', { name: 'Open Settings → Artifacts' })
     ).not.toBeInTheDocument()
@@ -356,7 +358,9 @@ describe('ArtifactsPage', () => {
     resolveRefresh()
 
     await waitFor(() =>
-      expect(screen.queryByText('Sign in to Orca again to load artifacts.')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Sign in to Kingu again to load artifacts.')
+      ).not.toBeInTheDocument()
     )
   })
 
@@ -396,7 +400,9 @@ describe('ArtifactsPage', () => {
     resolveRefresh()
 
     await waitFor(() =>
-      expect(screen.queryByText('Sign in to Orca again to load artifacts.')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Sign in to Kingu again to load artifacts.')
+      ).not.toBeInTheDocument()
     )
   })
 
@@ -435,7 +441,7 @@ describe('ArtifactsPage', () => {
               updatedAt: '2026-08-02T12:00:00.000Z',
               version: 1
             },
-            shareUrl: 'https://share.onorca.dev/a/account-a-secret'
+            shareUrl: 'https://share.onkingu.dev/a/account-a-secret'
           }
         ]
       }
@@ -558,7 +564,7 @@ describe('ArtifactsPage', () => {
       configured: true,
       persistence: 'encrypted',
       state: 'connected'
-    } satisfies OrcaProfileAuthStatus
+    } satisfies KinguProfileAuthStatus
 
     expect(artifactAccountIdentity(status)).not.toBe(
       artifactAccountIdentity({ ...status, cloud: { ...status.cloud, activeOrgId: 'org-b' } })
@@ -592,6 +598,6 @@ function artifactListItem(title: string, slug: string): Record<string, unknown> 
       updatedAt: '2026-08-02T12:00:00.000Z',
       version: 1
     },
-    shareUrl: `https://share.onorca.dev/a/${slug}`
+    shareUrl: `https://share.onkingu.dev/a/${slug}`
   }
 }

@@ -26,7 +26,7 @@ type LinkedLinearWorktreeFields = Pick<Worktree, 'linkedLinearIssue'> &
     >
   >
 
-// Why: Has Workspace is an Orca workspace view, not a Linear API filter.
+// Why: Has Workspace is an Kingu workspace view, not a Linear API filter.
 export function collectLinkedLinearIssueRefsFromWorktrees(
   worktrees: readonly LinkedLinearWorktreeFields[],
   options?: {
@@ -122,7 +122,7 @@ export function collectLinkedLinearIssueRefsFromWorktrees(
   return [...byIdentifier.values()].flat()
 }
 
-export function filterLinearIssuesForInOrcaWorkspace(
+export function filterLinearIssuesForInKinguWorkspace(
   issues: readonly LinearIssue[],
   workspaceId: string | null | undefined
 ): LinearIssue[] {

@@ -69,7 +69,7 @@ function renderQuickActions(initialStatuses: Map<string, unknown>) {
 
 describe('worktree jump palette quick action availability', () => {
   beforeEach(() => {
-    ;(globalThis as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__ = true
+    ;(globalThis as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__ = true
     mocks.state = {
       activeView: 'terminal',
       activeWorktreeId: WORKTREE_ID,
@@ -82,7 +82,7 @@ describe('worktree jump palette quick action availability', () => {
     }
   })
   afterEach(() => {
-    delete (globalThis as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__
+    delete (globalThis as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__
   })
 
   it('drops the paired-web browser action when the runtime loses screencast capability', () => {

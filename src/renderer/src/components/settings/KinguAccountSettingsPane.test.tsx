@@ -13,8 +13,8 @@ type MockAuthStatus = {
 } | null
 
 const mocks = vi.hoisted(() => {
-  const state: { orcaProfileAuthStatus: MockAuthStatus } = {
-    orcaProfileAuthStatus: {
+  const state: { kinguProfileAuthStatus: MockAuthStatus } = {
+    kinguProfileAuthStatus: {
       configured: true,
       state: 'connected',
       cloud: { displayName: 'Ada Lovelace', email: 'ada@example.com' }
@@ -36,14 +36,14 @@ vi.mock('@/store', () => ({
   useAppStore: (selector: (state: Record<string, unknown>) => unknown) =>
     selector({
       ...mocks.state,
-      connectCurrentOrcaProfile: mocks.connect,
-      fetchOrcaProfileAuthStatus: mocks.fetchAuthStatus,
-      signOutCurrentOrcaProfile: mocks.signOut
+      connectCurrentKinguProfile: mocks.connect,
+      fetchKinguProfileAuthStatus: mocks.fetchAuthStatus,
+      signOutCurrentKinguProfile: mocks.signOut
     })
 }))
 
-vi.mock('../orca-profiles/OrcaProfileSignOutConfirmDialog', () => ({
-  OrcaProfileSignOutConfirmDialog: ({
+vi.mock('../kingu-profiles/KinguProfileSignOutConfirmDialog', () => ({
+  KinguProfileSignOutConfirmDialog: ({
     open,
     onConfirm
   }: {
@@ -53,15 +53,15 @@ vi.mock('../orca-profiles/OrcaProfileSignOutConfirmDialog', () => ({
   }) => (open ? <button onClick={onConfirm}>Confirm sign out</button> : null)
 }))
 
-import { OrcaAccountSettingsPane } from './OrcaAccountSettingsPane'
+import { KinguAccountSettingsPane } from './KinguAccountSettingsPane'
 
-describe('OrcaAccountSettingsPane', () => {
+describe('KinguAccountSettingsPane', () => {
   beforeEach(() => {
     mocks.connect.mockReset()
     mocks.fetchAuthStatus.mockReset()
     mocks.signOut.mockReset()
     mocks.signOut.mockResolvedValue({ status: 'signed-out' })
-    mocks.state.orcaProfileAuthStatus = {
+    mocks.state.kinguProfileAuthStatus = {
       configured: true,
       state: 'connected',
       cloud: { displayName: 'Ada Lovelace', email: 'ada@example.com' }
@@ -72,12 +72,12 @@ describe('OrcaAccountSettingsPane', () => {
 
   it('shows the connected identity and confirms sign out', async () => {
     const user = userEvent.setup()
-    render(<OrcaAccountSettingsPane />)
+    render(<KinguAccountSettingsPane />)
 
     expect(screen.getByText('Ada Lovelace')).toBeInTheDocument()
     expect(screen.getByText('ada@example.com')).toBeInTheDocument()
     expect(screen.getByText('Artifact sharing')).toBeInTheDocument()
-    expect(screen.getByText('Orca Relay')).toBeInTheDocument()
+    expect(screen.getByText('Kingu Relay')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Sign out' }))
     await user.click(screen.getByRole('button', { name: 'Confirm sign out' }))
@@ -86,27 +86,27 @@ describe('OrcaAccountSettingsPane', () => {
 
   it('offers sign in for a local profile', async () => {
     const user = userEvent.setup()
-    mocks.state.orcaProfileAuthStatus = { configured: true, state: 'local' }
+    mocks.state.kinguProfileAuthStatus = { configured: true, state: 'local' }
     mocks.connect.mockReturnValue(new Promise(() => {}))
-    render(<OrcaAccountSettingsPane />)
+    render(<KinguAccountSettingsPane />)
 
     expect(
       screen.getByText(
-        'Sign in to extend Orca with cloud features, including Artifacts and Orca Relay.'
+        'Sign in to extend Kingu with cloud features, including Artifacts and Kingu Relay.'
       )
     ).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Sign in to Orca' }))
+    await user.click(screen.getByRole('button', { name: 'Sign in to Kingu' }))
     expect(mocks.connect).toHaveBeenCalledOnce()
-    expect(screen.getByRole('button', { name: 'Sign in to Orca' })).toBeEnabled()
-    await user.click(screen.getByRole('button', { name: 'Sign in to Orca' }))
+    expect(screen.getByRole('button', { name: 'Sign in to Kingu' })).toBeEnabled()
+    await user.click(screen.getByRole('button', { name: 'Sign in to Kingu' }))
     expect(mocks.connect).toHaveBeenCalledTimes(2)
   })
 
   it('loads account status when it is not hydrated yet', () => {
-    mocks.state.orcaProfileAuthStatus = null
-    render(<OrcaAccountSettingsPane />)
+    mocks.state.kinguProfileAuthStatus = null
+    render(<KinguAccountSettingsPane />)
 
     expect(mocks.fetchAuthStatus).toHaveBeenCalledOnce()
-    expect(screen.getByRole('button', { name: 'Sign in to Orca' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Sign in to Kingu' })).toBeDisabled()
   })
 })

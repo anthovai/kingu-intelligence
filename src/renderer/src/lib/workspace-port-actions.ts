@@ -53,7 +53,7 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => window.setTimeout(resolve, ms))
 }
 
-export function shouldOpenWorkspacePortInOrcaBrowser(
+export function shouldOpenWorkspacePortInKinguBrowser(
   settings: { openLinksInApp?: boolean } | null | undefined
 ): boolean {
   return settings?.openLinksInApp === true
@@ -73,7 +73,7 @@ export function getPortOpenBrowserTooltipLabel(openLabel: string, isMac?: boolea
 
 type PortOpenClickEvent = Pick<MouseEvent, 'metaKey' | 'ctrlKey' | 'shiftKey'>
 
-export function resolvePortOpenInOrcaBrowser({
+export function resolvePortOpenInKinguBrowser({
   settings,
   event,
   isMac
@@ -87,7 +87,7 @@ export function resolvePortOpenInOrcaBrowser({
   if (event?.shiftKey && (isMac ? event.metaKey : event.ctrlKey)) {
     return false
   }
-  return shouldOpenWorkspacePortInOrcaBrowser(settings)
+  return shouldOpenWorkspacePortInKinguBrowser(settings)
 }
 
 export function workspacePortOwnerWorktreeId(port: WorkspacePort): string | null {
@@ -105,7 +105,7 @@ export async function openWorkspacePortInBrowser(args: {
   runtimeTarget: RuntimeClientTarget | null
   createBrowserTab: BrowserTabCreator
   setRemoteBrowserPageHandle: RemoteBrowserPageHandleSetter
-  openInOrcaBrowser?: boolean
+  openInKinguBrowser?: boolean
   localhostLabelRoute?: LocalhostWorktreeLabelRoute | null
 }): Promise<{ ok: true } | { ok: false; reason: string }> {
   if (!args.runtimeTarget) {
@@ -120,7 +120,7 @@ export async function openWorkspacePortInBrowser(args: {
       url = rawUrl
     }
   }
-  if (args.openInOrcaBrowser === false && args.runtimeTarget.kind === 'local') {
+  if (args.openInKinguBrowser === false && args.runtimeTarget.kind === 'local') {
     try {
       await window.api.shell.openUrl(url)
       return { ok: true }

@@ -53,20 +53,20 @@ describe('renderer i18n lazy locale loading', () => {
   })
 
   it('loads an isolated catalog contributed by an enabled plugin', async () => {
-    const id = 'plugin:orca-samples.portuguese/pt-BR' as const
+    const id = 'plugin:kingu-samples.portuguese/pt-BR' as const
     setRendererPluginLanguagePacks([
       {
         id,
         resourceLanguage: pluginLanguageResourceId(id),
-        pluginKey: 'orca-samples.portuguese',
+        pluginKey: 'kingu-samples.portuguese',
         locale: 'pt-BR',
-        catalog: { menu: { file: 'Arquivo Orca' } }
+        catalog: { menu: { file: 'Arquivo Kingu' } }
       }
     ])
 
     await setRendererUiLanguage(id)
     expect(i18n.language).toBe(pluginLanguageResourceId(id))
-    expect(i18n.t('menu.file', { defaultValue: 'File' })).toBe('Arquivo Orca')
+    expect(i18n.t('menu.file', { defaultValue: 'File' })).toBe('Arquivo Kingu')
 
     setRendererPluginLanguagePacks([])
     await setRendererUiLanguage(id)

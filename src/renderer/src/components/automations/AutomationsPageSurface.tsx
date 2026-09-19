@@ -160,7 +160,7 @@ export function AutomationsPageSurface({
         createTarget={createTarget}
         createDestination={destination.createDestination.control}
         editDestination={
-          destinationForm.isOrcaForm ? destinationForm.editDestinationControl : undefined
+          destinationForm.isKinguForm ? destinationForm.editDestinationControl : undefined
         }
         notice={editorNotice}
         onNoticeRecover={(action) => {
@@ -187,7 +187,7 @@ export function AutomationsPageSurface({
         onProjectChange={editorActions.handleProjectChange}
         getRepoHostLabel={presentation.getAutomationRepoHostLabel}
         allowAddProject={
-          !destinationForm.isOrcaForm ||
+          !destinationForm.isKinguForm ||
           (editingAutomationId !== null
             ? destinationForm.editHostResolution.status === 'ready'
               ? getAutomationAuthorityTarget(destinationForm.editHostResolution.authority).kind ===

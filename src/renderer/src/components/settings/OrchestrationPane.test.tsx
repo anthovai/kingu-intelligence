@@ -13,10 +13,10 @@ import { getOrchestrationPaneSearchEntries } from './orchestration-search'
 import { matchesSettingsSearch } from './settings-search'
 
 const INSTALL_COMMAND =
-  'npx skills add https://github.com/stablyai/orca --skill orchestration --global'
+  'npx skills add https://github.com/anthovai/kingu-intelligence --skill orchestration --global'
 const UPDATE_COMMAND = INSTALL_COMMAND
 const WINDOWS_INSTALL_COMMAND =
-  'cmd.exe /d /s /c "where.exe npx >nul 2>nul & if errorlevel 1 (echo ERROR: npx was not found. Install Node.js LTS from https://nodejs.org/ to get npx. & echo Then close this terminal and start skill setup again - a new terminal picks up the updated PATH. & exit /b 1) else (npx skills add https://github.com/stablyai/orca --skill orchestration --global)"'
+  'cmd.exe /d /s /c "where.exe npx >nul 2>nul & if errorlevel 1 (echo ERROR: npx was not found. Install Node.js LTS from https://nodejs.org/ to get npx. & echo Then close this terminal and start skill setup again - a new terminal picks up the updated PATH. & exit /b 1) else (npx skills add https://github.com/anthovai/kingu-intelligence --skill orchestration --global)"'
 
 const mocks = vi.hoisted(() => ({
   dialogProps: [] as Record<string, unknown>[],
@@ -167,7 +167,7 @@ describe('OrchestrationPane', () => {
     mocks.panelProps.length = 0
     mocks.skillInstalled = true
     mocks.updateSettings.mockReset()
-    delete (globalThis as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__
+    delete (globalThis as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__
   })
 
   it('keeps skill setup visible after install and shows agent coverage plus examples', () => {
@@ -243,7 +243,7 @@ describe('OrchestrationPane', () => {
   })
 
   it('keeps host-only nested depth out of paired web clients', () => {
-    ;(globalThis as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__ = true
+    ;(globalThis as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__ = true
     const markup = renderToStaticMarkup(<OrchestrationPane {...getPaneProps()} />)
 
     expect(markup).not.toContain('Nested worker depth')

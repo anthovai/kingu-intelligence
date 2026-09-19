@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { OrcaProfileAuthStatus } from '../../../../shared/orca-profiles'
+import type { KinguProfileAuthStatus } from '../../../../shared/kingu-profiles'
 import { createTestStore } from '../../store/slices/store-test-helpers'
 
 const { storeHolder } = vi.hoisted(() => ({
@@ -14,23 +14,23 @@ vi.mock('sonner', () => ({
   toast: { error: vi.fn(), info: vi.fn(), success: vi.fn(), warning: vi.fn() }
 }))
 
-import { registerOrcaProfileAuthIpcBridge } from './orca-profile-auth-ipc-bridge'
+import { registerKinguProfileAuthIpcBridge } from './kingu-profile-auth-ipc-bridge'
 
-const connectedAuthStatus: OrcaProfileAuthStatus = {
+const connectedAuthStatus: KinguProfileAuthStatus = {
   activeProfileId: 'local-default',
   configured: true,
   state: 'connected',
   persistence: 'encrypted'
 }
 
-const reconnectRequiredAuthStatus: OrcaProfileAuthStatus = {
+const reconnectRequiredAuthStatus: KinguProfileAuthStatus = {
   activeProfileId: 'local-default',
   configured: true,
   state: 'reconnect-required',
   persistence: 'encrypted'
 }
 
-describe('orca profile auth IPC bridge', () => {
+describe('kingu profile auth IPC bridge', () => {
   let listener: (() => void) | null = null
   const unsubscribe = vi.fn()
   const authStatus = vi.fn()
@@ -41,7 +41,7 @@ describe('orca profile auth IPC bridge', () => {
     authStatus.mockReset()
     vi.stubGlobal('window', {
       api: {
-        orcaProfiles: {
+        kinguProfiles: {
           authStatus,
           onAuthStatusChanged: (callback: () => void) => {
             listener = callback
@@ -56,15 +56,15 @@ describe('orca profile auth IPC bridge', () => {
     authStatus.mockResolvedValue(connectedAuthStatus)
     const store = createTestStore()
     storeHolder.current = store
-    await store.getState().fetchOrcaProfileAuthStatus()
-    expect(store.getState().orcaProfileAuthStatus).toEqual(connectedAuthStatus)
+    await store.getState().fetchKinguProfileAuthStatus()
+    expect(store.getState().kinguProfileAuthStatus).toEqual(connectedAuthStatus)
 
     const unsubs: (() => void)[] = []
-    registerOrcaProfileAuthIpcBridge(unsubs)
+    registerKinguProfileAuthIpcBridge(unsubs)
     authStatus.mockResolvedValue(reconnectRequiredAuthStatus)
     listener?.()
     await vi.waitFor(() =>
-      expect(store.getState().orcaProfileAuthStatus).toEqual(reconnectRequiredAuthStatus)
+      expect(store.getState().kinguProfileAuthStatus).toEqual(reconnectRequiredAuthStatus)
     )
 
     unsubs.forEach((dispose) => dispose())
@@ -72,10 +72,10 @@ describe('orca profile auth IPC bridge', () => {
   })
 
   it('skips registration when the preload bridge does not expose the event', () => {
-    vi.stubGlobal('window', { api: { orcaProfiles: { authStatus } } })
+    vi.stubGlobal('window', { api: { kinguProfiles: { authStatus } } })
     const unsubs: (() => void)[] = []
 
-    registerOrcaProfileAuthIpcBridge(unsubs)
+    registerKinguProfileAuthIpcBridge(unsubs)
 
     expect(unsubs).toHaveLength(0)
   })

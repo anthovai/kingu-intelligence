@@ -145,7 +145,7 @@ describe('structured agent launch reload recovery', () => {
     const worktreeId = 'wt-reload'
     const sessionId = 'codex-reload-session'
     localStorage.setItem(
-      'orca:structuredAgentLaunches:v1',
+      'kingu:structuredAgentLaunches:v1',
       JSON.stringify([
         {
           sessionId,

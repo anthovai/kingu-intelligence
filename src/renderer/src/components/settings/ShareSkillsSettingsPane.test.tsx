@@ -12,7 +12,7 @@ const mocks = vi.hoisted(() => ({
   openSkillsPage: vi.fn(),
   updateSettings: vi.fn(),
   state: {
-    orcaProfileAuthStatus: { configured: true, state: 'connected' } as Record<
+    kinguProfileAuthStatus: { configured: true, state: 'connected' } as Record<
       string,
       unknown
     > | null,
@@ -33,8 +33,8 @@ vi.mock('@/store', () => ({
   useAppStore: (selector: (state: Record<string, unknown>) => unknown) =>
     selector({
       ...mocks.state,
-      connectCurrentOrcaProfile: mocks.connect,
-      fetchOrcaProfileAuthStatus: mocks.fetchAuthStatus,
+      connectCurrentKinguProfile: mocks.connect,
+      fetchKinguProfileAuthStatus: mocks.fetchAuthStatus,
       openSkillsPage: mocks.openSkillsPage,
       updateSettings: mocks.updateSettings
     })
@@ -48,7 +48,7 @@ describe('ShareSkillsSettingsPane', () => {
     mocks.fetchAuthStatus.mockReset()
     mocks.openSkillsPage.mockReset()
     mocks.updateSettings.mockReset()
-    mocks.state.orcaProfileAuthStatus = { configured: true, state: 'connected' }
+    mocks.state.kinguProfileAuthStatus = { configured: true, state: 'connected' }
     mocks.state.isWebClient = false
     Object.defineProperty(window, 'api', {
       configurable: true,
@@ -88,7 +88,7 @@ describe('ShareSkillsSettingsPane', () => {
 
   it('offers owner sign-in while explaining recipients stay signed out', async () => {
     const user = userEvent.setup()
-    mocks.state.orcaProfileAuthStatus = { configured: true, state: 'local' }
+    mocks.state.kinguProfileAuthStatus = { configured: true, state: 'local' }
     render(
       <TooltipProvider>
         <ShareSkillsSettingsPane />
@@ -97,7 +97,7 @@ describe('ShareSkillsSettingsPane', () => {
 
     expect(screen.getByText('Sign in to share skills')).toBeInTheDocument()
     expect(screen.getByText(/Recipients do not need an account/)).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Sign in to Orca' }))
+    await user.click(screen.getByRole('button', { name: 'Sign in to Kingu' }))
     expect(mocks.connect).toHaveBeenCalledOnce()
   })
 
@@ -111,7 +111,7 @@ describe('ShareSkillsSettingsPane', () => {
 
     await user.click(
       screen.getByRole('switch', {
-        name: 'Allow agents and the Orca CLI to publish skill links'
+        name: 'Allow agents and the Kingu CLI to publish skill links'
       })
     )
     expect(mocks.updateSettings).toHaveBeenCalledWith({ agentSkillSharingEnabled: true })
@@ -119,19 +119,19 @@ describe('ShareSkillsSettingsPane', () => {
 
   it('does not offer desktop publishing from the web client', () => {
     mocks.state.isWebClient = true
-    mocks.state.orcaProfileAuthStatus = { configured: true, state: 'local' }
+    mocks.state.kinguProfileAuthStatus = { configured: true, state: 'local' }
     render(
       <TooltipProvider>
         <ShareSkillsSettingsPane />
       </TooltipProvider>
     )
 
-    expect(screen.getByText(/available in the Orca desktop app/)).toBeInTheDocument()
+    expect(screen.getByText(/available in the Kingu desktop app/)).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Open Skills/ })).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Sign in to Orca' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Sign in to Kingu' })).not.toBeInTheDocument()
     expect(
       screen.getByRole('switch', {
-        name: 'Allow agents and the Orca CLI to publish skill links'
+        name: 'Allow agents and the Kingu CLI to publish skill links'
       })
     ).toBeDisabled()
   })

@@ -264,7 +264,7 @@ describe('buildAgentLaunchRouteInput', () => {
     const appStore = store({
       ...STRUCTURED_SETTINGS,
       agentDefaultArgs: { [agent]: agentArgs },
-      agentDefaultEnv: { [agent]: { ORCA_QA: '1' } }
+      agentDefaultEnv: { [agent]: { KINGU_QA: '1' } }
     })
     const args = {
       agent,
@@ -338,7 +338,7 @@ describe('workspaceKindForWorktreeId', () => {
   it.each([
     [FLOATING_TERMINAL_WORKTREE_ID, 'floating'],
     ['folder:ws-1', 'folder'],
-    ['repo-1::/repo/orca', 'git-worktree']
+    ['repo-1::/repo/kingu', 'git-worktree']
   ])('classifies %s as %s', (worktreeId, kind) => {
     expect(workspaceKindForWorktreeId(worktreeId)).toBe(kind)
   })

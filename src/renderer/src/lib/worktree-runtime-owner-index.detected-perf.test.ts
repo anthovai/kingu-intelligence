@@ -191,7 +191,7 @@ describe('detected worktree index performance', () => {
       }
     }
     writeFileSync(
-      join(tmpdir(), 'orca-detected-worktree-index-bench.json'),
+      join(tmpdir(), 'kingu-detected-worktree-index-bench.json'),
       `${JSON.stringify(report, null, 2)}\n`
     )
 

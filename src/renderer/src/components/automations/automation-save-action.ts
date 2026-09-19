@@ -8,7 +8,7 @@ import { translate } from '@/i18n/i18n'
 import { acceptsAutomationDraftSchedule } from './automation-schedule-input-gate'
 import { parseDraftTime } from './automation-draft-model'
 import { saveHermesAutomation } from './automation-hermes-save'
-import { saveOrcaAutomation } from './automation-orca-save'
+import { saveKinguAutomation } from './automation-kingu-save'
 import type { AutomationSaveContext } from './automation-save-context'
 
 /** Validates editor input then delegates the provider-specific save transaction. */
@@ -104,7 +104,7 @@ export function createAutomationSaveAction(context: AutomationSaveContext) {
       }
       await (isHermesSave
         ? saveHermesAutomation(context)
-        : saveOrcaAutomation(context, { hour, minute, now }))
+        : saveKinguAutomation(context, { hour, minute, now }))
     } catch (error) {
       if (isHermesSave) {
         await context.pageRefresh.refresh().catch(() => undefined)

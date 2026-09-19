@@ -18,7 +18,7 @@ describe('structured agent launch persistence', () => {
 
   it('normalizes pending launches after a renderer reload', () => {
     localStorage.setItem(
-      'orca:structuredAgentLaunches:v1',
+      'kingu:structuredAgentLaunches:v1',
       JSON.stringify([
         {
           sessionId: 'codex_session',
@@ -48,7 +48,7 @@ describe('structured agent launch persistence', () => {
       resumeFrom: { providerSessionId: 'provider-thread' }
     })
 
-    const raw = localStorage.getItem('orca:structuredAgentLaunches:v1') ?? ''
+    const raw = localStorage.getItem('kingu:structuredAgentLaunches:v1') ?? ''
     expect(raw).toContain('claude_session')
     expect(raw).toContain('operation-2')
     expect(raw).not.toContain('prompt')
@@ -60,7 +60,7 @@ describe('structured agent launch persistence', () => {
   it('persists cancellation tombstones by session id and retires them', () => {
     markStructuredAgentLaunchCancelledPersisted('codex_session')
     expect(hasStructuredAgentLaunchCancellationTombstonePersisted('codex_session')).toBe(true)
-    expect(localStorage.getItem('orca:structuredAgentLaunchCancelledSessions:v1')).toBe(
+    expect(localStorage.getItem('kingu:structuredAgentLaunchCancelledSessions:v1')).toBe(
       '["codex_session"]'
     )
     expect(retireStructuredAgentLaunchCancellationTombstonePersisted('codex_session')).toBe(true)

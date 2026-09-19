@@ -3,10 +3,10 @@ import { describe, expect, it } from 'vitest'
 import {
   collectLinkedLinearIssueRefsFromWorktrees,
   filterLinearIssuesBySearchQuery,
-  filterLinearIssuesForInOrcaWorkspace,
+  filterLinearIssuesForInKinguWorkspace,
   linkedLinearIssueRefsSignature,
   readLinkedLinearIssuesWithLimit
-} from './task-page-linear-in-orca-issues'
+} from './task-page-linear-in-kingu-issues'
 import type { LinearIssue } from '../../../shared/linear/issue-types'
 
 function issue(
@@ -113,7 +113,7 @@ describe('collectLinkedLinearIssueRefsFromWorktrees', () => {
   })
 })
 
-describe('filterLinearIssuesForInOrcaWorkspace', () => {
+describe('filterLinearIssuesForInKinguWorkspace', () => {
   it('keeps issues without workspace metadata when a workspace is selected', () => {
     const issues = [
       issue({ id: '1', identifier: 'ENG-1', workspaceId: 'ws-a' }),
@@ -121,7 +121,7 @@ describe('filterLinearIssuesForInOrcaWorkspace', () => {
       issue({ id: '3', identifier: 'ENG-3' })
     ]
     expect(
-      filterLinearIssuesForInOrcaWorkspace(issues, 'ws-a').map((item) => item.identifier)
+      filterLinearIssuesForInKinguWorkspace(issues, 'ws-a').map((item) => item.identifier)
     ).toEqual(['ENG-1', 'ENG-3'])
   })
 })

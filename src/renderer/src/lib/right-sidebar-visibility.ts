@@ -12,7 +12,10 @@ const RIGHT_SIDEBAR_SUPPRESSED_VIEWS = new Set<ActiveView>([
   'space',
   'skills',
   'artifacts',
-  'mobile'
+  'mobile',
+  // Why: the IDE takes the whole window — it brings its own explorer and source
+  // control, so Kingu's would be a second, conflicting copy of both.
+  'ide'
 ])
 
 export function canShowRightSidebarForView(activeView: ActiveView): boolean {

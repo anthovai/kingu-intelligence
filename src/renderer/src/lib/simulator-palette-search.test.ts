@@ -336,7 +336,7 @@ describe('simulator-palette-search', () => {
       makeEntry({
         tab: makeTab({ label: 'Phone Preview' }),
         worktree: makeWorktree({ displayName: 'Checkout Flow' }),
-        repoName: 'orca/mobile-client',
+        repoName: 'kingu/mobile-client',
         worktreeSortIndex: 1,
         isCurrentTab: false,
         isCurrentWorktree: false
@@ -427,7 +427,7 @@ describe('simulator-palette-search', () => {
           displayName: undefined as unknown as string,
           branch: 'refs/heads/feature/mobile-emulator'
         }),
-        repoName: 'orca',
+        repoName: 'kingu',
         worktreeSortIndex: 0,
         isCurrentTab: false,
         isCurrentWorktree: false
@@ -449,7 +449,7 @@ describe('simulator-palette-search', () => {
           branch: undefined as unknown as string,
           path: '/repos/design-review'
         }),
-        repoName: 'orca',
+        repoName: 'kingu',
         worktreeSortIndex: 0,
         isCurrentTab: false,
         isCurrentWorktree: false

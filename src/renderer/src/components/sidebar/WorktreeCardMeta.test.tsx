@@ -60,7 +60,7 @@ describe('WorktreeCardDetailsHover', () => {
           number: 456,
           title: 'Fix stale GH PR',
           state: 'open',
-          url: 'https://github.com/acme/orca/pull/456',
+          url: 'https://github.com/acme/kingu/pull/456',
           status: 'success',
           updatedAt: '2026-05-17T00:00:00.000Z',
           mergeable: 'MERGEABLE'
@@ -87,7 +87,7 @@ describe('WorktreeCardDetailsHover', () => {
           number: 5518,
           title: 'Agent monitor lists ephemeral headless subprocesses',
           state: 'open',
-          url: 'https://github.com/acme/orca/issues/5518',
+          url: 'https://github.com/acme/kingu/issues/5518',
           labels: []
         }}
         linearIssue={null}
@@ -121,7 +121,7 @@ describe('WorktreeCardDetailsHover', () => {
           number: 456,
           title: 'Fix stale GH PR',
           state: 'open',
-          url: 'https://github.com/acme/orca/pull/456',
+          url: 'https://github.com/acme/kingu/pull/456',
           status: 'success',
           updatedAt: '2026-05-17T00:00:00.000Z',
           mergeable: 'MERGEABLE'
@@ -129,7 +129,7 @@ describe('WorktreeCardDetailsHover', () => {
         comment={null}
         onEditIssue={vi.fn()}
         onEditComment={vi.fn()}
-        onOpenReviewInOrca={vi.fn()}
+        onOpenReviewInKingu={vi.fn()}
         onOpenReviewInBrowser={vi.fn()}
         onUnlinkReview={vi.fn()}
       >
@@ -138,7 +138,7 @@ describe('WorktreeCardDetailsHover', () => {
     )
 
     const moreActionsIndex = markup.indexOf('aria-label="More PR actions"')
-    const openInOrcaIndex = markup.indexOf('aria-label="Open in Orca"')
+    const openInKinguIndex = markup.indexOf('aria-label="Open in Kingu"')
     const viewOnGitHubIndex = markup.indexOf('aria-label="View on GitHub"')
 
     expect(moreActionsIndex).toBeGreaterThan(-1)
@@ -146,12 +146,12 @@ describe('WorktreeCardDetailsHover', () => {
     expect(markup).toContain('Copy link')
     expect(markup).toContain('Unlink PR from workspace')
     expect(markup).toContain(
-      'Orca will hide PR #456 details for this workspace. The PR and branch on GitHub won’t be changed.'
+      'Kingu will hide PR #456 details for this workspace. The PR and branch on GitHub won’t be changed.'
     )
-    expect(markup).toContain('Open in Orca browser')
-    expect(moreActionsIndex).toBeLessThan(openInOrcaIndex)
-    expect(openInOrcaIndex).toBeLessThan(viewOnGitHubIndex)
-    expect(markup.indexOf('Open in Orca browser')).toBeLessThan(markup.indexOf('Copy link'))
+    expect(markup).toContain('Open in Kingu browser')
+    expect(moreActionsIndex).toBeLessThan(openInKinguIndex)
+    expect(openInKinguIndex).toBeLessThan(viewOnGitHubIndex)
+    expect(markup.indexOf('Open in Kingu browser')).toBeLessThan(markup.indexOf('Copy link'))
     expect(markup.indexOf('Copy link')).toBeLessThan(markup.indexOf('Unlink PR from workspace'))
     expect(markup).not.toContain('aria-label="Unlink PR from workspace"')
   })
@@ -163,7 +163,7 @@ describe('WorktreeCardDetailsHover', () => {
           number: 5518,
           title: 'Agent monitor lists ephemeral headless subprocesses',
           state: 'closed',
-          url: 'https://github.com/acme/orca/issues/5518',
+          url: 'https://github.com/acme/kingu/issues/5518',
           labels: []
         }}
         linearIssue={null}
@@ -171,7 +171,7 @@ describe('WorktreeCardDetailsHover', () => {
         comment={null}
         onEditIssue={vi.fn()}
         onEditComment={vi.fn()}
-        onOpenGitHubIssueInOrca={vi.fn()}
+        onOpenGitHubIssueInKingu={vi.fn()}
         onOpenIssueInBrowser={vi.fn()}
       >
         <span>Linked issue</span>
@@ -181,18 +181,18 @@ describe('WorktreeCardDetailsHover', () => {
     const moreActionsIndex = markup.indexOf('aria-label="More issue actions"')
     const copyLinkIndex = markup.indexOf('Copy link')
     const editIssueIndex = markup.indexOf('aria-label="Edit issue"')
-    const openInOrcaIndex = markup.indexOf('aria-label="Open in Orca"')
+    const openInKinguIndex = markup.indexOf('aria-label="Open in Kingu"')
     const viewOnGitHubIndex = markup.indexOf('aria-label="View on GitHub"')
 
     expect(moreActionsIndex).toBeGreaterThan(-1)
     expect(copyLinkIndex).toBeGreaterThan(-1)
-    expect(markup).toContain('Open in Orca browser')
-    expect(markup.indexOf('Open in Orca browser')).toBeLessThan(copyLinkIndex)
+    expect(markup).toContain('Open in Kingu browser')
+    expect(markup.indexOf('Open in Kingu browser')).toBeLessThan(copyLinkIndex)
     expect(editIssueIndex).toBeGreaterThan(-1)
     expect(moreActionsIndex).toBeLessThan(editIssueIndex)
     expect(copyLinkIndex).toBeLessThan(editIssueIndex)
-    expect(editIssueIndex).toBeLessThan(openInOrcaIndex)
-    expect(openInOrcaIndex).toBeLessThan(viewOnGitHubIndex)
+    expect(editIssueIndex).toBeLessThan(openInKinguIndex)
+    expect(openInKinguIndex).toBeLessThan(viewOnGitHubIndex)
   })
 
   it('labels GitLab unlink actions with MR terminology', () => {
@@ -205,7 +205,7 @@ describe('WorktreeCardDetailsHover', () => {
           number: 77,
           title: 'Fix GitLab MR display',
           state: 'open',
-          url: 'https://gitlab.com/acme/orca/-/merge_requests/77',
+          url: 'https://gitlab.com/acme/kingu/-/merge_requests/77',
           status: 'success'
         }}
         comment={null}
@@ -221,10 +221,10 @@ describe('WorktreeCardDetailsHover', () => {
     expect(markup).toContain('aria-label="More MR actions"')
     expect(markup).toContain('Unlink MR from workspace')
     expect(markup).toContain(
-      'Orca will hide MR !77 details for this workspace. The MR and branch on GitLab won’t be changed.'
+      'Kingu will hide MR !77 details for this workspace. The MR and branch on GitLab won’t be changed.'
     )
     expect(markup).toContain('View on GitLab')
-    expect(markup).toContain('Open in Orca browser')
+    expect(markup).toContain('Open in Kingu browser')
   })
 
   it('hides the embedded-browser action when a linked review has no URL', () => {
@@ -245,7 +245,7 @@ describe('WorktreeCardDetailsHover', () => {
       </WorktreeCardDetailsHover>
     )
 
-    expect(markup).not.toContain('Open in Orca browser')
+    expect(markup).not.toContain('Open in Kingu browser')
   })
 
   it('keeps the embedded-browser action provider-neutral for unsupported review URLs', () => {
@@ -270,7 +270,7 @@ describe('WorktreeCardDetailsHover', () => {
       </WorktreeCardDetailsHover>
     )
 
-    expect(markup).toContain('Open in Orca browser')
+    expect(markup).toContain('Open in Kingu browser')
   })
 
   it('displays Linear issue details with link', () => {
@@ -288,7 +288,7 @@ describe('WorktreeCardDetailsHover', () => {
         comment={null}
         onEditIssue={vi.fn()}
         onEditComment={vi.fn()}
-        onOpenLinearIssueInOrca={vi.fn()}
+        onOpenLinearIssueInKingu={vi.fn()}
       >
         <span>ENG-123</span>
       </WorktreeCardDetailsHover>

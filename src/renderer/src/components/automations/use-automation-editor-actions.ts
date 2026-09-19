@@ -58,7 +58,7 @@ export function useAutomationEditorActions({
     setEditingExternalTarget(null)
     setEditingDestination(null)
     setEditingHostStableKey(null)
-    setCreateTarget('orca')
+    setCreateTarget('kingu')
     const baseDraft: AutomationDraft = {
       name: '',
       prompt: '',
@@ -99,7 +99,7 @@ export function useAutomationEditorActions({
   const openEditDialog = async (row: AutomationListRow): Promise<void> => {
     const requestId = (editRequestRef.current += 1)
     setEditingExternalTarget(null)
-    setCreateTarget('orca')
+    setCreateTarget('kingu')
     const automationId = row.automation.id
     const reread = await dispatchAutomationReread(
       automationDispatchContext,

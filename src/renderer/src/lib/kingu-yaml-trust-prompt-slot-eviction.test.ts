@@ -21,7 +21,7 @@ function createStateBackedByRealModalSlot(): {
   const store = createUIStore()
   store.setState({
     repos: [{ id: 'repo-1', displayName: 'Repo One' }],
-    trustedOrcaHooks: {}
+    trustedKinguHooks: {}
   } as unknown as Partial<AppState>)
   return { store, state: store.getState() }
 }
@@ -33,7 +33,7 @@ async function settleOrReport<T>(promise: Promise<T>): Promise<T | 'never-settle
   ])
 }
 
-describe('orca.yaml trust prompt evicted from the modal slot', () => {
+describe('kingu.yaml trust prompt evicted from the modal slot', () => {
   beforeEach(() => {
     hooksCheckMock.mockReset()
     readIssueCommandMock.mockReset()
@@ -61,7 +61,7 @@ describe('orca.yaml trust prompt evicted from the modal slot', () => {
     const runSetup = vi.fn()
 
     const decision = ensureHooksConfirmed(state, 'repo-1', 'setup')
-    await vi.waitFor(() => expect(store.getState().activeModal).toBe('confirm-orca-yaml-hooks'))
+    await vi.waitFor(() => expect(store.getState().activeModal).toBe('confirm-kingu-yaml-hooks'))
 
     store.getState().openModal('worktree-palette')
 
@@ -72,14 +72,14 @@ describe('orca.yaml trust prompt evicted from the modal slot', () => {
 
     expect(result).toBe('skip')
     expect(runSetup).not.toHaveBeenCalled()
-    expect(store.getState().trustedOrcaHooks).toEqual({})
+    expect(store.getState().trustedKinguHooks).toEqual({})
   })
 
   it('resolves the pending decision as skip when the slot is closed outright', async () => {
     const { store, state } = createStateBackedByRealModalSlot()
 
     const decision = ensureHooksConfirmed(state, 'repo-1', 'setup')
-    await vi.waitFor(() => expect(store.getState().activeModal).toBe('confirm-orca-yaml-hooks'))
+    await vi.waitFor(() => expect(store.getState().activeModal).toBe('confirm-kingu-yaml-hooks'))
 
     store.getState().closeModal()
 
@@ -90,12 +90,12 @@ describe('orca.yaml trust prompt evicted from the modal slot', () => {
     const { store, state } = createStateBackedByRealModalSlot()
 
     const evicted = ensureHooksConfirmed(state, 'repo-1', 'setup')
-    await vi.waitFor(() => expect(store.getState().activeModal).toBe('confirm-orca-yaml-hooks'))
+    await vi.waitFor(() => expect(store.getState().activeModal).toBe('confirm-kingu-yaml-hooks'))
     store.getState().openModal('worktree-palette')
     await settleOrReport(evicted)
 
     const next = ensureHooksConfirmed(state, 'repo-1', 'setup')
-    await vi.waitFor(() => expect(store.getState().activeModal).toBe('confirm-orca-yaml-hooks'))
+    await vi.waitFor(() => expect(store.getState().activeModal).toBe('confirm-kingu-yaml-hooks'))
     const onResolve = store.getState().modalData.onResolve as (d: 'run' | 'skip') => void
     onResolve('run')
 
@@ -106,7 +106,7 @@ describe('orca.yaml trust prompt evicted from the modal slot', () => {
     const { store, state } = createStateBackedByRealModalSlot()
 
     const decision = ensureHooksConfirmed(state, 'repo-1', 'setup')
-    await vi.waitFor(() => expect(store.getState().activeModal).toBe('confirm-orca-yaml-hooks'))
+    await vi.waitFor(() => expect(store.getState().activeModal).toBe('confirm-kingu-yaml-hooks'))
 
     // Mirrors the trust dialog: resolve first, then vacate the slot.
     ;(store.getState().modalData.onResolve as (d: 'run' | 'skip') => void)('run')

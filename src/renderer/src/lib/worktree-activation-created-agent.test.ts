@@ -35,7 +35,7 @@ function activateAndExpectNoRelaunch(
 }
 
 afterEach(() => {
-  delete (globalThis as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__
+  delete (globalThis as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__
   vi.unstubAllGlobals()
   resetWebSessionTabsSnapshotFreshnessForTests()
   resetWebRuntimeWakeTerminalRespawnForTests()
@@ -278,7 +278,7 @@ describe('activateAndRevealWorktree', () => {
       ok: true,
       result: { repoId: worktree.repoId, worktreeId: worktree.id, activated: true }
     })
-    ;(globalThis as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__ = true
+    ;(globalThis as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__ = true
     vi.stubGlobal('window', {
       api: {
         runtimeEnvironments: {
@@ -346,7 +346,7 @@ describe('activateAndRevealWorktree', () => {
       ok: true,
       result: { repoId: worktree.repoId, worktreeId: worktree.id, activated: true }
     })
-    ;(globalThis as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__ = true
+    ;(globalThis as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__ = true
     vi.stubGlobal('window', {
       api: {
         runtimeEnvironments: {
@@ -416,7 +416,7 @@ describe('activateAndRevealWorktree', () => {
       ok: true,
       result: { repoId: worktree.repoId, worktreeId: worktree.id, activated: true }
     })
-    ;(globalThis as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__ = true
+    ;(globalThis as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__ = true
     vi.stubGlobal('window', {
       api: {
         runtimeEnvironments: {
@@ -451,7 +451,7 @@ describe('activateAndRevealWorktree', () => {
       activeTabIdByWorktree: {},
       tabBarOrderByWorktree: {},
       settings: {
-        ...getDefaultSettings('/workspace/.orca-workspaces'),
+        ...getDefaultSettings('/workspace/.kingu-workspaces'),
         agentCmdOverrides: {},
         activeRuntimeEnvironmentId: 'web-runtime-1',
         setupScriptLaunchMode: 'new-tab'
@@ -473,7 +473,7 @@ describe('activateAndRevealWorktree', () => {
   it('does not respawn when the host snapshot still has terminal tabs', async () => {
     const worktree = makeWorktree()
     const callRuntimeEnvironment = vi.fn()
-    ;(globalThis as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__ = true
+    ;(globalThis as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__ = true
 
     useAppStore.setState({
       repos: [
@@ -502,7 +502,7 @@ describe('activateAndRevealWorktree', () => {
       },
       ptyIdsByTabId: { 'tab-1': [] },
       settings: {
-        ...getDefaultSettings('/workspace/.orca-workspaces'),
+        ...getDefaultSettings('/workspace/.kingu-workspaces'),
         activeRuntimeEnvironmentId: 'web-runtime-1'
       },
       reconcileWorktreeTabModel: vi.fn(() => ({
@@ -554,7 +554,7 @@ describe('activateAndRevealWorktree', () => {
         ok: true,
         result: { tabId: 'host-tab-1', terminal: 'term_host' }
       })
-    ;(globalThis as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__ = true
+    ;(globalThis as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__ = true
     vi.stubGlobal('window', {
       api: {
         runtimeEnvironments: {
@@ -604,7 +604,7 @@ describe('activateAndRevealWorktree', () => {
       activeTabIdByWorktree: {},
       tabBarOrderByWorktree: {},
       settings: {
-        ...getDefaultSettings('/workspace/.orca-workspaces'),
+        ...getDefaultSettings('/workspace/.kingu-workspaces'),
         agentCmdOverrides: {},
         activeRuntimeEnvironmentId: 'web-runtime-1',
         setupScriptLaunchMode: 'new-tab'
@@ -636,7 +636,7 @@ describe('activateAndRevealWorktree', () => {
       ok: true,
       result: { tabId: 'host-tab-1', terminal: 'term_host' }
     })
-    ;(globalThis as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__ = true
+    ;(globalThis as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__ = true
     vi.stubGlobal('window', {
       api: {
         runtimeEnvironments: {
@@ -674,7 +674,7 @@ describe('activateAndRevealWorktree', () => {
       },
       ptyIdsByTabId: { 'tab-1': [] },
       settings: {
-        ...getDefaultSettings('/workspace/.orca-workspaces'),
+        ...getDefaultSettings('/workspace/.kingu-workspaces'),
         activeRuntimeEnvironmentId: 'focused-runtime'
       },
       reconcileWorktreeTabModel: vi.fn(() => ({

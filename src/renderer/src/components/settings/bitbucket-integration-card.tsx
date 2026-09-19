@@ -261,7 +261,7 @@ function BitbucketCardNote(props: {
       <p className="text-xs text-muted-foreground">
         {translate(
           'auto.components.settings.bitbucket.integration.card.envManaged',
-          'Configured via environment variables. Unset the ORCA_BITBUCKET_* variables to manage this credential in Orca.'
+          'Configured via environment variables. Unset the KINGU_BITBUCKET_* variables to manage this credential in Kingu.'
         )}
       </p>
     )
@@ -276,7 +276,7 @@ function BitbucketCardNote(props: {
             )
           : translate(
               'auto.components.settings.token.source.control.integration.cards.6154b02093',
-              'Bitbucket credentials are configured but could not authenticate. Check the token and repository permissions, then restart Orca if environment variables changed.'
+              'Bitbucket credentials are configured but could not authenticate. Check the token and repository permissions, then restart Kingu if environment variables changed.'
             )}
       </p>
     )
@@ -286,7 +286,7 @@ function BitbucketCardNote(props: {
       <p className="text-xs text-muted-foreground">
         {translate(
           'auto.components.settings.bitbucket.integration.card.storedCredential',
-          'Saved in Orca on this machine. ORCA_BITBUCKET_* environment variables take precedence when set.'
+          'Saved in Kingu on this machine. KINGU_BITBUCKET_* environment variables take precedence when set.'
         )}
       </p>
     )
@@ -295,7 +295,7 @@ function BitbucketCardNote(props: {
     <p className="text-xs text-muted-foreground">
       {translate(
         'auto.components.settings.bitbucket.integration.card.notConfigured',
-        'Connect a Bitbucket Cloud account with an Atlassian API token or an access token. ORCA_BITBUCKET_* environment variables work too and take precedence.'
+        'Connect a Bitbucket Cloud account with an Atlassian API token or an access token. KINGU_BITBUCKET_* environment variables work too and take precedence.'
       )}
     </p>
   )

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
-  canOpenAiVaultSessionLogInOrca,
+  canOpenAiVaultSessionLogInKingu,
   canUseLocalAiVaultSessionPathActions,
   isSyntheticAiVaultSessionPath
 } from './ai-vault-session-path-actions'
@@ -28,10 +28,10 @@ describe('isSyntheticAiVaultSessionPath', () => {
   })
 })
 
-describe('canOpenAiVaultSessionLogInOrca', () => {
+describe('canOpenAiVaultSessionLogInKingu', () => {
   it('allows a local, single-file, non-synthetic path', () => {
     expect(
-      canOpenAiVaultSessionLogInOrca({
+      canOpenAiVaultSessionLogInKingu({
         filePath: '/home/user/.claude/sessions/log.jsonl',
         executionHostId: 'local'
       })
@@ -39,17 +39,17 @@ describe('canOpenAiVaultSessionLogInOrca', () => {
   })
 
   it('withholds blank, remote, and synthetic identities', () => {
-    expect(canOpenAiVaultSessionLogInOrca({ filePath: '   ', executionHostId: 'local' })).toBe(
+    expect(canOpenAiVaultSessionLogInKingu({ filePath: '   ', executionHostId: 'local' })).toBe(
       false
     )
     expect(
-      canOpenAiVaultSessionLogInOrca({
+      canOpenAiVaultSessionLogInKingu({
         filePath: '/remote/.claude/log.jsonl',
         executionHostId: 'ssh:dev-box'
       })
     ).toBe(false)
     expect(
-      canOpenAiVaultSessionLogInOrca({
+      canOpenAiVaultSessionLogInKingu({
         filePath: '/home/user/.opencode/db.sqlite#sess_1',
         executionHostId: 'local'
       })

@@ -11,7 +11,7 @@ const mocks = vi.hoisted(() => ({
   fetchAuthStatus: vi.fn(),
   openArtifactsPage: vi.fn(),
   state: {
-    orcaProfileAuthStatus: {
+    kinguProfileAuthStatus: {
       configured: true,
       state: 'connected'
     } as Record<string, unknown> | null,
@@ -31,8 +31,8 @@ vi.mock('@/store', () => ({
   useAppStore: (selector: (state: Record<string, unknown>) => unknown) =>
     selector({
       ...mocks.state,
-      connectCurrentOrcaProfile: mocks.connect,
-      fetchOrcaProfileAuthStatus: mocks.fetchAuthStatus,
+      connectCurrentKinguProfile: mocks.connect,
+      fetchKinguProfileAuthStatus: mocks.fetchAuthStatus,
       openArtifactsPage: mocks.openArtifactsPage
     })
 }))
@@ -44,7 +44,7 @@ describe('ArtifactsSettingsPane', () => {
     mocks.connect.mockReset()
     mocks.fetchAuthStatus.mockReset()
     mocks.openArtifactsPage.mockReset()
-    mocks.state.orcaProfileAuthStatus = { configured: true, state: 'connected' }
+    mocks.state.kinguProfileAuthStatus = { configured: true, state: 'connected' }
     mocks.state.isWebClient = false
   })
 
@@ -69,40 +69,40 @@ describe('ArtifactsSettingsPane', () => {
     expect(
       screen.getByText('After publishing, copy the link and send it to your team.')
     ).toBeInTheDocument()
-    expect(screen.getByText('Manage it in Orca')).toBeInTheDocument()
+    expect(screen.getByText('Manage it in Kingu')).toBeInTheDocument()
     expect(
       screen.getByText('Preview, copy, and manage links shared through your account.')
     ).toBeInTheDocument()
     expect(
       screen.queryByText('Uploads require sign-in; public links do not.')
     ).not.toBeInTheDocument()
-    expect(screen.queryByText('Orca account')).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Sign in to Orca' })).not.toBeInTheDocument()
+    expect(screen.queryByText('Kingu account')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Sign in to Kingu' })).not.toBeInTheDocument()
   })
 
   it('offers sign in for a local profile', async () => {
     const user = userEvent.setup()
-    mocks.state.orcaProfileAuthStatus = { configured: true, state: 'local' }
+    mocks.state.kinguProfileAuthStatus = { configured: true, state: 'local' }
     render(<ArtifactsSettingsPane settings={getDefaultSettings('/tmp')} updateSettings={vi.fn()} />)
 
     expect(screen.getByText('Sign in to share artifacts')).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Sign in to Orca' }))
+    await user.click(screen.getByRole('button', { name: 'Sign in to Kingu' }))
     expect(mocks.connect).toHaveBeenCalledOnce()
   })
 
   it('keeps sign in clickable while reconnect is required', () => {
-    mocks.state.orcaProfileAuthStatus = { configured: true, state: 'reconnect-required' }
+    mocks.state.kinguProfileAuthStatus = { configured: true, state: 'reconnect-required' }
     render(<ArtifactsSettingsPane settings={getDefaultSettings('/tmp')} updateSettings={vi.fn()} />)
 
     expect(screen.getByRole('button', { name: 'Sign in again' })).toBeEnabled()
   })
 
   it('loads missing account status and disables sign in until configured', () => {
-    mocks.state.orcaProfileAuthStatus = null
+    mocks.state.kinguProfileAuthStatus = null
     render(<ArtifactsSettingsPane settings={getDefaultSettings('/tmp')} updateSettings={vi.fn()} />)
 
     expect(mocks.fetchAuthStatus).toHaveBeenCalledOnce()
-    expect(screen.getByRole('button', { name: 'Sign in to Orca' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Sign in to Kingu' })).toBeDisabled()
   })
 
   it('controls only sidebar visibility and always allows opening Artifacts', async () => {
@@ -120,7 +120,7 @@ describe('ArtifactsSettingsPane', () => {
     await user.click(toggle)
     expect(updateSettings).toHaveBeenCalledWith({ showArtifactsButton: true })
 
-    expect(screen.queryByText(/orca artifacts share/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/kingu artifacts share/)).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Copy command' })).not.toBeInTheDocument()
 
     const openButton = screen.getByRole('button', { name: /Open Artifacts/ })
@@ -211,7 +211,7 @@ describe('ArtifactsSettingsPane', () => {
     render(<ArtifactsSettingsPane settings={getDefaultSettings('/tmp')} updateSettings={vi.fn()} />)
 
     expect(
-      screen.getByText(/Open Settings → Artifacts in the Orca desktop app on the host device/)
+      screen.getByText(/Open Settings → Artifacts in the Kingu desktop app on the host device/)
     ).toBeInTheDocument()
   })
 })

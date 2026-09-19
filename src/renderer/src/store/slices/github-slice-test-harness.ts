@@ -212,10 +212,10 @@ export function githubSourceContext(
   return {
     kind: 'task-source',
     provider: 'github',
-    projectId: 'github:stablyai/orca',
+    projectId: 'github:anthovai/kingu-intelligence',
     hostId,
     projectHostSetupId: 'setup-1',
     repoId,
-    providerIdentity: { provider: 'github', owner: 'stablyai', repo: 'orca' }
+    providerIdentity: { provider: 'github', owner: 'anthovai', repo: 'kingu' }
   }
 }

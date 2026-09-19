@@ -13,8 +13,8 @@ export type StructuredAgentLaunchPersistedRecord = {
   resumeFrom?: StructuredAgentSessionResumeSource
 }
 
-const LAUNCH_STORAGE_KEY = 'orca:structuredAgentLaunches:v1'
-const TOMBSTONE_STORAGE_KEY = 'orca:structuredAgentLaunchCancelledSessions:v1'
+const LAUNCH_STORAGE_KEY = 'kingu:structuredAgentLaunches:v1'
+const TOMBSTONE_STORAGE_KEY = 'kingu:structuredAgentLaunchCancelledSessions:v1'
 const records = new Map<string, StructuredAgentLaunchPersistedRecord>()
 const tombstones = new Set<string>()
 let loaded = false

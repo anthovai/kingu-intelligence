@@ -23,7 +23,7 @@ const LOCAL_WINDOWS_ARGS: AgentResumeLaunchTargetArgs = {
   projectRuntime: undefined,
   connectionId: null,
   executionHostId: 'local',
-  worktreePath: 'C:\\Users\\neil\\orca\\workspaces\\orca\\feature',
+  worktreePath: 'C:\\Users\\neil\\kingu\\workspaces\\kingu\\feature',
   terminalWindowsShell: null
 }
 

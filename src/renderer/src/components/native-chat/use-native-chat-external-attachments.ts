@@ -33,7 +33,7 @@ function isSameComposerWorkspace(captured: ComposerWorkspace, current: ComposerW
 
 /**
  * Attach paths that arrived client-local (composer drop / file picker). SSH
- * worktrees upload into the worktree's `.orca/drops` first so the remote agent
+ * worktrees upload into the worktree's `.kingu/drops` first so the remote agent
  * can actually read what gets referenced (STA-1465).
  */
 export function useNativeChatExternalAttachments({

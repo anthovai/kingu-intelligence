@@ -61,16 +61,16 @@ export function getDeleteWorktreeToastCopy(
           { value0: worktreeName }
         ),
         // Why: Force Delete proceeds either way, so the copy must say which case this is.
-        // Telling a user "could not confirm" about terminals Orca watched stay alive asks
+        // Telling a user "could not confirm" about terminals Kingu watched stay alive asks
         // them to waive a doubt that does not exist, and any running agent's work dies with it.
         description: isProvenLivePtyRemovalError(error)
           ? translate(
               'auto.components.sidebar.delete.worktree.toast.unstoppedPtyLive',
-              'This workspace still has running terminals, so Orca stopped before deleting any files. Force Delete will kill them and discard any uncommitted work they hold.'
+              'This workspace still has running terminals, so Kingu stopped before deleting any files. Force Delete will kill them and discard any uncommitted work they hold.'
             )
           : translate(
               'auto.components.sidebar.delete.worktree.toast.unstoppedPty',
-              'Orca could not confirm every terminal in this workspace has exited, so it stopped before deleting any files. Use Force Delete to remove it anyway.'
+              'Kingu could not confirm every terminal in this workspace has exited, so it stopped before deleting any files. Use Force Delete to remove it anyway.'
             ),
         isDestructive: false
       }
@@ -83,17 +83,17 @@ export function getDeleteWorktreeToastCopy(
           { value0: worktreeName }
         ),
         // Why two branches, like the PTY pair above: an ordinary delete already tried to close
-        // these sessions, and only the observation AFTER that attempt separates one Orca watched
+        // these sessions, and only the observation AFTER that attempt separates one Kingu watched
         // stay attached from one it simply could not reach. Telling the first user "could not
         // confirm" asks them to waive a doubt that does not exist, and a conversation dies with it.
         description: isProvenLiveStructuredSessionRemovalError(error)
           ? translate(
               'auto.components.sidebar.delete.worktree.toast.runningAgentSessionLive',
-              'This workspace still has running agent sessions that Orca could not close, so it stopped before deleting any files. Force Delete will discard any work they hold.'
+              'This workspace still has running agent sessions that Kingu could not close, so it stopped before deleting any files. Force Delete will discard any work they hold.'
             )
           : translate(
               'auto.components.sidebar.delete.worktree.toast.runningAgentSession',
-              'Orca could not confirm every agent session in this workspace has closed, so it stopped before deleting any files. Use Force Delete to remove it anyway.'
+              'Kingu could not confirm every agent session in this workspace has closed, so it stopped before deleting any files. Use Force Delete to remove it anyway.'
             ),
         isDestructive: false
       }
@@ -107,7 +107,7 @@ export function getDeleteWorktreeToastCopy(
         ),
         description: translate(
           'auto.components.sidebar.delete.worktree.toast.905fc8efac',
-          'Git already removed this workspace. Use Force Delete to clear it from Orca.'
+          'Git already removed this workspace. Use Force Delete to clear it from Kingu.'
         ),
         isDestructive: false
       }
@@ -124,7 +124,7 @@ export function getDeleteWorktreeToastCopy(
       ),
       // Why: git commonly refuses the first delete when the worktree still has
       // modified or untracked files. Showing raw stderr in a destructive toast
-      // made a normal cleanup step look like an Orca bug, so this common case
+      // made a normal cleanup step look like an Kingu bug, so this common case
       // gets a concise explanation plus the force-delete path instead.
       isDestructive: false
     }

@@ -75,19 +75,19 @@ describe('pending worktree creation state', () => {
         taskSourceContext: {
           kind: 'task-source',
           provider: 'github',
-          projectId: 'github:stablyai/orca',
+          projectId: 'github:anthovai/kingu-intelligence',
           hostId: 'local',
           projectHostSetupId: 'setup-local',
           repoId: 'repo-local',
-          providerIdentity: { provider: 'github', owner: 'stablyai', repo: 'orca' }
+          providerIdentity: { provider: 'github', owner: 'anthovai', repo: 'kingu' }
         },
         workspaceRunContext: {
           kind: 'workspace-run',
-          projectId: 'github:stablyai/orca',
+          projectId: 'github:anthovai/kingu-intelligence',
           hostId: 'ssh:ssh-1',
           projectHostSetupId: 'setup-ssh',
           repoId: 'repo-ssh',
-          path: '/home/orca/orca'
+          path: '/home/kingu/kingu'
         },
         name: 'feature',
         setupDecision: 'inherit',

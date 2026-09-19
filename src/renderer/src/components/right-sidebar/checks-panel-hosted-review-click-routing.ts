@@ -23,10 +23,10 @@ export function resolveChecksPanelHostedReviewHttpOpenOptions(
 }
 
 /** Where a Shift+modifier click lands, or null when it lands where a plain click already does. */
-export type ChecksPanelHostedReviewModifierDestination = 'system-browser' | 'orca' | null
+export type ChecksPanelHostedReviewModifierDestination = 'system-browser' | 'kingu' | null
 
 // Why: mirrors openHttpLink's routing inputs — with inverting on and Link Routing off the
-// modifier now reaches Orca here, so gating the hint on openLinksInApp alone hides a live gesture.
+// modifier now reaches Kingu here, so gating the hint on openLinksInApp alone hides a live gesture.
 export function resolveChecksPanelHostedReviewModifierDestination(
   settings:
     | {
@@ -44,7 +44,7 @@ export function resolveChecksPanelHostedReviewModifierDestination(
   if (settings?.openLinksInApp === true) {
     return 'system-browser'
   }
-  return settings?.openLinksInAppModifierInverts === true ? 'orca' : null
+  return settings?.openLinksInAppModifierInverts === true ? 'kingu' : null
 }
 
 export function openChecksPanelHostedReviewUrl({

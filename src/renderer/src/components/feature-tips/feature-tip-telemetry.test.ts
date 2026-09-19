@@ -7,12 +7,12 @@ vi.mock('@/lib/telemetry', () => ({
 }))
 
 import {
-  getOrcaCliFeatureTipTelemetrySource,
+  getKinguCliFeatureTipTelemetrySource,
   trackCmdJPaletteFeatureTipAcknowledged,
   trackCmdJPaletteFeatureTipShown,
-  trackOrcaCliFeatureTipSetupClicked,
-  trackOrcaCliFeatureTipSetupResult,
-  trackOrcaCliFeatureTipShown
+  trackKinguCliFeatureTipSetupClicked,
+  trackKinguCliFeatureTipSetupResult,
+  trackKinguCliFeatureTipShown
 } from './feature-tip-telemetry'
 
 describe('feature tip telemetry', () => {
@@ -21,16 +21,16 @@ describe('feature tip telemetry', () => {
   })
 
   it('keeps feature tip sources low-cardinality', () => {
-    expect(getOrcaCliFeatureTipTelemetrySource('app_open')).toBe('app_open')
-    expect(getOrcaCliFeatureTipTelemetrySource('settings')).toBe('manual')
-    expect(getOrcaCliFeatureTipTelemetrySource(undefined)).toBe('manual')
+    expect(getKinguCliFeatureTipTelemetrySource('app_open')).toBe('app_open')
+    expect(getKinguCliFeatureTipTelemetrySource('settings')).toBe('manual')
+    expect(getKinguCliFeatureTipTelemetrySource(undefined)).toBe('manual')
   })
 
   it('tracks CLI tip exposure once per explicit call', () => {
-    trackOrcaCliFeatureTipShown('app_open')
+    trackKinguCliFeatureTipShown('app_open')
 
     expect(trackMock).toHaveBeenCalledTimes(1)
-    expect(trackMock).toHaveBeenCalledWith('orca_cli_feature_tip_shown', {
+    expect(trackMock).toHaveBeenCalledWith('kingu_cli_feature_tip_shown', {
       source: 'app_open'
     })
   })
@@ -49,14 +49,14 @@ describe('feature tip telemetry', () => {
   })
 
   it('tracks setup click and result without raw CLI details', () => {
-    trackOrcaCliFeatureTipSetupClicked('app_open')
-    trackOrcaCliFeatureTipSetupResult('app_open', 'installed')
+    trackKinguCliFeatureTipSetupClicked('app_open')
+    trackKinguCliFeatureTipSetupResult('app_open', 'installed')
 
     expect(trackMock).toHaveBeenCalledTimes(2)
-    expect(trackMock).toHaveBeenNthCalledWith(1, 'orca_cli_feature_tip_setup_clicked', {
+    expect(trackMock).toHaveBeenNthCalledWith(1, 'kingu_cli_feature_tip_setup_clicked', {
       source: 'app_open'
     })
-    expect(trackMock).toHaveBeenNthCalledWith(2, 'orca_cli_feature_tip_setup_result', {
+    expect(trackMock).toHaveBeenNthCalledWith(2, 'kingu_cli_feature_tip_setup_result', {
       source: 'app_open',
       result: 'installed'
     })

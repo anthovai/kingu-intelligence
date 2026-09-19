@@ -10,15 +10,18 @@ describe('IssueSourceIndicator suppression', () => {
 
     // Same slug → null (no information to convey)
     expect(sameGitHubOwnerRepo({ owner: 'o', repo: 'r' }, { owner: 'o', repo: 'r' })).toBe(true)
-    // Case-insensitive equality — the parent design doc calls out that `StablyAI/Orca`
-    // and `stablyai/orca` resolve to the same repo and must suppress.
+    // Case-insensitive equality — the parent design doc calls out that `StablyAI/Kingu`
+    // and `anthovai/kingu-intelligence` resolve to the same repo and must suppress.
     expect(
-      sameGitHubOwnerRepo({ owner: 'StablyAI', repo: 'Orca' }, { owner: 'stablyai', repo: 'orca' })
+      sameGitHubOwnerRepo(
+        { owner: 'StablyAI', repo: 'Kingu' },
+        { owner: 'anthovai', repo: 'kingu' }
+      )
     ).toBe(true)
     expect(
       sameGitHubOwnerRepo(
-        { owner: 'stablyai', repo: 'orca', host: 'github.com' },
-        { owner: 'stablyai', repo: 'orca', host: 'ghe.example.test' }
+        { owner: 'anthovai', repo: 'kingu', host: 'github.com' },
+        { owner: 'anthovai', repo: 'kingu', host: 'ghe.example.test' }
       )
     ).toBe(false)
     expect(sameGitHubOwnerRepo({ owner: 'a', repo: 'r' }, { owner: 'b', repo: 'r' })).toBe(false)

@@ -5,7 +5,7 @@ import { LinearApiKeyDialog } from '@/components/linear-api-key-dialog'
 import { LinearIcon } from '@/components/icons/LinearIcon'
 import { Button } from '@/components/ui/button'
 import { useAppStore } from '@/store'
-import { ORCA_LINEAR_SKILL_NAME } from '@/lib/agent-feature-install-commands'
+import { KINGU_LINEAR_SKILL_NAME } from '@/lib/agent-feature-install-commands'
 import { getLinearUsageExamples } from '@/lib/linear-usage-examples'
 import type { SkillUsageExample } from '@/lib/skill-usage-example'
 import { useLinearProviderConnected } from '@/hooks/useLinearProviderConnected'
@@ -101,7 +101,7 @@ export function LinearAgentSkillPane(): React.JSX.Element {
       title={translate('auto.components.settings.LinearAgentSkillPane.title', 'Linear')}
       description={translate(
         'auto.components.settings.LinearAgentSkillPane.description',
-        'How Linear works in Orca: browse issues, start linked workspaces, and let agents update tickets with /orca-linear.'
+        'How Linear works in Kingu: browse issues, start linked workspaces, and let agents update tickets with /kingu-linear.'
       )}
       keywords={getLinearAgentSkillPaneSearchEntries()[0].keywords}
       className="space-y-6 py-2"
@@ -133,7 +133,7 @@ export function LinearAgentSkillPane(): React.JSX.Element {
         )}
         examples={getLinearUsageExamples()}
         resolveIcon={resolveLinearExampleIcon}
-        slashCommand={`/${ORCA_LINEAR_SKILL_NAME}`}
+        slashCommand={`/${KINGU_LINEAR_SKILL_NAME}`}
       />
 
       <LinearAgentSkillNotes />

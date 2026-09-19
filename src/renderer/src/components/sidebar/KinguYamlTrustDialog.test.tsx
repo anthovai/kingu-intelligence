@@ -4,11 +4,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
   state: {
-    activeModal: 'confirm-orca-yaml-hooks' as string | null,
+    activeModal: 'confirm-kingu-yaml-hooks' as string | null,
     modalData: {} as Record<string, unknown>,
     closeModal: vi.fn(),
-    markOrcaHookScriptConfirmed: vi.fn(),
-    markOrcaHookRepoAlwaysTrusted: vi.fn()
+    markKinguHookScriptConfirmed: vi.fn(),
+    markKinguHookRepoAlwaysTrusted: vi.fn()
   }
 }))
 
@@ -55,13 +55,13 @@ function decodeHtml(html: string): string {
     .replace(/&gt;/g, '>')
 }
 
-describe('OrcaYamlTrustDialog', () => {
+describe('KinguYamlTrustDialog', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mocks.state.activeModal = 'confirm-orca-yaml-hooks'
+    mocks.state.activeModal = 'confirm-kingu-yaml-hooks'
     mocks.state.modalData = {
       repoId: 'repo-1',
-      repoName: 'orca',
+      repoName: 'kingu',
       scriptKind: 'setup',
       scriptContent: 'node config/scripts/run-internal-dev-setup.mjs\npnpm install',
       contentHash: 'hash-1',
@@ -69,30 +69,30 @@ describe('OrcaYamlTrustDialog', () => {
     }
   })
 
-  it('keeps spaces around orca.yaml and the repo name in the first-run copy', async () => {
-    const { default: OrcaYamlTrustDialog } = await import('./OrcaYamlTrustDialog')
-    const text = decodeHtml(renderToStaticMarkup(<OrcaYamlTrustDialog />)).replace(/<[^>]+>/g, '')
+  it('keeps spaces around kingu.yaml and the repo name in the first-run copy', async () => {
+    const { default: KinguYamlTrustDialog } = await import('./KinguYamlTrustDialog')
+    const text = decodeHtml(renderToStaticMarkup(<KinguYamlTrustDialog />)).replace(/<[^>]+>/g, '')
 
-    expect(text).toContain("This repository's orca.yaml runs on your machine")
-    expect(text).toContain('Only run if you trust orca.')
-    expect(text).toContain('Always trust orca.yaml in orca')
-    expect(text).not.toContain("repository'sorca.yaml")
-    expect(text).not.toContain('trustorca')
-    expect(text).not.toContain('trustorca.yaml')
-    expect(text).not.toContain('inorca')
+    expect(text).toContain("This repository's kingu.yaml runs on your machine")
+    expect(text).toContain('Only run if you trust kingu.')
+    expect(text).toContain('Always trust kingu.yaml in kingu')
+    expect(text).not.toContain("repository'skingu.yaml")
+    expect(text).not.toContain('trustkingu')
+    expect(text).not.toContain('trustkingu.yaml')
+    expect(text).not.toContain('inkingu')
   })
 
-  it('keeps spaces around orca.yaml when the script changed since last approval', async () => {
+  it('keeps spaces around kingu.yaml when the script changed since last approval', async () => {
     mocks.state.modalData = {
       ...mocks.state.modalData,
       previouslyApproved: true
     }
-    const { default: OrcaYamlTrustDialog } = await import('./OrcaYamlTrustDialog')
-    const text = decodeHtml(renderToStaticMarkup(<OrcaYamlTrustDialog />)).replace(/<[^>]+>/g, '')
+    const { default: KinguYamlTrustDialog } = await import('./KinguYamlTrustDialog')
+    const text = decodeHtml(renderToStaticMarkup(<KinguYamlTrustDialog />)).replace(/<[^>]+>/g, '')
 
-    expect(text).toContain('orca.yaml changed since you last approved')
-    expect(text).toContain('Always trust orca.yaml in orca')
-    expect(text).not.toContain('Always trustorca.yaml')
-    expect(text).not.toContain('inorca')
+    expect(text).toContain('kingu.yaml changed since you last approved')
+    expect(text).toContain('Always trust kingu.yaml in kingu')
+    expect(text).not.toContain('Always trustkingu.yaml')
+    expect(text).not.toContain('inkingu')
   })
 })

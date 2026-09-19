@@ -52,8 +52,8 @@ export function bindDeferredColdRestoreAndSnapshot(session: ConnectPanePtySessio
       ? {
           ...env,
           ...session.paneIdentityEnv,
-          ...(env.ORCA_AGENT_LAUNCH_TOKEN
-            ? { ORCA_AGENT_LAUNCH_TOKEN: env.ORCA_AGENT_LAUNCH_TOKEN }
+          ...(env.KINGU_AGENT_LAUNCH_TOKEN
+            ? { KINGU_AGENT_LAUNCH_TOKEN: env.KINGU_AGENT_LAUNCH_TOKEN }
             : {})
         }
       : undefined

@@ -45,7 +45,7 @@ vi.mock('@/lib/agent-launch-prompt-delivery', () => ({
 describe('paired browser capability cleanup', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.stubGlobal('__ORCA_WEB_CLIENT__', true)
+    vi.stubGlobal('__KINGU_WEB_CLIENT__', true)
     vi.stubGlobal('window', {
       api: { runtimeEnvironments: { call: mocks.runtimeCall } }
     })

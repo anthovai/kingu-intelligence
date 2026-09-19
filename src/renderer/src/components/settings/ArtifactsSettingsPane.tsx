@@ -2,7 +2,7 @@ import { ArrowRight, Files } from 'lucide-react'
 import type { GlobalSettings } from '../../../../shared/global-settings-types'
 import { Button } from '@/components/ui/button'
 import { SettingsSwitchRow } from './SettingsFormControls'
-import { useOrcaProfileAuthStatusRefresh } from '@/hooks/use-orca-profile-auth-status-refresh'
+import { useKinguProfileAuthStatusRefresh } from '@/hooks/use-kingu-profile-auth-status-refresh'
 import { useAppStore } from '@/store'
 import { isWebClientLocation } from '@/lib/web-client-location'
 import { translate } from '@/i18n/i18n'
@@ -17,15 +17,15 @@ export function ArtifactsSettingsPane({
   updateSettings: (updates: Partial<GlobalSettings>) => Promise<void>
 }): React.JSX.Element {
   const openArtifactsPage = useAppStore((state) => state.openArtifactsPage)
-  const authStatus = useAppStore((state) => state.orcaProfileAuthStatus)
-  const connect = useAppStore((state) => state.connectCurrentOrcaProfile)
+  const authStatus = useAppStore((state) => state.kinguProfileAuthStatus)
+  const connect = useAppStore((state) => state.connectCurrentKinguProfile)
   const signedIn = authStatus?.state === 'connected'
   // Why: the capability lives in the desktop host's store and is deliberately absent from the
   // settings.update allowlist, so a web client can only mirror it — never grant it.
   const isWebClient = isWebClientLocation()
   const sharingEnabled = settings.artifactSharingEnabled === true
 
-  useOrcaProfileAuthStatusRefresh()
+  useKinguProfileAuthStatusRefresh()
 
   const howToSteps: HowToStep[] = [
     ...(sharingEnabled
@@ -40,7 +40,7 @@ export function ArtifactsSettingsPane({
             description: isWebClient
               ? translate(
                   'auto.components.settings.artifacts.enableStepWebDescription',
-                  'Open Settings → Artifacts in the Orca desktop app on the host device and enable publishing.'
+                  'Open Settings → Artifacts in the Kingu desktop app on the host device and enable publishing.'
                 )
               : translate(
                   'auto.components.settings.artifacts.enableStepDescription',
@@ -69,7 +69,7 @@ export function ArtifactsSettingsPane({
     },
     {
       key: 'manage',
-      title: translate('auto.components.settings.artifacts.manageStepTitle', 'Manage it in Orca'),
+      title: translate('auto.components.settings.artifacts.manageStepTitle', 'Manage it in Kingu'),
       description: translate(
         'auto.components.settings.artifacts.manageStepDescription',
         'Open Artifacts from the sidebar to preview or remove links.'
@@ -120,7 +120,7 @@ export function ArtifactsSettingsPane({
             <p className="text-xs leading-relaxed text-muted-foreground">
               {translate(
                 'auto.components.settings.artifacts.signInDescription',
-                'Use your Orca account to upload artifacts and manage their public links.'
+                'Use your Kingu account to upload artifacts and manage their public links.'
               )}
             </p>
           </div>
@@ -132,7 +132,7 @@ export function ArtifactsSettingsPane({
           >
             {authStatus?.state === 'reconnect-required'
               ? translate('auto.components.settings.artifacts.signInAgain', 'Sign in again')
-              : translate('auto.components.settings.artifacts.signIn', 'Sign in to Orca')}
+              : translate('auto.components.settings.artifacts.signIn', 'Sign in to Kingu')}
           </Button>
         </section>
       ) : null}

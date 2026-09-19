@@ -32,10 +32,10 @@ function markedText(): string {
 describe('MatchedText', () => {
   it('underlines the matched run', () => {
     act(() => {
-      root.render(<MatchedText text="orca" hits={[0, 1, 2, 3]} />)
+      root.render(<MatchedText text="kingu" hits={[0, 1, 2, 3]} />)
     })
 
-    expect(markedText()).toBe('orca')
+    expect(markedText()).toBe('kingu')
   })
 
   // Hits are UTF-16 offsets; rendering splits by code point. An astral glyph is
@@ -46,33 +46,33 @@ describe('MatchedText', () => {
       kind: 'project',
       id: 'p1',
       projectId: 'p1',
-      displayName: '🚀 orca',
+      displayName: '🚀 kingu',
       badgeColor: '#111111',
-      detail: '~/dev/orca'
+      detail: '~/dev/kingu'
     }
-    const [match] = rankProjectOptions([option], 'orca', [])
+    const [match] = rankProjectOptions([option], 'kingu', [])
     expect(match).toBeDefined()
 
     act(() => {
       root.render(<MatchedText text={option.displayName} hits={match!.nameHits} />)
     })
 
-    expect(markedText()).toBe('orca')
+    expect(markedText()).toBe('kingu')
   })
 
   it('leaves text unmarked when there are no hits', () => {
     act(() => {
-      root.render(<MatchedText text="🚀 orca" hits={[]} />)
+      root.render(<MatchedText text="🚀 kingu" hits={[]} />)
     })
 
     expect(container.querySelectorAll('mark')).toHaveLength(0)
-    expect(container.textContent).toBe('🚀 orca')
+    expect(container.textContent).toBe('🚀 kingu')
   })
 })
 
 describe('ProjectOptionDetail', () => {
   it('keeps Windows path matches highlighted in the preserved tail', () => {
-    const detail = 'C:\\Users\\ada\\projects\\orca\\src\\renderer\\app.ts'
+    const detail = 'C:\\Users\\ada\\projects\\kingu\\src\\renderer\\app.ts'
     const start = detail.indexOf('src')
 
     act(() => {

@@ -313,7 +313,7 @@ describe('runtime file client', () => {
   })
 
   it('delegates stopped pre-ready web shared file watch cleanup to the subscription handle', async () => {
-    ;(globalThis as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__ = true
+    ;(globalThis as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__ = true
     const onPayload = vi.fn()
     const unsubscribe = vi.fn()
     let onResponse: ((response: unknown) => void) | undefined
@@ -351,7 +351,7 @@ describe('runtime file client', () => {
   })
 
   it('delegates stopped ready web shared file watch cleanup to the subscription handle', async () => {
-    ;(globalThis as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__ = true
+    ;(globalThis as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__ = true
     const onPayload = vi.fn()
     const unsubscribe = vi.fn()
     let onResponse: ((response: unknown) => void) | undefined

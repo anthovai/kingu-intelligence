@@ -43,7 +43,7 @@ describe('activateAndRevealWorktree', () => {
             }
           : { ok: false, error: { code: 'test', message: 'stop after recording the request' } }
     )
-    ;(globalThis as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__ = true
+    ;(globalThis as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__ = true
     vi.stubGlobal('window', {
       api: { runtimeEnvironments: { call: callRuntimeEnvironment } }
     })
@@ -76,7 +76,7 @@ describe('activateAndRevealWorktree', () => {
       agent: 'codex',
       startup: {
         command: "codex 'fix the ownership race'",
-        env: { ORCA_AGENT_PROFILE: 'review' },
+        env: { KINGU_AGENT_PROFILE: 'review' },
         launchAgent: 'codex',
         launchToken: 'launch-1'
       }
@@ -95,7 +95,7 @@ describe('activateAndRevealWorktree', () => {
       expect.objectContaining({
         params: expect.objectContaining({
           command: "codex 'fix the ownership race'",
-          env: { ORCA_AGENT_PROFILE: 'review' },
+          env: { KINGU_AGENT_PROFILE: 'review' },
           launchAgent: 'codex',
           launchToken: 'launch-1'
         })
@@ -114,7 +114,7 @@ describe('activateAndRevealWorktree', () => {
       ok: false,
       error: { code: 'test', message: 'stop after recording the request' }
     })
-    ;(globalThis as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__ = true
+    ;(globalThis as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__ = true
     vi.stubGlobal('window', {
       api: { runtimeEnvironments: { call: callRuntimeEnvironment } }
     })
@@ -168,7 +168,7 @@ describe('activateAndRevealFolderWorkspace', () => {
             }
           : { ok: false, error: { code: 'test', message: 'stop after recording the request' } }
     )
-    ;(globalThis as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__ = true
+    ;(globalThis as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__ = true
     vi.stubGlobal('window', {
       api: { runtimeEnvironments: { call: callRuntimeEnvironment } }
     })
@@ -231,7 +231,7 @@ describe('activateAndRevealFolderWorkspace', () => {
 
 describe('ensureWorktreeHasInitialTerminal', () => {
   it('does not create a local fallback tab in the paired web runtime client', () => {
-    ;(globalThis as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__ = true
+    ;(globalThis as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__ = true
     useAppStore.setState((state) => ({
       settings: state.settings
         ? { ...state.settings, activeRuntimeEnvironmentId: 'web-runtime-1' }
@@ -257,7 +257,7 @@ describe('ensureWorktreeHasInitialTerminal', () => {
   })
 
   it('queues returned setup fallback on an existing web runtime tab', () => {
-    ;(globalThis as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__ = true
+    ;(globalThis as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__ = true
     useAppStore.setState((state) => ({
       settings: state.settings
         ? { ...state.settings, activeRuntimeEnvironmentId: 'web-runtime-1' }
@@ -287,8 +287,8 @@ describe('ensureWorktreeHasInitialTerminal', () => {
       'wt-1',
       { command: 'claude' },
       {
-        runnerScriptPath: '/tmp/repo/.git/orca/setup-runner.sh',
-        envVars: { ORCA_ROOT_PATH: '/tmp/repo' },
+        runnerScriptPath: '/tmp/repo/.git/kingu/setup-runner.sh',
+        envVars: { KINGU_ROOT_PATH: '/tmp/repo' },
         waitForAgentStartup: true
       }
     )
@@ -302,7 +302,7 @@ describe('ensureWorktreeHasInitialTerminal', () => {
     expect(store.queueTabStartupCommand).toHaveBeenCalledWith(
       'tab-2',
       expect.objectContaining({
-        command: expect.stringContaining('bash /tmp/repo/.git/orca/setup-runner.sh')
+        command: expect.stringContaining('bash /tmp/repo/.git/kingu/setup-runner.sh')
       })
     )
     expect(store.queueTabStartupCommand).toHaveBeenCalledWith(
@@ -314,7 +314,7 @@ describe('ensureWorktreeHasInitialTerminal', () => {
   })
 
   it('holds the issue command for the first mirrored web runtime tab when none exists yet', () => {
-    ;(globalThis as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__ = true
+    ;(globalThis as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__ = true
     useAppStore.setState((state) => ({
       settings: state.settings
         ? { ...state.settings, activeRuntimeEnvironmentId: 'web-runtime-1' }

@@ -1,5 +1,5 @@
 import type { AppState } from '../../types'
-import type { PersistedTrustedOrcaHooks } from '../../../../../shared/orca-yaml-hook-types'
+import type { PersistedTrustedKinguHooks } from '../../../../../shared/kingu-yaml-hook-types'
 import type { PersistedUIState } from '../../../../../shared/persisted-ui-state-types'
 import type {
   TaskViewPresetId,
@@ -48,29 +48,29 @@ export function sanitizePersistedRepoIds(value: unknown): string[] {
   return value.filter((repoId): repoId is string => typeof repoId === 'string')
 }
 
-export function sanitizeTrustedOrcaHooks(trust: unknown): PersistedTrustedOrcaHooks {
+export function sanitizeTrustedKinguHooks(trust: unknown): PersistedTrustedKinguHooks {
   if (!isPlainPersistedRecord(trust)) {
     return {}
   }
-  const next: PersistedTrustedOrcaHooks = {}
+  const next: PersistedTrustedKinguHooks = {}
   for (const [repoId, entry] of Object.entries(trust)) {
     if (!isSafePersistedRecordKey(repoId) || !isPlainPersistedRecord(entry)) {
       continue
     }
-    next[repoId] = entry as PersistedTrustedOrcaHooks[string]
+    next[repoId] = entry as PersistedTrustedKinguHooks[string]
   }
   return next
 }
 
-export function hydrateTrustedOrcaHooks(
+export function hydrateTrustedKinguHooks(
   trust: unknown,
   validRepoIds: Set<string>
-): PersistedTrustedOrcaHooks {
-  const sanitized = sanitizeTrustedOrcaHooks(trust)
+): PersistedTrustedKinguHooks {
+  const sanitized = sanitizeTrustedKinguHooks(trust)
   if (validRepoIds.size === 0) {
     return sanitized
   }
-  const next: PersistedTrustedOrcaHooks = {}
+  const next: PersistedTrustedKinguHooks = {}
   for (const [repoId, entry] of Object.entries(sanitized)) {
     if (validRepoIds.has(repoId)) {
       next[repoId] = entry

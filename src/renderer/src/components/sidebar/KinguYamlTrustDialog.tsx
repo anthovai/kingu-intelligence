@@ -9,10 +9,10 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { useAppStore } from '@/store'
-import type { OrcaHookScriptKind } from '@/lib/orca-hook-trust'
+import type { KinguHookScriptKind } from '@/lib/kingu-hook-trust'
 import { translate } from '@/i18n/i18n'
 
-type ScriptKind = OrcaHookScriptKind
+type ScriptKind = KinguHookScriptKind
 
 const SCRIPT_KIND_LABEL: Record<ScriptKind, string> = {
   setup: 'setup script',
@@ -28,14 +28,14 @@ const SCRIPT_KIND_TRIGGER: Record<ScriptKind, string> = {
   vmRecipe: 'before provisioning a VM'
 }
 
-const OrcaYamlTrustDialog = React.memo(function OrcaYamlTrustDialog() {
+const KinguYamlTrustDialog = React.memo(function KinguYamlTrustDialog() {
   const activeModal = useAppStore((s) => s.activeModal)
   const modalData = useAppStore((s) => s.modalData)
   const closeModal = useAppStore((s) => s.closeModal)
-  const markOrcaHookScriptConfirmed = useAppStore((s) => s.markOrcaHookScriptConfirmed)
-  const markOrcaHookRepoAlwaysTrusted = useAppStore((s) => s.markOrcaHookRepoAlwaysTrusted)
+  const markKinguHookScriptConfirmed = useAppStore((s) => s.markKinguHookScriptConfirmed)
+  const markKinguHookRepoAlwaysTrusted = useAppStore((s) => s.markKinguHookRepoAlwaysTrusted)
 
-  const isOpen = activeModal === 'confirm-orca-yaml-hooks'
+  const isOpen = activeModal === 'confirm-kingu-yaml-hooks'
   const [alwaysTrustState, setAlwaysTrustState] = useState(() => ({
     isOpen,
     value: false
@@ -73,9 +73,9 @@ const OrcaYamlTrustDialog = React.memo(function OrcaYamlTrustDialog() {
     (decision: 'run' | 'skip') => {
       if (decision === 'run' && repoId) {
         if (alwaysTrust) {
-          markOrcaHookRepoAlwaysTrusted(repoId)
+          markKinguHookRepoAlwaysTrusted(repoId)
         } else if (contentHash) {
-          markOrcaHookScriptConfirmed(repoId, scriptKind, contentHash)
+          markKinguHookScriptConfirmed(repoId, scriptKind, contentHash)
         }
       }
       onResolve?.(decision)
@@ -85,8 +85,8 @@ const OrcaYamlTrustDialog = React.memo(function OrcaYamlTrustDialog() {
       alwaysTrust,
       closeModal,
       contentHash,
-      markOrcaHookRepoAlwaysTrusted,
-      markOrcaHookScriptConfirmed,
+      markKinguHookRepoAlwaysTrusted,
+      markKinguHookScriptConfirmed,
       onResolve,
       repoId,
       scriptKind
@@ -109,12 +109,12 @@ const OrcaYamlTrustDialog = React.memo(function OrcaYamlTrustDialog() {
           <DialogTitle className="text-sm">
             {previouslyApproved
               ? translate(
-                  'auto.components.sidebar.OrcaYamlTrustDialog.02b0ede5ad',
+                  'auto.components.sidebar.KinguYamlTrustDialog.02b0ede5ad',
                   "{{value0}}'s {{value1}} changed — run the new version?",
                   { value0: repoName, value1: SCRIPT_KIND_LABEL[scriptKind] }
                 )
               : translate(
-                  'auto.components.sidebar.OrcaYamlTrustDialog.e4a51dc4b3',
+                  'auto.components.sidebar.KinguYamlTrustDialog.e4a51dc4b3',
                   'Run {{value0}} from {{value1}}?',
                   { value0: SCRIPT_KIND_LABEL[scriptKind], value1: repoName }
                 )}
@@ -123,10 +123,13 @@ const OrcaYamlTrustDialog = React.memo(function OrcaYamlTrustDialog() {
             {previouslyApproved ? (
               <>
                 <code>
-                  {translate('auto.components.sidebar.OrcaYamlTrustDialog.79afc6772b', 'orca.yaml')}
+                  {translate(
+                    'auto.components.sidebar.KinguYamlTrustDialog.79afc6772b',
+                    'kingu.yaml'
+                  )}
                 </code>{' '}
                 {translate(
-                  'auto.components.sidebar.OrcaYamlTrustDialog.c55beddbf8',
+                  'auto.components.sidebar.KinguYamlTrustDialog.c55beddbf8',
                   'changed since you last approved. Re-review before it runs'
                 )}{' '}
                 {SCRIPT_KIND_TRIGGER[scriptKind]}.
@@ -134,19 +137,22 @@ const OrcaYamlTrustDialog = React.memo(function OrcaYamlTrustDialog() {
             ) : (
               <>
                 {translate(
-                  'auto.components.sidebar.OrcaYamlTrustDialog.aa3ffb33fb',
+                  'auto.components.sidebar.KinguYamlTrustDialog.aa3ffb33fb',
                   "This repository's"
                 )}{' '}
                 <code>
-                  {translate('auto.components.sidebar.OrcaYamlTrustDialog.79afc6772b', 'orca.yaml')}
+                  {translate(
+                    'auto.components.sidebar.KinguYamlTrustDialog.79afc6772b',
+                    'kingu.yaml'
+                  )}
                 </code>{' '}
                 {translate(
-                  'auto.components.sidebar.OrcaYamlTrustDialog.831f2cd9f0',
+                  'auto.components.sidebar.KinguYamlTrustDialog.831f2cd9f0',
                   'runs on your machine'
                 )}{' '}
                 {SCRIPT_KIND_TRIGGER[scriptKind]}
                 {translate(
-                  'auto.components.sidebar.OrcaYamlTrustDialog.bf800b7e04',
+                  'auto.components.sidebar.KinguYamlTrustDialog.bf800b7e04',
                   '. Only run if you trust'
                 )}{' '}
                 {repoName}.
@@ -160,12 +166,12 @@ const OrcaYamlTrustDialog = React.memo(function OrcaYamlTrustDialog() {
             <div className="mb-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
               {previouslyApproved
                 ? translate(
-                    'auto.components.sidebar.OrcaYamlTrustDialog.9e52effffd',
+                    'auto.components.sidebar.KinguYamlTrustDialog.9e52effffd',
                     'New {{value0}} script',
                     { value0: scriptKind }
                   )
                 : translate(
-                    'auto.components.sidebar.OrcaYamlTrustDialog.95bf974a1a',
+                    'auto.components.sidebar.KinguYamlTrustDialog.95bf974a1a',
                     '{{value0}} script',
                     { value0: scriptKind }
                   )}
@@ -190,20 +196,20 @@ const OrcaYamlTrustDialog = React.memo(function OrcaYamlTrustDialog() {
             onChange={(event) => setAlwaysTrust(event.target.checked)}
           />
           <span className="text-xs font-medium text-foreground">
-            {translate('auto.components.sidebar.OrcaYamlTrustDialog.531689199b', 'Always trust')}{' '}
+            {translate('auto.components.sidebar.KinguYamlTrustDialog.531689199b', 'Always trust')}{' '}
             <code>
-              {translate('auto.components.sidebar.OrcaYamlTrustDialog.79afc6772b', 'orca.yaml')}
+              {translate('auto.components.sidebar.KinguYamlTrustDialog.79afc6772b', 'kingu.yaml')}
             </code>{' '}
-            {translate('auto.components.sidebar.OrcaYamlTrustDialog.c494b3ccb1', 'in')} {repoName}
+            {translate('auto.components.sidebar.KinguYamlTrustDialog.c494b3ccb1', 'in')} {repoName}
           </span>
         </label>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => resolveAndClose('skip')}>
-            {translate('auto.components.sidebar.OrcaYamlTrustDialog.43b7bec4cd', "Don't run")}
+            {translate('auto.components.sidebar.KinguYamlTrustDialog.43b7bec4cd', "Don't run")}
           </Button>
           <Button onClick={() => resolveAndClose('run')}>
-            {translate('auto.components.sidebar.OrcaYamlTrustDialog.f3e2b868fb', 'Run hooks')}
+            {translate('auto.components.sidebar.KinguYamlTrustDialog.f3e2b868fb', 'Run hooks')}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -211,4 +217,4 @@ const OrcaYamlTrustDialog = React.memo(function OrcaYamlTrustDialog() {
   )
 })
 
-export default OrcaYamlTrustDialog
+export default KinguYamlTrustDialog

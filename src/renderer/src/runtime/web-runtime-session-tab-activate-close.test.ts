@@ -77,7 +77,7 @@ afterEach(() => resetWebSessionCloseIntentForTests())
 
 describe('web runtime session tab actions', () => {
   beforeEach(() => {
-    vi.stubGlobal('__ORCA_WEB_CLIENT__', true)
+    vi.stubGlobal('__KINGU_WEB_CLIENT__', true)
     mocks.getState.mockReturnValue({
       settings: {
         activeRuntimeEnvironmentId: ENVIRONMENT_ID

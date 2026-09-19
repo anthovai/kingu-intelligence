@@ -1,7 +1,7 @@
 import type { VirtualizedScrollAnchor } from '@/hooks/useVirtualizedScrollAnchor'
 import type { DiffSection } from '../../diff-section-types'
 import {
-  ORCA_EDITOR_EXTERNAL_FILE_CHANGE_EVENT,
+  KINGU_EDITOR_EXTERNAL_FILE_CHANGE_EVENT,
   type EditorPathMutationTarget
 } from '../../editor-autosave'
 
@@ -45,7 +45,7 @@ function handleCombinedDiffExternalFileChange(event: Event): void {
 export function disposeCombinedDiffViewMemory(): void {
   if (typeof window !== 'undefined') {
     window.removeEventListener(
-      ORCA_EDITOR_EXTERNAL_FILE_CHANGE_EVENT,
+      KINGU_EDITOR_EXTERNAL_FILE_CHANGE_EVENT,
       handleCombinedDiffExternalFileChange
     )
   }
@@ -53,7 +53,7 @@ export function disposeCombinedDiffViewMemory(): void {
 
 if (typeof window !== 'undefined') {
   window.addEventListener(
-    ORCA_EDITOR_EXTERNAL_FILE_CHANGE_EVENT,
+    KINGU_EDITOR_EXTERNAL_FILE_CHANGE_EVENT,
     handleCombinedDiffExternalFileChange
   )
 }

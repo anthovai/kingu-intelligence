@@ -1,7 +1,7 @@
 import type { AppState } from '@/store/types'
-import type { OrcaHooks } from '../../../shared/orca-yaml-hook-types'
+import type { KinguHooks } from '../../../shared/kingu-yaml-hook-types'
 import { resolveHookCommandSourcePolicy } from '../../../shared/hook-command-source-policy'
-import { hashOrcaHookScript, type OrcaHookScriptKind } from './orca-hook-trust'
+import { hashKinguHookScript, type KinguHookScriptKind } from './kingu-hook-trust'
 import {
   checkRuntimeHooks,
   readRuntimeIssueCommand,
@@ -15,7 +15,7 @@ import {
   type ExecutionHostId
 } from '../../../shared/execution-host'
 
-export type HookScriptKind = OrcaHookScriptKind
+export type HookScriptKind = KinguHookScriptKind
 
 const NEVER_CANCEL_TRUST_CHECK = (): boolean => false
 
@@ -32,7 +32,7 @@ export function __resetTrustPromptChainForTests(): void {
   trustPromptChain = Promise.resolve()
 }
 
-function getSetupTrustContent(yamlHooks: OrcaHooks | null): string {
+function getSetupTrustContent(yamlHooks: KinguHooks | null): string {
   const defaultTabCommands = (yamlHooks?.defaultTabs ?? [])
     .map((tab, index) => {
       const command = tab.command?.trim()
@@ -46,7 +46,7 @@ function getSetupTrustContent(yamlHooks: OrcaHooks | null): string {
   return [yamlHooks?.scripts?.setup?.trim(), ...defaultTabCommands].filter(Boolean).join('\n\n')
 }
 
-function getVmRecipeTrustContent(yamlHooks: OrcaHooks | null): string {
+function getVmRecipeTrustContent(yamlHooks: KinguHooks | null): string {
   return (yamlHooks?.environmentRecipes ?? [])
     .map((recipe) =>
       [
@@ -97,7 +97,7 @@ function settingsForHookRepoOwner(
 
 function canUseRepoWideTrust(state: AppState, repoId: string): boolean {
   const hasDuplicateRepoId = state.repos.filter((repo) => repo.id === repoId).length > 1
-  return Boolean(state.trustedOrcaHooks[repoId]?.all) && !hasDuplicateRepoId
+  return Boolean(state.trustedKinguHooks[repoId]?.all) && !hasDuplicateRepoId
 }
 
 async function confirmScriptContent(
@@ -115,11 +115,11 @@ async function confirmScriptContent(
     return 'run'
   }
 
-  const contentHash = await hashOrcaHookScript(scriptContent)
+  const contentHash = await hashKinguHookScript(scriptContent)
   if (isCancelled()) {
     return 'skip'
   }
-  const existingHash = state.trustedOrcaHooks[repoId]?.[scriptKind]?.contentHash
+  const existingHash = state.trustedKinguHooks[repoId]?.[scriptKind]?.contentHash
   if (existingHash === contentHash) {
     return 'run'
   }
@@ -137,7 +137,7 @@ async function confirmScriptContent(
       settled = true
       resolve(decision)
     }
-    state.openModal('confirm-orca-yaml-hooks', {
+    state.openModal('confirm-kingu-yaml-hooks', {
       repoId,
       repoName,
       scriptKind,
@@ -252,7 +252,7 @@ export async function ensureHooksConfirmed(
     let scriptContent = ''
     try {
       if (scriptKind === 'issueCommand') {
-        // Local overrides are user-owned; only shared orca.yaml commands need repo trust.
+        // Local overrides are user-owned; only shared kingu.yaml commands need repo trust.
         // Why: hostId disambiguates duplicate repo ids on the local IPC path,
         // matching the checkRuntimeHooks call below.
         const result = await readRuntimeIssueCommand(
@@ -290,7 +290,7 @@ export async function ensureHooksConfirmed(
         if (result.status === 'error') {
           return 'skip'
         }
-        const yamlHooks = (result.hooks as OrcaHooks | null) ?? null
+        const yamlHooks = (result.hooks as KinguHooks | null) ?? null
         scriptContent =
           scriptKind === 'setup'
             ? getSetupTrustContent(yamlHooks)

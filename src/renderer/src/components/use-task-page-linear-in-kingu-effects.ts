@@ -2,8 +2,8 @@ import type { TaskPageLinearListEffectsModel } from './use-task-page-linear-list
 import { useEffect } from 'react'
 import {
   readLinkedLinearIssuesWithLimit,
-  filterLinearIssuesForInOrcaWorkspace
-} from '@/components/task-page-linear-in-orca-issues'
+  filterLinearIssuesForInKinguWorkspace
+} from '@/components/task-page-linear-in-kingu-issues'
 import type { LinearIssue } from '../../../shared/linear/issue-types'
 import { translate } from '@/i18n/i18n'
 
@@ -15,7 +15,7 @@ function isCurrentLinearRequest(
   return requestRef.current?.signature === signature && requestRef.current?.nonce === nonce
 }
 
-export function useTaskPageLinearInOrcaEffects(model: TaskPageLinearListEffectsModel) {
+export function useTaskPageLinearInKinguEffects(model: TaskPageLinearListEffectsModel) {
   const {
     fetchLinearIssue,
     refreshLinearIssue,
@@ -31,20 +31,20 @@ export function useTaskPageLinearInOrcaEffects(model: TaskPageLinearListEffectsM
     setLinearError,
     linearRefreshNonce,
     lastLinearRequestRef,
-    inOrcaLinkedLinearRefsSignature,
-    inOrcaLinkedLinearRefsRef
+    inKinguLinkedLinearRefsSignature,
+    inKinguLinkedLinearRefsRef
   } = model
   // Why: Has Worktree loads Linear tickets linked on local worktrees, not a Linear list/search query.
   useEffect(() => {
     if (!taskResumeApplied) {
       return
     }
-    if (taskSource !== 'linear' || linearMode !== 'in-orca' || !linearConnected) {
+    if (taskSource !== 'linear' || linearMode !== 'in-kingu' || !linearConnected) {
       return
     }
     let cancelled = false
-    const linkedRefs = inOrcaLinkedLinearRefsRef.current
-    const requestSignature = `in-orca::${selectedLinearWorkspaceId ?? 'default'}::${inOrcaLinkedLinearRefsSignature}`
+    const linkedRefs = inKinguLinkedLinearRefsRef.current
+    const requestSignature = `in-kingu::${selectedLinearWorkspaceId ?? 'default'}::${inKinguLinkedLinearRefsSignature}`
     const previousRequest = lastLinearRequestRef.current
     const isNewSignature = previousRequest?.signature !== requestSignature
     const forceRefresh = linearRefreshNonce > 0 && previousRequest?.nonce !== linearRefreshNonce
@@ -87,7 +87,7 @@ export function useTaskPageLinearInOrcaEffects(model: TaskPageLinearListEffectsM
           setLinearError(
             translate(
               'auto.components.TaskPage.linearHasWorktreeLoadFailed',
-              'Unable to load Linear issues linked to an Orca workspace.'
+              'Unable to load Linear issues linked to an Kingu workspace.'
             )
           )
           setLinearIssues([])
@@ -98,11 +98,11 @@ export function useTaskPageLinearInOrcaEffects(model: TaskPageLinearListEffectsM
           setLinearError(
             translate(
               'auto.components.TaskPage.linearHasWorktreePartialLoadFailed',
-              'Some Linear issues linked to an Orca workspace could not be loaded. Refresh to try again.'
+              'Some Linear issues linked to an Kingu workspace could not be loaded. Refresh to try again.'
             )
           )
         }
-        setLinearIssues(filterLinearIssuesForInOrcaWorkspace(loaded, selectedLinearWorkspaceId))
+        setLinearIssues(filterLinearIssuesForInKinguWorkspace(loaded, selectedLinearWorkspaceId))
         setLinearLoading(false)
       })
       .catch((err) => {
@@ -122,8 +122,8 @@ export function useTaskPageLinearInOrcaEffects(model: TaskPageLinearListEffectsM
     // churn (activity stamps, unread flags) can't re-issue one read per linked ticket.
   }, [
     fetchLinearIssue,
-    inOrcaLinkedLinearRefsSignature,
-    inOrcaLinkedLinearRefsRef,
+    inKinguLinkedLinearRefsSignature,
+    inKinguLinkedLinearRefsRef,
     lastLinearRequestRef,
     linearConnected,
     linearMode,
@@ -140,4 +140,4 @@ export function useTaskPageLinearInOrcaEffects(model: TaskPageLinearListEffectsM
   ])
   return model
 }
-export type TaskPageLinearInOrcaEffectsModel = ReturnType<typeof useTaskPageLinearInOrcaEffects>
+export type TaskPageLinearInKinguEffectsModel = ReturnType<typeof useTaskPageLinearInKinguEffects>

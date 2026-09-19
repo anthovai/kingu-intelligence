@@ -26,7 +26,7 @@ export function MobileRelayMintFailureNotice({
   const providerMissing = failure.stage === 'provider_missing'
   // Why: a revoked cloud session fails every mint; "retry or use LAN" hides the one action that works.
   const reconnectRequired = useAppStore(
-    (state) => state.orcaProfileAuthStatus?.state === 'reconnect-required'
+    (state) => state.kinguProfileAuthStatus?.state === 'reconnect-required'
   )
   const [showBusyFeedback, setShowBusyFeedback] = useState(false)
   useEffect(() => {
@@ -41,17 +41,17 @@ export function MobileRelayMintFailureNotice({
   const title = visibleBusy
     ? translate(
         'auto.components.mobile.MobileRelayMintFailureNotice.retryingTitle',
-        'Retrying Orca Relay…'
+        'Retrying Kingu Relay…'
       )
     : providerMissing
       ? translate(
           'auto.components.mobile.MobileRelayMintFailureNotice.unavailableTitle',
-          'Orca Relay isn’t available on this desktop.'
+          'Kingu Relay isn’t available on this desktop.'
         )
       : reconnectRequired
         ? translate(
             'auto.components.mobile.MobileRelayMintFailureNotice.reconnectTitle',
-            'Your Orca account session expired.'
+            'Your Kingu account session expired.'
           )
         : translate(
             'auto.components.mobile.MobileRelayMintFailureNotice.title',
@@ -70,7 +70,7 @@ export function MobileRelayMintFailureNotice({
       : reconnectRequired
         ? translate(
             'auto.components.mobile.MobileRelayMintFailureNotice.reconnectBody',
-            'Sign in again to use Orca Relay, or use LAN to pair over Tailscale or the same Wi‑Fi.'
+            'Sign in again to use Kingu Relay, or use LAN to pair over Tailscale or the same Wi‑Fi.'
           )
         : translate(
             'auto.components.mobile.MobileRelayMintFailureNotice.body',

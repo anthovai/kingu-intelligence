@@ -77,16 +77,16 @@ describe('markdown document templates', () => {
     ).toHaveLength(0)
   })
 
-  it('discovers markdown files under .orca/templates and skips unsafe entries', async () => {
+  it('discovers markdown files under .kingu/templates and skips unsafe entries', async () => {
     const readDir = stubReadDir({
-      '/repo/.orca/templates': [
+      '/repo/.kingu/templates': [
         entry('daily-note.md'),
         entry('scratch.txt'),
         entry('linked.md', false, true),
         entry('nested', true),
         entry('node_modules', true)
       ],
-      '/repo/.orca/templates/nested': [entry('meeting.markdown'), entry('brief.mdx')]
+      '/repo/.kingu/templates/nested': [entry('meeting.markdown'), entry('brief.mdx')]
     })
 
     await expect(
@@ -101,33 +101,33 @@ describe('markdown document templates', () => {
       )
     ).resolves.toEqual([
       {
-        id: '.orca/templates/nested/brief.mdx',
+        id: '.kingu/templates/nested/brief.mdx',
         name: 'Brief',
-        filePath: '/repo/.orca/templates/nested/brief.mdx',
-        relativePath: '.orca/templates/nested/brief.mdx',
+        filePath: '/repo/.kingu/templates/nested/brief.mdx',
+        relativePath: '.kingu/templates/nested/brief.mdx',
         templateRelativePath: 'nested/brief.mdx',
         basename: 'brief.mdx'
       },
       {
-        id: '.orca/templates/daily-note.md',
+        id: '.kingu/templates/daily-note.md',
         name: 'Daily note',
-        filePath: '/repo/.orca/templates/daily-note.md',
-        relativePath: '.orca/templates/daily-note.md',
+        filePath: '/repo/.kingu/templates/daily-note.md',
+        relativePath: '.kingu/templates/daily-note.md',
         templateRelativePath: 'daily-note.md',
         basename: 'daily-note.md'
       },
       {
-        id: '.orca/templates/nested/meeting.markdown',
+        id: '.kingu/templates/nested/meeting.markdown',
         name: 'Meeting',
-        filePath: '/repo/.orca/templates/nested/meeting.markdown',
-        relativePath: '.orca/templates/nested/meeting.markdown',
+        filePath: '/repo/.kingu/templates/nested/meeting.markdown',
+        relativePath: '.kingu/templates/nested/meeting.markdown',
         templateRelativePath: 'nested/meeting.markdown',
         basename: 'meeting.markdown'
       }
     ])
 
     expect(readDir).toHaveBeenCalledWith({
-      dirPath: '/repo/.orca/templates',
+      dirPath: '/repo/.kingu/templates',
       connectionId: 'conn-1'
     })
   })
@@ -145,7 +145,7 @@ describe('markdown document templates', () => {
 
   it('keeps Windows file paths native while exposing root-relative template paths', async () => {
     stubReadDir({
-      'C:\\repo\\.orca\\templates': [entry('daily.md')]
+      'C:\\repo\\.kingu\\templates': [entry('daily.md')]
     })
 
     await expect(
@@ -155,10 +155,10 @@ describe('markdown document templates', () => {
       )
     ).resolves.toEqual([
       {
-        id: '.orca/templates/daily.md',
+        id: '.kingu/templates/daily.md',
         name: 'Daily',
-        filePath: 'C:\\repo\\.orca\\templates\\daily.md',
-        relativePath: '.orca/templates/daily.md',
+        filePath: 'C:\\repo\\.kingu\\templates\\daily.md',
+        relativePath: '.kingu/templates/daily.md',
         templateRelativePath: 'daily.md',
         basename: 'daily.md'
       }

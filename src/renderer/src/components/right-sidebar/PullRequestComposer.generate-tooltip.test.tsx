@@ -207,7 +207,10 @@ describe('CreateHostedReviewComposer generate tooltip', () => {
     const onPrimaryAction = vi.fn()
     const { container } = renderDom(
       pullRequestComposerElement({
-        stackParentReview: { number: 13741, url: 'https://github.com/stablyai/orca/pull/13741' },
+        stackParentReview: {
+          number: 13741,
+          url: 'https://github.com/anthovai/kingu-intelligence/pull/13741'
+        },
         onPrimaryAction
       })
     )
@@ -233,7 +236,10 @@ describe('CreateHostedReviewComposer generate tooltip', () => {
   it('drives both options through the shadcn Checkbox primitive', () => {
     const { container } = renderDom(
       pullRequestComposerElement({
-        stackParentReview: { number: 13741, url: 'https://github.com/stablyai/orca/pull/13741' }
+        stackParentReview: {
+          number: 13741,
+          url: 'https://github.com/anthovai/kingu-intelligence/pull/13741'
+        }
       })
     )
 
@@ -367,7 +373,10 @@ describe('CreateHostedReviewComposer generate tooltip', () => {
       <InteractiveBaseComposer
         initialBase="feature/parent"
         baseResults={['release/candidate']}
-        stackParentReview={{ number: 13741, url: 'https://github.com/stablyai/orca/pull/13741' }}
+        stackParentReview={{
+          number: 13741,
+          url: 'https://github.com/anthovai/kingu-intelligence/pull/13741'
+        }}
         onPrimaryAction={onPrimaryAction}
       />
     )
@@ -389,7 +398,10 @@ describe('CreateHostedReviewComposer generate tooltip', () => {
     renderDom(
       <InteractiveBaseComposer
         baseResults={['release/candidate']}
-        stackParentReview={{ number: 13741, url: 'https://github.com/stablyai/orca/pull/13741' }}
+        stackParentReview={{
+          number: 13741,
+          url: 'https://github.com/anthovai/kingu-intelligence/pull/13741'
+        }}
       />
     )
 
@@ -402,7 +414,10 @@ describe('CreateHostedReviewComposer generate tooltip', () => {
   it('hides stacked creation when the executing host lacks the capability', () => {
     const markup = renderPullRequestComposer({
       stackedCreationSupported: false,
-      stackParentReview: { number: 13741, url: 'https://github.com/stablyai/orca/pull/13741' }
+      stackParentReview: {
+        number: 13741,
+        url: 'https://github.com/anthovai/kingu-intelligence/pull/13741'
+      }
     })
 
     expect(markup).not.toContain('Stack this PR above #13741')

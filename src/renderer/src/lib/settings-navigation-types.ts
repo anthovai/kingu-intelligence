@@ -42,7 +42,7 @@ const SETTINGS_NAV_TARGETS = [
   'session-history',
   'share-skills',
   'automations',
-  'orca-account',
+  'kingu-account',
   'linear',
   'setup-guide',
   'servers',
@@ -53,7 +53,7 @@ const SETTINGS_NAV_TARGETS = [
 
 const SETTINGS_NAV_INTENTS = [
   'add-quick-command',
-  'add-remote-orca-server',
+  'add-remote-kingu-server',
   'add-ssh-host'
 ] as const
 

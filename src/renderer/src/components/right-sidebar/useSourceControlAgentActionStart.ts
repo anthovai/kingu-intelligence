@@ -31,8 +31,8 @@ type UseSourceControlAgentActionStartArgs = {
   groupId?: string | null
   promptDelivery: 'auto-submit' | 'draft' | 'submit-after-ready'
   launchPlatform?: NodeJS.Platform
-  /** Why: SSH hosts launch the plain `orca` shim, so the previewed command must
-   * drop the Linux-only `orca-ide` rename to match the real launch. */
+  /** Why: SSH hosts launch the plain `kingu` shim, so the previewed command must
+   * drop the Linux-only `kingu-ide` rename to match the real launch. */
   isRemote?: boolean
   launchSource: LaunchSource
   connectionUnavailable: boolean

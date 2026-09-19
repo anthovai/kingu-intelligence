@@ -53,11 +53,11 @@ function makeAutomation(overrides: Partial<Automation> = {}): Automation {
     updatedAt: 1,
     runContext: {
       kind: 'workspace-run',
-      projectId: 'github:stablyai/orca',
+      projectId: 'github:anthovai/kingu-intelligence',
       hostId: 'runtime:gpu',
       projectHostSetupId: 'setup-gpu',
       repoId: 'repo-1',
-      path: '/srv/orca'
+      path: '/srv/kingu'
     },
     ...overrides
   }
@@ -130,7 +130,7 @@ describe('automation host client', () => {
   it('encodes exact machine selectors for the create wire input', () => {
     const automation = makeAutomation({
       workspaceMode: 'existing',
-      workspaceId: 'repo-1::/srv/orca'
+      workspaceId: 'repo-1::/srv/kingu'
     })
     const input: AutomationCreateInput = {
       name: automation.name,
@@ -149,7 +149,7 @@ describe('automation host client', () => {
 
     expect(toRuntimeAutomationCreateInput(input)).toMatchObject({
       repo: 'id:repo-1',
-      workspace: 'id:repo-1::/srv/orca'
+      workspace: 'id:repo-1::/srv/kingu'
     })
     // A per-run workspace states no workspace selector at all.
     expect(
@@ -161,11 +161,11 @@ describe('automation host client', () => {
     const automation = makeAutomation({
       runContext: {
         kind: 'workspace-run',
-        projectId: 'github:stablyai/orca',
+        projectId: 'github:anthovai/kingu-intelligence',
         hostId: 'ssh:devbox',
         projectHostSetupId: 'setup-devbox',
         repoId: 'repo-1',
-        path: '/srv/orca'
+        path: '/srv/kingu'
       }
     })
     const sourceTarget = { kind: 'environment' as const, environmentId: 'gpu' }

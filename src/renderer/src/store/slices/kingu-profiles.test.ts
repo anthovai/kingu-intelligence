@@ -1,11 +1,11 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { createTestStore } from './store-test-helpers'
 import type {
-  CreateLocalOrcaProfileResult,
-  OrcaProfileAuthStatus,
-  OrcaProfileListResult,
-  TransferOrcaProfileProjectResult
-} from '../../../../shared/orca-profiles'
+  CreateLocalKinguProfileResult,
+  KinguProfileAuthStatus,
+  KinguProfileListResult,
+  TransferKinguProfileProjectResult
+} from '../../../../shared/kingu-profiles'
 
 const { toastErrorMock } = vi.hoisted(() => ({
   toastErrorMock: vi.fn()
@@ -20,7 +20,7 @@ vi.mock('sonner', () => ({
   }
 }))
 
-const listState: OrcaProfileListResult = {
+const listState: KinguProfileListResult = {
   activeProfileId: 'local-default',
   multiProfileUi: false,
   profiles: [
@@ -36,7 +36,7 @@ const listState: OrcaProfileListResult = {
   ]
 }
 
-const createdState: CreateLocalOrcaProfileResult = {
+const createdState: CreateLocalKinguProfileResult = {
   activeProfileId: 'local-default',
   profiles: [
     ...listState.profiles,
@@ -61,14 +61,14 @@ const createdState: CreateLocalOrcaProfileResult = {
   }
 }
 
-const localAuthStatus: OrcaProfileAuthStatus = {
+const localAuthStatus: KinguProfileAuthStatus = {
   activeProfileId: 'local-default',
   configured: false,
   state: 'unconfigured',
   persistence: 'none'
 }
 
-const connectedAuthStatus: OrcaProfileAuthStatus = {
+const connectedAuthStatus: KinguProfileAuthStatus = {
   activeProfileId: 'local-default',
   configured: true,
   state: 'connected',
@@ -85,7 +85,7 @@ const connectedAuthStatus: OrcaProfileAuthStatus = {
   }
 }
 
-const orcaProfilesApi = {
+const kinguProfilesApi = {
   list: vi.fn(),
   authStatus: vi.fn(),
   createLocal: vi.fn(),
@@ -98,98 +98,98 @@ const orcaProfilesApi = {
   transferProject: vi.fn()
 }
 
-describe('orca profile slice', () => {
+describe('kingu profile slice', () => {
   beforeEach(() => {
     vi.resetAllMocks()
     toastErrorMock.mockReset()
-    orcaProfilesApi.authStatus.mockResolvedValue(localAuthStatus)
+    kinguProfilesApi.authStatus.mockResolvedValue(localAuthStatus)
     vi.stubGlobal('window', {
       api: {
-        orcaProfiles: orcaProfilesApi
+        kinguProfiles: kinguProfilesApi
       }
     })
   })
 
   it('fetches profiles into store state', async () => {
-    orcaProfilesApi.list.mockResolvedValue(listState)
+    kinguProfilesApi.list.mockResolvedValue(listState)
     const store = createTestStore()
 
-    await store.getState().fetchOrcaProfiles()
+    await store.getState().fetchKinguProfiles()
 
-    expect(store.getState().activeOrcaProfileId).toBe('local-default')
-    expect(store.getState().orcaProfiles).toEqual(listState.profiles)
-    expect(store.getState().orcaProfileAuthStatus).toEqual(localAuthStatus)
-    expect(store.getState().orcaProfilesMultiProfileUi).toBe(false)
-    expect(store.getState().orcaProfilesLoading).toBe(false)
+    expect(store.getState().activeKinguProfileId).toBe('local-default')
+    expect(store.getState().kinguProfiles).toEqual(listState.profiles)
+    expect(store.getState().kinguProfileAuthStatus).toEqual(localAuthStatus)
+    expect(store.getState().kinguProfilesMultiProfileUi).toBe(false)
+    expect(store.getState().kinguProfilesLoading).toBe(false)
   })
 
   it('stores the multi-profile UI flag from the list result', async () => {
-    orcaProfilesApi.list.mockResolvedValue({ ...listState, multiProfileUi: true })
+    kinguProfilesApi.list.mockResolvedValue({ ...listState, multiProfileUi: true })
     const store = createTestStore()
 
-    await store.getState().fetchOrcaProfiles()
+    await store.getState().fetchKinguProfiles()
 
-    expect(store.getState().orcaProfilesMultiProfileUi).toBe(true)
+    expect(store.getState().kinguProfilesMultiProfileUi).toBe(true)
   })
 
   it('creates a local profile and returns the created summary', async () => {
-    orcaProfilesApi.createLocal.mockResolvedValue(createdState)
+    kinguProfilesApi.createLocal.mockResolvedValue(createdState)
     const store = createTestStore()
 
-    const profile = await store.getState().createLocalOrcaProfile('Work')
+    const profile = await store.getState().createLocalKinguProfile('Work')
 
     expect(profile).toEqual(createdState.profile)
-    expect(orcaProfilesApi.createLocal).toHaveBeenCalledWith({ name: 'Work' })
-    expect(store.getState().orcaProfiles).toEqual(createdState.profiles)
+    expect(kinguProfilesApi.createLocal).toHaveBeenCalledWith({ name: 'Work' })
+    expect(store.getState().kinguProfiles).toEqual(createdState.profiles)
   })
 
   it('fetches auth status independently', async () => {
-    orcaProfilesApi.authStatus.mockResolvedValue(connectedAuthStatus)
+    kinguProfilesApi.authStatus.mockResolvedValue(connectedAuthStatus)
     const store = createTestStore()
 
-    await expect(store.getState().fetchOrcaProfileAuthStatus()).resolves.toEqual(
+    await expect(store.getState().fetchKinguProfileAuthStatus()).resolves.toEqual(
       connectedAuthStatus
     )
-    expect(store.getState().orcaProfileAuthStatus).toEqual(connectedAuthStatus)
+    expect(store.getState().kinguProfileAuthStatus).toEqual(connectedAuthStatus)
   })
 
   it('sets switching state while requesting a profile switch', async () => {
-    orcaProfilesApi.switchProfile.mockResolvedValue({ status: 'relaunching' })
+    kinguProfilesApi.switchProfile.mockResolvedValue({ status: 'relaunching' })
     const store = createTestStore()
-    store.setState({ activeOrcaProfileId: 'local-default' })
+    store.setState({ activeKinguProfileId: 'local-default' })
 
-    const result = await store.getState().switchOrcaProfile('local-work')
+    const result = await store.getState().switchKinguProfile('local-work')
 
     expect(result).toEqual({ status: 'relaunching' })
-    expect(orcaProfilesApi.switchProfile).toHaveBeenCalledWith({ profileId: 'local-work' })
-    expect(store.getState().orcaProfileSwitching).toBe(true)
+    expect(kinguProfilesApi.switchProfile).toHaveBeenCalledWith({ profileId: 'local-work' })
+    expect(store.getState().kinguProfileSwitching).toBe(true)
   })
 
   it('releases switching state when main reports the profile is already active', async () => {
-    // Why: a stale renderer activeOrcaProfileId must not lock the switcher
+    // Why: a stale renderer activeKinguProfileId must not lock the switcher
     // forever when no relaunch is actually coming.
-    orcaProfilesApi.switchProfile.mockResolvedValue({ status: 'already-active' })
+    kinguProfilesApi.switchProfile.mockResolvedValue({ status: 'already-active' })
     const store = createTestStore()
-    store.setState({ activeOrcaProfileId: 'local-default' })
+    store.setState({ activeKinguProfileId: 'local-default' })
 
-    const result = await store.getState().switchOrcaProfile('local-work')
+    const result = await store.getState().switchKinguProfile('local-work')
 
     expect(result).toEqual({ status: 'already-active' })
-    expect(store.getState().orcaProfileSwitching).toBe(false)
+    expect(store.getState().kinguProfileSwitching).toBe(false)
   })
 
   it('does not call main when switching to the active profile', async () => {
     const store = createTestStore()
-    store.setState({ activeOrcaProfileId: 'local-default' })
+    store.setState({ activeKinguProfileId: 'local-default' })
 
-    const result = await store.getState().switchOrcaProfile('local-default')
+    const result = await store.getState().switchKinguProfile('local-default')
 
     expect(result).toEqual({ status: 'already-active' })
-    expect(orcaProfilesApi.switchProfile).not.toHaveBeenCalled()
+    expect(kinguProfilesApi.switchProfile).not.toHaveBeenCalled()
   })
 
   it('transfers projects through the profile API', async () => {
-    const transferResult: TransferOrcaProfileProjectResult = {
+    const transferResult: TransferKinguProfileProjectResult = {
       status: 'transferred',
       mode: 'copy',
       sourceProfileId: 'local-default',
@@ -198,10 +198,10 @@ describe('orca profile slice', () => {
       targetRepoId: 'repo-2',
       targetProjectId: 'repo:repo-2'
     }
-    orcaProfilesApi.transferProject.mockResolvedValue(transferResult)
+    kinguProfilesApi.transferProject.mockResolvedValue(transferResult)
     const store = createTestStore()
 
-    const result = await store.getState().transferOrcaProfileProject({
+    const result = await store.getState().transferKinguProfileProject({
       sourceProfileId: 'local-default',
       targetProfileId: 'local-work',
       repoId: 'repo-1',
@@ -209,7 +209,7 @@ describe('orca profile slice', () => {
     })
 
     expect(result).toEqual(transferResult)
-    expect(orcaProfilesApi.transferProject).toHaveBeenCalledWith({
+    expect(kinguProfilesApi.transferProject).toHaveBeenCalledWith({
       sourceProfileId: 'local-default',
       targetProfileId: 'local-work',
       repoId: 'repo-1',
@@ -218,7 +218,7 @@ describe('orca profile slice', () => {
   })
 
   it('marks profile switching when a project transfer relaunches the app', async () => {
-    const transferResult: TransferOrcaProfileProjectResult = {
+    const transferResult: TransferKinguProfileProjectResult = {
       status: 'transferred',
       mode: 'move',
       sourceProfileId: 'local-default',
@@ -228,31 +228,31 @@ describe('orca profile slice', () => {
       targetProjectId: 'repo:repo-1',
       willRelaunch: true
     }
-    orcaProfilesApi.transferProject.mockResolvedValue(transferResult)
+    kinguProfilesApi.transferProject.mockResolvedValue(transferResult)
     const store = createTestStore()
 
-    await store.getState().transferOrcaProfileProject({
+    await store.getState().transferKinguProfileProject({
       sourceProfileId: 'local-default',
       targetProfileId: 'local-work',
       repoId: 'repo-1',
       mode: 'move'
     })
 
-    expect(store.getState().orcaProfileSwitching).toBe(true)
+    expect(store.getState().kinguProfileSwitching).toBe(true)
   })
 
   it('warns when a project already exists in the target profile', async () => {
-    const transferResult: TransferOrcaProfileProjectResult = {
+    const transferResult: TransferKinguProfileProjectResult = {
       status: 'duplicate-target',
       sourceProfileId: 'local-default',
       targetProfileId: 'local-work',
       sourceRepoId: 'repo-1',
       duplicateRepoId: 'repo-existing'
     }
-    orcaProfilesApi.transferProject.mockResolvedValue(transferResult)
+    kinguProfilesApi.transferProject.mockResolvedValue(transferResult)
     const store = createTestStore()
 
-    await store.getState().transferOrcaProfileProject({
+    await store.getState().transferKinguProfileProject({
       sourceProfileId: 'local-default',
       targetProfileId: 'local-work',
       repoId: 'repo-1',
@@ -260,6 +260,6 @@ describe('orca profile slice', () => {
     })
 
     expect(toastErrorMock).toHaveBeenCalledWith('Project already exists in that profile')
-    expect(store.getState().orcaProfileSwitching).toBe(false)
+    expect(store.getState().kinguProfileSwitching).toBe(false)
   })
 })

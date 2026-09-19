@@ -10,7 +10,7 @@ import type { MobileRelayMintFailure } from '../../../../shared/mobile-relay-min
 
 type StoreState = {
   closeMobilePage: () => void
-  orcaProfileAuthStatus: { state: 'connected' | 'local' }
+  kinguProfileAuthStatus: { state: 'connected' | 'local' }
   settings: {
     showMobileButton: boolean
     mobilePairingConnectionMode?: MobilePairingConnectionMode
@@ -18,7 +18,7 @@ type StoreState = {
     mobilePairingCustomAddresses?: string[]
   }
   updateSettings: () => Promise<void>
-  fetchOrcaProfileAuthStatus: () => Promise<unknown>
+  fetchKinguProfileAuthStatus: () => Promise<unknown>
 }
 
 const mocks = vi.hoisted(() => ({
@@ -100,7 +100,7 @@ vi.mock('./MobilePageContent', () => ({
         Pair another device
       </button>
       <button type="button" onClick={() => props.handleConnectionModeChange('automatic')}>
-        Orca Relay
+        Kingu Relay
       </button>
       <button type="button" onClick={() => props.handleConnectionModeChange('local-only')}>
         LAN
@@ -151,7 +151,7 @@ describe('MobilePage pairing connection mode', () => {
       available: true,
       qrDataUrl: 'data:image/png;base64,qr',
       qrSize: 218,
-      pairingUrl: 'orca://pair#automatic'
+      pairingUrl: 'kingu://pair#automatic'
     })
     listNetworkInterfaces.mockReset().mockResolvedValue({ interfaces: [] })
     // The paired-device cache is module state shared by every surface; reset it so
@@ -159,10 +159,10 @@ describe('MobilePage pairing connection mode', () => {
     _resetPairedMobileDevicesCacheForTests()
     mocks.storeState = {
       closeMobilePage: vi.fn(),
-      orcaProfileAuthStatus: { state: 'connected' },
+      kinguProfileAuthStatus: { state: 'connected' },
       settings: { showMobileButton: true },
       updateSettings: vi.fn().mockResolvedValue(undefined),
-      fetchOrcaProfileAuthStatus: vi.fn().mockResolvedValue(null)
+      fetchKinguProfileAuthStatus: vi.fn().mockResolvedValue(null)
     }
     Object.defineProperty(window, 'api', {
       configurable: true,
@@ -194,7 +194,9 @@ describe('MobilePage pairing connection mode', () => {
 
     await user.click(screen.getByRole('button', { name: 'Open Android install guide' }))
 
-    expect(window.api.shell.openUrl).toHaveBeenCalledWith('https://www.onorca.dev/docs/android-apk')
+    expect(window.api.shell.openUrl).toHaveBeenCalledWith(
+      'https://www.onkingu.dev/docs/android-apk'
+    )
   })
 
   it('defaults signed-in pairing to Anywhere and remints when same-network is selected', async () => {
@@ -233,7 +235,7 @@ describe('MobilePage pairing connection mode', () => {
     resolveRotatedLocalQr?.({
       available: true,
       qrDataUrl: 'data:image/png;base64,local-qr',
-      pairingUrl: 'orca://pair#local'
+      pairingUrl: 'kingu://pair#local'
     })
     await waitFor(() => expect(screen.getByTestId('pairing-qr')).toHaveTextContent('local-qr'))
   })
@@ -268,7 +270,7 @@ describe('MobilePage pairing connection mode', () => {
   })
 
   it('does not auto-mint any QR when signed out with Anywhere selected', async () => {
-    mocks.storeState.orcaProfileAuthStatus = { state: 'local' }
+    mocks.storeState.kinguProfileAuthStatus = { state: 'local' }
     await openPairingStep()
 
     // Aligned with Settings: signed-out Anywhere cannot serve Relay, so we mint
@@ -281,7 +283,7 @@ describe('MobilePage pairing connection mode', () => {
   })
 
   it('mints a local-only QR when switching to LAN while signed out', async () => {
-    mocks.storeState.orcaProfileAuthStatus = { state: 'local' }
+    mocks.storeState.kinguProfileAuthStatus = { state: 'local' }
     const user = userEvent.setup()
     await openPairingStep()
     await new Promise((resolve) => setTimeout(resolve, 20))
@@ -295,7 +297,7 @@ describe('MobilePage pairing connection mode', () => {
   })
 
   it('does not remint when switching from Local to Anywhere while signed out', async () => {
-    mocks.storeState.orcaProfileAuthStatus = { state: 'local' }
+    mocks.storeState.kinguProfileAuthStatus = { state: 'local' }
     const user = userEvent.setup()
     await openPairingStep()
 
@@ -303,9 +305,9 @@ describe('MobilePage pairing connection mode', () => {
     await waitFor(() => expect(screen.getByTestId('pairing-qr')).toHaveTextContent('base64,qr'))
     getPairingQR.mockClear()
 
-    // Switching back to Orca Relay must clear the local QR, not remint a
+    // Switching back to Kingu Relay must clear the local QR, not remint a
     // local-only code under the Relay label.
-    await user.click(screen.getByRole('button', { name: 'Orca Relay' }))
+    await user.click(screen.getByRole('button', { name: 'Kingu Relay' }))
     await waitFor(() => expect(screen.getByTestId('mode')).toHaveTextContent('automatic'))
     await waitFor(() => expect(screen.getByTestId('pairing-qr')).toHaveTextContent('none'))
     await new Promise((resolve) => setTimeout(resolve, 20))
@@ -314,7 +316,7 @@ describe('MobilePage pairing connection mode', () => {
   })
 
   it('does not mint on address change while signed out with Anywhere selected', async () => {
-    mocks.storeState.orcaProfileAuthStatus = { state: 'local' }
+    mocks.storeState.kinguProfileAuthStatus = { state: 'local' }
     const user = userEvent.setup()
     await openPairingStep()
     await new Promise((resolve) => setTimeout(resolve, 20))
@@ -327,7 +329,7 @@ describe('MobilePage pairing connection mode', () => {
   })
 
   it('mints a Relay QR when signing in with Anywhere selected', async () => {
-    mocks.storeState.orcaProfileAuthStatus = { state: 'local' }
+    mocks.storeState.kinguProfileAuthStatus = { state: 'local' }
     const user = userEvent.setup()
     const { rerender } = render(<MobilePage />)
     await waitFor(() => expect(screen.getByTestId('stage')).toHaveTextContent('intro'))
@@ -349,7 +351,7 @@ describe('MobilePage pairing connection mode', () => {
     )
 
     // Signing in unlocks Relay, so Step 2 mints an honest Relay QR.
-    mocks.storeState.orcaProfileAuthStatus = { state: 'connected' }
+    mocks.storeState.kinguProfileAuthStatus = { state: 'connected' }
     rerender(<MobilePage />)
     await waitFor(() => expect(getPairingQR).toHaveBeenCalledWith({ connectionMode: 'automatic' }))
     // Between the auth flip and the mint resolving, no code may be shown — the
@@ -360,7 +362,7 @@ describe('MobilePage pairing connection mode', () => {
     resolveRelayQr?.({
       available: true,
       qrDataUrl: 'data:image/png;base64,qr',
-      pairingUrl: 'orca://pair#automatic'
+      pairingUrl: 'kingu://pair#automatic'
     })
     await waitFor(() => expect(screen.getByTestId('pairing-qr')).toHaveTextContent('base64,qr'))
     expect(screen.getByTestId('mode')).toHaveTextContent('automatic')
@@ -383,7 +385,7 @@ describe('MobilePage pairing connection mode', () => {
       available: true,
       qrDataUrl: null,
       qrError: 'encoding_failed',
-      pairingUrl: 'orca://pair?code=copy-fallback',
+      pairingUrl: 'kingu://pair?code=copy-fallback',
       endpoint: 'wss://host.example/large',
       connectionMode: 'automatic'
     })
@@ -414,7 +416,7 @@ describe('MobilePage pairing connection mode', () => {
     getPairingQR.mockResolvedValueOnce({
       available: true,
       qrDataUrl: 'data:image/png;base64,retried',
-      pairingUrl: 'orca://pair#retried',
+      pairingUrl: 'kingu://pair#retried',
       endpoint: 'ws://host',
       connectionMode: 'automatic'
     })
@@ -456,7 +458,7 @@ describe('MobilePage pairing connection mode', () => {
     getPairingQR.mockResolvedValueOnce({
       available: true,
       qrDataUrl: 'data:image/png;base64,local',
-      pairingUrl: 'orca://pair#local',
+      pairingUrl: 'kingu://pair#local',
       endpoint: 'ws://host',
       connectionMode: 'local-only'
     })
@@ -470,7 +472,7 @@ describe('MobilePage pairing connection mode', () => {
     resolveRetry?.({
       available: true,
       qrDataUrl: 'data:image/png;base64,stale-relay',
-      pairingUrl: 'orca://pair#stale-relay',
+      pairingUrl: 'kingu://pair#stale-relay',
       endpoint: 'ws://relay',
       connectionMode: 'automatic'
     })
@@ -486,7 +488,7 @@ describe('MobilePage pairing connection mode', () => {
       available: true,
       qrDataUrl: null,
       qrError: 'encoding_failed',
-      pairingUrl: 'orca://pair?code=copy-fallback',
+      pairingUrl: 'kingu://pair?code=copy-fallback',
       endpoint: 'wss://custom.example/large',
       connectionMode: 'automatic'
     })

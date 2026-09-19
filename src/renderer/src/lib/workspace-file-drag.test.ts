@@ -48,7 +48,7 @@ describe('workspace file drag payloads', () => {
   it('rejects missing and malformed workspace ownership', () => {
     const transfer = new FakeDataTransfer()
     expect(readWorkspaceFileDragSource(transfer)).toBeNull()
-    transfer.setData('application/x-orca-workspace-file-source', '{"workspaceId":"worktree-1"}')
+    transfer.setData('application/x-kingu-workspace-file-source', '{"workspaceId":"worktree-1"}')
     expect(readWorkspaceFileDragSource(transfer)).toBeNull()
   })
 

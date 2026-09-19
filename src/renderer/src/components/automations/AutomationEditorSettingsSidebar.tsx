@@ -6,7 +6,7 @@ import {
   isValidAutomationSchedule
 } from '../../../../shared/automation-schedule-parsing'
 import type { GlobalSettings } from '../../../../shared/global-settings-types'
-import type { OrcaHooks } from '../../../../shared/orca-yaml-hook-types'
+import type { KinguHooks } from '../../../../shared/kingu-yaml-hook-types'
 import type { ProjectHostSetup } from '../../../../shared/project-types'
 import type { Repo } from '../../../../shared/repo-types'
 import type { Worktree } from '../../../../shared/worktree/types'
@@ -30,7 +30,7 @@ type AutomationEditorSettingsSidebarProps = {
   isHermesCreate: boolean
   repos: readonly Repo[]
   projectHostSetups: readonly ProjectHostSetup[]
-  automationYamlHooksByRepoKey: Record<string, OrcaHooks | null>
+  automationYamlHooksByRepoKey: Record<string, KinguHooks | null>
   getAutomationHooksCacheKey: (repoId: string) => string
   repoMap: Map<string, Repo>
   worktrees: Worktree[]
@@ -73,7 +73,7 @@ export function AutomationEditorSettingsSidebar({
     <aside className="flex w-[320px] shrink-0 flex-col overflow-auto border-l border-border/50 bg-muted/20 px-5 py-5 scrollbar-sleek">
       <div className="flex flex-col">
         {/* Why: Hermes keeps project/workspace/schedule only. Collapse the
-            Orca-only knobs so switching the create target does not jump. */}
+            Kingu-only knobs so switching the create target does not jump. */}
         <div
           className={cn(
             'grid overflow-hidden transition-[grid-template-rows,margin] duration-200 ease-out',
@@ -223,7 +223,7 @@ export function AutomationEditorSettingsSidebar({
           </div>
         </div>
         <AutomationSetupDecisionField
-          createTarget={isHermesTarget ? 'hermes' : 'orca'}
+          createTarget={isHermesTarget ? 'hermes' : 'kingu'}
           draft={draft}
           repos={repos}
           projectHostSetups={projectHostSetups}

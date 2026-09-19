@@ -21,7 +21,7 @@ import {
   isCurrentLivePaneKey
 } from './terminal-notification-state'
 import {
-  isOrcaWindowForegroundFocused,
+  isKinguWindowForegroundFocused,
   isVisibleForegroundPaneKey
 } from './terminal-notification-pane-visibility'
 
@@ -83,9 +83,9 @@ export function createTerminalAttentionSurface(state: StoreSnapshot): AgentAtten
     // active leaf counts as already viewed.
     isSurfaceViewed: (subject) =>
       isVisibleForegroundPaneKey(state, subject.workspaceId, subject.surfaceKey),
-    // Why: activeWorktreeId is in-app selection only. A backgrounded Orca still needs unread.
+    // Why: activeWorktreeId is in-app selection only. A backgrounded Kingu still needs unread.
     isWorkspaceViewed: (workspaceId) =>
-      state.activeWorktreeId === workspaceId && isOrcaWindowForegroundFocused(),
+      state.activeWorktreeId === workspaceId && isKinguWindowForegroundFocused(),
     isWorkspaceActive: (workspaceId) => state.activeWorktreeId === workspaceId,
     resolveViewedSubjectKey: (groupId) => resolveViewedPaneKey(state, groupId),
     collectWorkspaceAttentionRemainder: (workspaceId) =>

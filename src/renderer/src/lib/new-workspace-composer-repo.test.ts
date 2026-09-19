@@ -99,32 +99,32 @@ describe('new-workspace-composer-repo', () => {
   })
 
   describe('resolveComposerActiveRepoId', () => {
-    const localOrca = makeRepo('local-orca', { upstream: { owner: 'stablyai', repo: 'orca' } })
-    const runtimeOrca = makeRepo('runtime-orca', {
-      connectionId: 'runtime-ssh-orca-1',
-      upstream: { owner: 'stablyai', repo: 'orca' }
+    const localKingu = makeRepo('local-kingu', { upstream: { owner: 'anthovai', repo: 'kingu' } })
+    const runtimeKingu = makeRepo('runtime-kingu', {
+      connectionId: 'runtime-ssh-kingu-1',
+      upstream: { owner: 'anthovai', repo: 'kingu' }
     })
-    const otherProject = makeRepo('noqa', { upstream: { owner: 'stablyai', repo: 'noqa' } })
-    const repos = [otherProject, localOrca, runtimeOrca]
+    const otherProject = makeRepo('noqa', { upstream: { owner: 'anthovai', repo: 'noqa' } })
+    const repos = [otherProject, localKingu, runtimeKingu]
     const eligibleRepos = getComposerEligibleRepos(repos)
 
     it('maps an active runtime-owned SSH repo to its local same-project sibling', () => {
-      expect(resolveComposerActiveRepoId(repos, eligibleRepos, 'runtime-orca')).toBe('local-orca')
+      expect(resolveComposerActiveRepoId(repos, eligibleRepos, 'runtime-kingu')).toBe('local-kingu')
     })
 
     it('leaves a normal active repo unchanged', () => {
-      expect(resolveComposerActiveRepoId(repos, eligibleRepos, 'local-orca')).toBe('local-orca')
+      expect(resolveComposerActiveRepoId(repos, eligibleRepos, 'local-kingu')).toBe('local-kingu')
     })
 
     it('keeps the runtime repo id when no same-project sibling is eligible', () => {
-      const onlyRuntime = [runtimeOrca]
+      const onlyRuntime = [runtimeKingu]
       expect(
         resolveComposerActiveRepoId(
           onlyRuntime,
           getComposerEligibleRepos(onlyRuntime),
-          'runtime-orca'
+          'runtime-kingu'
         )
-      ).toBe('runtime-orca')
+      ).toBe('runtime-kingu')
     })
 
     it('passes through null/undefined active repo', () => {

@@ -17,7 +17,7 @@ const item = {
   number: 14198,
   title: 'Agent terminals disappearing randomly',
   state: 'open',
-  url: 'https://github.com/stablyai/orca/issues/14198',
+  url: 'https://github.com/anthovai/kingu-intelligence/issues/14198',
   labels: [],
   updatedAt: '2026-08-12T12:00:00.000Z',
   author: 'nwparker',
@@ -31,7 +31,7 @@ describe('lookupCmdJGitHubUrlWorkItem', () => {
 
   it('looks up by owner/repo and returns null without a repo or on failure', async () => {
     const link = {
-      slug: { owner: 'stablyai', repo: 'orca', host: 'github.com' },
+      slug: { owner: 'anthovai', repo: 'kingu', host: 'github.com' },
       type: 'issue' as const,
       number: 14198
     }
@@ -53,8 +53,8 @@ describe('lookupCmdJGitHubUrlWorkItem', () => {
     ).toEqual(item)
     expect(lookupGitHubWorkItemByOwnerRepoForSource).toHaveBeenCalledWith(
       expect.objectContaining({
-        owner: 'stablyai',
-        repo: 'orca',
+        owner: 'anthovai',
+        repo: 'kingu',
         host: 'github.com',
         number: 14198,
         type: 'issue'

@@ -2,16 +2,16 @@ import { describe, expect, it } from 'vitest'
 import type { CliInstallStatus } from '../../../../shared/cli-install-types'
 import { readCliInstallFailure, readCliInstallRejection } from './cli-install-failure'
 
-const FALLBACK = 'Orca could not finish CLI registration and reported no reason.'
+const FALLBACK = 'Kingu could not finish CLI registration and reported no reason.'
 
 function cliStatus(overrides: Partial<CliInstallStatus> = {}): CliInstallStatus {
   return {
     platform: 'darwin',
-    commandName: 'orca',
-    commandPath: '/usr/local/bin/orca',
+    commandName: 'kingu',
+    commandPath: '/usr/local/bin/kingu',
     pathDirectory: '/usr/local/bin',
     pathConfigured: true,
-    launcherPath: '/Applications/Orca.app/Contents/Resources/bin/orca',
+    launcherPath: '/Applications/Kingu.app/Contents/Resources/bin/kingu',
     installMethod: 'symlink',
     supported: true,
     state: 'installed',
@@ -34,12 +34,12 @@ describe('readCliInstallFailure', () => {
           state: 'unsupported',
           supported: false,
           unsupportedReason: 'launcher_missing',
-          detail: 'The bundled CLI launcher is missing from this Orca build.'
+          detail: 'The bundled CLI launcher is missing from this Kingu build.'
         }),
         FALLBACK
       )
     ).toEqual({
-      reason: 'The bundled CLI launcher is missing from this Orca build.',
+      reason: 'The bundled CLI launcher is missing from this Kingu build.',
       conflictCommandPath: null
     })
   })
@@ -49,13 +49,13 @@ describe('readCliInstallFailure', () => {
       readCliInstallFailure(
         cliStatus({
           state: 'conflict',
-          detail: '/usr/local/bin/orca exists but is not an Orca symlink.'
+          detail: '/usr/local/bin/kingu exists but is not an Kingu symlink.'
         }),
         FALLBACK
       )
     ).toEqual({
-      reason: '/usr/local/bin/orca exists but is not an Orca symlink.',
-      conflictCommandPath: '/usr/local/bin/orca'
+      reason: '/usr/local/bin/kingu exists but is not an Kingu symlink.',
+      conflictCommandPath: '/usr/local/bin/kingu'
     })
   })
 
@@ -72,14 +72,14 @@ describe('readCliInstallRejection', () => {
     expect(
       readCliInstallRejection(
         new Error(
-          "Error invoking remote method 'cli:install': Error: Refusing to replace non-Orca " +
-            'command at /usr/local/bin/orca. Remove it and register again if it is no longer needed.'
+          "Error invoking remote method 'cli:install': Error: Refusing to replace non-Kingu " +
+            'command at /usr/local/bin/kingu. Remove it and register again if it is no longer needed.'
         ),
         FALLBACK
       )
     ).toEqual({
       reason:
-        'Refusing to replace non-Orca command at /usr/local/bin/orca. ' +
+        'Refusing to replace non-Kingu command at /usr/local/bin/kingu. ' +
         'Remove it and register again if it is no longer needed.',
       conflictCommandPath: null
     })
@@ -88,9 +88,9 @@ describe('readCliInstallRejection', () => {
   it('keeps the registration-lock remedy that names the lock file', () => {
     const failure = readCliInstallRejection(
       new Error(
-        "Error invoking remote method 'cli:install': Error: Timed out waiting for another Orca " +
-          'process to finish CLI registration (waited 330s). If no other Orca is running, remove ' +
-          '/home/u/.cache/orca/appimage/.cli-registration.lock and retry.'
+        "Error invoking remote method 'cli:install': Error: Timed out waiting for another Kingu " +
+          'process to finish CLI registration (waited 330s). If no other Kingu is running, remove ' +
+          '/home/u/.cache/kingu/appimage/.cli-registration.lock and retry.'
       ),
       FALLBACK
     )

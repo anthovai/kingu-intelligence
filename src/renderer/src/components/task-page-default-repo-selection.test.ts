@@ -22,22 +22,22 @@ function repo(overrides: Partial<Repo> & Pick<Repo, 'id'>): Repo {
 describe('getTaskEligibleRepos', () => {
   it('keeps only Git repos with a resolvable remote identity', () => {
     const eligible = getTaskEligibleRepos([
-      repo({ id: 'github-upstream', upstream: { owner: 'stablyai', repo: 'orca' } }),
+      repo({ id: 'github-upstream', upstream: { owner: 'anthovai', repo: 'kingu' } }),
       repo({
         id: 'github-icon',
         repoIcon: {
           type: 'image',
-          src: 'https://github.com/stablyai.png?size=64',
+          src: 'https://github.com/anthovai.png?size=64',
           source: 'github',
-          label: 'stablyai/orca'
+          label: 'anthovai/kingu-intelligence'
         }
       }),
       repo({
         id: 'gitlab-remote',
         gitRemoteIdentity: {
-          canonicalKey: 'gitlab.example.com/team/orca',
+          canonicalKey: 'gitlab.example.com/team/kingu',
           remoteName: 'origin',
-          remoteUrl: 'git@gitlab.example.com:team/orca.git'
+          remoteUrl: 'git@gitlab.example.com:team/kingu.git'
         }
       }),
       repo({ id: 'settled-no-remote', gitRemoteIdentity: null }),
@@ -52,7 +52,7 @@ describe('getTaskEligibleRepos', () => {
       repo({
         id: 'folder-with-remote',
         kind: 'folder',
-        upstream: { owner: 'stablyai', repo: 'docs' }
+        upstream: { owner: 'anthovai', repo: 'docs' }
       })
     ])
 
@@ -92,7 +92,7 @@ describe('getTaskEligibleRepos', () => {
         id: 'gitlab-ssh-partial',
         connectionId: 'builder',
         gitRemoteIdentity: {
-          canonicalKey: 'gitlab.example.com/team/orca',
+          canonicalKey: 'gitlab.example.com/team/kingu',
           remoteName: 'origin',
           remoteUrl: ''
         }
@@ -101,9 +101,9 @@ describe('getTaskEligibleRepos', () => {
         id: 'gitlab-ssh-complete',
         connectionId: 'builder',
         gitRemoteIdentity: {
-          canonicalKey: 'gitlab.example.com/team/orca',
+          canonicalKey: 'gitlab.example.com/team/kingu',
           remoteName: 'origin',
-          remoteUrl: 'git@gitlab.example.com:team/orca.git'
+          remoteUrl: 'git@gitlab.example.com:team/kingu.git'
         }
       })
     ])
@@ -116,55 +116,55 @@ describe('getDefaultTaskRepoSelection', () => {
   it('selects one source per logical GitHub project', () => {
     const selection = getDefaultTaskRepoSelection([
       repo({
-        id: 'local-orca',
-        upstream: { owner: 'StablyAI', repo: 'Orca' }
+        id: 'local-kingu',
+        upstream: { owner: 'StablyAI', repo: 'Kingu' }
       }),
       repo({
-        id: 'ssh-orca',
+        id: 'ssh-kingu',
         connectionId: 'builder',
-        upstream: { owner: 'stablyai', repo: 'orca' }
+        upstream: { owner: 'anthovai', repo: 'kingu' }
       }),
       repo({
         id: 'other',
-        upstream: { owner: 'stablyai', repo: 'other' }
+        upstream: { owner: 'anthovai', repo: 'other' }
       })
     ])
 
-    expect([...selection].sort()).toEqual(['local-orca', 'other'])
+    expect([...selection].sort()).toEqual(['local-kingu', 'other'])
   })
 
   it('keeps GitHub grouping intact while a pending-identity repo joins as its own project', () => {
     const selection = getDefaultTaskRepoSelection(
       getTaskEligibleRepos([
-        repo({ id: 'local-orca', upstream: { owner: 'StablyAI', repo: 'Orca' } }),
+        repo({ id: 'local-kingu', upstream: { owner: 'StablyAI', repo: 'Kingu' } }),
         repo({
-          id: 'ssh-orca',
+          id: 'ssh-kingu',
           connectionId: 'builder',
-          upstream: { owner: 'stablyai', repo: 'orca' }
+          upstream: { owner: 'anthovai', repo: 'kingu' }
         }),
         repo({ id: 'ssh-gitlab-pending', connectionId: 'builder' })
       ])
     )
 
-    expect([...selection].sort()).toEqual(['local-orca', 'ssh-gitlab-pending'])
+    expect([...selection].sort()).toEqual(['local-kingu', 'ssh-gitlab-pending'])
   })
 
   it('prefers local checkout over a remote checkout for the same project', () => {
     const selection = getDefaultTaskRepoSelection([
       repo({
-        id: 'ssh-orca',
+        id: 'ssh-kingu',
         addedAt: 1,
         connectionId: 'builder',
-        upstream: { owner: 'stablyai', repo: 'orca' }
+        upstream: { owner: 'anthovai', repo: 'kingu' }
       }),
       repo({
-        id: 'local-orca',
+        id: 'local-kingu',
         addedAt: 2,
-        upstream: { owner: 'stablyai', repo: 'orca' }
+        upstream: { owner: 'anthovai', repo: 'kingu' }
       })
     ])
 
-    expect([...selection]).toEqual(['local-orca'])
+    expect([...selection]).toEqual(['local-kingu'])
   })
 
   it('keeps same-named folders separate when provider identity is missing', () => {
@@ -183,9 +183,9 @@ describe('getDefaultTaskRepoSelection', () => {
         displayName: 'claude-swap',
         repoIcon: {
           type: 'image',
-          src: 'https://github.com/stablyai.png?size=64',
+          src: 'https://github.com/anthovai.png?size=64',
           source: 'github',
-          label: 'stablyai/claude-swap'
+          label: 'anthovai/claude-swap'
         }
       }),
       repo({
@@ -194,7 +194,7 @@ describe('getDefaultTaskRepoSelection', () => {
         connectionId: 'builder',
         repoIcon: {
           type: 'image',
-          src: 'https://github.com/stablyai.png?size=64',
+          src: 'https://github.com/anthovai.png?size=64',
           source: 'github',
           label: 'StablyAI/claude-swap'
         }
@@ -209,40 +209,40 @@ describe('getTaskProjectPickerRepos', () => {
   it('shows one picker row per logical GitHub project', () => {
     const pickerRepos = getTaskProjectPickerRepos([
       repo({
-        id: 'local-orca',
-        upstream: { owner: 'StablyAI', repo: 'Orca' }
+        id: 'local-kingu',
+        upstream: { owner: 'StablyAI', repo: 'Kingu' }
       }),
       repo({
-        id: 'ssh-orca',
+        id: 'ssh-kingu',
         connectionId: 'builder',
-        upstream: { owner: 'stablyai', repo: 'orca' }
+        upstream: { owner: 'anthovai', repo: 'kingu' }
       }),
       repo({
         id: 'other',
-        upstream: { owner: 'stablyai', repo: 'other' }
+        upstream: { owner: 'anthovai', repo: 'other' }
       })
     ])
 
-    expect(pickerRepos.map((candidate) => candidate.id)).toEqual(['local-orca', 'other'])
+    expect(pickerRepos.map((candidate) => candidate.id)).toEqual(['local-kingu', 'other'])
   })
 
   it('uses an explicitly selected remote source as the visible project row', () => {
     const pickerRepos = getTaskProjectPickerRepos(
       [
         repo({
-          id: 'local-orca',
-          upstream: { owner: 'stablyai', repo: 'orca' }
+          id: 'local-kingu',
+          upstream: { owner: 'anthovai', repo: 'kingu' }
         }),
         repo({
-          id: 'ssh-orca',
+          id: 'ssh-kingu',
           connectionId: 'builder',
-          upstream: { owner: 'stablyai', repo: 'orca' }
+          upstream: { owner: 'anthovai', repo: 'kingu' }
         })
       ],
-      new Set(['ssh-orca'])
+      new Set(['ssh-kingu'])
     )
 
-    expect(pickerRepos.map((candidate) => candidate.id)).toEqual(['ssh-orca'])
+    expect(pickerRepos.map((candidate) => candidate.id)).toEqual(['ssh-kingu'])
   })
 
   it('collapses legacy local and SSH rows that share a GitHub repo icon identity', () => {
@@ -252,9 +252,9 @@ describe('getTaskProjectPickerRepos', () => {
         displayName: 'claude-swap',
         repoIcon: {
           type: 'image',
-          src: 'https://github.com/stablyai.png?size=64',
+          src: 'https://github.com/anthovai.png?size=64',
           source: 'github',
-          label: 'stablyai/claude-swap'
+          label: 'anthovai/claude-swap'
         }
       }),
       repo({
@@ -263,7 +263,7 @@ describe('getTaskProjectPickerRepos', () => {
         connectionId: 'builder',
         repoIcon: {
           type: 'image',
-          src: 'https://github.com/stablyai.png?size=64',
+          src: 'https://github.com/anthovai.png?size=64',
           source: 'github',
           label: 'StablyAI/claude-swap'
         }
@@ -278,28 +278,28 @@ describe('getTaskProjectPickerGroups', () => {
   it('keeps all host sources under one logical project row', () => {
     const groups = getTaskProjectPickerGroups([
       repo({
-        id: 'local-orca',
-        upstream: { owner: 'stablyai', repo: 'orca' }
+        id: 'local-kingu',
+        upstream: { owner: 'anthovai', repo: 'kingu' }
       }),
       repo({
-        id: 'ssh-orca',
+        id: 'ssh-kingu',
         connectionId: 'builder',
-        upstream: { owner: 'stablyai', repo: 'orca' }
+        upstream: { owner: 'anthovai', repo: 'kingu' }
       }),
       repo({
         id: 'docs',
-        upstream: { owner: 'stablyai', repo: 'docs' }
+        upstream: { owner: 'anthovai', repo: 'docs' }
       })
     ])
 
     expect(groups).toHaveLength(2)
     expect(groups[0]).toMatchObject({
-      projectKey: 'github:stablyai/orca',
-      repo: { id: 'local-orca' }
+      projectKey: 'github:anthovai/kingu-intelligence',
+      repo: { id: 'local-kingu' }
     })
-    expect(groups[0]?.sources.map((source) => source.id)).toEqual(['local-orca', 'ssh-orca'])
+    expect(groups[0]?.sources.map((source) => source.id)).toEqual(['local-kingu', 'ssh-kingu'])
     expect(groups[1]).toMatchObject({
-      projectKey: 'github:stablyai/docs',
+      projectKey: 'github:anthovai/docs',
       repo: { id: 'docs' }
     })
   })
@@ -308,20 +308,20 @@ describe('getTaskProjectPickerGroups', () => {
     const groups = getTaskProjectPickerGroups(
       [
         repo({
-          id: 'local-orca',
-          upstream: { owner: 'stablyai', repo: 'orca' }
+          id: 'local-kingu',
+          upstream: { owner: 'anthovai', repo: 'kingu' }
         }),
         repo({
-          id: 'ssh-orca',
+          id: 'ssh-kingu',
           connectionId: 'builder',
-          upstream: { owner: 'stablyai', repo: 'orca' }
+          upstream: { owner: 'anthovai', repo: 'kingu' }
         })
       ],
-      new Set(['ssh-orca'])
+      new Set(['ssh-kingu'])
     )
 
-    expect(groups[0]?.repo.id).toBe('ssh-orca')
-    expect(groups[0]?.sources.map((source) => source.id)).toEqual(['local-orca', 'ssh-orca'])
+    expect(groups[0]?.repo.id).toBe('ssh-kingu')
+    expect(groups[0]?.sources.map((source) => source.id)).toEqual(['local-kingu', 'ssh-kingu'])
   })
 })
 
@@ -330,60 +330,60 @@ describe('normalizeTaskRepoSelection', () => {
     const selection = normalizeTaskRepoSelection(
       [
         repo({
-          id: 'local-orca',
-          upstream: { owner: 'stablyai', repo: 'orca' }
+          id: 'local-kingu',
+          upstream: { owner: 'anthovai', repo: 'kingu' }
         }),
         repo({
-          id: 'ssh-orca',
+          id: 'ssh-kingu',
           connectionId: 'builder',
-          upstream: { owner: 'stablyai', repo: 'orca' }
+          upstream: { owner: 'anthovai', repo: 'kingu' }
         })
       ],
-      new Set(['local-orca', 'ssh-orca'])
+      new Set(['local-kingu', 'ssh-kingu'])
     )
 
-    expect([...selection]).toEqual(['local-orca'])
+    expect([...selection]).toEqual(['local-kingu'])
   })
 
   it('preserves a single explicit remote source selection', () => {
     const selection = normalizeTaskRepoSelection(
       [
         repo({
-          id: 'local-orca',
-          upstream: { owner: 'stablyai', repo: 'orca' }
+          id: 'local-kingu',
+          upstream: { owner: 'anthovai', repo: 'kingu' }
         }),
         repo({
-          id: 'ssh-orca',
+          id: 'ssh-kingu',
           connectionId: 'builder',
-          upstream: { owner: 'stablyai', repo: 'orca' }
+          upstream: { owner: 'anthovai', repo: 'kingu' }
         })
       ],
-      new Set(['ssh-orca'])
+      new Set(['ssh-kingu'])
     )
 
-    expect([...selection]).toEqual(['ssh-orca'])
+    expect([...selection]).toEqual(['ssh-kingu'])
   })
 
   it('normalizes raw all-host selection to one source per logical project', () => {
     const selection = normalizeTaskRepoSelection(
       [
         repo({
-          id: 'local-orca',
-          upstream: { owner: 'stablyai', repo: 'orca' }
+          id: 'local-kingu',
+          upstream: { owner: 'anthovai', repo: 'kingu' }
         }),
         repo({
-          id: 'ssh-orca',
+          id: 'ssh-kingu',
           connectionId: 'builder',
-          upstream: { owner: 'stablyai', repo: 'orca' }
+          upstream: { owner: 'anthovai', repo: 'kingu' }
         }),
         repo({
           id: 'docs',
-          upstream: { owner: 'stablyai', repo: 'docs' }
+          upstream: { owner: 'anthovai', repo: 'docs' }
         })
       ],
-      new Set(['local-orca', 'ssh-orca', 'docs'])
+      new Set(['local-kingu', 'ssh-kingu', 'docs'])
     )
 
-    expect([...selection].sort()).toEqual(['docs', 'local-orca'])
+    expect([...selection].sort()).toEqual(['docs', 'local-kingu'])
   })
 })

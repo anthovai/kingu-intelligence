@@ -72,11 +72,11 @@ function table(
   return {
     project: {
       id: 'PVT_1',
-      owner: 'stablyai',
+      owner: 'anthovai',
       ownerType: 'organization',
       number: 3,
-      title: 'Orca',
-      url: 'https://github.com/orgs/stablyai/projects/3'
+      title: 'Kingu',
+      url: 'https://github.com/orgs/anthovai/projects/3'
     },
     selectedView: {
       id: 'PVTV_1',
@@ -153,7 +153,7 @@ describe('ProjectRoadmap', () => {
       expect(scroller.scrollLeft).toBe(123)
       fireEvent.click(screen.getByRole('button', { name: 'Year' }))
       expect(scroller.scrollLeft).not.toBe(123)
-      expect(window.localStorage.getItem('orca.githubProject.roadmapZoom')).toBe('year')
+      expect(window.localStorage.getItem('kingu.githubProject.roadmapZoom')).toBe('year')
     }
   )
 
@@ -259,7 +259,7 @@ describe('ProjectRoadmap', () => {
     expect(screen.getByText('list')).toBeTruthy()
     expect(
       screen.getByText(
-        'This roadmap view has no date or iteration field to place items on, so Orca is listing them instead.'
+        'This roadmap view has no date or iteration field to place items on, so Kingu is listing them instead.'
       )
     ).toBeTruthy()
   })

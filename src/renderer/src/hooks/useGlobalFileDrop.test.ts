@@ -78,13 +78,13 @@ describe('shouldUploadRemoteEditorFileDrop', () => {
           worktreesByRepo: { 'repo-1': [{ id: 'wt-1', repoId: 'repo-1' }] }
         },
         'wt-1',
-        '/home/orca/repo-1',
+        '/home/kingu/repo-1',
         'ssh-1'
       )
     ).toEqual({
       settings: { activeRuntimeEnvironmentId: null },
       worktreeId: 'wt-1',
-      worktreePath: '/home/orca/repo-1',
+      worktreePath: '/home/kingu/repo-1',
       connectionId: 'ssh-1'
     })
   })
@@ -125,7 +125,7 @@ describe('shouldUploadRemoteEditorFileDrop', () => {
       })
     ).toEqual({
       description: 'Save them to disk first, then drop the saved files.',
-      title: "Orca couldn't read a path for the dropped files."
+      title: "Kingu couldn't read a path for the dropped files."
     })
   })
 })

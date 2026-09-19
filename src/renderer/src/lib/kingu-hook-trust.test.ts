@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { hashOrcaHookScript } from './orca-hook-trust'
+import { hashKinguHookScript } from './kingu-hook-trust'
 
 const realCrypto = globalThis.crypto
 
@@ -11,11 +11,11 @@ function stubCrypto(value: unknown): void {
   Object.defineProperty(globalThis, 'crypto', { value, configurable: true })
 }
 
-describe('hashOrcaHookScript', () => {
+describe('hashKinguHookScript', () => {
   it('produces a stable hex digest via crypto.subtle', async () => {
-    const hash = await hashOrcaHookScript('echo hi')
+    const hash = await hashKinguHookScript('echo hi')
     expect(hash).toMatch(/^[0-9a-f]+$/)
-    expect(await hashOrcaHookScript('  echo hi  ')).toBe(hash)
+    expect(await hashKinguHookScript('  echo hi  ')).toBe(hash)
   })
 
   // Why: LAN web clients run on plain HTTP where crypto.subtle is undefined.
@@ -23,9 +23,9 @@ describe('hashOrcaHookScript', () => {
   // deterministic so trust comparisons keep working.
   it('falls back to a deterministic hash when crypto.subtle is unavailable', async () => {
     stubCrypto(undefined)
-    const hash = await hashOrcaHookScript('echo hi')
+    const hash = await hashKinguHookScript('echo hi')
     expect(hash).toMatch(/^[0-9a-f]+$/)
-    expect(await hashOrcaHookScript('echo hi')).toBe(hash)
-    expect(await hashOrcaHookScript('echo bye')).not.toBe(hash)
+    expect(await hashKinguHookScript('echo hi')).toBe(hash)
+    expect(await hashKinguHookScript('echo bye')).not.toBe(hash)
   })
 })

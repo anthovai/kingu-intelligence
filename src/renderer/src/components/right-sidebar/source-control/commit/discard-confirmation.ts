@@ -10,7 +10,7 @@ export type DiscardConfirmationCopy = {
 }
 
 /**
- * Untracked and newly-added paths have no HEAD version to restore, so Orca's discard removes the
+ * Untracked and newly-added paths have no HEAD version to restore, so Kingu's discard removes the
  * working-tree file. Every surface that names the operation must say "delete" for these.
  */
 export function discardDeletesEntryFile(entry: Pick<GitStatusEntry, 'area' | 'status'>): boolean {

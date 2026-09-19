@@ -46,7 +46,12 @@ describe('buildRows with pinned worktrees', () => {
     )
 
     expect(rows).toMatchObject([
-      { type: 'header', key: 'project:github:stablyai/orca', label: 'Orca', count: 2 },
+      {
+        type: 'header',
+        key: 'project:github:anthovai/kingu-intelligence',
+        label: 'Kingu',
+        count: 2
+      },
       { type: 'item', worktree: { id: worktree.id }, hostContextLabel: LOCAL_HOST_LABEL },
       { type: 'item', worktree: { id: remoteWorktree.id }, hostContextLabel: 'gpu-vm' }
     ])
@@ -99,10 +104,10 @@ describe('buildRows with pinned worktrees', () => {
     }
 
     expect(buildHeaders([], [])).toMatchObject([
-      { key: 'project:github:stablyai/orca', label: 'Orca' }
+      { key: 'project:github:anthovai/kingu-intelligence', label: 'Kingu' }
     ])
     expect(buildHeaders([otherWorktree], [otherRepo])).toMatchObject([
-      { key: 'project:github:stablyai/orca', label: 'Orca' },
+      { key: 'project:github:anthovai/kingu-intelligence', label: 'Kingu' },
       { key: 'repo:repo-other', label: 'design-assets' }
     ])
   })
@@ -299,7 +304,7 @@ describe('buildRows with pinned worktrees', () => {
   it('orders project identity headers by the manual repo order anchor', () => {
     const analyticsProject: Project = {
       ...project,
-      id: 'github:stablyai/analytics',
+      id: 'github:anthovai/analytics',
       displayName: 'Analytics',
       sourceRepoIds: ['repo-analytics']
     }
@@ -308,7 +313,7 @@ describe('buildRows with pinned worktrees', () => {
       id: 'repo-analytics',
       path: '/tmp/analytics',
       displayName: 'analytics',
-      upstream: { owner: 'stablyai', repo: 'analytics' }
+      upstream: { owner: 'anthovai', repo: 'analytics' }
     }
     const analyticsWorktree: Worktree = {
       ...worktree,
@@ -364,22 +369,22 @@ describe('buildRows with pinned worktrees', () => {
 
     const headers = rows.filter((row) => row.type === 'header')
     expect(headers.map((row) => row.key)).toEqual([
-      'project:github:stablyai/orca',
-      'project:github:stablyai/analytics'
+      'project:github:anthovai/kingu-intelligence',
+      'project:github:anthovai/analytics'
     ])
     expect(headers[0]).toMatchObject({
-      key: 'project:github:stablyai/orca',
+      key: 'project:github:anthovai/kingu-intelligence',
       repo: { id: repo.id, badgeColor: repo.badgeColor }
     })
   })
 
   it('splits same-host checkouts of one project into separate per-setup groups', () => {
-    const repoB: Repo = { ...repo, id: 'repo-2', path: '/tmp/orca-2', displayName: 'orca-2' }
+    const repoB: Repo = { ...repo, id: 'repo-2', path: '/tmp/kingu-2', displayName: 'kingu-2' }
     const worktreeB: Worktree = {
       ...worktree,
       id: 'wt-2',
       repoId: repoB.id,
-      path: '/tmp/orca-2-feature',
+      path: '/tmp/kingu-2-feature',
       displayName: 'feature-b'
     }
     const localSetupB: ProjectHostSetup = {
@@ -424,12 +429,12 @@ describe('buildRows with pinned worktrees', () => {
     expect(headers).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          key: 'project:github:stablyai/orca::setup:repo-1',
-          label: 'orca'
+          key: 'project:github:anthovai/kingu-intelligence::setup:repo-1',
+          label: 'kingu'
         }),
         expect.objectContaining({
-          key: 'project:github:stablyai/orca::setup:repo-2',
-          label: 'orca-2'
+          key: 'project:github:anthovai/kingu-intelligence::setup:repo-2',
+          label: 'kingu-2'
         })
       ])
     )
@@ -439,14 +444,14 @@ describe('buildRows with pinned worktrees', () => {
     const localRepoB: Repo = {
       ...repo,
       id: 'repo-local-b',
-      path: '/tmp/orca-b',
-      displayName: 'orca-b'
+      path: '/tmp/kingu-b',
+      displayName: 'kingu-b'
     }
     const localWorktreeB: Worktree = {
       ...worktree,
       id: 'wt-local-b',
       repoId: localRepoB.id,
-      path: '/tmp/orca-b-feature',
+      path: '/tmp/kingu-b-feature',
       displayName: 'feature-b'
     }
     const localSetupB: ProjectHostSetup = {
@@ -490,9 +495,9 @@ describe('buildRows with pinned worktrees', () => {
 
     const headers = rows.filter((row) => row.type === 'header')
     expect(headers.map((row) => row.key)).toEqual([
-      'project:github:stablyai/orca::setup:repo-1',
-      'project:github:stablyai/orca::setup:repo-local-b',
-      'project:github:stablyai/orca'
+      'project:github:anthovai/kingu-intelligence::setup:repo-1',
+      'project:github:anthovai/kingu-intelligence::setup:repo-local-b',
+      'project:github:anthovai/kingu-intelligence'
     ])
   })
 
@@ -501,7 +506,7 @@ describe('buildRows with pinned worktrees', () => {
     const runtimeRepo: Repo = {
       ...remoteRepo,
       id: 'repo-runtime',
-      path: '/home/alice/orca-runtime',
+      path: '/home/alice/kingu-runtime',
       connectionId: undefined,
       executionHostId: runtimeHostId
     }
@@ -509,7 +514,7 @@ describe('buildRows with pinned worktrees', () => {
       ...remoteWorktree,
       id: 'wt-runtime',
       repoId: runtimeRepo.id,
-      path: '/home/alice/orca-runtime-feature'
+      path: '/home/alice/kingu-runtime-feature'
     }
     const runtimeSetup: ProjectHostSetup = {
       ...projectHostSetups[1]!,
@@ -556,7 +561,10 @@ describe('buildRows with pinned worktrees', () => {
         undefined,
         grouping
       )
-    ]).toEqual(['project:github:stablyai/orca', 'project:github:stablyai/orca'])
+    ]).toEqual([
+      'project:github:anthovai/kingu-intelligence',
+      'project:github:anthovai/kingu-intelligence'
+    ])
   })
 
   it('keeps Git hosts grouped when folder setups share the project identity', () => {
@@ -564,7 +572,7 @@ describe('buildRows with pinned worktrees', () => {
     const windowsRepo: Repo = {
       ...repo,
       id: 'repo-windows',
-      path: 'C:\\Users\\neil\\orca\\orca',
+      path: 'C:\\Users\\neil\\kingu\\kingu',
       executionHostId: windowsHostId
     }
     const folderRepoA: Repo = {
@@ -626,21 +634,21 @@ describe('buildRows with pinned worktrees', () => {
         grouping
       )
     )
-    expect(new Set(groupKeys)).toEqual(new Set(['project:github:stablyai/orca']))
+    expect(new Set(groupKeys)).toEqual(new Set(['project:github:anthovai/kingu-intelligence']))
   })
 
   it('keeps a provisioned runtime copy under the project header alongside a same-host checkout', () => {
     const runtimeRepoB: Repo = {
       ...repo,
       id: 'repo-runtime-b',
-      path: '/tmp/orca-runtime-b',
-      displayName: 'orca-runtime-b'
+      path: '/tmp/kingu-runtime-b',
+      displayName: 'kingu-runtime-b'
     }
     const runtimeWorktreeB: Worktree = {
       ...worktree,
       id: 'wt-runtime-b',
       repoId: runtimeRepoB.id,
-      path: '/tmp/orca-runtime-b-feature',
+      path: '/tmp/kingu-runtime-b-feature',
       displayName: 'feature-runtime-b'
     }
     // Why: a `provisioned` (recipe-created ephemeral) copy shares the project's
@@ -687,8 +695,8 @@ describe('buildRows with pinned worktrees', () => {
     const headers = rows.filter((row) => row.type === 'header')
     expect(headers).toHaveLength(1)
     expect(headers[0]).toMatchObject({
-      key: 'project:github:stablyai/orca',
-      label: 'Orca',
+      key: 'project:github:anthovai/kingu-intelligence',
+      label: 'Kingu',
       count: 2
     })
   })
@@ -701,14 +709,14 @@ describe('buildRows with pinned worktrees', () => {
     const localRepoB: Repo = {
       ...repo,
       id: 'repo-local-b',
-      path: '/tmp/orca-b',
-      displayName: 'orca-b'
+      path: '/tmp/kingu-b',
+      displayName: 'kingu-b'
     }
     const localWorktreeB: Worktree = {
       ...worktree,
       id: 'wt-local-b',
       repoId: localRepoB.id,
-      path: '/tmp/orca-b-feature',
+      path: '/tmp/kingu-b-feature',
       displayName: 'feature-b'
     }
     const localSetupB: ProjectHostSetup = {
@@ -721,14 +729,14 @@ describe('buildRows with pinned worktrees', () => {
     const runtimeRepoB: Repo = {
       ...repo,
       id: 'repo-runtime-b',
-      path: '/tmp/orca-runtime-b',
-      displayName: 'orca-runtime-b'
+      path: '/tmp/kingu-runtime-b',
+      displayName: 'kingu-runtime-b'
     }
     const runtimeWorktreeB: Worktree = {
       ...worktree,
       id: 'wt-runtime-b',
       repoId: runtimeRepoB.id,
-      path: '/tmp/orca-runtime-b-feature',
+      path: '/tmp/kingu-runtime-b-feature',
       displayName: 'feature-runtime-b'
     }
     const runtimeSetupB: ProjectHostSetup = {
@@ -773,18 +781,22 @@ describe('buildRows with pinned worktrees', () => {
 
     const headers = rows.filter((row) => row.type === 'header')
     expect(headers.map((row) => row.key).sort()).toEqual([
-      'project:github:stablyai/orca',
-      'project:github:stablyai/orca::setup:repo-1',
-      'project:github:stablyai/orca::setup:repo-local-b'
+      'project:github:anthovai/kingu-intelligence',
+      'project:github:anthovai/kingu-intelligence::setup:repo-1',
+      'project:github:anthovai/kingu-intelligence::setup:repo-local-b'
     ])
     // The provisioned copy nests under the plain project key with only its own
     // worktree; it never gets a path-scoped `::setup:` header like the real
     // checkouts do, and that header keeps the project's own display name.
     expect(
-      headers.some((row) => row.key === 'project:github:stablyai/orca::setup:repo-runtime-b')
+      headers.some(
+        (row) => row.key === 'project:github:anthovai/kingu-intelligence::setup:repo-runtime-b'
+      )
     ).toBe(false)
-    expect(headers.find((row) => row.key === 'project:github:stablyai/orca')).toMatchObject({
-      label: 'Orca',
+    expect(
+      headers.find((row) => row.key === 'project:github:anthovai/kingu-intelligence')
+    ).toMatchObject({
+      label: 'Kingu',
       count: 1
     })
   })

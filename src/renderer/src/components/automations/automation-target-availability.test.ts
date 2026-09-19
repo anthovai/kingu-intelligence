@@ -391,10 +391,10 @@ describe('automation target availability', () => {
           sourceContext: {
             kind: 'task-source',
             provider: 'github',
-            projectId: 'github:stablyai/orca',
+            projectId: 'github:anthovai/kingu-intelligence',
             hostId: 'local',
             repoId: 'repo-1',
-            providerIdentity: { provider: 'github', owner: 'stablyai', repo: 'orca' }
+            providerIdentity: { provider: 'github', owner: 'anthovai', repo: 'kingu' }
           }
         }),
         repo: makeRepo(),
@@ -417,15 +417,15 @@ describe('automation target availability', () => {
           sourceContext: {
             kind: 'task-source',
             provider: 'gitlab',
-            projectId: 'gitlab:stablyai/orca',
+            projectId: 'gitlab:anthovai/kingu-intelligence',
             hostId: 'runtime:old-server',
             repoId: 'repo-1',
             providerIdentity: {
               provider: 'gitlab',
-              projectId: 'stablyai/orca',
-              namespace: 'stablyai',
-              project: 'orca',
-              webUrl: 'https://gitlab.com/stablyai/orca'
+              projectId: 'anthovai/kingu-intelligence',
+              namespace: 'anthovai',
+              project: 'kingu',
+              webUrl: 'https://gitlab.com/anthovai/kingu-intelligence'
             }
           }
         }),

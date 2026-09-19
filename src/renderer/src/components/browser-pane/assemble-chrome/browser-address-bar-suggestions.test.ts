@@ -157,9 +157,9 @@ describe('browser address bar suggestions', () => {
             visitCount: 1
           }),
           historyEntry({
-            url: 'https://github.com/acme/orca',
-            normalizedUrl: 'https://github.com/acme/orca',
-            title: 'acme/orca',
+            url: 'https://github.com/acme/kingu',
+            normalizedUrl: 'https://github.com/acme/kingu',
+            title: 'acme/kingu',
             lastVisitedAt: hoursAgo(20),
             visitCount: 1
           })
@@ -167,7 +167,7 @@ describe('browser address bar suggestions', () => {
       })
 
       expect(historyUrls(suggestions)).toEqual([
-        'https://github.com/acme/orca',
+        'https://github.com/acme/kingu',
         'https://docs.github.com/actions',
         'https://example.com/setup'
       ])
@@ -320,7 +320,7 @@ describe('workspace document suggestions', () => {
     expect(rows[0]?.docLocation).toEqual(DOC_ENTRY.docLocation)
     // The row's selection identity is the document's path, never a preview URL.
     expect(rows[0]?.url).toBe('/repo/docs/report.html')
-    expect(JSON.stringify(rows)).not.toContain('orca-preview://')
+    expect(JSON.stringify(rows)).not.toContain('kingu-preview://')
   })
 
   it('matches typed queries against the document title and path', () => {

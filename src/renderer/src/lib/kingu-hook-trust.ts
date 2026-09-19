@@ -1,8 +1,8 @@
 import { sha256 } from './sha256'
 
-export type OrcaHookScriptKind = 'setup' | 'archive' | 'issueCommand' | 'vmRecipe'
+export type KinguHookScriptKind = 'setup' | 'archive' | 'issueCommand' | 'vmRecipe'
 
-export async function hashOrcaHookScript(content: string): Promise<string> {
+export async function hashKinguHookScript(content: string): Promise<string> {
   const normalized = content.trim()
   const bytes = new TextEncoder().encode(normalized)
   // Why: crypto.subtle is undefined in non-secure browser contexts (LAN web

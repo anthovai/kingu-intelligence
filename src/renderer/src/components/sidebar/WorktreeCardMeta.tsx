@@ -72,10 +72,10 @@ export function WorktreeCardDetailsHover({
   onWorkspaceTitleEditingChange,
   onEditIssue,
   onEditComment,
-  onOpenGitHubIssueInOrca,
+  onOpenGitHubIssueInKingu,
   onOpenIssueInBrowser,
-  onOpenLinearIssueInOrca,
-  onOpenReviewInOrca,
+  onOpenLinearIssueInKingu,
+  onOpenReviewInKingu,
   onOpenReviewInBrowser,
   onUnlinkReview,
   onOpenAutomation,
@@ -219,8 +219,8 @@ export function WorktreeCardDetailsHover({
             onIssueMenuOpenChange={handleIssueMenuOpenChange}
             onCopyIssueLink={issue?.url ? handleCopyIssueLink : undefined}
             onEditIssue={onEditIssue}
-            onOpenGitHubIssueInOrca={
-              onOpenGitHubIssueInOrca ? dismissAndRun(onOpenGitHubIssueInOrca) : undefined
+            onOpenGitHubIssueInKingu={
+              onOpenGitHubIssueInKingu ? dismissAndRun(onOpenGitHubIssueInKingu) : undefined
             }
             onOpenIssueInBrowser={
               onOpenIssueInBrowser && issue?.url
@@ -243,13 +243,13 @@ export function WorktreeCardDetailsHover({
                 )}
                 actions={
                   <>
-                    {linearIssue.url && onOpenLinearIssueInOrca && (
+                    {linearIssue.url && onOpenLinearIssueInKingu && (
                       <MetadataActionIcon
                         label={translate(
                           'auto.components.sidebar.WorktreeCardMeta.2c67730e07',
-                          'Open in Orca'
+                          'Open in Kingu'
                         )}
-                        onClick={dismissAndRun(onOpenLinearIssueInOrca)}
+                        onClick={dismissAndRun(onOpenLinearIssueInKingu)}
                       >
                         <MonitorUp className="size-3" />
                       </MetadataActionIcon>
@@ -322,7 +322,7 @@ export function WorktreeCardDetailsHover({
             review={review}
             reviewMenuOpen={reviewMenuOpen}
             onReviewMenuOpenChange={handleReviewMenuOpenChange}
-            onOpenReviewInOrca={onOpenReviewInOrca}
+            onOpenReviewInKingu={onOpenReviewInKingu}
             onOpenReviewInBrowser={
               onOpenReviewInBrowser && review?.url ? onOpenReviewInBrowser : undefined
             }

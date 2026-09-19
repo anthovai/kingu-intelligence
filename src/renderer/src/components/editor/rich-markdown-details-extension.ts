@@ -198,7 +198,7 @@ export function exitEmptyDetailsBody(editor: Editor): boolean {
   return true
 }
 
-const OrcaDetails = Details.extend({
+const KinguDetails = Details.extend({
   // Why: details summary Enter must run before StarterKit's generic paragraph
   // splitting so typing a toggle title then pressing Enter moves into the body.
   priority: 1000,
@@ -208,10 +208,11 @@ const OrcaDetails = Details.extend({
       ...this.parent?.(),
       variant: {
         default: null,
-        parseHTML: (element) => parseToggleHeadingVariant(element.getAttribute('data-orca-toggle')),
+        parseHTML: (element) =>
+          parseToggleHeadingVariant(element.getAttribute('data-kingu-toggle')),
         renderHTML: ({ variant }) => {
           const parsed = parseToggleHeadingVariant(variant)
-          return parsed ? { 'data-orca-toggle': parsed } : {}
+          return parsed ? { 'data-kingu-toggle': parsed } : {}
         }
       }
     }
@@ -286,14 +287,14 @@ const OrcaDetails = Details.extend({
   }
 })
 
-const OrcaDetailsSummary = DetailsSummary.extend({
+const KinguDetailsSummary = DetailsSummary.extend({
   // Why: the summary parser runs parseInline, which emits image/math nodes that
   // upstream's text*-only summary rejects, so the doc is schema-invalid until the
   // first edit reassembles the summary and ProseMirror throws.
   content: 'inline*'
 })
 
-const OrcaDetailsContent = DetailsContent.extend({
+const KinguDetailsContent = DetailsContent.extend({
   // Why: detailsContent's double-Enter escape must run before StarterKit's
   // generic paragraph split, otherwise users can get stuck inside a toggle.
   priority: 1000,
@@ -313,15 +314,15 @@ const OrcaDetailsContent = DetailsContent.extend({
   }
 })
 
-export function createOrcaDetailsExtensions(): AnyExtension[] {
+export function createKinguDetailsExtensions(): AnyExtension[] {
   return [
-    OrcaDetails.configure({
+    KinguDetails.configure({
       persist: true,
       HTMLAttributes: {
-        class: 'orca-details'
+        class: 'kingu-details'
       }
     }),
-    OrcaDetailsSummary,
-    OrcaDetailsContent
+    KinguDetailsSummary,
+    KinguDetailsContent
   ]
 }

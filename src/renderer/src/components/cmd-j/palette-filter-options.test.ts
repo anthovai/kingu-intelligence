@@ -49,8 +49,8 @@ function worktree(id: string, repoId: string, extra: Partial<Worktree> = {}): Wo
 }
 
 // Two repos behind one project: one local checkout, one on the SSH host.
-const repos = [repo('r1', 'Orca'), repo('r2', 'Orca (builder)', 'ssh-1'), repo('r3', 'Solo')]
-const projects = [project('p1', 'Orca')]
+const repos = [repo('r1', 'Kingu'), repo('r2', 'Kingu (builder)', 'ssh-1'), repo('r3', 'Solo')]
+const projects = [project('p1', 'Kingu')]
 const projectHostSetups = [setup('s1', 'p1', 'local', 'r1'), setup('s2', 'p1', 'ssh-1', 'r2')]
 const hostOptions = buildSidebarHostOptions({
   repos,
@@ -67,11 +67,11 @@ describe('buildPaletteFilterModel', () => {
 
     expect(model.repoIdsByProjectKey.get('project:p1')).toEqual(['r1', 'r2'])
     expect(model.repositories.map((option) => [option.id, option.label, option.count])).toEqual([
-      ['r1', 'Orca', 1],
-      ['r2', 'Orca (builder)', 1],
+      ['r1', 'Kingu', 1],
+      ['r2', 'Kingu (builder)', 1],
       ['r3', 'Solo', 1]
     ])
-    expect(model.repositories[0]?.searchText).toContain('orca')
+    expect(model.repositories[0]?.searchText).toContain('kingu')
     expect(model.repositories[0]?.searchText).toContain(path.join('/repos', 'r1'))
   })
 
@@ -169,8 +169,8 @@ describe('buildPaletteFilterModel', () => {
     const model = buildModel([worktree('w1', 'r3'), worktree('w2', 'r1'), worktree('w3', 'r2')])
 
     expect(model.repositories.map((option) => option.label)).toEqual([
-      'Orca',
-      'Orca (builder)',
+      'Kingu',
+      'Kingu (builder)',
       'Solo'
     ])
   })
@@ -185,8 +185,8 @@ describe('buildPaletteFilterModel', () => {
 
     expect(model.repositories.map((option) => [option.label, option.count])).toEqual([
       ['Solo', 3],
-      ['Orca', 1],
-      ['Orca (builder)', 0]
+      ['Kingu', 1],
+      ['Kingu (builder)', 0]
     ])
   })
 })

@@ -141,7 +141,7 @@ function makeSplitResult(leafId: string): unknown {
 
 describe('splitWebRuntimeTerminal', () => {
   beforeEach(() => {
-    vi.stubGlobal('__ORCA_WEB_CLIENT__', true)
+    vi.stubGlobal('__KINGU_WEB_CLIENT__', true)
   })
 
   afterEach(() => {
@@ -250,7 +250,7 @@ describe('splitWebRuntimeTerminal', () => {
     expect(splitWebRuntimeTerminal('pty-local-1', 'horizontal', 'keyboard', SPLIT_SOURCE)).toBe(
       false
     )
-    vi.stubGlobal('__ORCA_WEB_CLIENT__', false)
+    vi.stubGlobal('__KINGU_WEB_CLIENT__', false)
     expect(
       splitWebRuntimeTerminal(
         'remote:web-env-1@@terminal-1',
@@ -792,7 +792,7 @@ describe('splitWebRuntimeTerminal', () => {
 
 describe('closeWebRuntimeTerminal', () => {
   beforeEach(() => {
-    vi.stubGlobal('__ORCA_WEB_CLIENT__', true)
+    vi.stubGlobal('__KINGU_WEB_CLIENT__', true)
   })
 
   afterEach(() => {
@@ -854,7 +854,7 @@ describe('closeWebRuntimeTerminal', () => {
     })
 
     expect(closeWebRuntimeTerminal('pty-local-1')).toBe(false)
-    vi.stubGlobal('__ORCA_WEB_CLIENT__', false)
+    vi.stubGlobal('__KINGU_WEB_CLIENT__', false)
     expect(closeWebRuntimeTerminal('remote:web-env-1@@terminal-1')).toBe(true)
 
     await vi.waitFor(() => expect(runtimeCall).toHaveBeenCalledTimes(1))

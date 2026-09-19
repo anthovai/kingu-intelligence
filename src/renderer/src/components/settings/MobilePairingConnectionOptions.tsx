@@ -3,7 +3,7 @@ import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { translate } from '../../i18n/i18n'
 import { useAppStore } from '../../store'
-import { useOrcaProfileAuthStatusRefresh } from '@/hooks/use-orca-profile-auth-status-refresh'
+import { useKinguProfileAuthStatusRefresh } from '@/hooks/use-kingu-profile-auth-status-refresh'
 import { cn } from '@/lib/utils'
 import type {
   MobileRelayStatus,
@@ -64,8 +64,8 @@ export function MobilePairingConnectionOptions({
   relayMintFailed?: boolean
   relayMintRetrying?: boolean
 }): React.JSX.Element {
-  const authStatus = useAppStore((state) => state.orcaProfileAuthStatus)
-  const connect = useAppStore((state) => state.connectCurrentOrcaProfile)
+  const authStatus = useAppStore((state) => state.kinguProfileAuthStatus)
+  const connect = useAppStore((state) => state.connectCurrentKinguProfile)
   const [relayStatus, setRelayStatus] = useState<MobileRelayStatus>('offline')
   const [relayCellUrl, setRelayCellUrl] = useState<string | undefined>(undefined)
   const signedIn = authStatus?.state === 'connected'
@@ -107,7 +107,7 @@ export function MobilePairingConnectionOptions({
 
   const relayCell = relayCellUrl ? relayCellLabel(relayCellUrl) : null
 
-  useOrcaProfileAuthStatusRefresh()
+  useKinguProfileAuthStatusRefresh()
 
   useEffect(() => {
     let receivedEvent = false
@@ -159,13 +159,13 @@ export function MobilePairingConnectionOptions({
           onSelect={() => onChange('automatic')}
           title={translate(
             'auto.components.settings.MobilePairingConnectionOptions.anywhereTitle',
-            'Orca Relay'
+            'Kingu Relay'
           )}
           description={
             relayUnavailable
               ? translate(
                   'auto.components.settings.MobilePairingConnectionOptions.relayUnavailable',
-                  'Orca Relay isn’t available in this build. Use LAN.'
+                  'Kingu Relay isn’t available in this build. Use LAN.'
                 )
               : translate(
                   'auto.components.settings.MobilePairingConnectionOptions.anywhereDescription',

@@ -8,7 +8,7 @@ import {
   canAutoSaveOpenFile,
   isAutosaveSuspendedForFile,
   normalizeAutoSaveDelayMs,
-  ORCA_EDITOR_FILE_SAVED_EVENT,
+  KINGU_EDITOR_FILE_SAVED_EVENT,
   type EditorFileSavedDetail
 } from './editor-autosave'
 import { flushPendingEditorChange } from './editor-pending-flush'
@@ -139,7 +139,7 @@ export function createEditorSaveQueue(store: AppStoreApi): EditorSaveQueue {
         }
 
         window.dispatchEvent(
-          new CustomEvent<EditorFileSavedDetail>(ORCA_EDITOR_FILE_SAVED_EVENT, {
+          new CustomEvent<EditorFileSavedDetail>(KINGU_EDITOR_FILE_SAVED_EVENT, {
             detail: { fileId: file.id, content: contentToSave }
           })
         )

@@ -107,7 +107,7 @@ export function useGlobalFileDrop(): void {
           try {
             // Why: OS file drops provide client-local paths. Remote runtime and
             // SSH editors must upload into the server worktree before opening.
-            const destinationDir = joinPath(worktreePath, '.orca/drops')
+            const destinationDir = joinPath(worktreePath, '.kingu/drops')
             const { results } = await importExternalPathsToRuntime(
               fileContext,
               data.paths,
@@ -215,7 +215,7 @@ export function getNativeFileDropRejectionMessage(data: NativeFileDropRejectedPa
       ),
       title: translate(
         'auto.hooks.useGlobalFileDrop.nativeDropUnresolvedPaths',
-        "Orca couldn't read a path for the dropped files."
+        "Kingu couldn't read a path for the dropped files."
       )
     }
   }

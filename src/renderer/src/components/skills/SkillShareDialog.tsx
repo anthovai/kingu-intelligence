@@ -32,11 +32,11 @@ function operationError(status: string): string {
   return status === 'reconnect-required'
     ? translate(
         'auto.components.skills.SkillShareDialog.reconnect',
-        'Reconnect your Orca account before sharing.'
+        'Reconnect your Kingu account before sharing.'
       )
     : translate(
         'auto.components.skills.SkillShareDialog.unconfigured',
-        'Connect an Orca Cloud account before sharing.'
+        'Connect an Kingu Cloud account before sharing.'
       )
 }
 
@@ -94,7 +94,7 @@ export function SkillShareDialog({
         ...(managedInstall ? { packageId: managedInstall.packageId } : {})
       })
       retainedPreparationId = nextPreview.preparationId
-      const auth = await window.api.orcaProfiles.authStatus()
+      const auth = await window.api.kinguProfiles.authStatus()
       return { nextPreview, auth, managedInstall }
     })()
       .then(async ({ nextPreview, auth, managedInstall }) => {
@@ -234,7 +234,7 @@ export function SkillShareDialog({
       setError(
         translate(
           'auto.components.skills.SkillShareDialog.cancelRequestFailed',
-          'Orca could not send the cancellation request. The upload may still finish.'
+          'Kingu could not send the cancellation request. The upload may still finish.'
         )
       )
     }

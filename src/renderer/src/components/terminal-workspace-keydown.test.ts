@@ -7,7 +7,7 @@ import { dispatchWorkspaceTabCommand } from '@/lib/workspace-tab-commands'
 import type { Tab } from '../../../shared/tab-types'
 import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../shared/constants'
 import {
-  ORCA_EDITOR_REQUEST_CMD_SAVE_EVENT,
+  KINGU_EDITOR_REQUEST_CMD_SAVE_EVENT,
   type EditorRequestCmdSaveDetail
 } from './editor/editor-autosave'
 import { handleTerminalWorkspaceKeyDown } from './terminal-workspace-keydown'
@@ -79,7 +79,7 @@ const controller = {
   handleNewTab: vi.fn(),
   keybindings: undefined,
   mobileEmulatorEnabled: false,
-  terminalShortcutPolicy: 'orca-first'
+  terminalShortcutPolicy: 'kingu-first'
 } as unknown as TerminalActivationController
 
 function pressCmdS(): (EditorRequestCmdSaveDetail | undefined)[] {
@@ -87,7 +87,7 @@ function pressCmdS(): (EditorRequestCmdSaveDetail | undefined)[] {
   const listener = (event: Event): void => {
     details.push((event as CustomEvent<EditorRequestCmdSaveDetail>).detail ?? undefined)
   }
-  window.addEventListener(ORCA_EDITOR_REQUEST_CMD_SAVE_EVENT, listener)
+  window.addEventListener(KINGU_EDITOR_REQUEST_CMD_SAVE_EVENT, listener)
   const target = document.createElement('div')
   document.body.appendChild(target)
   const event = new KeyboardEvent('keydown', { key: 's', metaKey: true, cancelable: true })
@@ -95,7 +95,7 @@ function pressCmdS(): (EditorRequestCmdSaveDetail | undefined)[] {
   try {
     handleTerminalWorkspaceKeyDown(event, controller, 'darwin')
   } finally {
-    window.removeEventListener(ORCA_EDITOR_REQUEST_CMD_SAVE_EVENT, listener)
+    window.removeEventListener(KINGU_EDITOR_REQUEST_CMD_SAVE_EVENT, listener)
     target.remove()
   }
   return details

@@ -75,7 +75,7 @@ type FileExplorerRowContextMenuProps = Pick<
   | 'connectionId'
   | 'runtimeDownloadContext'
   | 'supportsFolderDownload'
-  | 'canOpenInOrcaBrowser'
+  | 'canOpenInKinguBrowser'
   | 'canCollapseFolderSubtree'
   | 'targetDir'
   | 'targetDepth'
@@ -100,7 +100,7 @@ export function FileExplorerRowContextMenu({
   connectionId,
   runtimeDownloadContext,
   supportsFolderDownload,
-  canOpenInOrcaBrowser,
+  canOpenInKinguBrowser,
   canCollapseFolderSubtree,
   targetDir,
   targetDepth,
@@ -129,7 +129,7 @@ export function FileExplorerRowContextMenu({
     supportsFolderDownload
   )
   const showCopyFileAction = shouldShowCopyFileAction(node, connectionId, selectionSize)
-  const handleOpenInOrcaBrowser = useCallback(() => {
+  const handleOpenInKinguBrowser = useCallback(() => {
     if (!activeWorktreeId) {
       return
     }
@@ -224,12 +224,12 @@ export function FileExplorerRowContextMenu({
           {translate('auto.components.right.sidebar.FileExplorerRow.1d8e182c32', 'View File')}
         </ContextMenuItem>
       )}
-      {!node.isDirectory && activeWorktreeId && canOpenInOrcaBrowser && (
-        <ContextMenuItem onSelect={handleOpenInOrcaBrowser}>
+      {!node.isDirectory && activeWorktreeId && canOpenInKinguBrowser && (
+        <ContextMenuItem onSelect={handleOpenInKinguBrowser}>
           <Globe />
           {translate(
             'auto.components.right.sidebar.FileExplorerRow.dd112c81d2',
-            'Open in Orca Browser'
+            'Open in Kingu Browser'
           )}
         </ContextMenuItem>
       )}

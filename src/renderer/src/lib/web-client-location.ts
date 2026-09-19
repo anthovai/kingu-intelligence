@@ -8,7 +8,7 @@ export function isWebClientLocation(): boolean {
   // turns into a failed launch rather than a visible error.
   const pathname = (window as { location?: { pathname?: unknown } }).location?.pathname
   return (
-    Boolean((window as unknown as { __ORCA_WEB_CLIENT__?: boolean }).__ORCA_WEB_CLIENT__) ||
+    Boolean((window as unknown as { __KINGU_WEB_CLIENT__?: boolean }).__KINGU_WEB_CLIENT__) ||
     (typeof pathname === 'string' && pathname.endsWith('/web-index.html'))
   )
 }

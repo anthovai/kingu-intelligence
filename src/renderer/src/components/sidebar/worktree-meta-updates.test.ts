@@ -348,13 +348,15 @@ describe('buildWorktreeMetaUpdates', () => {
   })
 
   it('rejects issue URLs in the PR input', () => {
-    expect(buildUpdates({ reviewInput: 'https://github.com/stablyai/orca/issues/6933' })).toEqual(
-      {}
-    )
+    expect(
+      buildUpdates({ reviewInput: 'https://github.com/anthovai/kingu-intelligence/issues/6933' })
+    ).toEqual({})
   })
 
   it('accepts PR URLs in the PR input', () => {
-    expect(buildUpdates({ reviewInput: 'https://github.com/stablyai/orca/pull/6934' })).toEqual({
+    expect(
+      buildUpdates({ reviewInput: 'https://github.com/anthovai/kingu-intelligence/pull/6934' })
+    ).toEqual({
       linkedPR: 6934
     })
   })
@@ -379,7 +381,7 @@ describe('buildWorktreeMetaUpdates', () => {
   it('accepts issue URLs in the issue input', () => {
     expect(
       buildUpdates(
-        { issueInput: 'https://github.com/stablyai/orca/issues/6933' },
+        { issueInput: 'https://github.com/anthovai/kingu-intelligence/issues/6933' },
         {},
         { linkedLinearIssue: 'STA-335' }
       )
@@ -392,7 +394,9 @@ describe('buildWorktreeMetaUpdates', () => {
   })
 
   it('rejects PR URLs in the issue input', () => {
-    expect(buildUpdates({ issueInput: 'https://github.com/stablyai/orca/pull/6934' })).toEqual({})
+    expect(
+      buildUpdates({ issueInput: 'https://github.com/anthovai/kingu-intelligence/pull/6934' })
+    ).toEqual({})
   })
 
   // Persistence stamps lastActivityAt on any comment write, so re-emitting an

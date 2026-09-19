@@ -2,8 +2,8 @@ import { useCallback, useEffect } from 'react'
 import { toast } from 'sonner'
 import { useAppStore } from '../store'
 import {
-  ORCA_EDITOR_REQUEST_FILE_CLOSE_EVENT,
-  ORCA_EDITOR_SAVE_AND_CLOSE_EVENT,
+  KINGU_EDITOR_REQUEST_FILE_CLOSE_EVENT,
+  KINGU_EDITOR_SAVE_AND_CLOSE_EVENT,
   type EditorRequestFileCloseDetail,
   requestEditorSaveQuiesce
 } from './editor/editor-autosave'
@@ -44,7 +44,7 @@ export function useTerminalEditorCloseDialogActions(
     }
 
     setSaveDialogFileId(null)
-    window.dispatchEvent(new CustomEvent(ORCA_EDITOR_SAVE_AND_CLOSE_EVENT, { detail: { fileId } }))
+    window.dispatchEvent(new CustomEvent(KINGU_EDITOR_SAVE_AND_CLOSE_EVENT, { detail: { fileId } }))
     inFlightSaveFileIdRef.current = fileId
     let closed = false
     try {
@@ -136,12 +136,12 @@ export function useTerminalEditorCloseDialogActions(
       queueEditorCloseRequests([fileId])
     }
     window.addEventListener(
-      ORCA_EDITOR_REQUEST_FILE_CLOSE_EVENT,
+      KINGU_EDITOR_REQUEST_FILE_CLOSE_EVENT,
       onRequestEditorClose as EventListener
     )
     return () =>
       window.removeEventListener(
-        ORCA_EDITOR_REQUEST_FILE_CLOSE_EVENT,
+        KINGU_EDITOR_REQUEST_FILE_CLOSE_EVENT,
         onRequestEditorClose as EventListener
       )
   }, [queueEditorCloseRequests])

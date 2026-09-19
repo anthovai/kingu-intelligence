@@ -34,7 +34,7 @@ import { useTaskPageLinearIssueCreation } from '../use-task-page-linear-issue-cr
 import { useTaskPageJiraIssueCreation } from '../use-task-page-jira-issue-creation'
 import { useTaskPageGlobalEffects } from '../use-task-page-global-effects'
 import { useTaskPageLinearListEffects } from '../use-task-page-linear-list-effects'
-import { useTaskPageLinearInOrcaEffects } from '../use-task-page-linear-in-orca-effects'
+import { useTaskPageLinearInKinguEffects } from '../use-task-page-linear-in-kingu-effects'
 import { useTaskPageLinearCollectionEffects } from '../use-task-page-linear-collection-effects'
 import { useTaskPageJiraListEffects } from '../use-task-page-jira-list-effects'
 import { useTaskPageComposerActions } from '../use-task-page-composer-actions'
@@ -76,7 +76,7 @@ export default function TaskPage(): React.JSX.Element {
   const stage33 = useTaskPageJiraIssueCreation(stage32)
   const stage34 = useTaskPageGlobalEffects(stage33)
   const stage35 = useTaskPageLinearListEffects(stage34)
-  const stage36 = useTaskPageLinearInOrcaEffects(stage35)
+  const stage36 = useTaskPageLinearInKinguEffects(stage35)
   const stage37 = useTaskPageLinearCollectionEffects(stage36)
   const stage38 = useTaskPageJiraListEffects(stage37)
   const stage39 = useTaskPageComposerActions(stage38)

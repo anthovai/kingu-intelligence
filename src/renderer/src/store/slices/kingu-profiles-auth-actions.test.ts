@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type {
-  ConnectCurrentOrcaProfileResult,
-  CreateCloudLinkedOrcaProfileResult,
-  OrcaProfileAuthStatus,
-  OrcaProfileListState,
-  RefreshCurrentOrcaProfileAuthResult,
-  SelectOrcaProfileOrgResult,
-  SignOutCurrentOrcaProfileResult
-} from '../../../../shared/orca-profiles'
+  ConnectCurrentKinguProfileResult,
+  CreateCloudLinkedKinguProfileResult,
+  KinguProfileAuthStatus,
+  KinguProfileListState,
+  RefreshCurrentKinguProfileAuthResult,
+  SelectKinguProfileOrgResult,
+  SignOutCurrentKinguProfileResult
+} from '../../../../shared/kingu-profiles'
 import { createTestStore } from './store-test-helpers'
 
 const { toastErrorMock, toastSuccessMock } = vi.hoisted(() => ({
@@ -24,7 +24,7 @@ vi.mock('sonner', () => ({
   }
 }))
 
-const listState: OrcaProfileListState = {
+const listState: KinguProfileListState = {
   activeProfileId: 'local-default',
   profiles: [
     {
@@ -39,7 +39,7 @@ const listState: OrcaProfileListState = {
   ]
 }
 
-const localAuthStatus: OrcaProfileAuthStatus = {
+const localAuthStatus: KinguProfileAuthStatus = {
   activeProfileId: 'local-default',
   configured: false,
   state: 'unconfigured',
@@ -58,7 +58,7 @@ const connectedOrganizations = [
   { orgId: 'org-2', name: 'Personal' }
 ]
 
-const connectedAuthStatus: OrcaProfileAuthStatus = {
+const connectedAuthStatus: KinguProfileAuthStatus = {
   activeProfileId: 'local-default',
   configured: true,
   state: 'connected',
@@ -71,7 +71,7 @@ const connectedAuthStatus: OrcaProfileAuthStatus = {
   }
 }
 
-const orcaProfilesApi = {
+const kinguProfilesApi = {
   list: vi.fn(),
   authStatus: vi.fn(),
   createLocal: vi.fn(),
@@ -84,15 +84,15 @@ const orcaProfilesApi = {
   transferProject: vi.fn()
 }
 
-describe('orca profile auth actions slice', () => {
+describe('kingu profile auth actions slice', () => {
   beforeEach(() => {
     vi.resetAllMocks()
     toastErrorMock.mockReset()
     toastSuccessMock.mockReset()
-    orcaProfilesApi.authStatus.mockResolvedValue(localAuthStatus)
+    kinguProfilesApi.authStatus.mockResolvedValue(localAuthStatus)
     vi.stubGlobal('window', {
       api: {
-        orcaProfiles: orcaProfilesApi
+        kinguProfiles: kinguProfilesApi
       }
     })
   })
@@ -105,18 +105,18 @@ describe('orca profile auth actions slice', () => {
         cloud: connectedAuthStatus.cloud
       }
     ]
-    const result: ConnectCurrentOrcaProfileResult = {
+    const result: ConnectCurrentKinguProfileResult = {
       status: 'connected',
       auth: connectedAuthStatus,
       activeProfileId: 'local-default',
       profiles: connectedProfiles
     }
-    orcaProfilesApi.connectCurrent.mockResolvedValue(result)
+    kinguProfilesApi.connectCurrent.mockResolvedValue(result)
     const store = createTestStore()
 
-    await expect(store.getState().connectCurrentOrcaProfile()).resolves.toEqual(result)
-    expect(store.getState().orcaProfileAuthStatus).toEqual(connectedAuthStatus)
-    expect(store.getState().orcaProfiles).toEqual(connectedProfiles)
+    await expect(store.getState().connectCurrentKinguProfile()).resolves.toEqual(result)
+    expect(store.getState().kinguProfileAuthStatus).toEqual(connectedAuthStatus)
+    expect(store.getState().kinguProfiles).toEqual(connectedProfiles)
     expect(toastSuccessMock).toHaveBeenCalledOnce()
   })
 
@@ -128,48 +128,48 @@ describe('orca profile auth actions slice', () => {
         cloud: connectedAuthStatus.cloud
       }
     ]
-    const connected: ConnectCurrentOrcaProfileResult = {
+    const connected: ConnectCurrentKinguProfileResult = {
       status: 'connected',
       auth: connectedAuthStatus,
       activeProfileId: 'local-default',
       profiles: connectedProfiles
     }
-    const cancelled: ConnectCurrentOrcaProfileResult = {
+    const cancelled: ConnectCurrentKinguProfileResult = {
       status: 'cancelled',
       auth: connectedAuthStatus
     }
-    let finishFirst!: (value: ConnectCurrentOrcaProfileResult) => void
-    orcaProfilesApi.connectCurrent
+    let finishFirst!: (value: ConnectCurrentKinguProfileResult) => void
+    kinguProfilesApi.connectCurrent
       .mockReturnValueOnce(
-        new Promise<ConnectCurrentOrcaProfileResult>((resolve) => {
+        new Promise<ConnectCurrentKinguProfileResult>((resolve) => {
           finishFirst = resolve
         })
       )
       .mockResolvedValueOnce(connected)
     const store = createTestStore()
 
-    const first = store.getState().connectCurrentOrcaProfile()
-    const second = store.getState().connectCurrentOrcaProfile()
+    const first = store.getState().connectCurrentKinguProfile()
+    const second = store.getState().connectCurrentKinguProfile()
 
-    expect(orcaProfilesApi.connectCurrent).toHaveBeenCalledTimes(2)
+    expect(kinguProfilesApi.connectCurrent).toHaveBeenCalledTimes(2)
     await expect(second).resolves.toEqual(connected)
     expect(toastSuccessMock).toHaveBeenCalledOnce()
     finishFirst(cancelled)
     await expect(first).resolves.toEqual(cancelled)
     expect(toastErrorMock).not.toHaveBeenCalled()
     expect(toastSuccessMock).toHaveBeenCalledOnce()
-    expect(store.getState().orcaProfileAuthStatus).toEqual(connectedAuthStatus)
+    expect(store.getState().kinguProfileAuthStatus).toEqual(connectedAuthStatus)
   })
 
   it('refreshes current profile auth and stores fresh capability flags', async () => {
-    const refreshedAuthStatus: OrcaProfileAuthStatus = {
+    const refreshedAuthStatus: KinguProfileAuthStatus = {
       ...connectedAuthStatus,
       capabilities: {
         flags: { share: false, team: true },
         refreshedAt: 8
       }
     }
-    const result: RefreshCurrentOrcaProfileAuthResult = {
+    const result: RefreshCurrentKinguProfileAuthResult = {
       status: 'refreshed',
       auth: refreshedAuthStatus,
       activeProfileId: 'local-default',
@@ -181,13 +181,13 @@ describe('orca profile auth actions slice', () => {
         }
       ]
     }
-    orcaProfilesApi.refreshAuth.mockResolvedValue(result)
+    kinguProfilesApi.refreshAuth.mockResolvedValue(result)
     const store = createTestStore()
 
-    await expect(store.getState().refreshCurrentOrcaProfileAuth()).resolves.toEqual(result)
-    expect(orcaProfilesApi.refreshAuth).toHaveBeenCalledOnce()
-    expect(store.getState().orcaProfileAuthStatus).toEqual(refreshedAuthStatus)
-    expect(store.getState().orcaProfiles).toEqual(result.profiles)
+    await expect(store.getState().refreshCurrentKinguProfileAuth()).resolves.toEqual(result)
+    expect(kinguProfilesApi.refreshAuth).toHaveBeenCalledOnce()
+    expect(store.getState().kinguProfileAuthStatus).toEqual(refreshedAuthStatus)
+    expect(store.getState().kinguProfiles).toEqual(result.profiles)
   })
 
   it('creates a cloud-linked profile and stores the returned profile list', async () => {
@@ -206,43 +206,43 @@ describe('orca profile auth actions slice', () => {
         activeOrgName: 'Acme'
       }
     }
-    const result: CreateCloudLinkedOrcaProfileResult = {
+    const result: CreateCloudLinkedKinguProfileResult = {
       status: 'created',
       auth: connectedAuthStatus,
       activeProfileId: 'local-default',
       profiles: [...listState.profiles, cloudProfile],
       profile: cloudProfile
     }
-    orcaProfilesApi.createCloudLinked.mockResolvedValue(result)
+    kinguProfilesApi.createCloudLinked.mockResolvedValue(result)
     const store = createTestStore()
 
     await expect(
-      store.getState().createCloudLinkedOrcaProfile({ orgId: 'org-1', name: 'Acme' })
+      store.getState().createCloudLinkedKinguProfile({ orgId: 'org-1', name: 'Acme' })
     ).resolves.toEqual(result)
-    expect(orcaProfilesApi.createCloudLinked).toHaveBeenCalledWith({
+    expect(kinguProfilesApi.createCloudLinked).toHaveBeenCalledWith({
       orgId: 'org-1',
       name: 'Acme'
     })
-    expect(store.getState().orcaProfiles).toEqual(result.profiles)
+    expect(store.getState().kinguProfiles).toEqual(result.profiles)
   })
 
   it('signs out the current profile without dropping local profile data', async () => {
-    const result: SignOutCurrentOrcaProfileResult = {
+    const result: SignOutCurrentKinguProfileResult = {
       status: 'signed-out',
       auth: localAuthStatus,
       activeProfileId: 'local-default',
       profiles: listState.profiles
     }
-    orcaProfilesApi.signOutCurrent.mockResolvedValue(result)
+    kinguProfilesApi.signOutCurrent.mockResolvedValue(result)
     const store = createTestStore()
 
-    await expect(store.getState().signOutCurrentOrcaProfile()).resolves.toEqual(result)
-    expect(store.getState().orcaProfileAuthStatus).toEqual(localAuthStatus)
-    expect(store.getState().orcaProfiles).toEqual(listState.profiles)
+    await expect(store.getState().signOutCurrentKinguProfile()).resolves.toEqual(result)
+    expect(store.getState().kinguProfileAuthStatus).toEqual(localAuthStatus)
+    expect(store.getState().kinguProfiles).toEqual(listState.profiles)
   })
 
   it('selects a cloud organization and refreshes auth state', async () => {
-    const selectedAuthStatus: OrcaProfileAuthStatus = {
+    const selectedAuthStatus: KinguProfileAuthStatus = {
       ...connectedAuthStatus,
       cloud: {
         ...connectedCloud,
@@ -250,7 +250,7 @@ describe('orca profile auth actions slice', () => {
         activeOrgName: 'Acme'
       }
     }
-    const result: SelectOrcaProfileOrgResult = {
+    const result: SelectKinguProfileOrgResult = {
       status: 'selected',
       auth: selectedAuthStatus,
       activeProfileId: 'local-default',
@@ -262,12 +262,12 @@ describe('orca profile auth actions slice', () => {
         }
       ]
     }
-    orcaProfilesApi.selectOrg.mockResolvedValue(result)
+    kinguProfilesApi.selectOrg.mockResolvedValue(result)
     const store = createTestStore()
 
-    await expect(store.getState().selectOrcaProfileOrg('org-1')).resolves.toEqual(result)
-    expect(orcaProfilesApi.selectOrg).toHaveBeenCalledWith({ orgId: 'org-1' })
-    expect(store.getState().orcaProfileAuthStatus).toEqual(selectedAuthStatus)
-    expect(store.getState().orcaProfileAuthStatus?.organizations).toEqual(connectedOrganizations)
+    await expect(store.getState().selectKinguProfileOrg('org-1')).resolves.toEqual(result)
+    expect(kinguProfilesApi.selectOrg).toHaveBeenCalledWith({ orgId: 'org-1' })
+    expect(store.getState().kinguProfileAuthStatus).toEqual(selectedAuthStatus)
+    expect(store.getState().kinguProfileAuthStatus?.organizations).toEqual(connectedOrganizations)
   })
 })

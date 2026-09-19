@@ -23,7 +23,7 @@ type WorktreeCardReviewDetailSectionProps = {
   review: WorktreeCardPrDisplay | null
   reviewMenuOpen: boolean
   onReviewMenuOpenChange: (open: boolean) => void
-  onOpenReviewInOrca?: (event: React.MouseEvent) => void
+  onOpenReviewInKingu?: (event: React.MouseEvent) => void
   onCopyReviewLink?: () => void
   onOpenReviewInBrowser?: (url: string) => void
   onUnlinkReview?: () => void
@@ -34,7 +34,7 @@ export function WorktreeCardReviewDetailSection({
   review,
   reviewMenuOpen,
   onReviewMenuOpenChange,
-  onOpenReviewInOrca,
+  onOpenReviewInKingu,
   onCopyReviewLink,
   onOpenReviewInBrowser,
   onUnlinkReview,
@@ -67,7 +67,7 @@ export function WorktreeCardReviewDetailSection({
   )
   const dismissAndOpenReview = (event: React.MouseEvent): void => {
     closeHover()
-    onOpenReviewInOrca?.(event)
+    onOpenReviewInKingu?.(event)
   }
 
   return (
@@ -107,8 +107,8 @@ export function WorktreeCardReviewDetailSection({
                     >
                       <Globe className="size-3.5" />
                       {translate(
-                        'auto.components.sidebar.WorktreeCardMeta.openInOrcaBrowser',
-                        'Open in Orca browser'
+                        'auto.components.sidebar.WorktreeCardMeta.openInKinguBrowser',
+                        'Open in Kingu browser'
                       )}
                     </DropdownMenuItem>
                   )}
@@ -140,11 +140,11 @@ export function WorktreeCardReviewDetailSection({
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
-            {review.url && onOpenReviewInOrca && (
+            {review.url && onOpenReviewInKingu && (
               <MetadataActionIcon
                 label={translate(
                   'auto.components.sidebar.WorktreeCardMeta.2c67730e07',
-                  'Open in Orca'
+                  'Open in Kingu'
                 )}
                 onClick={dismissAndOpenReview}
               >

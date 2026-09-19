@@ -1,38 +1,38 @@
 import type { PreloadApi } from '../../../../preload/api-types'
 import {
-  DEFAULT_LOCAL_ORCA_PROFILE_ID,
-  createDefaultLocalOrcaProfile
-} from '../../../../shared/orca-profiles'
+  DEFAULT_LOCAL_KINGU_PROFILE_ID,
+  createDefaultLocalKinguProfile
+} from '../../../../shared/kingu-profiles'
 import { noopUnsubscribe } from './web-storage'
 
-export function createWebOrcaProfilesApi(): Partial<PreloadApi> {
-  const webOrcaProfileAuthStatus = () =>
+export function createWebKinguProfilesApi(): Partial<PreloadApi> {
+  const webKinguProfileAuthStatus = () =>
     Promise.resolve({
-      activeProfileId: DEFAULT_LOCAL_ORCA_PROFILE_ID,
+      activeProfileId: DEFAULT_LOCAL_KINGU_PROFILE_ID,
       configured: false,
       state: 'unconfigured' as const,
       persistence: 'none' as const,
-      setupMessage: 'Orca Cloud sign-in is not available in the browser fallback.'
+      setupMessage: 'Kingu Cloud sign-in is not available in the browser fallback.'
     })
   return {
-    orcaProfiles: {
+    kinguProfiles: {
       list: () =>
         Promise.resolve({
-          activeProfileId: DEFAULT_LOCAL_ORCA_PROFILE_ID,
-          profiles: [createDefaultLocalOrcaProfile(0)],
+          activeProfileId: DEFAULT_LOCAL_KINGU_PROFILE_ID,
+          profiles: [createDefaultLocalKinguProfile(0)],
           multiProfileUi: false
         }),
-      authStatus: webOrcaProfileAuthStatus,
+      authStatus: webKinguProfileAuthStatus,
       onAuthStatusChanged: () => noopUnsubscribe,
       createLocal: () =>
         Promise.resolve({
-          activeProfileId: DEFAULT_LOCAL_ORCA_PROFILE_ID,
-          profiles: [createDefaultLocalOrcaProfile(0)],
-          profile: createDefaultLocalOrcaProfile(0)
+          activeProfileId: DEFAULT_LOCAL_KINGU_PROFILE_ID,
+          profiles: [createDefaultLocalKinguProfile(0)],
+          profile: createDefaultLocalKinguProfile(0)
         }),
       createCloudLinked: async () => ({
         status: 'unconfigured',
-        auth: await webOrcaProfileAuthStatus()
+        auth: await webKinguProfileAuthStatus()
       }),
       switchProfile: () => Promise.resolve({ status: 'already-active' }),
       transferProject: (args) =>
@@ -46,21 +46,21 @@ export function createWebOrcaProfilesApi(): Partial<PreloadApi> {
       findProjectProfiles: async () => ({ projects: [] }),
       connectCurrent: async () => ({
         status: 'unconfigured',
-        auth: await webOrcaProfileAuthStatus()
+        auth: await webKinguProfileAuthStatus()
       }),
       refreshAuth: async () => ({
         status: 'unconfigured',
-        auth: await webOrcaProfileAuthStatus()
+        auth: await webKinguProfileAuthStatus()
       }),
       signOutCurrent: async () => ({
         status: 'signed-out',
-        auth: await webOrcaProfileAuthStatus(),
-        activeProfileId: DEFAULT_LOCAL_ORCA_PROFILE_ID,
-        profiles: [createDefaultLocalOrcaProfile(0)]
+        auth: await webKinguProfileAuthStatus(),
+        activeProfileId: DEFAULT_LOCAL_KINGU_PROFILE_ID,
+        profiles: [createDefaultLocalKinguProfile(0)]
       }),
       selectOrg: async () => ({
         status: 'unconfigured',
-        auth: await webOrcaProfileAuthStatus()
+        auth: await webKinguProfileAuthStatus()
       }),
       orgMembersList: async () => ({ status: 'unconfigured' }),
       orgMemberInvite: async () => ({ status: 'unconfigured' }),

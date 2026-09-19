@@ -131,7 +131,7 @@ describe('DashboardAgentRow', () => {
       makeAgent(
         {},
         {
-          prompt: 'You are working inside Orca, a multi-agent IDE.',
+          prompt: 'You are working inside Kingu, a multi-agent IDE.',
           orchestration: {
             taskId: 'task-1',
             dispatchId: 'ctx-1',
@@ -143,7 +143,7 @@ describe('DashboardAgentRow', () => {
     )
 
     expect(markup).toContain('Fix checkout race')
-    expect(markup).not.toContain('You are working inside Orca')
+    expect(markup).not.toContain('You are working inside Kingu')
   })
 
   it('shows the active model beside the agent label', () => {
@@ -330,7 +330,7 @@ describe('DashboardAgentRow', () => {
   it('reserves a real working tool line before tool metadata arrives', () => {
     const emptyToolMarkup = renderRow(makeAgent())
     const activeToolMarkup = renderRow(
-      makeAgent({}, { toolName: 'ListDir', toolInput: '/Users/nwparker/orca' })
+      makeAgent({}, { toolName: 'ListDir', toolInput: '/Users/nwparker/kingu' })
     )
 
     // Why: Antigravity emits working hooks without tool metadata between

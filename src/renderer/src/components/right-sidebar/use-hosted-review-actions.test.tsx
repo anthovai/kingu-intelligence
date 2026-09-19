@@ -25,7 +25,7 @@ vi.mock('@/runtime/runtime-rpc-client', () => ({
   assertRuntimeEnvironmentCapability: runtimeRpcMocks.assertRuntimeEnvironmentCapability
 }))
 
-const prRepo = { host: 'github.com', owner: 'stablyai', repo: 'orca-sta1015-sandbox' }
+const prRepo = { host: 'github.com', owner: 'anthovai', repo: 'kingu-sta1015-sandbox' }
 const review: HostedReviewActionInfo = {
   provider: 'github',
   number: 1015,
@@ -167,7 +167,7 @@ describe('useHostedReviewActions', () => {
     expect(runtimeRpcMocks.assertRuntimeEnvironmentCapability).toHaveBeenCalledWith(
       'env-1',
       'github.markPRReadyForReview',
-      expect.stringContaining('newer Orca server')
+      expect.stringContaining('newer Kingu server')
     )
     expect(runtimeRpcMocks.callRuntimeRpc).toHaveBeenCalledWith(
       { kind: 'environment', environmentId: 'env-1' },
@@ -223,7 +223,7 @@ describe('useHostedReviewActions', () => {
     expect(runtimeRpcMocks.assertRuntimeEnvironmentCapability).toHaveBeenCalledWith(
       'env-1',
       'gitlab.updateMR.readyForReview.v1',
-      expect.stringContaining('newer Orca server')
+      expect.stringContaining('newer Kingu server')
     )
     expect(runtimeRpcMocks.callRuntimeRpc).toHaveBeenCalledWith(
       { kind: 'environment', environmentId: 'env-1' },
@@ -248,7 +248,7 @@ describe('useHostedReviewActions', () => {
             position: 1,
             number: 1014,
             title: 'Models',
-            url: 'https://github.com/stablyai/orca/pull/1014',
+            url: 'https://github.com/anthovai/kingu-intelligence/pull/1014',
             state: 'open',
             checksStatus: 'success',
             mergeable: 'MERGEABLE'
@@ -257,7 +257,7 @@ describe('useHostedReviewActions', () => {
             position: 2,
             number: 1015,
             title: 'API',
-            url: 'https://github.com/stablyai/orca/pull/1015',
+            url: 'https://github.com/anthovai/kingu-intelligence/pull/1015',
             state: 'open',
             checksStatus: 'success',
             mergeable: 'MERGEABLE'
@@ -266,7 +266,7 @@ describe('useHostedReviewActions', () => {
             position: 3,
             number: 1016,
             title: 'UI',
-            url: 'https://github.com/stablyai/orca/pull/1016',
+            url: 'https://github.com/anthovai/kingu-intelligence/pull/1016',
             state: 'open',
             checksStatus: 'success',
             mergeable: 'MERGEABLE'
@@ -303,7 +303,7 @@ describe('useHostedReviewActions', () => {
             position: 1,
             number: 1014,
             title: 'Models',
-            url: 'https://github.com/stablyai/orca/pull/1014',
+            url: 'https://github.com/anthovai/kingu-intelligence/pull/1014',
             state: 'open',
             checksStatus: 'success',
             mergeable: 'MERGEABLE'
@@ -312,7 +312,7 @@ describe('useHostedReviewActions', () => {
             position: 2,
             number: 1015,
             title: 'API',
-            url: 'https://github.com/stablyai/orca/pull/1015',
+            url: 'https://github.com/anthovai/kingu-intelligence/pull/1015',
             state: 'open',
             checksStatus: 'success',
             mergeable: 'MERGEABLE'

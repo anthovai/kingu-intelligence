@@ -22,11 +22,11 @@ import {
   moveAutomationToDestination,
   resolveAutomationEditDestination,
   saveExistingAutomation
-} from './automation-orca-save-operations'
+} from './automation-kingu-save-operations'
 import type { AutomationSaveContext } from './automation-save-context'
 
-/** Saves an Orca automation, including destination validation and host moves. */
-export async function saveOrcaAutomation(
+/** Saves an Kingu automation, including destination validation and host moves. */
+export async function saveKinguAutomation(
   context: AutomationSaveContext,
   time: { hour: number; minute: number; now: number }
 ): Promise<void> {

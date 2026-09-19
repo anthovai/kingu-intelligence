@@ -46,17 +46,17 @@ vi.mock('./CliRegistrationDialog', () => ({
 function notInstalledStatus(overrides: Partial<CliInstallStatus> = {}): CliInstallStatus {
   return {
     platform: 'darwin',
-    commandName: 'orca',
-    commandPath: '/usr/local/bin/orca',
+    commandName: 'kingu',
+    commandPath: '/usr/local/bin/kingu',
     pathDirectory: '/usr/local/bin',
     pathConfigured: true,
-    launcherPath: '/Applications/Orca.app/Contents/Resources/bin/orca',
+    launcherPath: '/Applications/Kingu.app/Contents/Resources/bin/kingu',
     installMethod: 'symlink',
     supported: true,
     state: 'not_installed',
     currentTarget: null,
     unsupportedReason: null,
-    detail: 'Register /usr/local/bin/orca to use Orca from the terminal.',
+    detail: 'Register /usr/local/bin/kingu to use Kingu from the terminal.',
     ...overrides
   }
 }
@@ -92,15 +92,15 @@ describe('CliSection install failure surfacing', () => {
   it('shows the thrown conflict reason and its remedy instead of a success toast', async () => {
     await renderCliSectionAndInstall(async () => {
       throw new Error(
-        "Error invoking remote method 'cli:install': Error: Refusing to replace non-Orca " +
-          'command at /usr/local/bin/orca. Remove it and register again if it is no longer needed.'
+        "Error invoking remote method 'cli:install': Error: Refusing to replace non-Kingu " +
+          'command at /usr/local/bin/kingu. Remove it and register again if it is no longer needed.'
       )
     })
 
     const alert = screen.getByRole('alert')
-    expect(alert.textContent).toContain('Failed to register `orca` in PATH.')
+    expect(alert.textContent).toContain('Failed to register `kingu` in PATH.')
     expect(alert.textContent).toContain(
-      'Refusing to replace non-Orca command at /usr/local/bin/orca.'
+      'Refusing to replace non-Kingu command at /usr/local/bin/kingu.'
     )
     expect(alert.textContent).toContain('Remove it and register again if it is no longer needed.')
     // The Electron transport wrapper must not leak into the panel.
@@ -113,14 +113,14 @@ describe('CliSection install failure surfacing', () => {
     await renderCliSectionAndInstall(async () =>
       notInstalledStatus({
         state: 'conflict',
-        detail: '/usr/local/bin/orca exists but is not an Orca symlink.'
+        detail: '/usr/local/bin/kingu exists but is not an Kingu symlink.'
       })
     )
 
     const alert = screen.getByRole('alert')
-    expect(alert.textContent).toContain('/usr/local/bin/orca exists but is not an Orca symlink.')
+    expect(alert.textContent).toContain('/usr/local/bin/kingu exists but is not an Kingu symlink.')
     expect(alert.textContent).toContain(
-      'Remove /usr/local/bin/orca and register again if it is no longer needed.'
+      'Remove /usr/local/bin/kingu and register again if it is no longer needed.'
     )
     expect(toasts.success).not.toHaveBeenCalled()
   })
@@ -131,12 +131,12 @@ describe('CliSection install failure surfacing', () => {
         state: 'unsupported',
         supported: false,
         unsupportedReason: 'launcher_missing',
-        detail: 'The bundled CLI launcher is missing from this Orca build.'
+        detail: 'The bundled CLI launcher is missing from this Kingu build.'
       })
     )
 
     expect(screen.getByRole('alert').textContent).toContain(
-      'The bundled CLI launcher is missing from this Orca build.'
+      'The bundled CLI launcher is missing from this Kingu build.'
     )
     expect(toasts.success).not.toHaveBeenCalled()
     expect(toasts.error).toHaveBeenCalledTimes(1)

@@ -60,7 +60,7 @@ export function findUnhydratedHostMirrorForPane(
   // whatever the individual leaf's fate.
   //
   // TAB-GRANULAR, and everything below this line is leaf-aware — the asymmetry is a known residual,
-  // not an oversight. For a single-leaf tab (every agent tab Orca creates) it is exact: the mirror
+  // not an oversight. For a single-leaf tab (every agent tab Kingu creates) it is exact: the mirror
   // builds `ptyIdsByTabId[tab]` out of the same map it writes to the layout's `ptyIdsByLeafId`
   // (web-session-tabs-sync/terminal-build.ts), so a non-empty entry means this leaf is bound and
   // live. For a SPLIT mirrored tab it is not. A leaf that has ever been bound keeps its binding

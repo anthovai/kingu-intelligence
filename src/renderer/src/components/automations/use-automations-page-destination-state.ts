@@ -86,7 +86,7 @@ export function useAutomationsPageDestinationState({
       : null
   }, [activeWorktreeId, repoMap, worktreeMap])
   const createDestination = useAutomationCreateDestination({
-    open: createOpen && editingAutomationId === null && createTarget === 'orca',
+    open: createOpen && editingAutomationId === null && createTarget === 'kingu',
     catalog: hostCatalog.catalog,
     entries: hostCatalog.entries,
     filterStableKey: hostCatalog.resolution.entry?.stableKey ?? null,

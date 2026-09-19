@@ -89,7 +89,7 @@ describe('runtime Jira client search bounds', () => {
       hostId: 'runtime:env-1' as const
     }
     jiraReadStatusLocal.mockResolvedValue({ connected: true, viewer: null })
-    jiraLookupIssueSummaryLocal.mockResolvedValue({ key: 'ORCA-1' })
+    jiraLookupIssueSummaryLocal.mockResolvedValue({ key: 'KINGU-1' })
     runtimeCall.mockImplementation(async (args: { method: string }) => {
       if (args.method === 'status.get') {
         return createCompatibleRuntimeStatusResponse()
@@ -98,23 +98,25 @@ describe('runtime Jira client search bounds', () => {
         id: 'rpc-1',
         ok: true,
         result:
-          args.method === 'jira.readStatus' ? { connected: true, viewer: null } : { key: 'ORCA-1' },
+          args.method === 'jira.readStatus'
+            ? { connected: true, viewer: null }
+            : { key: 'KINGU-1' },
         _meta: { runtimeId: 'remote-runtime' }
       }
     })
 
     await expect(jiraReadStatus(localContext)).resolves.toMatchObject({ connected: true })
-    await expect(jiraLookupIssueSummary(localContext, 'ORCA-1', 'site-1')).resolves.toMatchObject({
-      key: 'ORCA-1'
+    await expect(jiraLookupIssueSummary(localContext, 'KINGU-1', 'site-1')).resolves.toMatchObject({
+      key: 'KINGU-1'
     })
     await expect(jiraReadStatus(runtimeContext)).resolves.toMatchObject({ connected: true })
-    await expect(jiraLookupIssueSummary(runtimeContext, 'ORCA-1', 'site-1')).resolves.toMatchObject(
-      { key: 'ORCA-1' }
-    )
+    await expect(
+      jiraLookupIssueSummary(runtimeContext, 'KINGU-1', 'site-1')
+    ).resolves.toMatchObject({ key: 'KINGU-1' })
 
     expect(jiraReadStatusLocal).toHaveBeenCalledTimes(1)
     expect(jiraLookupIssueSummaryLocal).toHaveBeenCalledWith({
-      key: 'ORCA-1',
+      key: 'KINGU-1',
       siteId: 'site-1',
       requestId: expect.any(String)
     })
@@ -124,7 +126,7 @@ describe('runtime Jira client search bounds', () => {
     expect(runtimeCall).toHaveBeenCalledWith(
       expect.objectContaining({
         method: 'jira.lookupIssueSummary',
-        params: { key: 'ORCA-1', siteId: 'site-1' },
+        params: { key: 'KINGU-1', siteId: 'site-1' },
         selector: 'env-1'
       })
     )
@@ -148,7 +150,7 @@ describe('runtime Jira client search bounds', () => {
     })
     const controller = new AbortController()
 
-    const lookup = jiraLookupIssueSummary(context, 'ORCA-1', 'site-1', controller.signal)
+    const lookup = jiraLookupIssueSummary(context, 'KINGU-1', 'site-1', controller.signal)
     controller.abort()
 
     await expect(lookup).rejects.toThrow('aborted')
@@ -183,7 +185,7 @@ describe('runtime Jira client search bounds', () => {
     await expect(
       jiraListAssignableUsers(
         { activeRuntimeEnvironmentId: 'env-1' },
-        'ORCA-1',
+        'KINGU-1',
         'x'.repeat(9 * 1024),
         'site-1'
       )
@@ -274,7 +276,7 @@ describe('runtime Jira client search bounds', () => {
       return {
         id: 'rpc-1',
         ok: true,
-        result: { ok: true, id: 'issue-1', key: 'ORCA-1', url: 'https://jira.example/ORCA-1' },
+        result: { ok: true, id: 'issue-1', key: 'KINGU-1', url: 'https://jira.example/KINGU-1' },
         _meta: { runtimeId: 'remote-runtime' }
       }
     })
@@ -284,7 +286,7 @@ describe('runtime Jira client search bounds', () => {
         { activeRuntimeEnvironmentId: 'env-1' },
         { projectId: 'project-1', issueTypeId: 'type-1', title: 'Issue' }
       )
-    ).resolves.toMatchObject({ ok: true, key: 'ORCA-1' })
+    ).resolves.toMatchObject({ ok: true, key: 'KINGU-1' })
     expect(runtimeCall).toHaveBeenCalledWith(
       expect.objectContaining({ method: 'jira.createIssue', selector: 'env-1' })
     )
@@ -298,7 +300,7 @@ describe('runtime Jira client search bounds', () => {
       return {
         id: 'rpc-1',
         ok: true,
-        result: { ok: true, id: 'issue-1', key: 'ORCA-1', url: 'https://jira.example/ORCA-1' },
+        result: { ok: true, id: 'issue-1', key: 'KINGU-1', url: 'https://jira.example/KINGU-1' },
         _meta: { runtimeId: 'remote-runtime' }
       }
     })
@@ -314,7 +316,7 @@ describe('runtime Jira client search bounds', () => {
           userFieldKeys: ['reporter']
         }
       )
-    ).resolves.toMatchObject({ ok: true, key: 'ORCA-1' })
+    ).resolves.toMatchObject({ ok: true, key: 'KINGU-1' })
 
     expect(runtimeCall).toHaveBeenNthCalledWith(
       2,
@@ -337,7 +339,7 @@ describe('runtime Jira client search bounds', () => {
       async (args: RuntimeSubscribeArgs, callbacks: RuntimeSubscribeCallbacks) => {
         const payload =
           args.method === 'jira.getIssueStream'
-            ? { key: 'ORCA-1', description: '![shot](data:image/png;base64,abc)' }
+            ? { key: 'KINGU-1', description: '![shot](data:image/png;base64,abc)' }
             : [{ id: 'comment-1', body: '![shot](data:image/png;base64,abc)' }]
         callbacks.onResponse({
           id: 'rpc-1',
@@ -356,10 +358,10 @@ describe('runtime Jira client search bounds', () => {
     )
 
     await expect(
-      jiraGetIssue({ activeRuntimeEnvironmentId: 'env-1' }, 'ORCA-1', 'site-1')
-    ).resolves.toMatchObject({ key: 'ORCA-1' })
+      jiraGetIssue({ activeRuntimeEnvironmentId: 'env-1' }, 'KINGU-1', 'site-1')
+    ).resolves.toMatchObject({ key: 'KINGU-1' })
     await expect(
-      jiraIssueComments({ activeRuntimeEnvironmentId: 'env-1' }, 'ORCA-1', 'site-1')
+      jiraIssueComments({ activeRuntimeEnvironmentId: 'env-1' }, 'KINGU-1', 'site-1')
     ).resolves.toMatchObject([{ id: 'comment-1' }])
 
     expect(runtimeSubscribe).toHaveBeenNthCalledWith(
@@ -367,7 +369,7 @@ describe('runtime Jira client search bounds', () => {
       {
         selector: 'env-1',
         method: 'jira.getIssueStream',
-        params: { key: 'ORCA-1', siteId: 'site-1' },
+        params: { key: 'KINGU-1', siteId: 'site-1' },
         timeoutMs: 60_000
       },
       expect.anything()
@@ -377,7 +379,7 @@ describe('runtime Jira client search bounds', () => {
       {
         selector: 'env-1',
         method: 'jira.issueCommentsStream',
-        params: { key: 'ORCA-1', siteId: 'site-1' },
+        params: { key: 'KINGU-1', siteId: 'site-1' },
         timeoutMs: 60_000
       },
       expect.anything()

@@ -16,7 +16,7 @@ const mocks = vi.hoisted(() => ({
   publish: vi.fn(),
   openPopover: null as ((open: boolean) => void) | null,
   state: {
-    orcaProfileAuthStatus: { configured: true, state: 'connected' } as Record<string, unknown>,
+    kinguProfileAuthStatus: { configured: true, state: 'connected' } as Record<string, unknown>,
     settings: { artifactSharingEnabled: true }
   }
 }))
@@ -25,7 +25,7 @@ vi.mock('@/store', () => ({
   useAppStore: (selector: (state: Record<string, unknown>) => unknown) =>
     selector({
       ...mocks.state,
-      connectCurrentOrcaProfile: mocks.connect,
+      connectCurrentKinguProfile: mocks.connect,
       openSettingsPage: mocks.openSettingsPage,
       openSettingsTarget: mocks.openSettingsTarget
     })
@@ -81,7 +81,7 @@ describe('ArtifactPublishButton', () => {
     mocks.getPublishedLink.mockResolvedValue(null)
     mocks.copyLink.mockResolvedValue(true)
     mocks.openPopover = null
-    mocks.state.orcaProfileAuthStatus = { configured: true, state: 'connected' }
+    mocks.state.kinguProfileAuthStatus = { configured: true, state: 'connected' }
     mocks.state.settings = { artifactSharingEnabled: true }
   })
 
@@ -103,7 +103,7 @@ describe('ArtifactPublishButton', () => {
 
   it('offers sign-in and blocks confirmation while signed out', async () => {
     const user = userEvent.setup()
-    mocks.state.orcaProfileAuthStatus = { configured: true, state: 'local' }
+    mocks.state.kinguProfileAuthStatus = { configured: true, state: 'local' }
     render(<ArtifactPublishButton sourceKey="/repo/report.md" createRequest={vi.fn()} />)
 
     expect(await screen.findByRole('button', { name: 'Generate link' })).toBeDisabled()
@@ -137,18 +137,18 @@ describe('ArtifactPublishButton', () => {
   it('shows and manages an existing public link', async () => {
     const user = userEvent.setup()
     const createRequest = vi.fn()
-    mocks.getPublishedLink.mockResolvedValue('https://share.onorca.dev/a/artifact-a')
+    mocks.getPublishedLink.mockResolvedValue('https://share.onkingu.dev/a/artifact-a')
     mocks.publish.mockResolvedValue({
       change: 'updated',
-      item: { shareUrl: 'https://share.onorca.dev/a/artifact-a' }
+      item: { shareUrl: 'https://share.onkingu.dev/a/artifact-a' }
     })
 
     render(<ArtifactPublishButton sourceKey="/repo/report.md" createRequest={createRequest} />)
 
     await user.click(screen.getByRole('button', { name: 'Share as artifact' }))
-    expect(await screen.findByText('https://share.onorca.dev/a/artifact-a')).toBeInTheDocument()
+    expect(await screen.findByText('https://share.onkingu.dev/a/artifact-a')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Copy link' }))
-    expect(mocks.copyLink).toHaveBeenCalledWith('https://share.onorca.dev/a/artifact-a', {
+    expect(mocks.copyLink).toHaveBeenCalledWith('https://share.onkingu.dev/a/artifact-a', {
       showSuccessToast: false
     })
 
@@ -159,7 +159,7 @@ describe('ArtifactPublishButton', () => {
   it('keeps existing links available when publishing is disabled', async () => {
     const user = userEvent.setup()
     mocks.state.settings = { artifactSharingEnabled: false }
-    mocks.getPublishedLink.mockResolvedValue('https://share.onorca.dev/a/artifact-a')
+    mocks.getPublishedLink.mockResolvedValue('https://share.onkingu.dev/a/artifact-a')
 
     render(<ArtifactPublishButton sourceKey="/repo/report.md" createRequest={vi.fn()} />)
 
@@ -182,7 +182,7 @@ describe('ArtifactPublishButton', () => {
   it('does not start copy feedback after the panel unmounts', async () => {
     const user = userEvent.setup()
     let finishCopy: ((copied: boolean) => void) | undefined
-    mocks.getPublishedLink.mockResolvedValue('https://share.onorca.dev/a/artifact-a')
+    mocks.getPublishedLink.mockResolvedValue('https://share.onkingu.dev/a/artifact-a')
     mocks.copyLink.mockReturnValue(
       new Promise<boolean>((resolve) => {
         finishCopy = resolve

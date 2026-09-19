@@ -106,7 +106,7 @@ function makeResult(
     title: 'Terminal',
     secondaryText: '',
     secondaryMatches: [],
-    repoName: 'repo/orca',
+    repoName: 'repo/kingu',
     worktreeName: 'Palette Worktree',
     branchName: 'main',
     titleRanges: [],

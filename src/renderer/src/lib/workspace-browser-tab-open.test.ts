@@ -117,7 +117,7 @@ describe('openWorkspaceBrowserTab', () => {
 
     await openWorkspaceBrowserTab({
       workspaceId: WORKSPACE_ID,
-      url: 'https://github.com/acme/orca/pull/456',
+      url: 'https://github.com/acme/kingu/pull/456',
       intent: { kind: 'url' },
       focusOnCreate: false,
       selectWorktree: false
@@ -125,7 +125,7 @@ describe('openWorkspaceBrowserTab', () => {
 
     expect(createBrowserTab).toHaveBeenCalledWith(
       WORKSPACE_ID,
-      'https://github.com/acme/orca/pull/456',
+      'https://github.com/acme/kingu/pull/456',
       expect.objectContaining({ activate: false })
     )
   })
@@ -201,7 +201,7 @@ describe('openWorkspaceBrowserTab', () => {
 
     await openWorkspaceBrowserTab({
       workspaceId: WORKSPACE_ID,
-      url: 'https://gitlab.com/acme/orca/-/merge_requests/77',
+      url: 'https://gitlab.com/acme/kingu/-/merge_requests/77',
       intent: { kind: 'url' },
       focusOnCreate: false,
       selectWorktree: false
@@ -211,7 +211,7 @@ describe('openWorkspaceBrowserTab', () => {
       expect.objectContaining({
         focusOnCreate: false,
         selectWorktree: false,
-        url: 'https://gitlab.com/acme/orca/-/merge_requests/77'
+        url: 'https://gitlab.com/acme/kingu/-/merge_requests/77'
       })
     )
   })

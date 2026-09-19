@@ -67,7 +67,7 @@ describe('useComposerState host-context boundaries', () => {
       number: 42,
       title: 'Fix PR workspace creation',
       state: 'open' as const,
-      url: 'https://github.com/stablyai/orca/pull/42',
+      url: 'https://github.com/anthovai/kingu-intelligence/pull/42',
       labels: [],
       updatedAt: '2026-08-04T00:00:00.000Z',
       author: 'octocat',
@@ -99,7 +99,7 @@ describe('useComposerState host-context boundaries', () => {
           type: 'pr',
           number: 43,
           title: item.title,
-          url: 'https://github.com/stablyai/orca/pull/43'
+          url: 'https://github.com/anthovai/kingu-intelligence/pull/43'
         },
         repoId: 'repo-1'
       })
@@ -117,7 +117,7 @@ describe('useComposerState host-context boundaries', () => {
     expect(isExplicitWorkspaceNameInput({ name: '#1234', lastAutoName: '' })).toBe(false)
     expect(
       isExplicitWorkspaceNameInput({
-        name: 'https://github.com/stablyai/orca/pull/1234',
+        name: 'https://github.com/anthovai/kingu-intelligence/pull/1234',
         lastAutoName: ''
       })
     ).toBe(false)
@@ -150,7 +150,7 @@ describe('useComposerState host-context boundaries', () => {
         resolutionKind: 'pr-start-point',
         smartWorkspaceName: 'title-derived-name',
         smartDisplayName: 'Title derived name',
-        fallbackWorkspaceName: 'https://github.com/stablyai/orca/pull/6772',
+        fallbackWorkspaceName: 'https://github.com/anthovai/kingu-intelligence/pull/6772',
         nameIsAutoManaged: true
       })
     ).toEqual({ workspaceName: 'title-derived-name', displayName: 'Title derived name' })
@@ -173,7 +173,7 @@ describe('useComposerState host-context boundaries', () => {
           provider: 'github',
           number: 1234,
           title: 'Fix workspace name',
-          url: 'https://github.com/stablyai/orca/issues/1234'
+          url: 'https://github.com/anthovai/kingu-intelligence/issues/1234'
         }
       })
     ).toBe('fix-workspace-name')
@@ -616,9 +616,9 @@ describe('useComposerState host-context boundaries', () => {
       provider: 'jira' as const,
       type: 'issue' as const,
       number: 0,
-      title: 'ORCA-123 Link Jira',
-      url: 'https://company.atlassian.net/jira/browse/ORCA-123',
-      jiraIdentifier: 'ORCA-123'
+      title: 'KINGU-123 Link Jira',
+      url: 'https://company.atlassian.net/jira/browse/KINGU-123',
+      jiraIdentifier: 'KINGU-123'
     }
     const context = {
       kind: 'task-source' as const,
@@ -629,7 +629,7 @@ describe('useComposerState host-context boundaries', () => {
         provider: 'jira' as const,
         siteId: 'site-1',
         siteUrl: 'https://company.atlassian.net/jira',
-        projectKey: 'ORCA'
+        projectKey: 'KINGU'
       }
     }
 
@@ -641,7 +641,7 @@ describe('useComposerState host-context boundaries', () => {
       })
     ).toBeNull()
     expect(
-      getMatchingLinkedTaskSourceContext({ ...item, jiraIdentifier: 'ORCA-999' }, context)
+      getMatchingLinkedTaskSourceContext({ ...item, jiraIdentifier: 'KINGU-999' }, context)
     ).toBeNull()
   })
 
@@ -711,7 +711,7 @@ describe('useComposerState host-context boundaries', () => {
       COMPOSER_SOURCE.fullCreation +
       COMPOSER_SOURCE.quickSubmitPreparation +
       COMPOSER_SOURCE.quickCreation
-    expect(submitSources).not.toContain('isOrcaCliAvailableForLaunch')
+    expect(submitSources).not.toContain('isKinguCliAvailableForLaunch')
     expect(submitSources).not.toContain('hasGeneratedLinearSourceContext')
     expect(submitSources).not.toContain('shouldDraftGeneratedLinearContext')
     expect(COMPOSER_SOURCE.derived).toMatch(

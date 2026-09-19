@@ -117,7 +117,7 @@ describe('feature education telemetry helpers', () => {
     const storage = createMemoryStorage()
     vi.stubGlobal('localStorage', storage)
     storage.setItem(
-      'orca.setupGuideTelemetryCompletedSteps.v1',
+      'kingu.setupGuideTelemetryCompletedSteps.v1',
       JSON.stringify(['split-terminal', 'two-worktrees'])
     )
 

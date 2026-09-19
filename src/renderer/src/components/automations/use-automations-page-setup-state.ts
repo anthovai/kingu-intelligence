@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import type { OrcaHooks } from '../../../../shared/orca-yaml-hook-types'
+import type { KinguHooks } from '../../../../shared/kingu-yaml-hook-types'
 import { getSettingsForRepoRuntimeOwner } from '@/lib/repo-runtime-owner'
 import { checkRuntimeHooks } from '@/runtime/runtime-hooks-client'
 import type { AutomationDraft } from './AutomationEditorDialog'
@@ -107,7 +107,7 @@ export function useAutomationsPageSetupState({
     [repos, settings]
   )
   const loadAutomationYamlHooksForRepo = useCallback(
-    async (repoId: string, hostId?: ExecutionHostId): Promise<OrcaHooks | null> => {
+    async (repoId: string, hostId?: ExecutionHostId): Promise<KinguHooks | null> => {
       const key = getAutomationHooksCacheKey(repoId, hostId)
       if (Object.hasOwn(automationYamlHooksByRepoKey, key)) {
         return automationYamlHooksByRepoKey[key] ?? null
@@ -119,7 +119,7 @@ export function useAutomationsPageSetupState({
       const settingsForRepo = getSettingsForRepoRuntimeOwner({ repos, settings }, repoId)
       const promise = checkRuntimeHooks(settingsForRepo, repoId, hostId)
         .then((result) => ({
-          hooks: result.status === 'error' ? null : ((result.hooks as OrcaHooks | null) ?? null),
+          hooks: result.status === 'error' ? null : ((result.hooks as KinguHooks | null) ?? null),
           ok: result.status !== 'error'
         }))
         .catch(() => ({ hooks: null, ok: false }))

@@ -22,7 +22,7 @@ export type ComposerProviderRuntimeSyncInput = Pick<
 >
 
 import { useEffect, useCallback, useRef } from 'react'
-import type { SetupAgentStartupPolicy, OrcaHooks } from '../../../../shared/orca-yaml-hook-types'
+import type { SetupAgentStartupPolicy, KinguHooks } from '../../../../shared/kingu-yaml-hook-types'
 import { useAppStore } from '@/store'
 import { isGitRepoKind } from '../../../../shared/repo-kind'
 import { toast } from 'sonner'
@@ -214,7 +214,7 @@ export function useComposerProviderRuntimeSync(input: ComposerProviderRuntimeSyn
   )
 
   const commitHookCheckIfCurrent = useCallback(
-    (targetContextKey: string, hooks: OrcaHooks | null): boolean => {
+    (targetContextKey: string, hooks: KinguHooks | null): boolean => {
       if (selectedRepoHookContextKey !== targetContextKey) {
         return false
       }

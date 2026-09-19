@@ -29,7 +29,7 @@ function createHarness(startUrl: string) {
     browserTabUrl: startUrl,
     recoveryNavigationValidationRef: ref(null),
     activeLoadFailureRef: ref(null),
-    // Why the destination, not the current document: Orca-driven navigations set this ref before
+    // Why the destination, not the current document: Kingu-driven navigations set this ref before
     // assigning src, which is exactly the case the origin check must not read it for.
     lastKnownWebviewUrlRef: ref<string | null>(startUrl),
     addressBarInputRef: ref(null),

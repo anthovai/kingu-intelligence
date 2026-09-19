@@ -145,13 +145,13 @@ export function RuntimeServerRow({
             <span className="text-[11px] text-muted-foreground">
               {remoteUpdate.currentVersion
                 ? translate(
-                    'auto.components.settings.RuntimeEnvironmentsPane.orcaVersion',
-                    'Orca v{{value0}}',
+                    'auto.components.settings.RuntimeEnvironmentsPane.kinguVersion',
+                    'Kingu v{{value0}}',
                     { value0: remoteUpdate.currentVersion }
                   )
                 : translate(
                     'auto.components.settings.RuntimeEnvironmentsPane.versionUnavailable',
-                    'Orca version unavailable'
+                    'Kingu version unavailable'
                   )}
             </span>
             <RemoteServerUpdateStatus entry={remoteUpdate} compact />

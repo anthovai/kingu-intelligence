@@ -7,8 +7,10 @@ import { RecoverableRenderErrorBoundary } from '../components/error-boundaries/R
 import { FloatingTerminalToggleButton } from '../components/floating-terminal/FloatingTerminalToggleButton'
 import { TerminalWorkbenchContainer } from '../components/TerminalWorkbenchContainer'
 import type { VirtualizedScrollAnchor } from '../hooks/useVirtualizedScrollAnchor'
+import { IdeModeTitlebar } from '../components/ide/IdeModeTitlebar'
 import { TitlebarLeftControls } from './TitlebarLeftControls'
 import { RightSidebarToggle, TitlebarMainStrip } from './TitlebarMainStrip'
+import { splitWorktreeIdForFilesystem } from '../../../shared/worktree/id'
 import type { AppChromeLayout } from './use-app-chrome-layout'
 import type { FloatingWorkspacePanelState } from './use-floating-workspace-panel'
 
@@ -21,6 +23,7 @@ const AutomationsPage = lazy(() => import('../components/automations/Automations
 const ActivityPrototypePage = lazy(() => import('../components/activity/ActivityPrototypePage'))
 const Settings = lazy(() => import('../components/settings/Settings'))
 const SkillsPage = lazy(() => import('../components/skills/SkillsPage'))
+const IdePage = lazy(() => import('../components/ide/IdePage'))
 const ArtifactsPage = lazy(() => import('../components/artifacts/ArtifactsPage'))
 const WorkspaceSpacePage = lazy(() => import('../components/workspace-space/WorkspaceSpacePage'))
 const MobilePage = lazy(() => import('../components/mobile/MobilePage'))
@@ -76,6 +79,15 @@ function ActivePage({ layout }: { layout: AppChromeLayout }): React.JSX.Element 
       {activeView === 'activity' ? <ActivityPrototypePage /> : null}
       {activeView === 'space' ? <WorkspaceSpacePage /> : null}
       {activeView === 'mobile' ? <MobilePage /> : null}
+      {activeView === 'ide' ? (
+        <IdePage
+          folder={
+            activeWorktreeId
+              ? (splitWorktreeIdForFilesystem(activeWorktreeId)?.worktreePath ?? null)
+              : null
+          }
+        />
+      ) : null}
       {activeView === 'terminal' && creationLayoutActive && activePendingCreationId ? (
         <WorktreeCreationPanel
           creationId={activePendingCreationId}
@@ -116,7 +128,9 @@ export function AppWorkspaceShell(props: {
         {/* Why: keep the non-workspace titlebar inside this left+center wrapper so it doesn't span over the right-sidebar column. */}
         <div className="flex flex-col flex-1 min-w-0 min-h-0">
           {/* Why: workspace view drops the full-width titlebar so tab groups extend to the top; settings/landing/tasks keep it. */}
-          {!layout.leftTitlebarChromeLayout.shouldMount ? (
+          {layout.activeView === 'ide' ? (
+            <IdeModeTitlebar />
+          ) : !layout.leftTitlebarChromeLayout.shouldMount ? (
             <div className="titlebar">
               <div className="flex items-center shrink-0 mr-2">{titlebarLeftControls}</div>
               {titlebarMainStrip}
@@ -207,7 +221,7 @@ export function AppWorkspaceShell(props: {
                       title={translate('auto.App.b7a714db1e', 'This page hit an error.')}
                       description={translate(
                         'auto.App.03a14f6b5b',
-                        'Retry the page or navigate to another Orca surface.'
+                        'Retry the page or navigate to another Kingu surface.'
                       )}
                     >
                       <ActivePage layout={layout} />
