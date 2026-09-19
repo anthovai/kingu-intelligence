@@ -158,7 +158,7 @@ export const ROOT_HELP_TEXT_SECONDARY = [
   '  $ kingu repo list',
   '  $ kingu worktree create --name agent-task --agent codex --prompt "hi"',
   '  $ kingu worktree create --repo name:kingu --name cli-test-1 --issue 273',
-  '  $ kingu worktree create --repo name:kingu --name linear-task --linear-issue https://linear.app/stably/issue/STA-335/test-issue',
+  '  $ kingu worktree create --repo name:kingu --name linear-task --linear-issue https://linear.app/your-team/issue/ENG-335/test-issue',
   '  $ kingu worktree create --name linear-task --linear-issue STA-335',
   '  $ kingu worktree show --worktree branch:Jinwoo-H/cli',
   '  $ kingu worktree current',

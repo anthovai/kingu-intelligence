@@ -130,7 +130,7 @@ export const CORE_COMMAND_SPECS: CommandSpec[] = [
       'kingu worktree create --name agent-task --agent codex --prompt "hi" --json',
       'kingu worktree create --repo id:<repoId> --name related-task --json',
       'kingu worktree create --project github:anthovai/kingu-intelligence --host runtime:03ef704c-b180-4b10-998d-e28fbd5de9a3 --name benchmark --json',
-      'kingu worktree create --repo id:<repoId> --name linear-task --linear-issue https://linear.app/stably/issue/STA-335/test-issue --json',
+      'kingu worktree create --repo id:<repoId> --name linear-task --linear-issue https://linear.app/your-team/issue/ENG-335/test-issue --json',
       'kingu worktree create --repo id:<repoId> --name agent-task --agent codex --prompt "hi" --json',
       'kingu worktree create --repo id:<repoId> --name folder-child --parent-worktree folder:<folderId> --json',
       'kingu worktree create --repo id:<repoId> --name related-task --parent-worktree active --json',
