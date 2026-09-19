@@ -197,8 +197,8 @@ describe('explicit user-item attribution', () => {
 
   it('resolves a submission through its provider alias instead of journal order', () => {
     const items = [
-      user('orca:first'),
-      user('orca:second'),
+      user('kingu:first'),
+      user('kingu:second'),
       lifecycle('t1', {
         state: 'completed',
         userItemId: 'codex:thread:t1:0',
@@ -210,7 +210,7 @@ describe('explicit user-item attribution', () => {
       submission('first', 'codex:thread:t1:0'),
       submission('second', null)
     ])
-    expect([...timings.keys()]).toEqual(['orca:first'])
+    expect([...timings.keys()]).toEqual(['kingu:first'])
   })
 
   it('uses the key directly when the user item is journaled under it', () => {
@@ -228,7 +228,7 @@ describe('explicit user-item attribution', () => {
 
   it('attributes nothing when a keyed row names a user item nobody journaled', () => {
     const items = [
-      user('orca:first'),
+      user('kingu:first'),
       lifecycle('auto', {
         state: 'completed',
         userItemId: 'codex:thread:auto:0',
@@ -241,10 +241,10 @@ describe('explicit user-item attribution', () => {
 
   it('falls back to journal order only for rows without a key (older hosts)', () => {
     const items = [
-      user('orca:first'),
+      user('kingu:first'),
       lifecycle('t1', { state: 'completed', startedAt: 1_000, completedAt: 2_000 })
     ]
-    expect([...selectStructuredAgentTurnTimings(items).keys()]).toEqual(['orca:first'])
+    expect([...selectStructuredAgentTurnTimings(items).keys()]).toEqual(['kingu:first'])
   })
 })
 
@@ -287,8 +287,8 @@ describe('coalesced sends and canonical rows', () => {
 
   it('gives a turn shared by two accepted sends to the prompt that opened it', () => {
     const items = [
-      user('orca:first'),
-      user('orca:second'),
+      user('kingu:first'),
+      user('kingu:second'),
       lifecycle('t1', {
         state: 'completed',
         userItemId: 'codex:thread:t1:0',
@@ -300,7 +300,7 @@ describe('coalesced sends and canonical rows', () => {
       accepted('first', 'codex:thread:t1:0'),
       accepted('second', 'codex:thread:t1:0')
     ])
-    expect([...timings.keys()]).toEqual(['orca:first'])
+    expect([...timings.keys()]).toEqual(['kingu:first'])
   })
 
   it('reads a canonical turn item exactly like the legacy carrier', () => {
@@ -314,15 +314,17 @@ describe('coalesced sends and canonical rows', () => {
         kind: 'turn',
         turnId: 't9',
         state: 'completed',
-        userItemId: 'orca:u9',
+        userItemId: 'kingu:u9',
         startedAt: 1_000,
         completedAt: 9_000,
         durationMs: 7_172
       }
     }
-    const timings = selectStructuredAgentTurnTimings([user('orca:u9'), canonical])
-    expect(timings.get('orca:u9')).toMatchObject({ state: 'completed', durationMs: 7_172 })
-    expect(selectStructuredAgentSettledTurns([user('orca:u9'), canonical]).get('orca:u9')).toEqual({
+    const timings = selectStructuredAgentTurnTimings([user('kingu:u9'), canonical])
+    expect(timings.get('kingu:u9')).toMatchObject({ state: 'completed', durationMs: 7_172 })
+    expect(
+      selectStructuredAgentSettledTurns([user('kingu:u9'), canonical]).get('kingu:u9')
+    ).toEqual({
       startedAt: 1_000,
       workedSeconds: 7
     })

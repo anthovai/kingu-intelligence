@@ -70,10 +70,10 @@ describe('shared agent-hook-listener', () => {
   it('normalizes a raw JSON hook body with metadata headers', async () => {
     const req = createReadableRequest({
       'content-type': 'application/json',
-      'x-orca-pane-key': paneKey,
-      'x-orca-worktree-id': 'repo::/tmp/work',
-      'x-orca-agent-hook-env': 'production',
-      'x-orca-agent-hook-version': '1'
+      'x-kingu-pane-key': paneKey,
+      'x-kingu-worktree-id': 'repo::/tmp/work',
+      'x-kingu-agent-hook-env': 'production',
+      'x-kingu-agent-hook-version': '1'
     })
     const body = readRequestBody(req as unknown as IncomingMessage)
     req.emit('data', Buffer.from('{"hook_event_name":"UserPromptSubmit","prompt":"hello"}'))
@@ -94,8 +94,8 @@ describe('shared agent-hook-listener', () => {
     const merged = mergeAgentHookRequestHeaders(
       { hook_event_name: 'UserPromptSubmit', prompt: 'hello' },
       {
-        'x-orca-agent-hook-meta-encoding': 'base64',
-        'x-orca-agent-hook-meta': packedMetadata(
+        'x-kingu-agent-hook-meta-encoding': 'base64',
+        'x-kingu-agent-hook-meta': packedMetadata(
           paneKey,
           'tab-1',
           '',
@@ -124,8 +124,8 @@ describe('shared agent-hook-listener', () => {
       prompt: 'hello'
     }
     const merged = mergeAgentHookRequestHeaders(rawBody, {
-      'x-orca-pane-key': paneKey,
-      'x-orca-tab-id': 'tab-1'
+      'x-kingu-pane-key': paneKey,
+      'x-kingu-tab-id': 'tab-1'
     })
 
     expect(merged).toMatchObject({ paneKey, tabId: 'tab-1', payload: rawBody })
@@ -250,10 +250,10 @@ describe('shared agent-hook-listener', () => {
       })
       expect(ok).toBe(true)
       const text = readFileSync(finalPath, 'utf8')
-      expect(text).toContain('ORCA_AGENT_HOOK_PORT=12345')
-      expect(text).toContain('ORCA_AGENT_HOOK_TOKEN=abcdef-0123')
-      expect(text).toContain('ORCA_AGENT_HOOK_VERSION=1')
-      expect(text).toContain('ORCA_AGENT_HOOK_TRANSPORT=raw-json-v1')
+      expect(text).toContain('KINGU_AGENT_HOOK_PORT=12345')
+      expect(text).toContain('KINGU_AGENT_HOOK_TOKEN=abcdef-0123')
+      expect(text).toContain('KINGU_AGENT_HOOK_VERSION=1')
+      expect(text).toContain('KINGU_AGENT_HOOK_TRANSPORT=raw-json-v1')
       // POSIX 0o600 — owner read/write only.
       if (process.platform !== 'win32') {
         const mode = statSync(finalPath).mode & 0o777

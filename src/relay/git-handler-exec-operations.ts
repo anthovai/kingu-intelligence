@@ -37,7 +37,7 @@ export class GitHandlerExecOperations extends GitHandlerOperationContext {
   // Why: generic git.exec blocks all `git config` writes outright (CONFIG_READ_ONLY_FLAGS),
   // so a deferred fork remote's provenance marker (#17828) needs its own narrow RPC that
   // only ever writes this fixed key shape, mirroring renameCurrentBranch below.
-  async markRemoteOrcaCreated(params: Record<string, unknown>) {
+  async markRemoteKinguCreated(params: Record<string, unknown>) {
     const repoPath = params.repoPath
     const remoteName = params.remoteName
     if (typeof repoPath !== 'string' || typeof remoteName !== 'string' || !remoteName) {
@@ -46,7 +46,7 @@ export class GitHandlerExecOperations extends GitHandlerOperationContext {
     if (!/^[A-Za-z0-9._-]+$/.test(remoteName)) {
       throw new Error('Invalid remote name for provenance marker.')
     }
-    await this.git(['config', `remote.${remoteName}.orca-created`, 'true'], repoPath)
+    await this.git(['config', `remote.${remoteName}.kingu-created`, 'true'], repoPath)
   }
 
   async renameCurrentBranch(params: Record<string, unknown>) {

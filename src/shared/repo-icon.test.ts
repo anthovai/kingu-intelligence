@@ -44,28 +44,28 @@ describe('sanitizeRepoIcon', () => {
     expect(
       sanitizeRepoIcon({
         type: 'image',
-        src: 'https://github.com/stablyai.png?size=64',
+        src: 'https://github.com/anthovai.png?size=64',
         source: 'github',
-        label: 'stablyai/orca'
+        label: 'anthovai/kingu-intelligence'
       })
     ).toEqual({
       type: 'image',
-      src: 'https://github.com/stablyai.png?size=64',
+      src: 'https://github.com/anthovai.png?size=64',
       source: 'github',
-      label: 'stablyai/orca'
+      label: 'anthovai/kingu-intelligence'
     })
     expect(
       sanitizeRepoIcon({
         type: 'image',
-        src: 'https://github.acme.test/stablyai.png?size=64',
+        src: 'https://github.acme.test/anthovai.png?size=64',
         source: 'github',
-        label: 'stablyai/orca'
+        label: 'anthovai/kingu-intelligence'
       })
     ).toEqual({
       type: 'image',
-      src: 'https://github.acme.test/stablyai.png?size=64',
+      src: 'https://github.acme.test/anthovai.png?size=64',
       source: 'github',
-      label: 'stablyai/orca'
+      label: 'anthovai/kingu-intelligence'
     })
     expect(
       sanitizeRepoIcon({

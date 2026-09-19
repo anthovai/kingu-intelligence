@@ -26,9 +26,9 @@ import {
 } from './review-head-tracking-ref'
 
 const execFileAsync = promisify(execFile)
-const image = process.env.ORCA_GIT_COMPAT_IMAGE
-const binary = process.env.ORCA_GIT_COMPAT_BINARY
-const expectedVersion = process.env.ORCA_GIT_COMPAT_VERSION
+const image = process.env.KINGU_GIT_COMPAT_IMAGE
+const binary = process.env.KINGU_GIT_COMPAT_BINARY
+const expectedVersion = process.env.KINGU_GIT_COMPAT_VERSION
 const describeBinaryCompatibility = image || binary ? describe : describe.skip
 
 type GitResult = { stdout: string; stderr: string }
@@ -91,7 +91,7 @@ describeBinaryCompatibility('real Git binary compatibility', () => {
   }
 
   beforeAll(async () => {
-    repoPath = await mkdtemp(join(tmpdir(), 'orca-git-binary-compat-'))
+    repoPath = await mkdtemp(join(tmpdir(), 'kingu-git-binary-compat-'))
     const versionOutput = await runGit(['--version'])
     expect(versionOutput.stdout).toContain(`git version ${expectedVersion}`)
     const match = versionOutput.stdout.match(/git version (\d+)\.(\d+)/)
@@ -151,7 +151,7 @@ describeBinaryCompatibility('real Git binary compatibility', () => {
 
     // Why: the `prunable` porcelain annotation landed in Git 2.31 — five
     // releases before `-z` (2.36) — so only Git <2.31 emits neither and needs
-    // Orca's path-existence fallback (issue #8389).
+    // Kingu's path-existence fallback (issue #8389).
     await runGit(['worktree', 'add', '-b', 'compat-stale', 'stale-wt'])
     await rm(join(repoPath, 'stale-wt'), { recursive: true, force: true })
     const staleList = await runGit(['worktree', 'list', '--porcelain'])
@@ -193,7 +193,7 @@ describeBinaryCompatibility('real Git binary compatibility', () => {
   })
 
   it('deregisters a worktree whose directory was renamed away', async () => {
-    // Orca renames the checkout into a trash directory and then clears the registration, so every
+    // Kingu renames the checkout into a trash directory and then clears the registration, so every
     // supported Git must accept `worktree remove --force` on the now-missing path.
     await runGit(['worktree', 'add', '-b', 'compat-deferred', 'deferred-wt'])
     await rename(join(repoPath, 'deferred-wt'), join(repoPath, 'deferred-trash'))
@@ -222,7 +222,7 @@ describeBinaryCompatibility('real Git binary compatibility', () => {
       'worktree',
       'lock',
       '--reason',
-      'orca-create-preparation:v1:compat',
+      'kingu-create-preparation:v1:compat',
       'compat-prepared'
     ])
     // Why: `-f -f` moves a locked preparation while preserving its lock reason (Git >=2.25).
@@ -277,7 +277,7 @@ describeBinaryCompatibility('real Git binary compatibility', () => {
     await expect(runGit(['merge-base', '--end-of-options', head, unrelated])).rejects.toBeDefined()
   })
 
-  // Why pin this: Orca answers "which remote has this URL" from one `git remote -v`
+  // Why pin this: Kingu answers "which remote has this URL" from one `git remote -v`
   // instead of one `git remote get-url` per remote. That is only equivalent if both
   // commands report the same URL — the insteadOf-expanded first `remote.<name>.url`,
   // which a raw config read does not produce — on every supported Git.
@@ -316,7 +316,7 @@ describeBinaryCompatibility('real Git binary compatibility', () => {
     const fetchHeadPath = join(repoPath, '.git', 'FETCH_HEAD')
     await writeFile(fetchHeadPath, 'sentinel\n')
     await expectPreferredOrRecognizedFallback(
-      ['fetch', '--no-write-fetch-head', '.', '+HEAD:refs/orca/compat/no-write-fetch-head'],
+      ['fetch', '--no-write-fetch-head', '.', '+HEAD:refs/kingu/compat/no-write-fetch-head'],
       supports(2, 29),
       isNoWriteFetchHeadUnsupportedError
     )

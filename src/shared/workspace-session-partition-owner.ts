@@ -7,7 +7,7 @@ import {
 /**
  * The one partition a worktree's durable session state lives in: its own execution host.
  *
- * This used to answer differently depending on who asked (stablyai/orca#12723). The renderer
+ * This used to answer differently depending on who asked (anthovai/kingu-intelligence#12723). The renderer
  * mapped SSH worktrees to the `local` blob while the main-process runtime read-modify-wrote
  * `ssh:<targetId>`, so one workspace's session was split across two stores and neither reader
  * reunited them. Whatever landed on the unread side did not read as unknown — it round-tripped as

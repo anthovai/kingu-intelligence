@@ -181,7 +181,7 @@ const SURFACE_ROWS: readonly SurfaceRow[] = [
   },
   {
     row: 59,
-    path: 'src/main/runtime/orca-runtime-write-orchestration-pointer-pty.ts',
+    path: 'src/main/runtime/kingu-runtime-write-orchestration-pointer-pty.ts',
     marker: 'resolvePaneAgentIdentityField'
   },
   {

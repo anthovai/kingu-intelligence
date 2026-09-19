@@ -40,7 +40,7 @@ const STALE_PID = 424_242
 /**
  * node-pty's native `pty.resize` error when the ioctl reaches a closed master.
  *
- * Orca's node-pty patch retires `_fd` when it gives up the master, so a patched
+ * Kingu's node-pty patch retires `_fd` when it gives up the master, so a patched
  * handle answers a late resize with a no-op. That leaves this handler two cases
  * it still has to contain: the tick between libuv closing the fd and node-pty's
  * own handler observing it, and a relay host, which installs node-pty from npm

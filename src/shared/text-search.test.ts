@@ -312,7 +312,7 @@ describe('buildSubmatchRegex', () => {
 
 describe('ingestGitGrepLine', () => {
   it('parses actual git grep null-delimited output from the current git binary', () => {
-    const rootPath = mkdtempSync(join(tmpdir(), 'orca-search-git-'))
+    const rootPath = mkdtempSync(join(tmpdir(), 'kingu-search-git-'))
     try {
       execFileSync('git', ['init'], { cwd: rootPath, stdio: 'ignore' })
       mkdirSync(join(rootPath, 'src'))
@@ -352,7 +352,7 @@ describe('ingestGitGrepLine', () => {
   })
 
   it('does not broaden a separator-only include pattern to the repository', () => {
-    const rootPath = mkdtempSync(join(tmpdir(), 'orca-search-git-'))
+    const rootPath = mkdtempSync(join(tmpdir(), 'kingu-search-git-'))
     try {
       execFileSync('git', ['init'], { cwd: rootPath, stdio: 'ignore' })
       writeFileSync(join(rootPath, 'target.ts'), 'needle\n')

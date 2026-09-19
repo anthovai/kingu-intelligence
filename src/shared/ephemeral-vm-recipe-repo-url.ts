@@ -1,8 +1,8 @@
 import { stripCredentialsFromMessage } from './git-remote-error'
-import type { OrcaVmRecipe } from './orca-yaml-hook-types'
+import type { KinguVmRecipe } from './kingu-yaml-hook-types'
 
 export function getProvisionedRootRecipeRepoUrl(
-  checkoutMode: OrcaVmRecipe['checkoutMode'],
+  checkoutMode: KinguVmRecipe['checkoutMode'],
   remoteUrl: string | undefined
 ): string | undefined {
   if (checkoutMode !== 'provisioned-root' || !remoteUrl) {

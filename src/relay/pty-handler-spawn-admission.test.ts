@@ -487,7 +487,7 @@ describe('PtyHandler', () => {
   // path, so a fence keyed on the unstripped id would guard a directory no spawn ever uses --
   // exactly what routing both through one resolver is supposed to make impossible.
   it('fences a folder-workspace instance id on the directory the spawn will use', async () => {
-    const workspaceRoot = mkdtempSync(join(tmpdir(), 'orca-relay-fence-'))
+    const workspaceRoot = mkdtempSync(join(tmpdir(), 'kingu-relay-fence-'))
     try {
       const finishCreation = vi.fn()
       const beginWorktreePtySpawn = vi.fn((_operationPath: string) => finishCreation)
@@ -518,7 +518,7 @@ describe('PtyHandler', () => {
     await expect(
       dispatcher.callRequest('pty.spawn', {
         cwd: '/repo/removing/nested',
-        env: { ORCA_WORKTREE_ID: 'repo-id::/repo/sibling' }
+        env: { KINGU_WORKTREE_ID: 'repo-id::/repo/sibling' }
       })
     ).rejects.toThrow('Remote worktree deletion already in progress')
 

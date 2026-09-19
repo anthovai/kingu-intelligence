@@ -30,7 +30,7 @@ describe('FsHandler document previews', () => {
     const readDocPreview = requestHandlers.get('fs.readDocPreview')
     expect(readDocPreview).toBeTypeOf('function')
 
-    const fixture = await mkdtemp(join(tmpdir(), 'orca-relay-doc-preview-'))
+    const fixture = await mkdtemp(join(tmpdir(), 'kingu-relay-doc-preview-'))
     fixtureRoots.push(fixture)
     const workspace = join(fixture, 'workspace')
     const docs = join(workspace, 'docs')

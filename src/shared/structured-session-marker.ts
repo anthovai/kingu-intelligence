@@ -6,8 +6,8 @@
  * otherwise GUESS an implicit terminal refuse instead: a structured session has no pane, so every
  * guess resolves to a sibling, and `orchestration check` is destructive by default.
  */
-export const ORCA_STRUCTURED_SESSION_ENV = 'ORCA_STRUCTURED_SESSION'
+export const KINGU_STRUCTURED_SESSION_ENV = 'KINGU_STRUCTURED_SESSION'
 
 export function isStructuredSessionWithoutIdentity(env: NodeJS.ProcessEnv = process.env): boolean {
-  return (env[ORCA_STRUCTURED_SESSION_ENV] ?? '').length > 0
+  return (env[KINGU_STRUCTURED_SESSION_ENV] ?? '').length > 0
 }

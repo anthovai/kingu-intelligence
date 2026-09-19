@@ -101,7 +101,7 @@ describe('RelayDispatcher silent-client reaper', () => {
   })
 
   it('never reaps a client that does not send keepalives at all', () => {
-    // The remote `orca` CLI opens the socket, sends one `orca.cli` request and then waits for a
+    // The remote `kingu` CLI opens the socket, sends one `kingu.cli` request and then waits for a
     // result budgeted in minutes (remote-cli-timeout.ts: 5min default, 10min for wait, 11min for
     // orchestration ask). It has no keepalive timer, so judging it on inbound silence would abort
     // `terminal wait`, `--wait` and `orchestration ask` after 20s.
@@ -111,7 +111,7 @@ describe('RelayDispatcher silent-client reaper', () => {
     const clientId = dispatcher.attachClient(() => true)
     dispatcher.feedClient(
       clientId,
-      encodeJsonRpcFrame({ jsonrpc: '2.0', id: 1, method: 'orca.cli', params: {} }, 1, 0)
+      encodeJsonRpcFrame({ jsonrpc: '2.0', id: 1, method: 'kingu.cli', params: {} }, 1, 0)
     )
 
     vi.advanceTimersByTime(TIMEOUT_MS * 20)

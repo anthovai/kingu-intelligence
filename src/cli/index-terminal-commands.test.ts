@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 const {
   callMock,
   runtimeClientConstructorMock,
-  serveOrcaAppMock,
+  serveKinguAppMock,
   getDefaultUserDataPathMock,
   addEnvironmentFromPairingCodeMock,
   listEnvironmentsMock,
@@ -11,8 +11,8 @@ const {
 } = vi.hoisted(() => ({
   callMock: vi.fn(),
   runtimeClientConstructorMock: vi.fn(),
-  serveOrcaAppMock: vi.fn(),
-  getDefaultUserDataPathMock: vi.fn(() => '/tmp/orca-user-data'),
+  serveKinguAppMock: vi.fn(),
+  getDefaultUserDataPathMock: vi.fn(() => '/tmp/kingu-user-data'),
   addEnvironmentFromPairingCodeMock: vi.fn(),
   listEnvironmentsMock: vi.fn(),
   spawnMock: vi.fn()
@@ -23,7 +23,7 @@ vi.mock('./runtime-client', async () => {
   return createRuntimeClientModuleMock({
     callMock,
     runtimeClientConstructorMock,
-    serveOrcaAppMock,
+    serveKinguAppMock,
     getDefaultUserDataPathMock
   })
 })
@@ -44,10 +44,10 @@ import { main } from './index'
 import { buildWorktree, okFixture, queueFixtures, worktreeListFixture } from './test-fixtures'
 import { useWorktreeAwarenessEnvironment } from './index-test-harness'
 
-describe('orca cli worktree awareness', () => {
+describe('kingu cli worktree awareness', () => {
   useWorktreeAwarenessEnvironment({
     callMock,
-    serveOrcaAppMock,
+    serveKinguAppMock,
     getDefaultUserDataPathMock,
     addEnvironmentFromPairingCodeMock,
     listEnvironmentsMock,
@@ -554,7 +554,7 @@ describe('orca cli worktree awareness', () => {
       okFixture('req_terminal_create', {
         terminal: {
           handle: 'term_1',
-          worktreeId: 'repo-1::/srv/orca/feature',
+          worktreeId: 'repo-1::/srv/kingu/feature',
           title: 'Server terminal'
         }
       })
@@ -566,7 +566,7 @@ describe('orca cli worktree awareness', () => {
         'terminal',
         'create',
         '--worktree',
-        'id:repo-1::/srv/orca/feature',
+        'id:repo-1::/srv/kingu/feature',
         '--pairing-code',
         'remote-runtime',
         '--json'
@@ -575,7 +575,7 @@ describe('orca cli worktree awareness', () => {
     )
 
     expect(callMock).toHaveBeenCalledWith('terminal.create', {
-      worktree: 'id:repo-1::/srv/orca/feature',
+      worktree: 'id:repo-1::/srv/kingu/feature',
       command: undefined,
       title: undefined,
       focus: false
@@ -583,7 +583,7 @@ describe('orca cli worktree awareness', () => {
   })
 
   it('exits nonzero when terminal wait returns an unsatisfied blocked result', async () => {
-    process.env.ORCA_TERMINAL_HANDLE = 'term_worker'
+    process.env.KINGU_TERMINAL_HANDLE = 'term_worker'
     callMock.mockResolvedValueOnce({
       id: 'req_terminal_wait',
       ok: true,
@@ -629,7 +629,7 @@ describe('orca cli worktree awareness', () => {
       okFixture('req_terminal_create', {
         terminal: {
           handle: 'term_1',
-          worktreeId: 'repo-1::/srv/orca/feature',
+          worktreeId: 'repo-1::/srv/kingu/feature',
           title: 'Codex'
         }
       })
@@ -641,7 +641,7 @@ describe('orca cli worktree awareness', () => {
         'terminal',
         'create',
         '--worktree',
-        'id:repo-1::/srv/orca/feature',
+        'id:repo-1::/srv/kingu/feature',
         '--command',
         'codex',
         '--title',
@@ -654,7 +654,7 @@ describe('orca cli worktree awareness', () => {
     )
 
     expect(callMock).toHaveBeenCalledWith('terminal.create', {
-      worktree: 'id:repo-1::/srv/orca/feature',
+      worktree: 'id:repo-1::/srv/kingu/feature',
       command: 'codex',
       title: 'Codex',
       focus: false

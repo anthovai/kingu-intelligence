@@ -3,7 +3,7 @@ import {
   agentPromptSentSchema,
   agentStartedSchema,
   appOpenedSchema,
-  appStarredOrcaSchema,
+  appStarredKinguSchema,
   featureInteractionUsageBucketReachedSchema,
   repoAddedSchema,
   starNagOutcomeEventSchema,
@@ -51,9 +51,9 @@ import {
   nativeChatSendClassifiedSchema,
   nativeChatSkillDiscoverySchema,
   nativeChatToggledSchema,
-  orcaCliFeatureTipSetupClickedSchema,
-  orcaCliFeatureTipSetupResultSchema,
-  orcaCliFeatureTipShownSchema,
+  kinguCliFeatureTipSetupClickedSchema,
+  kinguCliFeatureTipSetupResultSchema,
+  kinguCliFeatureTipShownSchema,
   telemetryOptedInSchema,
   telemetryOptedOutSchema
 } from './telemetry-native-feature-event-schemas'
@@ -98,7 +98,7 @@ import {
 // Versioning: breaking changes (rename/re-mean/remove a key) need a new event name; in-place edits blend pre/post rows unmixably. Additive-optional fields are safe.
 export const eventSchemas = {
   app_opened: appOpenedSchema,
-  app_starred_orca: appStarredOrcaSchema,
+  app_starred_kingu: appStarredKinguSchema,
   star_nag_outcome: starNagOutcomeEventSchema,
   feature_interaction_usage_bucket_reached: featureInteractionUsageBucketReachedSchema,
 
@@ -144,9 +144,9 @@ export const eventSchemas = {
   telemetry_opted_in: telemetryOptedInSchema,
   telemetry_opted_out: telemetryOptedOutSchema,
 
-  orca_cli_feature_tip_shown: orcaCliFeatureTipShownSchema,
-  orca_cli_feature_tip_setup_clicked: orcaCliFeatureTipSetupClickedSchema,
-  orca_cli_feature_tip_setup_result: orcaCliFeatureTipSetupResultSchema,
+  kingu_cli_feature_tip_shown: kinguCliFeatureTipShownSchema,
+  kingu_cli_feature_tip_setup_clicked: kinguCliFeatureTipSetupClickedSchema,
+  kingu_cli_feature_tip_setup_result: kinguCliFeatureTipSetupResultSchema,
   cmd_j_palette_feature_tip_shown: cmdJPaletteFeatureTipShownSchema,
   cmd_j_palette_feature_tip_acknowledged: cmdJPaletteFeatureTipAcknowledgedSchema,
 

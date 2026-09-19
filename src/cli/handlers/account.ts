@@ -85,7 +85,7 @@ function addAgentNodePaths(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
 /**
  * Runs the real agent login attached to the user's terminal so the OAuth
  * URL/device-code prompt is visible and the code can be pasted back — the desktop
- * GUI flow drives this via a browser Orca can't reach on a headless host.
+ * GUI flow drives this via a browser Kingu can't reach on a headless host.
  */
 async function runAgentLoginInTerminal(
   command: string,
@@ -117,7 +117,7 @@ async function runAgentLoginInTerminal(
     }
     // Why paired after the seed: addAgentNodePaths prepends the *newest* version
     // manager bin, which is not necessarily where this CLI lives. Pairing last puts
-    // the CLI's own node in front of that seed (stablyai/orca#10932).
+    // the CLI's own node in front of that seed (anthovai/kingu-intelligence#10932).
     const env = withCliRuntimeOnPath(
       resolvedCommand,
       addAgentNodePaths({ ...stripElectronRunAsNode(process.env), ...extraEnv })
@@ -195,7 +195,7 @@ async function cleanupClaudeLoginArtifacts(
 
 /** Logs into a Claude account in a temp config dir, then registers it with the local runtime. */
 async function addClaudeAccount({ client, json }: HandlerContext): Promise<void> {
-  const configDir = mkdtempSync(join(tmpdir(), 'orca-account-add-claude-'))
+  const configDir = mkdtempSync(join(tmpdir(), 'kingu-account-add-claude-'))
   const session: InteractiveLoginSession = {
     child: null,
     registering: false,
@@ -240,7 +240,7 @@ async function addClaudeAccount({ client, json }: HandlerContext): Promise<void>
 
 /** Logs into a Codex account in a temp CODEX_HOME, then registers it with the local runtime. */
 async function addCodexAccount({ client, json }: HandlerContext): Promise<void> {
-  const codexHome = mkdtempSync(join(tmpdir(), 'orca-account-add-codex-'))
+  const codexHome = mkdtempSync(join(tmpdir(), 'kingu-account-add-codex-'))
   const session: InteractiveLoginSession = {
     child: null,
     registering: false,
@@ -289,12 +289,12 @@ async function assertAccountImportSupported({ client }: HandlerContext): Promise
   if (!status.result.capabilities?.includes(ACCOUNT_IMPORT_RUNTIME_CAPABILITY)) {
     throw new RuntimeClientError(
       'incompatible_runtime',
-      'The running Orca runtime is too old to add accounts from the CLI. Update or restart Orca and try again.'
+      'The running Kingu runtime is too old to add accounts from the CLI. Update or restart Kingu and try again.'
     )
   }
 }
 
-/** CLI handlers for `orca account add [--agent claude|codex]` and `orca account list`. */
+/** CLI handlers for `kingu account add [--agent claude|codex]` and `kingu account list`. */
 export const ACCOUNT_HANDLERS: Record<string, CommandHandler> = {
   'account add': async (ctx) => {
     const agentFlag = ctx.flags.get('agent')
@@ -313,14 +313,14 @@ export const ACCOUNT_HANDLERS: Record<string, CommandHandler> = {
         `Unsupported --agent "${agent}". Use "claude" or "codex".`
       )
     }
-    rejectAccountRemoteSelectionFlags(ctx, 'orca account add')
+    rejectAccountRemoteSelectionFlags(ctx, 'kingu account add')
     // Why: fail on runtime version skew before burning a full OAuth round trip.
     await assertAccountImportSupported(ctx)
     await ctx.client.call('accounts.list', { refreshUsage: false })
     await (agent === 'claude' ? addClaudeAccount(ctx) : addCodexAccount(ctx))
   },
   'account list': async (ctx) => {
-    rejectAccountRemoteSelectionFlags(ctx, 'orca account list')
+    rejectAccountRemoteSelectionFlags(ctx, 'kingu account list')
     const { client, json } = ctx
     // Why: this command renders no usage numbers, so skip the forced provider
     // refresh — it is one serial network round-trip per managed account.

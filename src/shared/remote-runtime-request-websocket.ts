@@ -68,7 +68,7 @@ export function openRemoteRuntimeWebSocket(
       callbacks.onError(
         ws,
         invalidRemoteRuntimeResponseError(
-          'Remote Orca runtime returned an unexpected binary frame.'
+          'Remote Kingu runtime returned an unexpected binary frame.'
         )
       )
       return
@@ -89,7 +89,7 @@ export function openRemoteRuntimeWebSocket(
     ws.off('pong', onPong)
     ws.off('ping', onPing)
     // Why: a manually closed ws can still emit a late transport error; keep
-    // that from becoming an unhandled EventEmitter error after detaching Orca.
+    // that from becoming an unhandled EventEmitter error after detaching Kingu.
     if (ws.readyState !== WebSocket.CLOSED) {
       ws.on('error', ignoreLateSocketError)
     }

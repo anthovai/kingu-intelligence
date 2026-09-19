@@ -49,22 +49,22 @@ export const nativeChatSkillDiscoverySchema = z
 export const telemetryOptedInSchema = z.object({ via: optInViaSchema }).strict()
 export const telemetryOptedOutSchema = z.object({ via: optInViaSchema }).strict()
 
-export const orcaCliFeatureTipSourceSchema = z.enum(['app_open', 'manual'])
-export const orcaCliFeatureTipShownSchema = z
+export const kinguCliFeatureTipSourceSchema = z.enum(['app_open', 'manual'])
+export const kinguCliFeatureTipShownSchema = z
   .object({
-    source: orcaCliFeatureTipSourceSchema,
+    source: kinguCliFeatureTipSourceSchema,
     nth_repo_added: nthRepoAddedSchema
   })
   .strict()
-export const orcaCliFeatureTipSetupClickedSchema = z
+export const kinguCliFeatureTipSetupClickedSchema = z
   .object({
-    source: orcaCliFeatureTipSourceSchema,
+    source: kinguCliFeatureTipSourceSchema,
     nth_repo_added: nthRepoAddedSchema
   })
   .strict()
-export const orcaCliFeatureTipSetupResultSchema = z
+export const kinguCliFeatureTipSetupResultSchema = z
   .object({
-    source: orcaCliFeatureTipSourceSchema,
+    source: kinguCliFeatureTipSourceSchema,
     result: z.enum(['installed', 'needs_attention', 'dev_preview', 'failed']),
     nth_repo_added: nthRepoAddedSchema
   })
@@ -72,13 +72,13 @@ export const orcaCliFeatureTipSetupResultSchema = z
 
 export const cmdJPaletteFeatureTipShownSchema = z
   .object({
-    source: orcaCliFeatureTipSourceSchema,
+    source: kinguCliFeatureTipSourceSchema,
     nth_repo_added: nthRepoAddedSchema
   })
   .strict()
 export const cmdJPaletteFeatureTipAcknowledgedSchema = z
   .object({
-    source: orcaCliFeatureTipSourceSchema,
+    source: kinguCliFeatureTipSourceSchema,
     nth_repo_added: nthRepoAddedSchema
   })
   .strict()

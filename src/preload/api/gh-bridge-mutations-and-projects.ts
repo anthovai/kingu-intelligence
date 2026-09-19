@@ -149,8 +149,9 @@ export const ghMutationsAndProjectsApi = {
     ipcRenderer.on('gh:workItemMutated', listener)
     return () => ipcRenderer.removeListener('gh:workItemMutated', listener)
   },
-  checkOrcaStarred: (): Promise<boolean | null> => ipcRenderer.invoke('gh:checkOrcaStarred'),
-  starOrca: (source: AppStarSource): Promise<boolean> => ipcRenderer.invoke('gh:starOrca', source),
+  checkKinguStarred: (): Promise<boolean | null> => ipcRenderer.invoke('gh:checkKinguStarred'),
+  starKingu: (source: AppStarSource): Promise<boolean> =>
+    ipcRenderer.invoke('gh:starKingu', source),
   rateLimit: (args?: { force?: boolean }): Promise<GetRateLimitResult> =>
     ipcRenderer.invoke('gh:rateLimit', args),
   diagnoseAuth: (args?: { host?: string }): Promise<GhAuthDiagnostic> =>

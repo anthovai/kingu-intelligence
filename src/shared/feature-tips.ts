@@ -4,7 +4,7 @@ import {
   type FeatureInteractionState
 } from './feature-interactions'
 
-export type FeatureTipId = 'voice-dictation' | 'orca-cli' | 'cmd-j-palette'
+export type FeatureTipId = 'voice-dictation' | 'kingu-cli' | 'cmd-j-palette'
 
 export type FeatureTipPriority = 'new' | 'unseen'
 
@@ -30,10 +30,10 @@ export type CompletedFeatureTipState = {
 
 export const FEATURE_TIPS = [
   {
-    id: 'orca-cli',
+    id: 'kingu-cli',
     priority: 'new',
     eyebrow: 'Tip',
-    title: 'Let agents drive Orca with the Orca CLI',
+    title: 'Let agents drive Kingu with the Kingu CLI',
     description: 'Enable agents to coordinate child worktrees and communicate between worktrees.',
     action: 'setup-cli',
     ctaLabel: 'Install CLI & Skills',
@@ -87,7 +87,7 @@ export function normalizeFeatureTipIds(value: unknown): FeatureTipId[] {
 export function getCompletedFeatureTipIds(state: CompletedFeatureTipState): Set<FeatureTipId> {
   const completedIds = new Set<FeatureTipId>()
   if (state.cliInstalled) {
-    completedIds.add('orca-cli')
+    completedIds.add('kingu-cli')
   }
   if (state.voiceDictationEnabled) {
     completedIds.add('voice-dictation')

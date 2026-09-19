@@ -25,7 +25,7 @@ export async function getCliStatus(
       runtime: {
         // Why: distinguishing "never started" from "was running but died"
         // gives the user a better signal about what happened. If the metadata
-        // file exists, Orca was running at some point.
+        // file exists, Kingu was running at some point.
         state: metadata ? 'stale_bootstrap' : 'not_running',
         reachable: false,
         runtimeId: null
@@ -108,7 +108,7 @@ function isProcessRunning(pid: number | null | undefined): boolean {
     return true
   } catch (error) {
     // Why: only ESRCH proves the pid is gone. EPERM means it exists under another uid, and
-    // reporting that as `stale_bootstrap` calls a live Orca dead.
+    // reporting that as `stale_bootstrap` calls a live Kingu dead.
     return !(error instanceof Error && 'code' in error && error.code === 'ESRCH')
   }
 }

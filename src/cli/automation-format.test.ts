@@ -31,7 +31,7 @@ function automation(overrides: Partial<Automation> = {}): Automation {
   }
 }
 
-// `orca automations run` sends users to `orca automations show` to find out where
+// `kingu automations run` sends users to `kingu automations show` to find out where
 // an automation lives. The stored `executionTarget*` fields survive their host's
 // removal untouched, so printing only those renders a dead automation byte-for-byte
 // like a healthy one and the named recovery step cannot be completed.

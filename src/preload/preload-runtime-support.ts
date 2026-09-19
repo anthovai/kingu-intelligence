@@ -3,9 +3,9 @@ import { createBrowserClientPageRendererRequests } from './browser-client-page-r
 import { createBrowserFindSubscriptions } from './browser-find-subscriptions'
 import { registerRendererRestartIpcRelays } from './renderer-restart-wiring'
 import { createUpdaterQuitAbortRelay } from '../shared/renderer-restart-preparation'
-import { ORCA_UPDATER_QUIT_AND_INSTALL_ABORTED_EVENT } from '../shared/updater-renderer-events'
+import { KINGU_UPDATER_QUIT_AND_INSTALL_ABORTED_EVENT } from '../shared/updater-renderer-events'
 import {
-  ORCA_INTERNAL_FILE_DRAG_TYPE,
+  KINGU_INTERNAL_FILE_DRAG_TYPE,
   createNativeFileDropPayload,
   createRejectedNativeFileDropPayload,
   hasNativeFileDragTypes,
@@ -27,7 +27,7 @@ export async function awaitBeforeUnloadCheckpoint(): Promise<void> {
   }
 }
 
-export const startupDiagnosticsEnabled = process.env.ORCA_STARTUP_DIAGNOSTICS === '1'
+export const startupDiagnosticsEnabled = process.env.KINGU_STARTUP_DIAGNOSTICS === '1'
 
 export function getLinuxDisplayServer(): 'wayland' | 'x11' | null {
   if (process.platform !== 'linux') {
@@ -111,7 +111,7 @@ export function installNativeFileDropHandlers(): void {
   document.addEventListener(
     'drop',
     (event) => {
-      if (event.dataTransfer?.types.includes(ORCA_INTERNAL_FILE_DRAG_TYPE)) {
+      if (event.dataTransfer?.types.includes(KINGU_INTERNAL_FILE_DRAG_TYPE)) {
         return
       }
       event.preventDefault()
@@ -184,7 +184,7 @@ export function installBrowserFindListener(): void {
 
 export const updaterQuitAbortRelay = createUpdaterQuitAbortRelay(
   window,
-  ORCA_UPDATER_QUIT_AND_INSTALL_ABORTED_EVENT
+  KINGU_UPDATER_QUIT_AND_INSTALL_ABORTED_EVENT
 )
 
 registerRendererRestartIpcRelays(ipcRenderer, window, updaterQuitAbortRelay)

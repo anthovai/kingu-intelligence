@@ -1,7 +1,7 @@
 import type { spawn } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { statSync } from 'node:fs'
-import type { OrcaVmRecipe } from './orca-yaml-hook-types'
+import type { KinguVmRecipe } from './kingu-yaml-hook-types'
 import { parseEphemeralVmRecipeResult, type EphemeralVmRecipeResult } from './ephemeral-vm-recipes'
 import {
   getEphemeralVmRecipeCheckoutModeError,
@@ -31,11 +31,11 @@ export type EphemeralVmRecipeContext = {
   branch?: string
   ref?: string
   expectedRefHead?: string
-  orcaVersion?: string
+  kinguVersion?: string
 }
 
 export type EphemeralVmRecipeStartArgs = {
-  recipe: OrcaVmRecipe
+  recipe: KinguVmRecipe
   repoPath: string
   context?: Partial<Omit<EphemeralVmRecipeContext, 'recipeId' | 'repoPath'>>
   env?: NodeJS.ProcessEnv
@@ -70,7 +70,7 @@ export type EphemeralVmRecipeStartResult =
   | EphemeralVmRecipeStartFailure
 
 export type EphemeralVmRecipeCleanupArgs = {
-  recipe: OrcaVmRecipe
+  recipe: KinguVmRecipe
   repoPath: string
   context: EphemeralVmRecipeContext
   recipeResult: EphemeralVmRecipeResult
@@ -303,13 +303,13 @@ export async function runEphemeralVmRecipeResume(
 }
 
 function buildRecipeContext(
-  recipe: OrcaVmRecipe,
+  recipe: KinguVmRecipe,
   repoPath: string,
   context: EphemeralVmRecipeStartArgs['context'] = {}
 ): EphemeralVmRecipeContext {
   return {
     ...context,
-    instanceId: context.instanceId ?? `orca-${randomUUID()}`,
+    instanceId: context.instanceId ?? `kingu-${randomUUID()}`,
     recipeId: recipe.id,
     repoPath
   }

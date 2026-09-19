@@ -84,15 +84,15 @@ vi.mock('./runtime-client', async () => {
     RuntimeClient,
     RuntimeClientError,
     RuntimeRpcFailureError,
-    serveOrcaApp: vi.fn(),
-    getDefaultUserDataPath: vi.fn(() => '/tmp/orca-user-data')
+    serveKinguApp: vi.fn(),
+    getDefaultUserDataPath: vi.fn(() => '/tmp/kingu-user-data')
   }
 })
 
 import { dispatch } from './dispatch'
 import { main } from './index'
 
-describe('orca skills CLI', () => {
+describe('kingu skills CLI', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
     runtimeClientConstructorMock.mockClear()
@@ -213,7 +213,7 @@ describe('orca skills CLI', () => {
     await main(['--help'], '/tmp/repo')
 
     expect(String(logSpy.mock.calls[0]?.[0])).toContain(
-      'Usage: orca skills get <topic> [--full | --reference <name>] [--json]'
+      'Usage: kingu skills get <topic> [--full | --reference <name>] [--json]'
     )
     expect(String(logSpy.mock.calls[1]?.[0])).toContain(
       'Commands:\n  installed          List installed skill selectors'
@@ -222,10 +222,10 @@ describe('orca skills CLI', () => {
       'get                Print a version-matched skill guide'
     )
     expect(String(logSpy.mock.calls[1]?.[0])).toContain(
-      'install            Install bundled Orca skills'
+      'install            Install bundled Kingu skills'
     )
     expect(String(logSpy.mock.calls[1]?.[0])).toContain(
-      'update             Update already-installed Orca skills'
+      'update             Update already-installed Kingu skills'
     )
     expect(String(logSpy.mock.calls[2]?.[0])).toContain('Skills:\n  skills installed')
     expect(String(logSpy.mock.calls[2]?.[0])).toContain('skills update')
@@ -256,8 +256,8 @@ describe('orca skills CLI', () => {
         '  gamma',
         '  zeta',
         '',
-        'Usage: orca skills install --skill <name> [--skill <name> ...]',
-        '   or: orca skills install --all',
+        'Usage: kingu skills install --skill <name> [--skill <name> ...]',
+        '   or: kingu skills install --all',
         ''
       ].join('\n')
     )
@@ -321,7 +321,7 @@ describe('orca skills CLI', () => {
           error: {
             code: 'invalid_argument',
             message:
-              "orca skills install --json only supports --dry-run. Real installs stream npx's " +
+              "kingu skills install --json only supports --dry-run. Real installs stream npx's " +
               "own output, which isn't JSON."
           },
           _meta: { runtimeId: null }
@@ -339,7 +339,7 @@ describe('orca skills CLI', () => {
     await main(['skills', 'install', '--skill', 'alpha', '--dry-run'], '/tmp/repo')
 
     expect(stdoutText(stdoutSpy)).toBe(
-      'npx --yes skills add https://github.com/stablyai/orca --skill alpha --global --agent claude-code --agent universal -y\n\n' +
+      'npx --yes skills add https://github.com/anthovai/kingu-intelligence --skill alpha --global --agent claude-code --agent universal -y\n\n' +
         'Rerun without --dry-run to install now.\n'
     )
     expect(spawnMock).not.toHaveBeenCalled()
@@ -354,7 +354,7 @@ describe('orca skills CLI', () => {
       `${JSON.stringify(
         {
           command:
-            'npx --yes skills add https://github.com/stablyai/orca --skill alpha --global --agent claude-code --agent universal -y',
+            'npx --yes skills add https://github.com/anthovai/kingu-intelligence --skill alpha --global --agent claude-code --agent universal -y',
           skills: ['alpha'],
           global: true,
           executed: false
@@ -371,7 +371,7 @@ describe('orca skills CLI', () => {
     await main(['skills', 'install', '--skill', 'alpha', '--local', '--dry-run'], '/tmp/repo')
 
     expect(stdoutText(stdoutSpy)).toBe(
-      'npx --yes skills add https://github.com/stablyai/orca --skill alpha --agent claude-code --agent universal -y\n\n' +
+      'npx --yes skills add https://github.com/anthovai/kingu-intelligence --skill alpha --agent claude-code --agent universal -y\n\n' +
         'Rerun without --dry-run to install now.\n'
     )
 
@@ -385,7 +385,7 @@ describe('orca skills CLI', () => {
       `${JSON.stringify(
         {
           command:
-            'npx --yes skills add https://github.com/stablyai/orca --skill alpha --agent claude-code --agent universal -y',
+            'npx --yes skills add https://github.com/anthovai/kingu-intelligence --skill alpha --agent claude-code --agent universal -y',
           skills: ['alpha'],
           global: false,
           executed: false
@@ -412,7 +412,7 @@ describe('orca skills CLI', () => {
         '--yes',
         'skills',
         'add',
-        'https://github.com/stablyai/orca',
+        'https://github.com/anthovai/kingu-intelligence',
         '--skill',
         'alpha',
         '--agent',
@@ -447,7 +447,7 @@ describe('orca skills CLI', () => {
         '--yes',
         'skills',
         'add',
-        'https://github.com/stablyai/orca',
+        'https://github.com/anthovai/kingu-intelligence',
         '--skill',
         'alpha',
         '--global',
@@ -495,7 +495,7 @@ describe('orca skills CLI', () => {
         '--yes',
         'skills',
         'add',
-        'https://github.com/stablyai/orca',
+        'https://github.com/anthovai/kingu-intelligence',
         '--skill',
         'alpha',
         '--global',
@@ -525,7 +525,7 @@ describe('orca skills CLI', () => {
         '--yes',
         'skills',
         'add',
-        'https://github.com/stablyai/orca',
+        'https://github.com/anthovai/kingu-intelligence',
         '--skill',
         'alpha',
         '--skill',
@@ -573,8 +573,8 @@ describe('orca skills CLI', () => {
         '  gamma',
         '  zeta',
         '',
-        'Usage: orca skills update --skill <name> [--skill <name> ...]',
-        '   or: orca skills update --all',
+        'Usage: kingu skills update --skill <name> [--skill <name> ...]',
+        '   or: kingu skills update --all',
         ''
       ].join('\n')
     )
@@ -631,13 +631,13 @@ describe('orca skills CLI', () => {
     )
   })
 
-  it('refuses a real run when the shell forwards orca to the Orca host', async () => {
-    vi.stubEnv('ORCA_CLI_CWD', '/home/alice/wt')
+  it('refuses a real run when the shell forwards kingu to the Kingu host', async () => {
+    vi.stubEnv('KINGU_CLI_CWD', '/home/alice/wt')
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
     await main(['skills', 'install', '--skill', 'alpha'], '/tmp/repo')
 
-    // Why: the SSH relay and WSL bridge run argv on the Orca host, so a real
+    // Why: the SSH relay and WSL bridge run argv on the Kingu host, so a real
     // install there would silently skip the machine the user is sitting on.
     expect(spawnMock).not.toHaveBeenCalled()
     expect(process.exitCode).toBe(1)
@@ -645,7 +645,7 @@ describe('orca skills CLI', () => {
   })
 
   it('refuses --dry-run through the host-forwarding shim too', async () => {
-    vi.stubEnv('ORCA_CLI_CWD', '/home/alice/wt')
+    vi.stubEnv('KINGU_CLI_CWD', '/home/alice/wt')
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
     await main(['skills', 'install', '--skill', 'alpha', '--dry-run'], '/tmp/repo')
@@ -660,7 +660,7 @@ describe('orca skills CLI', () => {
   it('puts the resolved npx directory on the child PATH', async () => {
     // Why a real directory with a real sibling node: pairing only fires when the
     // node it would add actually exists, so a fictional path proves nothing.
-    const npxBin = mkdtempSync(join(tmpdir(), 'orca-npx-'))
+    const npxBin = mkdtempSync(join(tmpdir(), 'kingu-npx-'))
     for (const name of ['node', 'npx']) {
       writeFileSync(join(npxBin, name), '')
       chmodSync(join(npxBin, name), 0o755)
@@ -688,7 +688,7 @@ describe('orca skills CLI', () => {
   it('leaves PATH untouched when no node ships beside the resolved npx', async () => {
     // Why: prepending a directory that has no node buys nothing and would shadow
     // the caller's own ordering for every other binary the child resolves.
-    const npxBin = mkdtempSync(join(tmpdir(), 'orca-npx-bare-'))
+    const npxBin = mkdtempSync(join(tmpdir(), 'kingu-npx-bare-'))
     writeFileSync(join(npxBin, 'npx'), '')
     chmodSync(join(npxBin, 'npx'), 0o755)
     const child = createFakeChild()
@@ -758,7 +758,7 @@ describe('orca skills CLI', () => {
     expect(spawnMock.mock.calls[0]?.[2]?.env?.PATH).toBe(`/usr/bin${delimiter}/bin`)
   })
 
-  it('refuses to install when Orca detects no agent, instead of targeting them all', async () => {
+  it('refuses to install when Kingu detects no agent, instead of targeting them all', async () => {
     detectCommandsMock.mockReturnValue(new Set<string>())
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
@@ -792,14 +792,14 @@ describe('orca skills CLI', () => {
     expect(detectCommandsMock).not.toHaveBeenCalled()
   })
 
-  it('maps detected agents onto the skills CLI namespace, not Orca ids', async () => {
+  it('maps detected agents onto the skills CLI namespace, not Kingu ids', async () => {
     const stdoutSpy = vi.spyOn(process.stdout, 'write').mockImplementation(() => true)
     detectCommandsMock.mockReturnValue(new Set<string>(['claude', 'cursor-agent', 'rovo']))
 
     await main(['skills', 'install', '--skill', 'alpha', '--dry-run'], '/tmp/repo')
 
     // Why: `skills add` exits 1 on an unknown --agent, and the ids differ —
-    // Orca's `claude` is `claude-code` and its `rovo` is `rovodev`.
+    // Kingu's `claude` is `claude-code` and its `rovo` is `rovodev`.
     expect(stdoutText(stdoutSpy)).toContain(
       '--agent claude-code --agent cursor --agent rovodev --agent universal'
     )
@@ -855,7 +855,7 @@ describe('orca skills CLI', () => {
   })
 
   it('reports forwarding, not missing agents, when a forwarded host detects none', async () => {
-    vi.stubEnv('ORCA_CLI_CWD', '/home/alice/wt')
+    vi.stubEnv('KINGU_CLI_CWD', '/home/alice/wt')
     detectCommandsMock.mockReturnValue(new Set<string>())
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
@@ -897,7 +897,7 @@ describe('orca skills CLI', () => {
         '--yes',
         'skills',
         'add',
-        'https://github.com/stablyai/orca',
+        'https://github.com/anthovai/kingu-intelligence',
         '--skill',
         'alpha',
         '--skill',
@@ -922,7 +922,7 @@ describe('orca skills CLI', () => {
     )
 
     expect(stdoutText(stdoutSpy)).toBe(
-      'npx --yes skills add https://github.com/stablyai/orca --skill alpha --global --agent claude-code --agent universal -y\n\n' +
+      'npx --yes skills add https://github.com/anthovai/kingu-intelligence --skill alpha --global --agent claude-code --agent universal -y\n\n' +
         'Rerun without --dry-run to install now.\n'
     )
     expect(spawnMock).not.toHaveBeenCalled()
@@ -940,7 +940,7 @@ describe('orca skills CLI', () => {
 
     // Why: stdout belongs to the child, so this record has to go to stderr.
     expect(stderrSpy).toHaveBeenCalledWith(
-      'Running: npx --yes skills add https://github.com/stablyai/orca --skill alpha --global --agent claude-code --agent universal -y\n'
+      'Running: npx --yes skills add https://github.com/anthovai/kingu-intelligence --skill alpha --global --agent claude-code --agent universal -y\n'
     )
   })
 
@@ -976,7 +976,7 @@ describe('orca skills CLI', () => {
           error: {
             code: 'invalid_argument',
             message:
-              "orca skills update --json only supports --dry-run. Real updates stream npx's " +
+              "kingu skills update --json only supports --dry-run. Real updates stream npx's " +
               "own output, which isn't JSON."
           },
           _meta: { runtimeId: null }

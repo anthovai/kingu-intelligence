@@ -5,7 +5,7 @@ import {
   installNativeFileDropHandlers
 } from './preload-runtime-support'
 import { appApi } from './api/app-bridge'
-import { orcaProfilesApi } from './api/orca-profiles-bridge'
+import { kinguProfilesApi } from './api/kingu-profiles-bridge'
 import { platformApi } from './api/platform-bridge'
 import { wslApi } from './api/wsl-bridge'
 import { pwshApi } from './api/pwsh-bridge'
@@ -71,6 +71,7 @@ import { claudeUsageApi } from './api/claude-usage-bridge'
 import { codexUsageApi } from './api/codex-usage-bridge'
 import { openCodeUsageApi } from './api/open-code-usage-bridge'
 import { aiVaultApi } from './api/ai-vault-bridge'
+import { ideApi } from './api/ide-bridge'
 import { nativeChatApi } from './api/native-chat-bridge'
 import { runtimeApi } from './api/runtime-bridge'
 import { runtimeEnvironmentsApi } from './api/runtime-environments-bridge'
@@ -99,7 +100,7 @@ const telemetryGetConsentStateApi: PreloadApi['telemetryGetConsentState'] = () =
 
 const api = {
   app: appApi,
-  orcaProfiles: orcaProfilesApi,
+  kinguProfiles: kinguProfilesApi,
   platform: platformApi,
   wsl: wslApi,
   pwsh: pwshApi,
@@ -169,6 +170,7 @@ const api = {
   codexUsage: codexUsageApi,
   openCodeUsage: openCodeUsageApi,
   aiVault: aiVaultApi,
+  ide: ideApi,
   nativeChat: nativeChatApi,
   runtime: runtimeApi,
   runtimeEnvironments: runtimeEnvironmentsApi,

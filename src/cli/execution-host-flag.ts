@@ -16,11 +16,11 @@ import type { RuntimeClient } from './runtime-client'
 import { RuntimeClientError } from './runtime/types'
 
 export type HostFlagRoutingSelection = {
-  // Why: SSH targets live in the running Orca host, not on disk, so enumerating them needs a
+  // Why: SSH targets live in the running Kingu host, not on disk, so enumerating them needs a
   // client. Injected as a thunk so the lookup only happens on the error path we are explaining.
   listSshTargets: () => Promise<SshTargetSummary[]>
   pairingCode: string | null
-  // Why: an ambient ORCA_ENVIRONMENT counts as a selection too, so carry the label to
+  // Why: an ambient KINGU_ENVIRONMENT counts as a selection too, so carry the label to
   // name the real source in the conflict message.
   environmentSelector: { value: string; label: string } | null
 }
@@ -79,13 +79,13 @@ export async function resolveHostFlagEnvironmentId(
     const sshTargets = await selection.listSshTargets()
     throw new RuntimeClientError(
       'invalid_argument',
-      `Unknown Orca server in --host ${host.id}: no paired Orca server is named or has id ${host.environmentId}.`,
+      `Unknown Kingu server in --host ${host.id}: no paired Kingu server is named or has id ${host.environmentId}.`,
       {
         knownEnvironments: environments,
         knownSshTargets: sshTargets,
         nextSteps: [
           ...crossKindNextSteps(host.environmentId, { environments, sshTargets }, 'environment'),
-          'Run `orca environment list` to see paired Orca servers.',
+          'Run `kingu environment list` to see paired Kingu servers.',
           'Use --host local to target this machine.'
         ]
       }
@@ -94,7 +94,7 @@ export async function resolveHostFlagEnvironmentId(
   if (selection.pairingCode) {
     throw new RuntimeClientError(
       'invalid_argument',
-      `--host ${host.id} already selects a paired Orca server; use either --host runtime:<id> or --pairing-code, not both.`
+      `--host ${host.id} already selects a paired Kingu server; use either --host runtime:<id> or --pairing-code, not both.`
     )
   }
   if (selection.environmentSelector) {
@@ -102,7 +102,7 @@ export async function resolveHostFlagEnvironmentId(
     if (selected.id !== environment.id) {
       throw new RuntimeClientError(
         'invalid_argument',
-        `--host ${host.id} and ${selection.environmentSelector.label} ${selection.environmentSelector.value} name different Orca servers.`
+        `--host ${host.id} and ${selection.environmentSelector.label} ${selection.environmentSelector.value} name different Kingu servers.`
       )
     }
   }
@@ -161,7 +161,7 @@ function assertEnvironmentNameUnambiguous(
   }
   throw new RuntimeClientError(
     'invalid_argument',
-    `Ambiguous Orca server in ${flag}: ${ambiguous.length} paired servers are named ${name}. Use the environment id.`,
+    `Ambiguous Kingu server in ${flag}: ${ambiguous.length} paired servers are named ${name}. Use the environment id.`,
     {
       knownEnvironments: ambiguous,
       nextSteps: ambiguous.map(
@@ -194,13 +194,13 @@ export async function assertEnvironmentSelectorResolvable(
   const sshTargets = await listSshTargetsForSuggestion()
   throw new RuntimeClientError(
     'invalid_argument',
-    `Unknown Orca server in --environment ${selector}: no paired Orca server is named or has id ${selector}.`,
+    `Unknown Kingu server in --environment ${selector}: no paired Kingu server is named or has id ${selector}.`,
     {
       knownEnvironments: environments,
       knownSshTargets: sshTargets,
       nextSteps: [
         ...crossKindNextSteps(selector, { environments, sshTargets }, 'environment'),
-        'Run `orca host list` to see every machine you can target and the flag for each.'
+        'Run `kingu host list` to see every machine you can target and the flag for each.'
       ]
     }
   )

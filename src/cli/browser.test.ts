@@ -6,7 +6,7 @@ vi.mock('./runtime-client', () => {
   class RuntimeClient {
     call = callMock
     getCliStatus = vi.fn()
-    openOrca = vi.fn()
+    openKingu = vi.fn()
   }
 
   class RuntimeClientError extends Error {
@@ -38,7 +38,7 @@ import { main } from './index'
 import { RuntimeClientError } from './runtime-client'
 import { buildWorktree, okFixture, queueFixtures, worktreeListFixture } from './test-fixtures'
 
-describe('orca cli browser page targeting', () => {
+describe('kingu cli browser page targeting', () => {
   beforeEach(() => {
     callMock.mockReset()
   })
@@ -60,7 +60,7 @@ describe('orca cli browser page targeting', () => {
     )
     vi.spyOn(console, 'log').mockImplementation(() => {})
 
-    await main(['snapshot', '--page', 'page-1', '--json'], '/tmp/not-an-orca-worktree')
+    await main(['snapshot', '--page', 'page-1', '--json'], '/tmp/not-an-kingu-worktree')
 
     expect(callMock).toHaveBeenCalledTimes(1)
     expect(callMock).toHaveBeenCalledWith('browser.snapshot', { page: 'page-1' })
@@ -168,7 +168,7 @@ describe('orca cli browser page targeting', () => {
         'all',
         '--json'
       ],
-      '/tmp/not-an-orca-worktree'
+      '/tmp/not-an-kingu-worktree'
     )
 
     expect(callMock).toHaveBeenCalledTimes(1)
@@ -255,7 +255,7 @@ describe('orca cli browser page targeting', () => {
     )
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 
-    await main(['tab', 'list', '--show-profile', '--worktree', 'all'], '/tmp/not-an-orca-worktree')
+    await main(['tab', 'list', '--show-profile', '--worktree', 'all'], '/tmp/not-an-kingu-worktree')
 
     expect(callMock).toHaveBeenCalledTimes(1)
     expect(callMock).toHaveBeenCalledWith('browser.tabList', { worktree: undefined })
@@ -283,7 +283,7 @@ describe('orca cli browser page targeting', () => {
     )
     vi.spyOn(console, 'log').mockImplementation(() => {})
 
-    await main(['tab', 'show', '--page', 'page-1', '--json'], '/tmp/not-an-orca-worktree')
+    await main(['tab', 'show', '--page', 'page-1', '--json'], '/tmp/not-an-kingu-worktree')
 
     expect(callMock).toHaveBeenCalledTimes(1)
     expect(callMock).toHaveBeenCalledWith('browser.tabShow', { page: 'page-1' })
@@ -307,14 +307,14 @@ describe('orca cli browser page targeting', () => {
     )
     vi.spyOn(console, 'log').mockImplementation(() => {})
 
-    await main(['tab', 'current', '--worktree', 'all', '--json'], '/tmp/not-an-orca-worktree')
+    await main(['tab', 'current', '--worktree', 'all', '--json'], '/tmp/not-an-kingu-worktree')
 
     expect(callMock).toHaveBeenCalledTimes(1)
     expect(callMock).toHaveBeenCalledWith('browser.tabCurrent', { worktree: undefined })
   })
 })
 
-describe('orca cli browser identity', () => {
+describe('kingu cli browser identity', () => {
   beforeEach(() => {
     callMock.mockReset()
   })
@@ -341,7 +341,7 @@ describe('orca cli browser identity', () => {
     )
     vi.spyOn(console, 'log').mockImplementation(() => {})
 
-    await main(['browser', 'identity', 'get', '--json'], '/tmp/not-an-orca-worktree')
+    await main(['browser', 'identity', 'get', '--json'], '/tmp/not-an-kingu-worktree')
 
     expect(callMock).toHaveBeenNthCalledWith(1, 'status.get')
     expect(callMock).toHaveBeenNthCalledWith(2, 'browser.identity.get')
@@ -367,7 +367,7 @@ describe('orca cli browser identity', () => {
 
     await main(
       ['browser', 'identity', 'set', '--mode', 'native', '--json'],
-      '/tmp/not-an-orca-worktree'
+      '/tmp/not-an-kingu-worktree'
     )
 
     expect(callMock).toHaveBeenNthCalledWith(2, 'browser.identity.set', { mode: 'native' })
@@ -377,14 +377,14 @@ describe('orca cli browser identity', () => {
     queueFixtures(callMock, okFixture('status', { capabilities: [] }))
     const error = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    await main(['browser', 'identity', 'get'], '/tmp/not-an-orca-worktree')
+    await main(['browser', 'identity', 'get'], '/tmp/not-an-kingu-worktree')
 
     expect(callMock).toHaveBeenCalledTimes(1)
-    expect(error).toHaveBeenCalledWith(expect.stringContaining('Update or restart Orca'))
+    expect(error).toHaveBeenCalledWith(expect.stringContaining('Update or restart Kingu'))
   })
 })
 
-describe('orca cli browser profile management', () => {
+describe('kingu cli browser profile management', () => {
   beforeEach(() => {
     callMock.mockReset()
   })
@@ -407,7 +407,7 @@ describe('orca cli browser profile management', () => {
 
     await main(
       ['tab', 'profile', 'show', '--page', 'page-2', '--json'],
-      '/tmp/not-an-orca-worktree'
+      '/tmp/not-an-kingu-worktree'
     )
 
     expect(callMock).toHaveBeenCalledTimes(1)
@@ -427,7 +427,7 @@ describe('orca cli browser profile management', () => {
 
     await main(
       ['tab', 'profile', 'use-default', '--page', 'page-2', '--json'],
-      '/tmp/not-an-orca-worktree'
+      '/tmp/not-an-kingu-worktree'
     )
 
     expect(callMock).toHaveBeenCalledTimes(1)
@@ -451,7 +451,7 @@ describe('orca cli browser profile management', () => {
 
     await main(
       ['tab', 'profile', 'clone', '--page', 'page-2', '--profile', 'work', '--json'],
-      '/tmp/not-an-orca-worktree'
+      '/tmp/not-an-kingu-worktree'
     )
 
     expect(callMock).toHaveBeenCalledTimes(1)
@@ -462,7 +462,7 @@ describe('orca cli browser profile management', () => {
   })
 })
 
-describe('orca cli browser tab profiles', () => {
+describe('kingu cli browser tab profiles', () => {
   beforeEach(() => {
     callMock.mockReset()
   })
@@ -476,19 +476,19 @@ describe('orca cli browser tab profiles', () => {
       callMock,
       okFixture('req_profiles', {
         profiles: [
-          { id: 'default', scope: 'default', label: 'Default', partition: 'persist:orca-browser' },
+          { id: 'default', scope: 'default', label: 'Default', partition: 'persist:kingu-browser' },
           {
             id: 'work',
             scope: 'isolated',
             label: 'Work',
-            partition: 'persist:orca-browser-session-work'
+            partition: 'persist:kingu-browser-session-work'
           }
         ]
       })
     )
     vi.spyOn(console, 'log').mockImplementation(() => {})
 
-    await main(['tab', 'profile', 'list', '--json'], '/tmp/not-an-orca-worktree')
+    await main(['tab', 'profile', 'list', '--json'], '/tmp/not-an-kingu-worktree')
 
     expect(callMock).toHaveBeenCalledTimes(1)
     expect(callMock).toHaveBeenCalledWith('browser.profileList')
@@ -498,7 +498,7 @@ describe('orca cli browser tab profiles', () => {
     queueFixtures(callMock, okFixture('req_profiles', { profiles: [] }))
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 
-    await main(['tab', 'profile', 'list'], '/tmp/not-an-orca-worktree')
+    await main(['tab', 'profile', 'list'], '/tmp/not-an-kingu-worktree')
 
     expect(callMock).toHaveBeenCalledTimes(1)
     expect(callMock).toHaveBeenCalledWith('browser.profileList')
@@ -513,7 +513,7 @@ describe('orca cli browser tab profiles', () => {
           id: 'work',
           scope: 'isolated',
           label: 'Work',
-          partition: 'persist:orca-browser-session-work'
+          partition: 'persist:kingu-browser-session-work'
         }
       })
     )
@@ -521,7 +521,7 @@ describe('orca cli browser tab profiles', () => {
 
     await main(
       ['tab', 'profile', 'create', '--label', 'Work', '--json'],
-      '/tmp/not-an-orca-worktree'
+      '/tmp/not-an-kingu-worktree'
     )
 
     expect(callMock).toHaveBeenCalledTimes(1)
@@ -539,7 +539,7 @@ describe('orca cli browser tab profiles', () => {
           id: 'imp',
           scope: 'imported',
           label: 'From Chrome',
-          partition: 'persist:orca-browser-session-imp'
+          partition: 'persist:kingu-browser-session-imp'
         }
       })
     )
@@ -547,7 +547,7 @@ describe('orca cli browser tab profiles', () => {
 
     await main(
       ['tab', 'profile', 'create', '--label', 'From Chrome', '--scope', 'imported', '--json'],
-      '/tmp/not-an-orca-worktree'
+      '/tmp/not-an-kingu-worktree'
     )
 
     expect(callMock).toHaveBeenCalledWith('browser.profileCreate', {
@@ -561,7 +561,7 @@ describe('orca cli browser tab profiles', () => {
 
     await main(
       ['tab', 'profile', 'create', '--label', 'Work', '--scope', 'isloated'],
-      '/tmp/not-an-orca-worktree'
+      '/tmp/not-an-kingu-worktree'
     )
 
     expect(callMock).not.toHaveBeenCalled()
@@ -572,7 +572,7 @@ describe('orca cli browser tab profiles', () => {
     queueFixtures(callMock, okFixture('req_profile_create', { profile: null }))
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    await main(['tab', 'profile', 'create', '--label', 'Bogus'], '/tmp/not-an-orca-worktree')
+    await main(['tab', 'profile', 'create', '--label', 'Bogus'], '/tmp/not-an-kingu-worktree')
 
     expect(callMock).toHaveBeenCalledTimes(1)
     expect(errorSpy).toHaveBeenCalledWith(
@@ -586,7 +586,7 @@ describe('orca cli browser tab profiles', () => {
 
     await main(
       ['tab', 'profile', 'delete', '--profile', 'work', '--json'],
-      '/tmp/not-an-orca-worktree'
+      '/tmp/not-an-kingu-worktree'
     )
 
     expect(callMock).toHaveBeenCalledTimes(1)
@@ -600,14 +600,14 @@ describe('orca cli browser tab profiles', () => {
     )
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 
-    await main(['tab', 'profile', 'delete', '--profile', 'default'], '/tmp/not-an-orca-worktree')
+    await main(['tab', 'profile', 'delete', '--profile', 'default'], '/tmp/not-an-kingu-worktree')
 
     expect(callMock).toHaveBeenCalledWith('browser.profileDelete', { profileId: 'default' })
     expect(logSpy).toHaveBeenCalledWith('Profile default was not deleted')
   })
 })
 
-describe('orca cli browser cookies', () => {
+describe('kingu cli browser cookies', () => {
   beforeEach(() => {
     callMock.mockReset()
     process.exitCode = undefined
@@ -635,7 +635,7 @@ describe('orca cli browser cookies', () => {
         'all',
         '--json'
       ],
-      '/tmp/not-an-orca-worktree'
+      '/tmp/not-an-kingu-worktree'
     )
 
     expect(callMock).toHaveBeenCalledWith('browser.cookie.set', {
@@ -654,7 +654,7 @@ describe('orca cli browser cookies', () => {
 
       await main(
         ['cookie', 'set', '--name', 'sid', '--value', 'x', '--expires', expires],
-        '/tmp/not-an-orca-worktree'
+        '/tmp/not-an-kingu-worktree'
       )
 
       expect(callMock).not.toHaveBeenCalled()
@@ -671,7 +671,7 @@ describe('orca cli browser cookies', () => {
 
     await main(
       ['cookie', 'set', '--name', 'sid', '--value', 'x', '--expires'],
-      '/tmp/not-an-orca-worktree'
+      '/tmp/not-an-kingu-worktree'
     )
 
     expect(callMock).not.toHaveBeenCalled()
@@ -682,7 +682,7 @@ describe('orca cli browser cookies', () => {
   })
 })
 
-describe('orca cli browser waits and viewport flags', () => {
+describe('kingu cli browser waits and viewport flags', () => {
   beforeEach(() => {
     callMock.mockReset()
     process.exitCode = undefined
@@ -698,7 +698,7 @@ describe('orca cli browser waits and viewport flags', () => {
 
     await main(
       ['wait', '--selector', '#ready', '--worktree', 'all', '--json'],
-      '/tmp/not-an-orca-worktree'
+      '/tmp/not-an-kingu-worktree'
     )
 
     expect(callMock).toHaveBeenCalledWith(
@@ -723,7 +723,7 @@ describe('orca cli browser waits and viewport flags', () => {
 
     await main(
       ['wait', '--selector', '#ready', '--timeout', '12000', '--worktree', 'all', '--json'],
-      '/tmp/not-an-orca-worktree'
+      '/tmp/not-an-kingu-worktree'
     )
 
     expect(callMock).toHaveBeenCalledWith(
@@ -742,18 +742,18 @@ describe('orca cli browser waits and viewport flags', () => {
     )
   })
 
-  it('does not tell users Orca is down for a generic runtime timeout', async () => {
+  it('does not tell users Kingu is down for a generic runtime timeout', async () => {
     callMock.mockRejectedValueOnce(
       new RuntimeClientError(
         'runtime_timeout',
-        'Timed out waiting for the Orca runtime to respond.'
+        'Timed out waiting for the Kingu runtime to respond.'
       )
     )
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    await main(['wait', '--selector', '#ready', '--worktree', 'all'], '/tmp/not-an-orca-worktree')
+    await main(['wait', '--selector', '#ready', '--worktree', 'all'], '/tmp/not-an-kingu-worktree')
 
-    expect(errorSpy).toHaveBeenCalledWith('Timed out waiting for the Orca runtime to respond.')
+    expect(errorSpy).toHaveBeenCalledWith('Timed out waiting for the Kingu runtime to respond.')
   })
 
   it('passes the mobile viewport flag through to browser.viewport', async () => {
@@ -782,7 +782,7 @@ describe('orca cli browser waits and viewport flags', () => {
         'all',
         '--json'
       ],
-      '/tmp/not-an-orca-worktree'
+      '/tmp/not-an-kingu-worktree'
     )
 
     expect(callMock).toHaveBeenCalledWith('browser.viewport', {

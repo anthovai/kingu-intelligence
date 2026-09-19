@@ -12,7 +12,7 @@ const hit = {
   executionHostId: 'ssh:build-01',
   sessionId: 'session-1',
   title: 'Terminal resize race',
-  cwd: '/src/orca',
+  cwd: '/src/kingu',
   branch: 'main',
   updatedAt: '2026-09-12T18:04:11.000Z',
   messageCount: 214,
@@ -97,7 +97,7 @@ function printedResults(output: string): Extract<AiVaultSearchResponse, { kind: 
   return parsed
 }
 
-describe('orca search over the runtime RPC', () => {
+describe('kingu search over the runtime RPC', () => {
   it('sends the query with the contract defaults the schema resolves', async () => {
     const { call } = await runSearch([['query', 'resize race']])
 
@@ -234,9 +234,9 @@ describe('orca search over the runtime RPC', () => {
   it('propagates a transport failure instead of calling it unavailable', async () => {
     await expect(
       runSearch([['query', 'q']], {
-        error: new RuntimeClientError('runtime_unavailable', 'Orca is not running.')
+        error: new RuntimeClientError('runtime_unavailable', 'Kingu is not running.')
       })
-    ).rejects.toThrow('Orca is not running.')
+    ).rejects.toThrow('Kingu is not running.')
   })
 
   it('applies the paired-client exposure policy for a remote runtime', async () => {
@@ -257,7 +257,7 @@ describe('orca search over the runtime RPC', () => {
   })
 })
 
-describe('orca search --json', () => {
+describe('kingu search --json', () => {
   it('hands back the contract response unchanged under the CLI envelope', async () => {
     const { output } = await runSearch([['query', 'q']], { json: true })
     const printed = printedEnvelope(output)

@@ -18,7 +18,7 @@ describe('shell process readiness', () => {
   it.skipIf(process.platform === 'win32')(
     'resolves bare shell commands through the spawn PATH',
     async () => {
-      const root = await mkdtemp(join(tmpdir(), 'orca-shell-path-'))
+      const root = await mkdtemp(join(tmpdir(), 'kingu-shell-path-'))
       const link = join(root, 'shell-name')
       await symlink(process.execPath, link)
       try {
@@ -43,7 +43,7 @@ describe('shell process readiness', () => {
   it.skipIf(process.platform === 'win32')(
     'resolves relative shell paths against the PTY cwd',
     async () => {
-      const root = await mkdtemp(join(tmpdir(), 'orca-relative-shell-'))
+      const root = await mkdtemp(join(tmpdir(), 'kingu-relative-shell-'))
       const bin = join(root, 'bin')
       await symlink(dirname(process.execPath), bin)
       try {
@@ -59,7 +59,7 @@ describe('shell process readiness', () => {
   it.skipIf(process.platform === 'win32')(
     'skips searchable directories that shadow a later PATH executable',
     async () => {
-      const root = await mkdtemp(join(tmpdir(), 'orca-shadowed-shell-'))
+      const root = await mkdtemp(join(tmpdir(), 'kingu-shadowed-shell-'))
       const first = join(root, 'first')
       const second = join(root, 'second')
       await mkdir(join(first, 'shell-name'), { recursive: true })
@@ -78,7 +78,7 @@ describe('shell process readiness', () => {
   it.skipIf(process.platform === 'win32')(
     'lists every PATH installation of a shell name, deduplicated and canonical',
     async () => {
-      const root = await mkdtemp(join(tmpdir(), 'orca-installed-shells-'))
+      const root = await mkdtemp(join(tmpdir(), 'kingu-installed-shells-'))
       const first = join(root, 'first')
       const second = join(root, 'second')
       const missing = join(root, 'missing')
@@ -100,7 +100,7 @@ describe('shell process readiness', () => {
   it.skipIf(process.platform === 'win32')(
     'omits a same-name executable that no PATH entry reaches',
     async () => {
-      const root = await mkdtemp(join(tmpdir(), 'orca-offpath-shell-'))
+      const root = await mkdtemp(join(tmpdir(), 'kingu-offpath-shell-'))
       const onPath = join(root, 'bin')
       const offPath = join(root, 'dropped')
       await mkdir(onPath)

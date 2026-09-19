@@ -20,16 +20,16 @@ import type { TuiAgent } from './tui-agent'
 const RECORDED_HISTORY_DIR = 'terminal-history'
 const QUARANTINE_DIR = '.recovery-quarantine'
 
-function orcaAppSupportCandidates(): string[] {
+function kinguAppSupportCandidates(): string[] {
   if (process.platform === 'darwin') {
-    return [join(homedir(), 'Library', 'Application Support', 'Orca')]
+    return [join(homedir(), 'Library', 'Application Support', 'Kingu')]
   }
   if (process.platform === 'win32') {
-    return [join(process.env.APPDATA ?? join(homedir(), 'AppData', 'Roaming'), 'Orca')]
+    return [join(process.env.APPDATA ?? join(homedir(), 'AppData', 'Roaming'), 'Kingu')]
   }
   return [
-    join(process.env.XDG_CONFIG_HOME ?? join(homedir(), '.config'), 'Orca'),
-    join(process.env.XDG_DATA_HOME ?? join(homedir(), '.local', 'share'), 'Orca')
+    join(process.env.XDG_CONFIG_HOME ?? join(homedir(), '.config'), 'Kingu'),
+    join(process.env.XDG_DATA_HOME ?? join(homedir(), '.local', 'share'), 'Kingu')
   ]
 }
 
@@ -37,7 +37,7 @@ function orcaAppSupportCandidates(): string[] {
  *  quarantine subtree excluded BY NAME so a future recursive rewrite cannot silently turn
  *  quarantined recovery data into product regressions. */
 function loadRecordedTitleCorpus(): { checkpointCount: number; titles: string[] } | null {
-  const root = orcaAppSupportCandidates()
+  const root = kinguAppSupportCandidates()
     .map((candidate) => join(candidate, RECORDED_HISTORY_DIR))
     .find((candidate) => existsSync(candidate))
   if (!root) {

@@ -249,7 +249,7 @@ export class FsHandler {
       start: (signal) =>
         runListFilesScan(rootPath, excludePathPrefixes, signal, maxResults, searchQuery)
     })
-    // Why: a full listing of a real monorepo serializes past the 1 MiB control lane — Orca's own
+    // Why: a full listing of a real monorepo serializes past the 1 MiB control lane — Kingu's own
     // checkout is 22.6k paths averaging 58 characters, so a 20,001-row page is ~1.2MB — and the
     // legacy-response lane it demotes to is refused under unrelated producer load. Streaming makes
     // size stop being a correctness question instead of picking a row or byte ceiling to refuse at.

@@ -13,7 +13,7 @@ import { CLI_COMMAND_NAMES } from '../../main/startup/cli-command-names'
 const searchSpec = SEARCH_COMMAND_SPECS[0]!
 const help = formatCommandHelp(searchSpec)
 
-describe('orca search command spec', () => {
+describe('kingu search command spec', () => {
   it('is one command, not a group, because the query is a bare positional', () => {
     expect(SEARCH_COMMAND_SPECS).toHaveLength(1)
     expect(searchSpec.path).toEqual(['search'])
@@ -83,21 +83,21 @@ describe('orca search command spec', () => {
   })
 
   it('shows both the query and the index report in its usage', () => {
-    expect(searchSpec.usage).toContain('orca search <query>')
-    expect(searchSpec.usage).toContain('orca search --index-status')
+    expect(searchSpec.usage).toContain('kingu search <query>')
+    expect(searchSpec.usage).toContain('kingu search --index-status')
   })
 })
 
-describe('orca search discovery surfaces', () => {
+describe('kingu search discovery surfaces', () => {
   it('is listed in the root help', () => {
     expect(ROOT_HELP_TEXT_PRIMARY).toContain('Agent Sessions:')
     expect(ROOT_HELP_TEXT_PRIMARY).toContain(
-      '  search                    Search the full text of agent sessions on one Orca host'
+      '  search                    Search the full text of agent sessions on one Kingu host'
     )
-    expect(ROOT_HELP_TEXT_SECONDARY).toContain('  orca search --index-status [--json]')
+    expect(ROOT_HELP_TEXT_SECONDARY).toContain('  kingu search --index-status [--json]')
   })
 
-  it('prints its own help for `orca search --help`', () => {
+  it('prints its own help for `kingu search --help`', () => {
     const lines: string[] = []
     const restore = console.log
     console.log = (value: unknown) => void lines.push(String(value))
@@ -106,7 +106,7 @@ describe('orca search discovery surfaces', () => {
     } finally {
       console.log = restore
     }
-    expect(lines.join('\n')).toContain('Usage: orca search <query>')
+    expect(lines.join('\n')).toContain('Usage: kingu search <query>')
   })
 
   it('resolves for dispatch', () => {

@@ -3,9 +3,9 @@ import { gitExecMutatesRepository } from './git-exec-mutation'
 
 describe('gitExecMutatesRepository', () => {
   it.each([
-    [['remote', 'add', 'pr-contributor-orca', 'https://github.com/contributor/orca.git']],
-    [['remote', 'remove', 'pr-contributor-orca']],
-    [['clone', '--', 'https://github.com/stablyai/orca.git', 'orca']],
+    [['remote', 'add', 'pr-contributor-kingu', 'https://github.com/contributor/kingu.git']],
+    [['remote', 'remove', 'pr-contributor-kingu']],
+    [['clone', '--', 'https://github.com/anthovai/kingu-intelligence.git', 'kingu']],
     [['commit', '--allow-empty', '-m', 'Initial commit']],
     [['init']]
   ])('treats %j as mutating', (args) => {

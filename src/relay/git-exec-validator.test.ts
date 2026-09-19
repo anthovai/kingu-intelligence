@@ -166,25 +166,30 @@ describe('validateGitExecArgs', () => {
       expectAllowed([
         'remote',
         'add',
-        'pr-contributor-orca',
-        'https://github.com/contributor/orca.git'
+        'pr-contributor-kingu',
+        'https://github.com/contributor/kingu.git'
       ])
-      expectAllowed(['remote', 'add', 'pr-contributor-orca', 'git@github.com:contributor/orca.git'])
-      expectAllowed(['remote', 'remove', 'pr-contributor-orca'])
+      expectAllowed([
+        'remote',
+        'add',
+        'pr-contributor-kingu',
+        'git@github.com:contributor/kingu.git'
+      ])
+      expectAllowed(['remote', 'remove', 'pr-contributor-kingu'])
     })
 
     it.each([
       // Extra or missing operands are not a shape main ever sends.
       [['remote', 'add', 'fork']],
-      [['remote', 'add', 'fork', 'https://github.com/contributor/orca.git', '--tags']],
+      [['remote', 'add', 'fork', 'https://github.com/contributor/kingu.git', '--tags']],
       [['remote', 'remove']],
       [['remote', 'remove', 'fork', 'extra']],
       // Names and URLs must pass the same rules the pushTarget RPCs enforce.
-      [['remote', 'add', '--mirror=push', 'https://github.com/contributor/orca.git']],
-      [['remote', 'add', '../escape', 'https://github.com/contributor/orca.git']],
+      [['remote', 'add', '--mirror=push', 'https://github.com/contributor/kingu.git']],
+      [['remote', 'add', '../escape', 'https://github.com/contributor/kingu.git']],
       [['remote', 'remove', '-f']],
       [['remote', 'add', 'fork', 'ext::sh -c payload']],
-      [['remote', 'add', 'fork', 'https://evil.test/contributor/orca.git']],
+      [['remote', 'add', 'fork', 'https://evil.test/contributor/kingu.git']],
       [['remote', 'add', 'fork', '/etc/passwd']]
     ])('rejects unsafe remote write args %j', (args) => {
       expectBlocked(args, 'Destructive git remote operations')
@@ -231,18 +236,24 @@ describe('validateGitExecArgs', () => {
 
   describe('git clone', () => {
     it('allows only the project setup clone shape', () => {
-      expectAllowed(['clone', '--', 'https://github.com/stablyai/orca.git', 'orca'])
-      expectAllowed(['clone', '--progress', '--', 'git@github.com:stablyai/orca.git', 'orca'])
+      expectAllowed(['clone', '--', 'https://github.com/anthovai/kingu-intelligence.git', 'kingu'])
+      expectAllowed([
+        'clone',
+        '--progress',
+        '--',
+        'git@github.com:anthovai/kingu-intelligence.git',
+        'kingu'
+      ])
     })
 
     it.each([
-      [['clone', 'https://github.com/stablyai/orca.git']],
-      [['clone', 'https://github.com/stablyai/orca.git', 'orca']],
-      [['clone', '--depth=1', '--', 'https://github.com/stablyai/orca.git', 'orca']],
-      [['clone', '--', 'https://github.com/stablyai/orca.git', '.']],
-      [['clone', '--', 'https://github.com/stablyai/orca.git', '..']],
-      [['clone', '--', 'https://github.com/stablyai/orca.git', 'nested/orca']],
-      [['clone', '--', 'https://github.com/stablyai/orca.git', 'nested\\orca']]
+      [['clone', 'https://github.com/anthovai/kingu-intelligence.git']],
+      [['clone', 'https://github.com/anthovai/kingu-intelligence.git', 'kingu']],
+      [['clone', '--depth=1', '--', 'https://github.com/anthovai/kingu-intelligence.git', 'kingu']],
+      [['clone', '--', 'https://github.com/anthovai/kingu-intelligence.git', '.']],
+      [['clone', '--', 'https://github.com/anthovai/kingu-intelligence.git', '..']],
+      [['clone', '--', 'https://github.com/anthovai/kingu-intelligence.git', 'nested/kingu']],
+      [['clone', '--', 'https://github.com/anthovai/kingu-intelligence.git', 'nested\\kingu']]
     ])('rejects unsafe clone args %j', (args) => {
       expectBlocked(args, 'git clone')
     })

@@ -56,11 +56,11 @@ function assertParentWorktreeFlagsCompatible(flags: Map<string, string | boolean
 }
 
 function getEnvParentWorkspace(): string | undefined {
-  const workspaceId = process.env.ORCA_WORKSPACE_ID
+  const workspaceId = process.env.KINGU_WORKSPACE_ID
   if (typeof workspaceId === 'string' && isWorkspaceKey(workspaceId)) {
     return workspaceId
   }
-  const worktreeId = process.env.ORCA_WORKTREE_ID
+  const worktreeId = process.env.KINGU_WORKTREE_ID
   if (typeof worktreeId === 'string' && worktreeId.length > 0) {
     return isWorkspaceKey(worktreeId) ? worktreeId : worktreeWorkspaceKey(worktreeId)
   }
@@ -146,7 +146,7 @@ async function getCreateRepoSelector(
   }
   throw new RuntimeClientError(
     'invalid_argument',
-    'Missing repo selector. Pass --repo or run from inside an Orca-managed worktree.'
+    'Missing repo selector. Pass --repo or run from inside an Kingu-managed worktree.'
   )
 }
 
@@ -186,9 +186,9 @@ export const WORKTREE_HANDLERS: Record<string, CommandHandler> = {
     assertCreateParentFlagsCompatible(flags)
     assertWorkspaceTargetFlagsCompatible(flags)
     const callerTerminalHandle =
-      typeof process.env.ORCA_TERMINAL_HANDLE === 'string' &&
-      process.env.ORCA_TERMINAL_HANDLE.length > 0
-        ? process.env.ORCA_TERMINAL_HANDLE
+      typeof process.env.KINGU_TERMINAL_HANDLE === 'string' &&
+      process.env.KINGU_TERMINAL_HANDLE.length > 0
+        ? process.env.KINGU_TERMINAL_HANDLE
         : undefined
     const explicitParent = await resolveCreateParentSelector(flags, cwd, client)
     const explicitParentWorktree = explicitParent.parentWorktree
@@ -207,8 +207,8 @@ export const WORKTREE_HANDLERS: Record<string, CommandHandler> = {
       needsCwdRepoInference
     ) {
       try {
-        // Why: agent shells can lose ORCA_TERMINAL_HANDLE while still running
-        // inside an Orca worktree. Cwd keeps CLI-created children nestable and
+        // Why: agent shells can lose KINGU_TERMINAL_HANDLE while still running
+        // inside an Kingu worktree. Cwd keeps CLI-created children nestable and
         // lets create infer the repo for the common current-workspace case.
         cwdParentWorktree = await resolveCurrentWorktreeSelector(cwd, client)
       } catch {
@@ -279,7 +279,7 @@ export const WORKTREE_HANDLERS: Record<string, CommandHandler> = {
     if (!hostId) {
       throw new RuntimeClientError(
         'worktree_host_unresolved',
-        'Orca cannot tell which host owns this workspace. Refresh projects and try again.'
+        'Kingu cannot tell which host owns this workspace. Refresh projects and try again.'
       )
     }
     // Why (#19334): the waiver only ever applies to a hook that ran, so without --run-hooks it

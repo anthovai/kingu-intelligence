@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { parseOrcaYaml } from './orca-yaml'
+import { parseKinguYaml } from './kingu-yaml'
 
-describe('orca.yaml alias expansion', () => {
+describe('kingu.yaml alias expansion', () => {
   it('preserves an ordinary shared scalar', () => {
     expect(
-      parseOrcaYaml(`
+      parseKinguYaml(`
 setupCommand: &setupCommand pnpm install
 scripts:
   setup: *setupCommand
@@ -21,7 +21,7 @@ scripts:
     ).join('\n')
 
     expect(
-      parseOrcaYaml(`
+      parseKinguYaml(`
 shared: &shared
   command: pnpm dev
 defaultTabs:
@@ -42,6 +42,6 @@ ${tabs}
         .join(', ')}]\n`
     }
 
-    expect(parseOrcaYaml(`${source}scripts:\n  setup: *a8\n`)).toBeNull()
+    expect(parseKinguYaml(`${source}scripts:\n  setup: *a8\n`)).toBeNull()
   })
 })

@@ -4,8 +4,8 @@ import {
   imagePasteWritesFollowedByText
 } from './image-paste-following-text'
 
-const IMAGE_A = '\x1b[200~/tmp/orca-paste-a.png\x1b[201~'
-const IMAGE_B = '\x1b[200~/tmp/orca-paste-b.png\x1b[201~'
+const IMAGE_A = '\x1b[200~/tmp/kingu-paste-a.png\x1b[201~'
+const IMAGE_B = '\x1b[200~/tmp/kingu-paste-b.png\x1b[201~'
 
 describe('imagePasteWritesFollowedByText', () => {
   it('separates an attachment path from following prompt text by a single space', () => {

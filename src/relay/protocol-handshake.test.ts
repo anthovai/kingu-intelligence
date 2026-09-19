@@ -9,9 +9,9 @@ import {
 } from './protocol'
 
 describe('handshake framing', () => {
-  it('round-trips an orca-relay-handshake envelope through the existing framing', () => {
+  it('round-trips an kingu-relay-handshake envelope through the existing framing', () => {
     const sent = encodeHandshakeFrame({
-      type: 'orca-relay-handshake',
+      type: 'kingu-relay-handshake',
       version: '0.1.0+deadbeef'
     })
     expect(sent[0]).toBe(MessageType.Handshake)
@@ -24,24 +24,24 @@ describe('handshake framing', () => {
     expect(frames).toHaveLength(1)
     expect(frames[0].type).toBe(MessageType.Handshake)
     const msg = parseHandshakeMessage(frames[0].payload)
-    expect(msg).toEqual({ type: 'orca-relay-handshake', version: '0.1.0+deadbeef' })
+    expect(msg).toEqual({ type: 'kingu-relay-handshake', version: '0.1.0+deadbeef' })
   })
 
-  it('round-trips an orca-relay-handshake-ok reply', () => {
+  it('round-trips an kingu-relay-handshake-ok reply', () => {
     const sent = encodeHandshakeFrame({
-      type: 'orca-relay-handshake-ok',
+      type: 'kingu-relay-handshake-ok',
       version: '0.1.0+deadbeef'
     })
     const frames: DecodedFrame[] = []
     const decoder = new FrameDecoder((f) => frames.push(f))
     decoder.feed(sent)
     const msg = parseHandshakeMessage(frames[0].payload)
-    expect(msg).toEqual({ type: 'orca-relay-handshake-ok', version: '0.1.0+deadbeef' })
+    expect(msg).toEqual({ type: 'kingu-relay-handshake-ok', version: '0.1.0+deadbeef' })
   })
 
-  it('round-trips an orca-relay-handshake-mismatch reply', () => {
+  it('round-trips an kingu-relay-handshake-mismatch reply', () => {
     const sent = encodeHandshakeFrame({
-      type: 'orca-relay-handshake-mismatch',
+      type: 'kingu-relay-handshake-mismatch',
       expected: '0.1.0+aaa',
       got: '0.1.0+bbb'
     })
@@ -50,14 +50,14 @@ describe('handshake framing', () => {
     decoder.feed(sent)
     const msg = parseHandshakeMessage(frames[0].payload)
     expect(msg).toEqual({
-      type: 'orca-relay-handshake-mismatch',
+      type: 'kingu-relay-handshake-mismatch',
       expected: '0.1.0+aaa',
       got: '0.1.0+bbb'
     })
   })
 
   it('rejects payloads with unknown type', () => {
-    const bogus = Buffer.from(JSON.stringify({ type: 'orca-something-else', version: 'x' }))
+    const bogus = Buffer.from(JSON.stringify({ type: 'kingu-something-else', version: 'x' }))
     expect(() => parseHandshakeMessage(bogus)).toThrow(/Unknown handshake type/)
   })
 
@@ -71,7 +71,7 @@ describe('handshake framing', () => {
   // The daemon logs the peer's version before any credential check, and `JSON.parse` can hand
   // back a value a template literal throws on. The parser is the one place every reader shares.
   it('rejects a version that is not a string on both arms that carry one', () => {
-    for (const type of ['orca-relay-handshake', 'orca-relay-handshake-ok']) {
+    for (const type of ['kingu-relay-handshake', 'kingu-relay-handshake-ok']) {
       for (const version of [{ toString: 1 }, 7, null, undefined, ['0.1.0']]) {
         const payload = Buffer.from(JSON.stringify({ type, version }))
         expect(
@@ -83,7 +83,7 @@ describe('handshake framing', () => {
   })
 
   it('rejects a mismatch reply whose expected or got is not a string', () => {
-    const type = 'orca-relay-handshake-mismatch'
+    const type = 'kingu-relay-handshake-mismatch'
     expect(() =>
       parseHandshakeMessage(Buffer.from(JSON.stringify({ type, expected: {}, got: 'b' })))
     ).toThrow(/Handshake field expected is not a string/)
@@ -93,7 +93,7 @@ describe('handshake framing', () => {
   })
 
   it('rejects payloads that are not objects', () => {
-    for (const payload of ['null', '"orca-relay-handshake"', '42']) {
+    for (const payload of ['null', '"kingu-relay-handshake"', '42']) {
       expect(() => parseHandshakeMessage(Buffer.from(payload)), payload).toThrow(
         /Handshake payload is not an object/
       )
@@ -106,7 +106,7 @@ describe('handshake framing', () => {
   it('rejects a present endpointCredential that is not a string', () => {
     for (const endpointCredential of [{ toString: 1 }, 7, null, ['secret'], true]) {
       const payload = Buffer.from(
-        JSON.stringify({ type: 'orca-relay-handshake', version: '0.1.0', endpointCredential })
+        JSON.stringify({ type: 'kingu-relay-handshake', version: '0.1.0', endpointCredential })
       )
       expect(
         () => parseHandshakeMessage(payload),
@@ -118,13 +118,13 @@ describe('handshake framing', () => {
   // Absent must stay absent: a bridge that legitimately presents no credential is the common case,
   // and refusing it here would close every unauthenticated-endpoint connection in the fleet.
   it('still accepts a handshake with no endpointCredential, and one with a string', () => {
-    const bare = Buffer.from(JSON.stringify({ type: 'orca-relay-handshake', version: '0.1.0' }))
-    expect(parseHandshakeMessage(bare)).toEqual({ type: 'orca-relay-handshake', version: '0.1.0' })
+    const bare = Buffer.from(JSON.stringify({ type: 'kingu-relay-handshake', version: '0.1.0' }))
+    expect(parseHandshakeMessage(bare)).toEqual({ type: 'kingu-relay-handshake', version: '0.1.0' })
     const withCredential = Buffer.from(
-      JSON.stringify({ type: 'orca-relay-handshake', version: '0.1.0', endpointCredential: 'sec' })
+      JSON.stringify({ type: 'kingu-relay-handshake', version: '0.1.0', endpointCredential: 'sec' })
     )
     expect(parseHandshakeMessage(withCredential)).toEqual({
-      type: 'orca-relay-handshake',
+      type: 'kingu-relay-handshake',
       version: '0.1.0',
       endpointCredential: 'sec'
     })
@@ -132,10 +132,10 @@ describe('handshake framing', () => {
 
   it('still accepts a credential-mismatch reply, which carries no fields', () => {
     const payload = Buffer.from(
-      JSON.stringify({ type: 'orca-relay-handshake-credential-mismatch' })
+      JSON.stringify({ type: 'kingu-relay-handshake-credential-mismatch' })
     )
     expect(parseHandshakeMessage(payload)).toEqual({
-      type: 'orca-relay-handshake-credential-mismatch'
+      type: 'kingu-relay-handshake-credential-mismatch'
     })
   })
 

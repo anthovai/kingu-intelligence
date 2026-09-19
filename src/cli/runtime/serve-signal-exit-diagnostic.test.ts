@@ -35,7 +35,7 @@ function superviseUntilExit(code: number | null, signal: NodeJS.Signals | null):
 
 function superviseChild(child: FakeChildProcess): Promise<number> {
   return superviseForegroundServe({
-    executable: '/Applications/Orca.app/Contents/MacOS/Orca',
+    executable: '/Applications/Kingu.app/Contents/MacOS/Kingu',
     childArgs: ['--serve'],
     spawnOptions: {},
     spawnChild: vi.fn() as never,
@@ -62,7 +62,7 @@ describe('serveSignalExitError', () => {
     expect(error.data).toMatchObject({
       nextSteps: [
         expect.stringContaining('macOS desktop login'),
-        expect.stringContaining('~/Library/Logs/DiagnosticReports/Orca-*.ips')
+        expect.stringContaining('~/Library/Logs/DiagnosticReports/Kingu-*.ips')
       ]
     })
   })
@@ -71,7 +71,7 @@ describe('serveSignalExitError', () => {
     for (const platform of ['linux', 'win32'] as const) {
       const error = serveSignalExitError('SIGABRT', platform)
 
-      expect(error.message).toBe('Orca serve exited via SIGABRT.')
+      expect(error.message).toBe('Kingu serve exited via SIGABRT.')
       expect(error.data).toBeUndefined()
     }
   })
@@ -79,13 +79,13 @@ describe('serveSignalExitError', () => {
   it('does not claim the macOS cause for other darwin signals', () => {
     const error = serveSignalExitError('SIGKILL', 'darwin')
 
-    expect(error.message).toBe('Orca serve exited via SIGKILL.')
+    expect(error.message).toBe('Kingu serve exited via SIGKILL.')
     expect(error.data).toBeUndefined()
   })
 
   it('stays clear when neither a code nor a signal is reported', () => {
     expect(serveSignalExitError(null, 'darwin').message).toBe(
-      'Orca serve exited without reporting an exit code or signal.'
+      'Kingu serve exited without reporting an exit code or signal.'
     )
   })
 })
@@ -116,7 +116,7 @@ describe('superviseForegroundServe signal exits', () => {
     expect(child.kill).toHaveBeenCalledTimes(2)
 
     child.emit('exit', null, 'SIGKILL')
-    await expect(supervised).rejects.toThrow('Orca serve exited via SIGKILL.')
+    await expect(supervised).rejects.toThrow('Kingu serve exited via SIGKILL.')
   })
 
   it('lets a shared-console Windows child handle Ctrl-C gracefully', async () => {
@@ -166,11 +166,11 @@ describe('superviseForegroundServe signal exits', () => {
 
   it('does not terminate an exited child when update handoff completion fails late', async () => {
     vi.useFakeTimers()
-    const missingParent = await mkdtemp(join(tmpdir(), 'orca-serve-missing-handoff-'))
+    const missingParent = await mkdtemp(join(tmpdir(), 'kingu-serve-missing-handoff-'))
     await rm(missingParent, { recursive: true })
     const child = new FakeChildProcess()
     const supervised = superviseForegroundServe({
-      executable: '/Applications/Orca.app/Contents/MacOS/Orca',
+      executable: '/Applications/Kingu.app/Contents/MacOS/Kingu',
       childArgs: ['--serve'],
       spawnOptions: {},
       spawnChild: vi.fn() as never,
@@ -187,7 +187,7 @@ describe('superviseForegroundServe signal exits', () => {
     vi.spyOn(process.stderr, 'write').mockImplementation(() => true)
 
     child.emit('message', {
-      type: 'orca:serve-ready',
+      type: 'kingu:serve-ready',
       version: '1.0.61',
       runtimeId: 'runtime-new'
     })
@@ -210,7 +210,7 @@ describe('superviseForegroundServe signal exits', () => {
     setPlatform('linux')
 
     await expect(superviseUntilExit(null, 'SIGABRT')).rejects.toThrow(
-      'Orca serve exited via SIGABRT.'
+      'Kingu serve exited via SIGABRT.'
     )
   })
 

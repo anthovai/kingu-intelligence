@@ -4,18 +4,18 @@ import { summarizeSkillMarkdown } from './skill-metadata'
 describe('summarizeSkillMarkdown', () => {
   it('reads name and folded description from YAML frontmatter', () => {
     const summary = summarizeSkillMarkdown(`---
-name: orca-cli
+name: kingu-cli
 description: >-
-  Use the orca CLI to drive a running editor;
+  Use the kingu CLI to drive a running editor;
   keep worktree comments current.
 ---
 
-# Orca CLI
+# Kingu CLI
 `)
 
     expect(summary).toEqual({
-      name: 'orca-cli',
-      description: 'Use the orca CLI to drive a running editor; keep worktree comments current.'
+      name: 'kingu-cli',
+      description: 'Use the kingu CLI to drive a running editor; keep worktree comments current.'
     })
   })
 

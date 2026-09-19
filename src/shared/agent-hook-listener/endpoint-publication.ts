@@ -35,13 +35,13 @@ export function writeEndpointFile(
   const tmpPath = join(endpointDir, `.endpoint-${process.pid}-${randomUUID()}.tmp`)
   const prefix = process.platform === 'win32' ? 'set ' : ''
   const valuesToWrite: [string, string][] = [
-    ['ORCA_AGENT_HOOK_PORT', String(fields.port)],
-    ['ORCA_AGENT_HOOK_TOKEN', fields.token],
-    ['ORCA_AGENT_HOOK_ENV', fields.env],
-    ['ORCA_AGENT_HOOK_VERSION', fields.version]
+    ['KINGU_AGENT_HOOK_PORT', String(fields.port)],
+    ['KINGU_AGENT_HOOK_TOKEN', fields.token],
+    ['KINGU_AGENT_HOOK_ENV', fields.env],
+    ['KINGU_AGENT_HOOK_VERSION', fields.version]
   ]
   if (fields.transport) {
-    valuesToWrite.push(['ORCA_AGENT_HOOK_TRANSPORT', fields.transport])
+    valuesToWrite.push(['KINGU_AGENT_HOOK_TRANSPORT', fields.transport])
   }
   for (const [key, value] of valuesToWrite) {
     if (!isShellSafeEndpointValue(value)) {

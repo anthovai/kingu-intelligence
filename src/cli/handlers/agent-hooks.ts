@@ -29,7 +29,7 @@ const WSL_CODEX_PREPARE_TIMEOUT_MS = 50_000
 
 function getDataPath(): string {
   const userDataPath = getDefaultUserDataPath()
-  const indexPath = join(userDataPath, 'orca-profile-index.json')
+  const indexPath = join(userDataPath, 'kingu-profile-index.json')
   for (const candidate of [indexPath, `${indexPath}.bak`]) {
     try {
       const parsed: unknown = JSON.parse(readFileSync(candidate, 'utf-8'))
@@ -42,13 +42,13 @@ function getDataPath(): string {
         /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(profileId) &&
         parsed.profiles.some((profile) => isRecord(profile) && profile.id === profileId)
       ) {
-        return join(userDataPath, 'profiles', profileId, 'orca-data.json')
+        return join(userDataPath, 'profiles', profileId, 'kingu-data.json')
       }
     } catch {
       // Try the profile-index backup, then the legacy pre-profile path.
     }
   }
-  return join(userDataPath, 'orca-data.json')
+  return join(userDataPath, 'kingu-data.json')
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -214,7 +214,7 @@ export const AGENT_HOOK_HANDLERS: Record<string, CommandHandler> = {
           'agentHooks.prepareCodexForWslPane',
           {
             codexHome: process.env.CODEX_HOME ?? '',
-            orcaCodexHome: process.env.ORCA_CODEX_HOME ?? '',
+            kinguCodexHome: process.env.KINGU_CODEX_HOME ?? '',
             wslDistro: process.env.WSL_DISTRO_NAME
           },
           { timeoutMs: WSL_CODEX_PREPARE_TIMEOUT_MS }

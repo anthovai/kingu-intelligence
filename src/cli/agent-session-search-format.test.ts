@@ -15,7 +15,7 @@ const localHit: AiVaultSearchHit = {
   executionHostId: 'ssh:build-01',
   sessionId: 'session-1',
   title: 'Terminal resize race on Windows',
-  cwd: 'C:\\src\\orca',
+  cwd: 'C:\\src\\kingu',
   branch: 'main',
   updatedAt: '2026-09-12T18:04:11.000Z',
   messageCount: 214,
@@ -162,7 +162,7 @@ describe('formatSessionSearchResponse: non-result answers', () => {
     expect(formatSessionSearchResponse({ kind: 'unavailable', reason: 'no-service' })).toBe(
       [
         'This host runs no session search service.',
-        'An Orca host older than session search answers the same way; update it and try again.'
+        'An Kingu host older than session search answers the same way; update it and try again.'
       ].join('\n')
     )
   })

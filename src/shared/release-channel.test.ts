@@ -40,13 +40,13 @@ describe('release channel', () => {
   // exposes only 10 entries, so 24 hourly tags a day would evict every stable/RC
   // entry and leave real users with nothing to update to.
   it('keeps dev builds out of the main release repo, and apart from each other', () => {
-    expect(getReleaseRepoForChannel('hourly')).toBe('stablyai/orca-hourly')
-    expect(getReleaseRepoForChannel('daily')).toBe('stablyai/orca-daily')
+    expect(getReleaseRepoForChannel('hourly')).toBe('anthovai/kingu-intelligence-hourly')
+    expect(getReleaseRepoForChannel('daily')).toBe('anthovai/kingu-intelligence-daily')
     // Why adhoc gets its own repo rather than sharing hourly's: an unlanded
     // branch build must never surface to someone who only meant to ride main.
-    expect(getReleaseRepoForChannel('adhoc')).toBe('stablyai/orca-adhoc')
-    expect(getReleaseRepoForChannel('stable')).toBe('stablyai/orca')
-    expect(getReleaseRepoForChannel('rc')).toBe('stablyai/orca')
+    expect(getReleaseRepoForChannel('adhoc')).toBe('anthovai/kingu-intelligence-adhoc')
+    expect(getReleaseRepoForChannel('stable')).toBe('anthovai/kingu-intelligence')
+    expect(getReleaseRepoForChannel('rc')).toBe('anthovai/kingu-intelligence')
   })
 
   it('marks exactly the dev channels as having their own repo', () => {
@@ -61,21 +61,23 @@ describe('release channel', () => {
   // in the hourly repo.
   it('builds release-notes links against the repo that published the version', () => {
     expect(getReleaseNotesUrlForVersion('1.4.160-hourly.202607281400')).toBe(
-      'https://github.com/stablyai/orca-hourly/releases/tag/v1.4.160-hourly.202607281400'
+      'https://github.com/anthovai/kingu-intelligence-hourly/releases/tag/v1.4.160-hourly.202607281400'
     )
     expect(getReleaseNotesUrlForVersion('1.4.160-daily.202607281300')).toBe(
-      'https://github.com/stablyai/orca-daily/releases/tag/v1.4.160-daily.202607281300'
+      'https://github.com/anthovai/kingu-intelligence-daily/releases/tag/v1.4.160-daily.202607281300'
     )
     expect(getReleaseNotesUrlForVersion('1.4.160')).toBe(
-      'https://github.com/stablyai/orca/releases/tag/v1.4.160'
+      'https://github.com/anthovai/kingu-intelligence/releases/tag/v1.4.160'
     )
     expect(getReleaseNotesUrlForVersion('v1.4.160-rc.3')).toBe(
-      'https://github.com/stablyai/orca/releases/tag/v1.4.160-rc.3'
+      'https://github.com/anthovai/kingu-intelligence/releases/tag/v1.4.160-rc.3'
     )
     expect(getReleaseNotesUrlForVersion('1.4.160-adhoc.20260728140533')).toBe(
-      'https://github.com/stablyai/orca-adhoc/releases/tag/v1.4.160-adhoc.20260728140533'
+      'https://github.com/anthovai/kingu-intelligence-adhoc/releases/tag/v1.4.160-adhoc.20260728140533'
     )
-    expect(getReleaseNotesUrlForVersion(null)).toBe('https://github.com/stablyai/orca/releases')
+    expect(getReleaseNotesUrlForVersion(null)).toBe(
+      'https://github.com/anthovai/kingu-intelligence/releases'
+    )
   })
 
   it('round-trips an hourly version stamp as UTC', () => {
@@ -227,13 +229,13 @@ describe('release channel', () => {
   it('finds the directly runnable installer for a platform', () => {
     const assets = [
       'latest.yml',
-      'orca-windows-setup.exe',
-      'orca-macos-arm64.dmg',
-      'orca-linux.AppImage'
+      'kingu-windows-setup.exe',
+      'kingu-macos-arm64.dmg',
+      'kingu-linux.AppImage'
     ]
-    expect(findInstallerAssetName('win32', assets)).toBe('orca-windows-setup.exe')
-    expect(findInstallerAssetName('darwin', assets)).toBe('orca-macos-arm64.dmg')
-    expect(findInstallerAssetName('linux', assets)).toBe('orca-linux.AppImage')
+    expect(findInstallerAssetName('win32', assets)).toBe('kingu-windows-setup.exe')
+    expect(findInstallerAssetName('darwin', assets)).toBe('kingu-macos-arm64.dmg')
+    expect(findInstallerAssetName('linux', assets)).toBe('kingu-linux.AppImage')
     expect(findInstallerAssetName('win32', ['latest.yml'])).toBeNull()
     expect(findInstallerAssetName('freebsd', assets)).toBeNull()
   })
@@ -264,7 +266,7 @@ describe('release channel', () => {
       channel: 'hourly',
       name: null,
       publishedAt: null,
-      releaseUrl: `https://github.com/stablyai/orca-hourly/releases/tag/v${version}`,
+      releaseUrl: `https://github.com/anthovai/kingu-intelligence-hourly/releases/tag/v${version}`,
       installerUrl: null
     })
     const sorted = sortReleaseBuildsNewestFirst([
@@ -310,7 +312,7 @@ describe('release channel', () => {
       channel: 'adhoc',
       name: null,
       publishedAt: null,
-      releaseUrl: `https://github.com/stablyai/orca-adhoc/releases/tag/v${version}`,
+      releaseUrl: `https://github.com/anthovai/kingu-intelligence-adhoc/releases/tag/v${version}`,
       installerUrl: null
     })
     const sorted = sortReleaseBuildsNewestFirst([

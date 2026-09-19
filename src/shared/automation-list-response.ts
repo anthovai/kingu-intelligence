@@ -29,8 +29,8 @@ export type AutomationListResponseValidation =
   | { ok: false; error: AutomationListResponseFailure }
 
 const UNSUPPORTED_HOST_SCOPE_MESSAGE =
-  'This host does not support per-host automation lists. Update the Orca server to filter by host.'
-const INVALID_RESPONSE_MESSAGE = 'This host returned an automation list Orca could not read.'
+  'This host does not support per-host automation lists. Update the Kingu server to filter by host.'
+const INVALID_RESPONSE_MESSAGE = 'This host returned an automation list Kingu could not read.'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null

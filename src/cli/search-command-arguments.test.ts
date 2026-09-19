@@ -33,7 +33,7 @@ function request(argv: string[]) {
   return command.request
 }
 
-describe('orca search argument parsing', () => {
+describe('kingu search argument parsing', () => {
   it('takes the query positionally', () => {
     expect(parseCli(['search', 'resize race']).commandPath).toEqual(['search'])
     expect(request(['search', 'resize race'])).toEqual({ query: 'resize race' })
@@ -70,9 +70,9 @@ describe('orca search argument parsing', () => {
         '--agent',
         'codex',
         '--path',
-        '/Users/me/orca',
+        '/Users/me/kingu',
         '--path',
-        'C:\\src\\orca',
+        'C:\\src\\kingu',
         '--since',
         '2026-08-01T00:00:00Z',
         '--sort',
@@ -87,7 +87,7 @@ describe('orca search argument parsing', () => {
       cursor: 'eyJ2IjoxfQ',
       filters: {
         agents: ['claude', 'codex'],
-        scopePaths: ['/Users/me/orca', 'C:\\src\\orca'],
+        scopePaths: ['/Users/me/kingu', 'C:\\src\\kingu'],
         since: '2026-08-01T00:00:00Z',
         sort: 'newest'
       },
@@ -174,7 +174,7 @@ describe('orca search argument parsing', () => {
   })
 })
 
-describe('orca search --index-status', () => {
+describe('kingu search --index-status', () => {
   it('asks for the index report', () => {
     expect(parseSearch(['search', '--index-status'])).toEqual({ kind: 'index-status' })
   })

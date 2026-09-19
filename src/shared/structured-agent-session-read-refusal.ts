@@ -3,11 +3,11 @@
  *
  * `agentSession.history` and `agentSession.subscribe` both resolve the session through the host's
  * `requireSession`, which raises this code when the host holds no session object by that id. That
- * is never a transcript Orca could not read — it is a session this host has not attached YET (the
+ * is never a transcript Kingu could not read — it is a session this host has not attached YET (the
  * surface's hold is what attaches one) or one it has just closed. Both windows end on their own:
  * the first when the hold lands, the second when the chat tab retires.
  *
- * The genuinely latched lease — "Orca cannot prove the previous owner exited" — reaches the client
+ * The genuinely latched lease — "Kingu cannot prove the previous owner exited" — reaches the client
  * through the ACQUISITION path instead, so narrowing on the code costs a read no real diagnosis.
  * See `agent-session-lease-adjudication`.
  */

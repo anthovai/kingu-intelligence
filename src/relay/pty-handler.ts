@@ -61,8 +61,8 @@ import { terminatePtyJob } from '../main/windows/windows-pty-job'
 import { stripInheritedBuildModeEnv } from '../main/pty/build-mode-env'
 import { stripLegacyTerminalShimEnv } from '../main/pty/legacy-terminal-shim-dir'
 import { dropIncoherentCondaActivationEnv } from '../main/pty/conda-activation-env'
-import { dropInheritedOrcaFishHistory } from '../main/fish-history-session'
-import { dropInheritedOrcaHistFile } from '../main/worktree-history-file-path'
+import { dropInheritedKinguFishHistory } from '../main/fish-history-session'
+import { dropInheritedKinguHistFile } from '../main/worktree-history-file-path'
 import {
   PTY_STARTUP_INGRESS_VERSION,
   PtyStartupIngress,
@@ -113,7 +113,7 @@ import {
   injectRelayFishHistoryEnv,
   injectRelayHistoryEnv
 } from './terminal-history'
-import { isFlattenedNodePtyLoaderMessage } from '../main/orcad/node-pty-loader-diagnosis'
+import { isFlattenedNodePtyLoaderMessage } from '../main/kingud/node-pty-loader-diagnosis'
 import { collectNodePtyUnavailableDiagnosis } from './node-pty-binding-survey'
 import {
   formatNodePtyUnavailableMessage,
@@ -147,7 +147,7 @@ function requireRelaySpawnCwd(
 ): string {
   const resolution: RelaySpawnCwdResolution = resolveRelaySpawnCwd({
     requestedCwd: params.cwd,
-    worktreeId: typeof params.worktreeId === 'string' ? params.worktreeId : env?.ORCA_WORKTREE_ID,
+    worktreeId: typeof params.worktreeId === 'string' ? params.worktreeId : env?.KINGU_WORKTREE_ID,
     env,
     launchAgent: isTuiAgent(params.launchAgent) ? params.launchAgent : undefined,
     // A WSL shell executes in a guest, so the relay's own statSync is not the right question.
@@ -213,7 +213,7 @@ type ManagedPty = {
   disposed?: boolean
   /** True once external cleanup observers have been notified. */
   exitListenerNotified?: boolean
-  /** Renderer-supplied paneKey (ORCA_PANE_KEY); captured so exit observers can evict per-pane cache state. */
+  /** Renderer-supplied paneKey (KINGU_PANE_KEY); captured so exit observers can evict per-pane cache state. */
   paneKey?: string
   tabId?: string
   /** Attach-only identity metadata (RPC). Separate from paneKey/tabId, which also drive shell env/revive hooks. */
@@ -417,7 +417,7 @@ type PtyProcessSummary = {
   /** Age on the HOST's clock. Published instead of a creation timestamp so a client with a skewed
    *  clock cannot compute a negative or enormous age and act on it. */
   hostAgeMs?: number
-  /** True when this PTY was spawned for an Orca pane (`ORCA_PANE_KEY`). False means a bare relay
+  /** True when this PTY was spawned for an Kingu pane (`KINGU_PANE_KEY`). False means a bare relay
    *  shell. Absent from a host that predates the field — which is neither. */
   paneBound?: boolean
   /** See {@link ManagedPty.ownerClientInstanceId}. Omitted when this host cannot attest one. */
@@ -767,7 +767,7 @@ export class PtyHandler {
   }
 
   /** Register an env augmenter merged into every spawn env *after* process.env and renderer env.
-   *  Used by the relay-hook server to inject ORCA_AGENT_HOOK_* coords: evaluated per spawn (not captured once), so a late or restarted hook-server bind still reaches the next PTY. */
+   *  Used by the relay-hook server to inject KINGU_AGENT_HOOK_* coords: evaluated per spawn (not captured once), so a late or restarted hook-server bind still reaches the next PTY. */
   addEnvAugmenter(augmenter: PtyEnvAugmenter): () => void {
     this.envAugmenters.push(augmenter)
     return () => {
@@ -795,9 +795,9 @@ export class PtyHandler {
         ...stripInheritedBuildModeEnv(process.env),
         TERM: 'xterm-256color',
         COLORTERM: 'truecolor',
-        TERM_PROGRAM: 'Orca',
+        TERM_PROGRAM: 'Kingu',
         TERM_PROGRAM_VERSION:
-          rendererEnv?.ORCA_APP_VERSION || process.env.ORCA_APP_VERSION || '0.0.0-dev',
+          rendererEnv?.KINGU_APP_VERSION || process.env.KINGU_APP_VERSION || '0.0.0-dev',
         FORCE_HYPERLINK: '1'
       },
       rendererEnv
@@ -816,22 +816,22 @@ export class PtyHandler {
     // Why: an older client may not ask a newly upgraded relay to delete inherited shim state.
     stripLegacyTerminalShimEnv(result, process.platform)
     // Why unconditionally here, not in injectRelayFishHistoryEnv: that runs only for a
-    // fish pane with isolation on, yet an Orca-minted `fish_history` (fish EXPORTS it,
-    // so the relay inherits one when launched from an Orca fish pane) must never scope
+    // fish pane with isolation on, yet an Kingu-minted `fish_history` (fish EXPORTS it,
+    // so the relay inherits one when launched from an Kingu fish pane) must never scope
     // any pane to someone else's worktree. Matches the desktop, which drops it on both
     // branches (STA-4682).
-    dropInheritedOrcaFishHistory(result)
+    dropInheritedKinguFishHistory(result)
     // Why here as well as in injectRelayHistoryEnv: that runs only with isolation
-    // on, yet an inherited Orca HISTFILE must not scope a pane to someone else's
+    // on, yet an inherited Kingu HISTFILE must not scope a pane to someone else's
     // worktree on the disabled and revive paths either.
-    dropInheritedOrcaHistFile(result)
-    // Why unconditionally: ORCA_HISTFILE is Orca-owned and minted below by
+    dropInheritedKinguHistFile(result)
+    // Why unconditionally: KINGU_HISTFILE is Kingu-owned and minted below by
     // injectRelayHistoryEnv, which also runs only with isolation on. An
-    // inherited one (the relay can be launched from an Orca pane) would
+    // inherited one (the relay can be launched from an Kingu pane) would
     // otherwise reach the wrapper on the disabled and revive paths, scoping the
     // pane to another worktree's history file — and wrapping a zsh pane that
     // nothing asked to wrap, since `history` is selected on its presence.
-    delete result.ORCA_HISTFILE
+    delete result.KINGU_HISTFILE
     // Why: match local/daemon precedence so defaults/augmenters can't resurrect explicitly-removed values.
     for (const key of envToDelete) {
       delete result[key]
@@ -1727,7 +1727,7 @@ export class PtyHandler {
   ): Promise<RelayAgentSessionCreateResult> {
     const env = params.env as Record<string, string> | undefined
     const worktreeId =
-      typeof params.worktreeId === 'string' ? params.worktreeId : env?.ORCA_WORKTREE_ID
+      typeof params.worktreeId === 'string' ? params.worktreeId : env?.KINGU_WORKTREE_ID
     // Must be the filesystem split, matching requireRelaySpawnCwd: a `::workspace:<uuid>` id would
     // otherwise fence a directory the spawn never enters.
     const worktreePath = worktreeId
@@ -1861,10 +1861,10 @@ export class PtyHandler {
     } while (this.ptys.has(id) || this.pendingReviveIds.has(id))
 
     // Why: augmenter values override renderer env so remote paths and hook coords win over local userData.
-    const paneKey = typeof env?.ORCA_PANE_KEY === 'string' ? env.ORCA_PANE_KEY : undefined
+    const paneKey = typeof env?.KINGU_PANE_KEY === 'string' ? env.KINGU_PANE_KEY : undefined
     // Why: kept so a restarted runtime can re-adopt this PTY under its original handle (survives revive).
     const terminalHandle =
-      typeof env?.ORCA_TERMINAL_HANDLE === 'string' ? env.ORCA_TERMINAL_HANDLE : undefined
+      typeof env?.KINGU_TERMINAL_HANDLE === 'string' ? env.KINGU_TERMINAL_HANDLE : undefined
     const command = typeof params.command === 'string' ? params.command : undefined
     const launchAgent = isTuiAgent(params.launchAgent) ? params.launchAgent : undefined
     const terminalWindowsWslDistro =
@@ -1877,7 +1877,7 @@ export class PtyHandler {
       envToDelete
     )
     const worktreeId =
-      typeof params.worktreeId === 'string' ? params.worktreeId : env?.ORCA_WORKTREE_ID
+      typeof params.worktreeId === 'string' ? params.worktreeId : env?.KINGU_WORKTREE_ID
     const historyIsolationEnabled = params.historyIsolationEnabled === true
     // Deliberately not reached by wsl.exe: a guest fish writes its history file
     // inside the distro, where relay deletion cannot reach it (STA-4682).
@@ -1957,7 +1957,7 @@ export class PtyHandler {
     onPhysicalSpawnCommitted?.()
 
     // Why: capture paneKey so the exit listener can evict per-pane caches without a separate ptyId→paneKey map.
-    const tabId = typeof env?.ORCA_TAB_ID === 'string' ? env.ORCA_TAB_ID : undefined
+    const tabId = typeof env?.KINGU_TAB_ID === 'string' ? env.KINGU_TAB_ID : undefined
     const attachIdentity = {
       paneKey: typeof params.paneKey === 'string' ? params.paneKey : paneKey,
       tabId: typeof params.tabId === 'string' ? params.tabId : tabId
@@ -2968,19 +2968,19 @@ export class PtyHandler {
     if (!ptyMod) {
       return
     }
-    // Why: pane identity comes from the serialized entry (not env) since hook scripts exit without ORCA_PANE_KEY.
+    // Why: pane identity comes from the serialized entry (not env) since hook scripts exit without KINGU_PANE_KEY.
     const revivedEnv: Record<string, string> = {}
     if (entry.paneKey) {
-      revivedEnv.ORCA_PANE_KEY = entry.paneKey
+      revivedEnv.KINGU_PANE_KEY = entry.paneKey
     }
     if (entry.tabId) {
-      revivedEnv.ORCA_TAB_ID = entry.tabId
+      revivedEnv.KINGU_TAB_ID = entry.tabId
     }
     if (entry.worktreeId) {
-      revivedEnv.ORCA_WORKTREE_ID = entry.worktreeId
+      revivedEnv.KINGU_WORKTREE_ID = entry.worktreeId
     }
     if (entry.terminalHandle) {
-      revivedEnv.ORCA_TERMINAL_HANDLE = entry.terminalHandle
+      revivedEnv.KINGU_TERMINAL_HANDLE = entry.terminalHandle
     }
     const explicitTerm =
       typeof entry.explicitTerm === 'string' && entry.explicitTerm.length > 0

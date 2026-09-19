@@ -1,14 +1,17 @@
 import { isUsableSkillsCliAgentKey } from './skills-cli-agent-keys'
 
-export const ORCA_SKILLS_REPOSITORY_URL = 'https://github.com/stablyai/orca'
+export const KINGU_SKILLS_REPOSITORY_URL = 'https://github.com/anthovai/kingu-intelligence'
 
-export const ORCA_CLI_SKILL_NAME = 'orca-cli'
+export const KINGU_CLI_SKILL_NAME = 'kingu-cli'
 export const COMPUTER_USE_SKILL_NAME = 'computer-use'
 export const ORCHESTRATION_SKILL_NAME = 'orchestration'
-export const EPHEMERAL_VMS_SKILL_NAME = 'orca-per-workspace-env'
-export const ORCA_LINEAR_SKILL_NAME = 'orca-linear'
+export const EPHEMERAL_VMS_SKILL_NAME = 'kingu-per-workspace-env'
+export const KINGU_LINEAR_SKILL_NAME = 'kingu-linear'
 export const LINEAR_TICKETS_SKILL_NAME = 'linear-tickets'
-export const LINEAR_AGENT_SKILL_NAMES = [ORCA_LINEAR_SKILL_NAME, LINEAR_TICKETS_SKILL_NAME] as const
+export const LINEAR_AGENT_SKILL_NAMES = [
+  KINGU_LINEAR_SKILL_NAME,
+  LINEAR_TICKETS_SKILL_NAME
+] as const
 
 // Why: `yes` and `agents` default off so every Settings/onboarding string a human
 // pastes keeps its interactive prompts and the CLI's own agent detection. Only an
@@ -44,7 +47,7 @@ export function buildAgentFeatureSkillInstallArgs(
   return [
     'skills',
     'add',
-    ORCA_SKILLS_REPOSITORY_URL,
+    KINGU_SKILLS_REPOSITORY_URL,
     ...skillArgs,
     ...(global ? ['--global'] : []),
     // Why: an explicit --agent stops `skills add` calling its own detection, whose
@@ -90,12 +93,12 @@ export function buildAgentFeatureSkillUpdateCommand(
   return `npx ${buildAgentFeatureSkillUpdateArgs(skillNames, options).join(' ')}`
 }
 
-export const ORCA_CLI_SKILL_INSTALL_COMMAND = buildAgentFeatureSkillInstallCommand([
-  ORCA_CLI_SKILL_NAME
+export const KINGU_CLI_SKILL_INSTALL_COMMAND = buildAgentFeatureSkillInstallCommand([
+  KINGU_CLI_SKILL_NAME
 ])
 
-export const ORCA_CLI_SKILL_UPDATE_COMMAND =
-  buildAgentFeatureSkillUpdateCommand(ORCA_CLI_SKILL_NAME)
+export const KINGU_CLI_SKILL_UPDATE_COMMAND =
+  buildAgentFeatureSkillUpdateCommand(KINGU_CLI_SKILL_NAME)
 
 export const COMPUTER_USE_SKILL_INSTALL_COMMAND = buildAgentFeatureSkillInstallCommand([
   COMPUTER_USE_SKILL_NAME
@@ -118,17 +121,17 @@ export const EPHEMERAL_VMS_SKILL_INSTALL_COMMAND = buildAgentFeatureSkillInstall
 export const EPHEMERAL_VMS_SKILL_UPDATE_COMMAND =
   buildAgentFeatureSkillUpdateCommand(EPHEMERAL_VMS_SKILL_NAME)
 
-export const ORCA_CLI_ORCHESTRATION_SKILL_INSTALL_COMMAND = buildAgentFeatureSkillInstallCommand([
-  ORCA_CLI_SKILL_NAME,
+export const KINGU_CLI_ORCHESTRATION_SKILL_INSTALL_COMMAND = buildAgentFeatureSkillInstallCommand([
+  KINGU_CLI_SKILL_NAME,
   ORCHESTRATION_SKILL_NAME
 ])
 
-export const ORCA_LINEAR_SKILL_INSTALL_COMMAND = buildAgentFeatureSkillInstallCommand([
-  ORCA_LINEAR_SKILL_NAME
+export const KINGU_LINEAR_SKILL_INSTALL_COMMAND = buildAgentFeatureSkillInstallCommand([
+  KINGU_LINEAR_SKILL_NAME
 ])
 
-export const ORCA_LINEAR_SKILL_UPDATE_COMMAND =
-  buildAgentFeatureSkillUpdateCommand(ORCA_LINEAR_SKILL_NAME)
+export const KINGU_LINEAR_SKILL_UPDATE_COMMAND =
+  buildAgentFeatureSkillUpdateCommand(KINGU_LINEAR_SKILL_NAME)
 
 export const LINEAR_TICKETS_SKILL_UPDATE_COMMAND =
   buildAgentFeatureSkillUpdateCommand(LINEAR_TICKETS_SKILL_NAME)

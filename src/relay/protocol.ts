@@ -25,7 +25,7 @@ export {
 export type { DecodedFrame, FrameDecoderOptions } from './relay-frame-decoder'
 
 export const RELAY_VERSION = '0.1.0'
-export const RELAY_SENTINEL = `ORCA-RELAY v${RELAY_VERSION} READY\n`
+export const RELAY_SENTINEL = `KINGU-RELAY v${RELAY_VERSION} READY\n`
 
 export const MessageType = {
   Regular: 1,
@@ -38,12 +38,12 @@ export const MessageType = {
 // to refuse mismatched-version --connect bridges that would otherwise drive a
 // stale daemon.
 export type HandshakeMessage =
-  | { type: 'orca-relay-handshake'; version: string; endpointCredential?: string }
-  | { type: 'orca-relay-handshake-ok'; version: string }
-  | { type: 'orca-relay-handshake-mismatch'; expected: string; got: string }
+  | { type: 'kingu-relay-handshake'; version: string; endpointCredential?: string }
+  | { type: 'kingu-relay-handshake-ok'; version: string }
+  | { type: 'kingu-relay-handshake-mismatch'; expected: string; got: string }
   // Why a distinct reply: the bridge exits with its own code so the client can tell a refused
   // credential from a crashed relay. Old bridges reject the unknown type and exit 1 pre-sentinel.
-  | { type: 'orca-relay-handshake-credential-mismatch' }
+  | { type: 'kingu-relay-handshake-credential-mismatch' }
 
 export function encodeHandshakeFrame(msg: HandshakeMessage): Buffer {
   const payload = Buffer.from(JSON.stringify(msg), 'utf-8')
@@ -54,10 +54,10 @@ export function encodeHandshakeFrame(msg: HandshakeMessage): Buffer {
 // both sides interpolate its version fields into log lines. `JSON.parse` can produce values a
 // template literal throws on, so anything that reaches a reader must already be a string.
 const HANDSHAKE_STRING_FIELDS: Readonly<Record<HandshakeMessage['type'], readonly string[]>> = {
-  'orca-relay-handshake': ['version'],
-  'orca-relay-handshake-ok': ['version'],
-  'orca-relay-handshake-mismatch': ['expected', 'got'],
-  'orca-relay-handshake-credential-mismatch': []
+  'kingu-relay-handshake': ['version'],
+  'kingu-relay-handshake-ok': ['version'],
+  'kingu-relay-handshake-mismatch': ['expected', 'got'],
+  'kingu-relay-handshake-credential-mismatch': []
 }
 
 // Optional fields are peer-supplied too, so the parser only proves the type of what it returns if
@@ -68,10 +68,10 @@ const HANDSHAKE_STRING_FIELDS: Readonly<Record<HandshakeMessage['type'], readonl
 const HANDSHAKE_OPTIONAL_STRING_FIELDS: Readonly<
   Record<HandshakeMessage['type'], readonly string[]>
 > = {
-  'orca-relay-handshake': ['endpointCredential'],
-  'orca-relay-handshake-ok': [],
-  'orca-relay-handshake-mismatch': [],
-  'orca-relay-handshake-credential-mismatch': []
+  'kingu-relay-handshake': ['endpointCredential'],
+  'kingu-relay-handshake-ok': [],
+  'kingu-relay-handshake-mismatch': [],
+  'kingu-relay-handshake-credential-mismatch': []
 }
 
 export function parseHandshakeMessage(payload: Buffer): HandshakeMessage {
@@ -145,7 +145,7 @@ export const GIT_RESPONSE_CHUNK_SIZE = 128 * 1024
  * follows as git.responseChunk frames on the bulk lane. Old relays never emit
  * this, so a new client falls back to the plain result they return. */
 export type GitResponseStreamMarker = {
-  __orcaGitResponseStream: { streamId: number; totalBytes: number; chunkCount: number }
+  __kinguGitResponseStream: { streamId: number; totalBytes: number; chunkCount: number }
 }
 
 export const RelayErrorCode = {

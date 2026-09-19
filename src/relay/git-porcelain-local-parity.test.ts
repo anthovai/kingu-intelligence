@@ -110,7 +110,7 @@ function createRelay(): { dispatcher: MockDispatcher; handler: GitHandler } {
 
 describe('relay/desktop worktree-list porcelain parity', () => {
   it('answers the -z lane with exactly what the desktop parser produces, including isSparse', async () => {
-    const mainPath = await createWorktreeFixture('orca-parity-wt-')
+    const mainPath = await createWorktreeFixture('kingu-parity-wt-')
     const porcelain = toNulPorcelain(buildWorktreePorcelainBlocks(mainPath))
 
     const relayWorktrees = await listWorktreesOverRelay(mainPath, async () => ({
@@ -123,7 +123,7 @@ describe('relay/desktop worktree-list porcelain parity', () => {
   })
 
   it('answers the Git <2.36 fallback lane identically', async () => {
-    const mainPath = await createWorktreeFixture('orca-parity-wt-fallback-')
+    const mainPath = await createWorktreeFixture('kingu-parity-wt-fallback-')
     const porcelain = toLinePorcelain(buildWorktreePorcelainBlocks(mainPath))
 
     const relayWorktrees = await listWorktreesOverRelay(mainPath, async (args) => {
@@ -138,7 +138,7 @@ describe('relay/desktop worktree-list porcelain parity', () => {
   })
 
   it('leaves isSparse absent on a Git 2.25 host that never emits the sparse line', async () => {
-    const mainPath = await createTempDir('orca-parity-wt-baseline-')
+    const mainPath = await createTempDir('kingu-parity-wt-baseline-')
     const porcelain = toNulPorcelain([
       [`worktree ${mainPath}`, 'HEAD abc123', 'branch refs/heads/main']
     ])
@@ -155,7 +155,7 @@ describe('relay/desktop worktree-list porcelain parity', () => {
 
 describe('relay/desktop unmerged-entry porcelain parity', () => {
   it('resolves C-quoted conflict paths and the working-tree probe the same way', async () => {
-    const worktreePath = await createTempDir('orca-parity-conflict-')
+    const worktreePath = await createTempDir('kingu-parity-conflict-')
     await writeFile(path.join(worktreePath, 'present é.ts'), 'conflict\n')
     const unmergedLines = [
       'u UU N... 100644 100644 100644 100644 aa bb cc plain.ts',
@@ -219,7 +219,7 @@ describe('relay/desktop unmerged-entry porcelain parity', () => {
   })
 
   it('drops submodule conflicts on both paths', async () => {
-    const worktreePath = await createTempDir('orca-parity-conflict-submodule-')
+    const worktreePath = await createTempDir('kingu-parity-conflict-submodule-')
     const line = 'u UU S... 160000 160000 160000 160000 aa bb cc vendor/submodule'
     const git = vi.fn<GitExec>(async (args) => {
       if (args.includes('status')) {

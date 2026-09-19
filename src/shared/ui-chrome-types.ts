@@ -38,7 +38,7 @@ export type WorktreeCardProperty =
   | 'jira-issue'
   | 'pr'
   | 'automation'
-  // Badge marking workspaces created through `orca worktree create`.
+  // Badge marking workspaces created through `kingu worktree create`.
   | 'cli'
   | 'comment'
   | 'ports'
@@ -72,7 +72,7 @@ export type TaskResumeState = {
   githubItemsPreset?: TaskViewPresetId | null
   githubItemsQuery?: string
   githubProjectHiddenFieldIdsByView?: Record<string, string[]>
-  linearMode?: 'issues' | 'projects' | 'views' | 'in-orca'
+  linearMode?: 'issues' | 'projects' | 'views' | 'in-kingu'
   linearPreset?: 'assigned' | 'created' | 'all' | 'completed'
   linearQuery?: string
   linearContext?: {
@@ -120,3 +120,4 @@ export type TopLevelView =
   | 'skills'
   | 'artifacts'
   | 'mobile'
+  | 'ide'

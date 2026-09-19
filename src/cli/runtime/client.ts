@@ -9,7 +9,7 @@ import {
   orchestrationMigrationData
 } from '../../shared/orchestration-rpc-contract'
 import type { PairingOffer } from '../../shared/pairing'
-import { launchOrcaApp } from './launch'
+import { launchKinguApp } from './launch'
 import { getDefaultUserDataPath, readMetadata } from './metadata'
 import { getCliStatus, projectRemoteAppStatus } from './status'
 import { sendRequest } from './transport'
@@ -63,8 +63,8 @@ export class RuntimeClient {
   constructor(
     userDataPath = getDefaultUserDataPath(),
     requestTimeoutMs = 60_000,
-    remotePairingCode = process.env.ORCA_PAIRING_CODE ?? process.env.ORCA_REMOTE_PAIRING ?? null,
-    environmentSelector = process.env.ORCA_ENVIRONMENT ?? null,
+    remotePairingCode = process.env.KINGU_PAIRING_CODE ?? process.env.KINGU_REMOTE_PAIRING ?? null,
+    environmentSelector = process.env.KINGU_ENVIRONMENT ?? null,
     cliExecutable = resolveOrchestrationCliExecutable(),
     originalArgs?: readonly string[]
   ) {
@@ -258,13 +258,13 @@ export class RuntimeClient {
     if (!response.result.capabilities?.includes(ORCHESTRATION_CONTRACT_RUNTIME_CAPABILITY)) {
       throw new RuntimeClientError(
         'orchestration_migration_required',
-        'The connected Orca runtime does not support the current orchestration contract. No effects were applied.',
+        'The connected Kingu runtime does not support the current orchestration contract. No effects were applied.',
         orchestrationMigrationData('runtime_capability_missing')
       )
     }
   }
 
-  async openOrca(timeoutMs = 15_000): Promise<RuntimeRpcSuccess<CliStatusResult>> {
+  async openKingu(timeoutMs = 15_000): Promise<RuntimeRpcSuccess<CliStatusResult>> {
     const initial = await this.getCliStatus()
     if (this.remotePairing) {
       return initial
@@ -275,7 +275,7 @@ export class RuntimeClient {
     if (initial.result.app.desktopWindowStatus === 'blocked') {
       throwDesktopActivationBlocked()
     }
-    launchOrcaApp()
+    launchKinguApp()
     if (initial.result.app.desktopWindowStatus === 'available') {
       return initial
     }
@@ -294,7 +294,7 @@ export class RuntimeClient {
 
     throw new RuntimeClientError(
       'runtime_open_timeout',
-      'Timed out waiting for an Orca desktop window. The runtime may still be running headlessly.'
+      'Timed out waiting for an Kingu desktop window. The runtime may still be running headlessly.'
     )
   }
 }
@@ -302,7 +302,7 @@ export class RuntimeClient {
 function throwDesktopActivationBlocked(): never {
   throw new RuntimeClientError(
     'desktop_activation_blocked',
-    'Orca is running headlessly, but it cannot open a desktop window safely because the persistent terminal provider is unavailable. Quit Orca normally and start the app again; do not use open -n.'
+    'Kingu is running headlessly, but it cannot open a desktop window safely because the persistent terminal provider is unavailable. Quit Kingu normally and start the app again; do not use open -n.'
   )
 }
 

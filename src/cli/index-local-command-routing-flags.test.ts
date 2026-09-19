@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 const {
   callMock,
   runtimeClientConstructorMock,
-  serveOrcaAppMock,
+  serveKinguAppMock,
   getDefaultUserDataPathMock,
   addEnvironmentFromPairingCodeMock,
   listEnvironmentsMock,
@@ -13,8 +13,8 @@ const {
 } = vi.hoisted(() => ({
   callMock: vi.fn(),
   runtimeClientConstructorMock: vi.fn(),
-  serveOrcaAppMock: vi.fn(),
-  getDefaultUserDataPathMock: vi.fn(() => '/tmp/orca-user-data'),
+  serveKinguAppMock: vi.fn(),
+  getDefaultUserDataPathMock: vi.fn(() => '/tmp/kingu-user-data'),
   addEnvironmentFromPairingCodeMock: vi.fn(),
   listEnvironmentsMock: vi.fn(),
   removeEnvironmentMock: vi.fn(),
@@ -27,7 +27,7 @@ vi.mock('./runtime-client', async () => {
   return createRuntimeClientModuleMock({
     callMock,
     runtimeClientConstructorMock,
-    serveOrcaAppMock,
+    serveKinguAppMock,
     getDefaultUserDataPathMock
   })
 })
@@ -61,7 +61,7 @@ function queueSshTargetLookups(count: number): void {
 describe('runtime-selector flags on locally pinned CLI commands', () => {
   useWorktreeAwarenessEnvironment({
     callMock,
-    serveOrcaAppMock,
+    serveKinguAppMock,
     getDefaultUserDataPathMock,
     addEnvironmentFromPairingCodeMock,
     listEnvironmentsMock,
@@ -101,7 +101,7 @@ describe('runtime-selector flags on locally pinned CLI commands', () => {
     const printed = JSON.parse(String(logSpy.mock.calls[0]?.[0]))
     expect(printed.ok).toBe(false)
     expect(printed.error.code).toBe('invalid_argument')
-    expect(printed.error.message).toContain('`--environment` does not retarget `orca host list`')
+    expect(printed.error.message).toContain('`--environment` does not retarget `kingu host list`')
     expect(process.exitCode).toBe(1)
     expect(callMock).not.toHaveBeenCalled()
     expect(runtimeClientConstructorMock).not.toHaveBeenCalledWith(null, 'm4air')
@@ -118,7 +118,7 @@ describe('runtime-selector flags on locally pinned CLI commands', () => {
     expect(printed.ok).toBe(false)
     expect(printed.error.code).toBe('invalid_argument')
     expect(printed.error.message).toContain(
-      '`--environment` does not retarget `orca environment list`'
+      '`--environment` does not retarget `kingu environment list`'
     )
     process.exitCode = 0
   })
@@ -127,9 +127,9 @@ describe('runtime-selector flags on locally pinned CLI commands', () => {
     pairRuntimeEnvironment(listEnvironmentsMock, 'env-m4air', 'm4air')
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 
-    await main(['host', 'list', '--pairing-code', 'orca://pair?code=x', '--json'], '/tmp/repo')
+    await main(['host', 'list', '--pairing-code', 'kingu://pair?code=x', '--json'], '/tmp/repo')
     await main(
-      ['environment', 'list', '--pairing-code', 'orca://pair?code=x', '--json'],
+      ['environment', 'list', '--pairing-code', 'kingu://pair?code=x', '--json'],
       '/tmp/repo'
     )
 
@@ -142,10 +142,10 @@ describe('runtime-selector flags on locally pinned CLI commands', () => {
     process.exitCode = 0
   })
 
-  it('keeps `host list` local when ORCA_ENVIRONMENT is set ambiently', async () => {
+  it('keeps `host list` local when KINGU_ENVIRONMENT is set ambiently', async () => {
     // Why: the ambient variable produced the same two-machine listing as the explicit flag, with
     // no flag to reject. Pinning the family is what makes `runtimeId: local` true in both cases.
-    process.env.ORCA_ENVIRONMENT = 'm4air'
+    process.env.KINGU_ENVIRONMENT = 'm4air'
     pairRuntimeEnvironment(listEnvironmentsMock, 'env-m4air', 'm4air')
     queueSshTargetLookups(1)
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})

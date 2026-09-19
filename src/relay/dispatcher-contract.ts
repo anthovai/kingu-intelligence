@@ -58,7 +58,7 @@ export type RelayClient = {
   // and kept its owner lease and paused PTYs indefinitely.
   lastReceivedAt: number | null
   // Why silence is only held against a client that sends keepalives: not every client speaks that
-  // protocol. The remote `orca` CLI opens the socket, sends one `orca.cli` request and then waits
+  // protocol. The remote `kingu` CLI opens the socket, sends one `kingu.cli` request and then waits
   // for a result that is deliberately budgeted in minutes (src/relay/remote-cli-timeout.ts), so
   // judging it on inbound silence would kill `terminal wait`, `--wait` and `orchestration ask`
   // after 20s. Only a client that has proven it participates is eligible.

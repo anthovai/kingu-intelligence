@@ -1,7 +1,7 @@
 import type { GlobalSettings } from './global-settings-types'
 import type { NotificationSettings } from './notification-settings-types'
 import type { OnboardingChecklistState, OnboardingState } from './onboarding-state-types'
-import type { RepoHookSettings } from './orca-yaml-hook-types'
+import type { RepoHookSettings } from './kingu-yaml-hook-types'
 import type { PersistedState } from './persisted-state-types'
 import type { PersistedUIState } from './persisted-ui-state-types'
 import type { AgentActivityDisplayMode } from './ui-chrome-types'
@@ -44,9 +44,9 @@ export function normalizeAgentActivityDisplayMode(value: unknown): AgentActivity
 export const ONBOARDING_FINAL_STEP = 5
 export const ONBOARDING_FLOW_VERSION = 4
 
-export const ORCA_BROWSER_PARTITION = 'persist:orca-browser'
+export const KINGU_BROWSER_PARTITION = 'persist:kingu-browser'
 // Why: inert blank-tab URL shared by main/renderer so the attach policy can allow just this one data URL and reject others.
-export const ORCA_BROWSER_BLANK_URL = 'data:text/html,'
+export const KINGU_BROWSER_BLANK_URL = 'data:text/html,'
 
 // Why: Electron's invoke error path preserves only message text, so signal reconnect via this stable token.
 export const SSH_TERMINATE_RECONNECT_REQUIRED = 'SSH_TERMINATE_RECONNECT_REQUIRED'
@@ -158,7 +158,7 @@ export function getDefaultOnboardingState(): OnboardingState {
 export function getDefaultWorkspaceDir(homeDir: string): string {
   const separator = homeDir.includes('\\') ? '\\' : '/'
   const trimmedHomeDir = homeDir.replace(/[\\/]+$/, '')
-  return [trimmedHomeDir, 'orca', 'workspaces'].join(separator)
+  return [trimmedHomeDir, 'kingu', 'workspaces'].join(separator)
 }
 
 export function getDefaultSettings(homedir: string): GlobalSettings {
@@ -298,7 +298,7 @@ export function getDefaultUIState(): PersistedUIState {
     dismissedUpdateVersion: null,
     dismissedUnexpectedSignoutVersion: null,
     lastUpdateCheckAt: null,
-    trustedOrcaHooks: {},
+    trustedKinguHooks: {},
     setupScriptPromptDismissedRepoIds: [],
     acknowledgedAgentsByPaneKey: {},
     activityClearedAtByPaneKey: {},

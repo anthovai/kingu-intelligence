@@ -2,35 +2,35 @@ export type SetupRunPolicy = 'ask' | 'run-by-default' | 'skip-by-default'
 export type SetupAgentStartupPolicy = 'start-immediately' | 'wait-for-setup'
 export type HookCommandSourcePolicy = 'shared-only' | 'local-only' | 'run-both'
 
-// ─── Hooks (orca.yaml) ──────────────────────────────────────────────
-export type OrcaHooks = {
+// ─── Hooks (kingu.yaml) ──────────────────────────────────────────────
+export type KinguHooks = {
   scripts: {
     setup?: string // Runs after worktree is created
     archive?: string // Runs before worktree is archived
   }
   setupAgentStartupPolicy?: SetupAgentStartupPolicy
   issueCommand?: string // Shared default command for linked GitHub issues
-  defaultTabs?: OrcaDefaultTabTemplate[] // Terminal tabs to create once for a new worktree
-  environmentRecipes?: OrcaVmRecipe[] // Project-scoped per-workspace environment recipes
-  environmentRecipeDiagnostics?: OrcaVmRecipeDiagnostic[] // Non-fatal validation issues from environmentRecipes
-  worktree?: OrcaWorktreeDefaults // Project-scoped defaults applied when a worktree is created
+  defaultTabs?: KinguDefaultTabTemplate[] // Terminal tabs to create once for a new worktree
+  environmentRecipes?: KinguVmRecipe[] // Project-scoped per-workspace environment recipes
+  environmentRecipeDiagnostics?: KinguVmRecipeDiagnostic[] // Non-fatal validation issues from environmentRecipes
+  worktree?: KinguWorktreeDefaults // Project-scoped defaults applied when a worktree is created
 }
 
-export type OrcaWorktreeDefaults = {
+export type KinguWorktreeDefaults = {
   // Why: shared (symlinked) rather than copied — large rebuildable dirs like
   // node_modules should be one install serving every worktree.
   sharedDirectories?: string[]
 }
 
-export type OrcaDefaultTabTemplate = {
+export type KinguDefaultTabTemplate = {
   title?: string
   color?: string
   command?: string
 }
 
-export type EphemeralVmCheckoutMode = 'orca-worktree' | 'provisioned-root'
+export type EphemeralVmCheckoutMode = 'kingu-worktree' | 'provisioned-root'
 
-export type OrcaVmRecipe = {
+export type KinguVmRecipe = {
   id: string
   name: string
   create: string
@@ -42,7 +42,7 @@ export type OrcaVmRecipe = {
   destroyDisabled?: boolean
 }
 
-export type OrcaVmRecipeDiagnostic = {
+export type KinguVmRecipeDiagnostic = {
   index: number
   field?: string
   message: string
@@ -61,19 +61,19 @@ export type RepoHookSettings = {
   }
 }
 
-export type PersistedTrustedOrcaHookEntry = {
+export type PersistedTrustedKinguHookEntry = {
   contentHash: string
   approvedAt: number
 }
 
-export type PersistedTrustedOrcaHookRepo = {
+export type PersistedTrustedKinguHookRepo = {
   all?: {
     approvedAt: number
   }
-  setup?: PersistedTrustedOrcaHookEntry
-  archive?: PersistedTrustedOrcaHookEntry
-  issueCommand?: PersistedTrustedOrcaHookEntry
-  vmRecipe?: PersistedTrustedOrcaHookEntry
+  setup?: PersistedTrustedKinguHookEntry
+  archive?: PersistedTrustedKinguHookEntry
+  issueCommand?: PersistedTrustedKinguHookEntry
+  vmRecipe?: PersistedTrustedKinguHookEntry
 }
 
-export type PersistedTrustedOrcaHooks = Record<string, PersistedTrustedOrcaHookRepo>
+export type PersistedTrustedKinguHooks = Record<string, PersistedTrustedKinguHookRepo>

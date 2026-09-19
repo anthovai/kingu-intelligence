@@ -33,9 +33,9 @@ describe('relay readDir symlink probes', () => {
     statCalls.inFlight = 0
     statCalls.peak = 0
     statCalls.total = 0
-    root = mkdtempSync(join(tmpdir(), 'orca-relay-readdir-'))
+    root = mkdtempSync(join(tmpdir(), 'kingu-relay-readdir-'))
     // Kept outside `root` so the listing contains only the symlinks under test.
-    targetRoot = mkdtempSync(join(tmpdir(), 'orca-relay-readdir-target-'))
+    targetRoot = mkdtempSync(join(tmpdir(), 'kingu-relay-readdir-target-'))
     const target = join(targetRoot, 'target')
     mkdirSync(target)
     writeFileSync(join(target, 'index.js'), '')

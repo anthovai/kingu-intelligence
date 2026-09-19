@@ -39,7 +39,7 @@ describe('handshake round-trip over a real Socket pair', () => {
   let uncaughtHandler: (err: Error) => void
 
   beforeEach(() => {
-    tmpDir = mkdtempSync(join(tmpdir(), 'orca-handshake-test-'))
+    tmpDir = mkdtempSync(join(tmpdir(), 'kingu-handshake-test-'))
     sockPath = relayTestSocketPath(tmpDir)
     exitSpy = vi.spyOn(process, 'exit').mockImplementation(((code?: number) => {
       throw new ExitCalled(code ?? 0)
@@ -152,7 +152,7 @@ describe('handshake round-trip over a real Socket pair', () => {
     await new Promise<void>((r) => bridgeSock.once('connect', () => r()))
 
     const handshakeFrame = encodeHandshakeFrame({
-      type: 'orca-relay-handshake',
+      type: 'kingu-relay-handshake',
       version: '0.1.0+match'
     })
     const trailingPayload = encodeJsonRpcFrame({ jsonrpc: '2.0', method: 'noop', params: {} }, 1, 0)
@@ -179,7 +179,7 @@ describe('handshake round-trip over a real Socket pair', () => {
         }
         serverHandshakeSeen = true
         const ok = encodeHandshakeFrame({
-          type: 'orca-relay-handshake-ok',
+          type: 'kingu-relay-handshake-ok',
           version: '0.1.0+match'
         })
         const trailing = encodeJsonRpcFrame(
@@ -261,7 +261,7 @@ describe('handshake round-trip over a real Socket pair', () => {
     // The annotation is deliberately a lie: this is the frame a hostile peer sends, and
     // HandshakeMessage cannot describe it. JSON.parse answers `any`, so it needs no assertion.
     const hostileFrame: HandshakeMessage = JSON.parse(
-      '{"type":"orca-relay-handshake","version":{"toString":1}}'
+      '{"type":"kingu-relay-handshake","version":{"toString":1}}'
     )
     hostile.write(encodeHandshakeFrame(hostileFrame))
     await hostileClosed

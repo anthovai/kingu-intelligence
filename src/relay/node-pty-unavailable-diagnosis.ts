@@ -17,11 +17,11 @@
  * hosts that break. `unverifiable` is a first-class outcome: a probe that did not answer
  * is not a diagnosis (docs/reference/ssh-execution-boundary.md).
  */
-import { GLIBC_FLOOR, nativeSlotName, type NativeHostAbi } from '../main/orcad/native-host-abi'
+import { GLIBC_FLOOR, nativeSlotName, type NativeHostAbi } from '../main/kingud/native-host-abi'
 import {
   classifyNodePtyLoaderMessage,
   isFlattenedNodePtyLoaderMessage
-} from '../main/orcad/node-pty-loader-diagnosis'
+} from '../main/kingud/node-pty-loader-diagnosis'
 import {
   toolchainInstallHintLines,
   type BuildToolchainStatus
@@ -332,7 +332,7 @@ function remedyFor(diagnosis: NodePtyUnavailableDiagnosis): string {
         `${diagnosis.detail}, which this host's C library does not provide ` +
         `(${host.glibcVersion ? `glibc ${host.glibcVersion}` : 'this host reports no glibc version'}). ` +
         `The binding was compiled on a newer system than this one. Reconnect to rebuild ` +
-        `node-pty here; Orca's own Linux floor is glibc ${GLIBC_FLOOR}.`
+        `node-pty here; Kingu's own Linux floor is glibc ${GLIBC_FLOOR}.`
       )
     case 'shared_library_missing':
       return (

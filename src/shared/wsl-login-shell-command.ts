@@ -22,17 +22,17 @@ export function buildWslExecArgs(
 export function buildWslLoginShellCommand(command: string): string {
   const quotedCommand = quotePosixShell(command)
   return [
-    '_orca_wsl_shell=$(getent passwd "$(id -un)" 2>/dev/null | cut -d: -f7)',
-    'if [ -z "$_orca_wsl_shell" ] || [ ! -x "$_orca_wsl_shell" ]; then',
-    '  _orca_wsl_shell="${SHELL:-/bin/bash}"',
+    '_kingu_wsl_shell=$(getent passwd "$(id -un)" 2>/dev/null | cut -d: -f7)',
+    'if [ -z "$_kingu_wsl_shell" ] || [ ! -x "$_kingu_wsl_shell" ]; then',
+    '  _kingu_wsl_shell="${SHELL:-/bin/bash}"',
     'fi',
-    'if [ -z "$_orca_wsl_shell" ] || [ ! -x "$_orca_wsl_shell" ]; then',
-    '  _orca_wsl_shell=/bin/sh',
+    'if [ -z "$_kingu_wsl_shell" ] || [ ! -x "$_kingu_wsl_shell" ]; then',
+    '  _kingu_wsl_shell=/bin/sh',
     'fi',
-    '_orca_wsl_shell_name=$(basename "$_orca_wsl_shell" | tr "[:upper:]" "[:lower:]")',
-    'case "$_orca_wsl_shell_name" in',
-    `  sh|dash) exec "$_orca_wsl_shell" -lc ${quotedCommand} ;;`,
-    `  bash|zsh|ksh|mksh|ash) exec "$_orca_wsl_shell" -ilc ${quotedCommand} ;;`,
+    '_kingu_wsl_shell_name=$(basename "$_kingu_wsl_shell" | tr "[:upper:]" "[:lower:]")',
+    'case "$_kingu_wsl_shell_name" in',
+    `  sh|dash) exec "$_kingu_wsl_shell" -lc ${quotedCommand} ;;`,
+    `  bash|zsh|ksh|mksh|ash) exec "$_kingu_wsl_shell" -ilc ${quotedCommand} ;;`,
     `  *) exec /bin/sh -lc ${quotedCommand} ;;`,
     'esac'
   ].join('\n')
@@ -72,8 +72,8 @@ export function buildWslCapturedLoginShellCommand(
   command: string,
   nonce: string = nextWslCaptureNonce()
 ): WslCapturedLoginShellCommand {
-  const begin = `__ORCA_WSL_CAPTURE_BEGIN_${nonce}__`
-  const end = `__ORCA_WSL_CAPTURE_END_${nonce}__`
+  const begin = `__KINGU_WSL_CAPTURE_BEGIN_${nonce}__`
+  const end = `__KINGU_WSL_CAPTURE_END_${nonce}__`
   return {
     beginMarker: begin,
     endMarker: end,
@@ -81,9 +81,9 @@ export function buildWslCapturedLoginShellCommand(
       [
         `printf %s ${quotePosixShell(begin)}`,
         command,
-        '_orca_capture_status=$?',
+        '_kingu_capture_status=$?',
         `printf %s ${quotePosixShell(end)}`,
-        'exit $_orca_capture_status'
+        'exit $_kingu_capture_status'
       ].join('\n')
     ),
     readStdout: (stdout) => {
@@ -106,36 +106,36 @@ export function buildWslCapturedLoginShellCommand(
 
 export function buildWslInteractiveLoginShellCommand(): string {
   return [
-    '_orca_wsl_shell=$(getent passwd "$(id -un)" 2>/dev/null | cut -d: -f7)',
-    'if [ -z "$_orca_wsl_shell" ] || [ ! -x "$_orca_wsl_shell" ]; then',
-    '  _orca_wsl_shell="${SHELL:-/bin/bash}"',
+    '_kingu_wsl_shell=$(getent passwd "$(id -un)" 2>/dev/null | cut -d: -f7)',
+    'if [ -z "$_kingu_wsl_shell" ] || [ ! -x "$_kingu_wsl_shell" ]; then',
+    '  _kingu_wsl_shell="${SHELL:-/bin/bash}"',
     'fi',
-    'if [ -z "$_orca_wsl_shell" ] || [ ! -x "$_orca_wsl_shell" ]; then',
-    '  _orca_wsl_shell=/bin/sh',
+    'if [ -z "$_kingu_wsl_shell" ] || [ ! -x "$_kingu_wsl_shell" ]; then',
+    '  _kingu_wsl_shell=/bin/sh',
     'fi',
-    '_orca_shell_ready_root=""',
+    '_kingu_shell_ready_root=""',
     // Why the explicit root first: the wrapper tree is content-addressed, so its
     // path carries a hash the guest cannot derive. The host publishes the
-    // resolved root and WSLENV /p-translates it. The ORCA_USER_DATA_PATH branch
+    // resolved root and WSLENV /p-translates it. The KINGU_USER_DATA_PATH branch
     // stays as the fallback for an older host that exports only that.
-    'if [ -n "${ORCA_SHELL_READY_ROOT:-}" ]; then',
-    '  _orca_shell_ready_root="${ORCA_SHELL_READY_ROOT%/}"',
-    'elif [ -n "${ORCA_USER_DATA_PATH:-}" ]; then',
-    '  _orca_shell_ready_root="${ORCA_USER_DATA_PATH%/}/shell-ready"',
+    'if [ -n "${KINGU_SHELL_READY_ROOT:-}" ]; then',
+    '  _kingu_shell_ready_root="${KINGU_SHELL_READY_ROOT%/}"',
+    'elif [ -n "${KINGU_USER_DATA_PATH:-}" ]; then',
+    '  _kingu_shell_ready_root="${KINGU_USER_DATA_PATH%/}/shell-ready"',
     'fi',
-    '_orca_wsl_shell_name=$(basename "$_orca_wsl_shell" | tr "[:upper:]" "[:lower:]")',
-    'case "$_orca_wsl_shell_name" in',
+    '_kingu_wsl_shell_name=$(basename "$_kingu_wsl_shell" | tr "[:upper:]" "[:lower:]")',
+    'case "$_kingu_wsl_shell_name" in',
     '  bash)',
-    '    if [ -n "${_orca_shell_ready_root:-}" ] && [ -f "${_orca_shell_ready_root}/bash/rcfile" ]; then',
-    '      exec "$_orca_wsl_shell" --rcfile "${_orca_shell_ready_root}/bash/rcfile"',
+    '    if [ -n "${_kingu_shell_ready_root:-}" ] && [ -f "${_kingu_shell_ready_root}/bash/rcfile" ]; then',
+    '      exec "$_kingu_wsl_shell" --rcfile "${_kingu_shell_ready_root}/bash/rcfile"',
     '    fi',
     '    ;;',
     '  zsh)',
-    '    if [ -n "${_orca_shell_ready_root:-}" ] && [ -d "${_orca_shell_ready_root}/zsh" ]; then',
-    '      export ZDOTDIR="${_orca_shell_ready_root}/zsh"',
+    '    if [ -n "${_kingu_shell_ready_root:-}" ] && [ -d "${_kingu_shell_ready_root}/zsh" ]; then',
+    '      export ZDOTDIR="${_kingu_shell_ready_root}/zsh"',
     '    fi',
     '    ;;',
     'esac',
-    'exec "$_orca_wsl_shell" -l'
+    'exec "$_kingu_wsl_shell" -l'
   ].join('\n')
 }

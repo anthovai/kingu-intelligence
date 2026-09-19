@@ -19,7 +19,7 @@ import { readLaunchVersion, runConnectHandshake } from './relay-handshake'
 
 const CONNECT_TIMEOUT_MS = 5_000
 
-export async function runRelayOrcaCliChannel(
+export async function runRelayKinguCliChannel(
   sockPath: string,
   argv: string[],
   endpointCredential?: string
@@ -35,7 +35,7 @@ export async function runRelayOrcaCliChannel(
   }
   const stdin =
     preparedArtifact.stdin ??
-    (shouldReadRemoteCliStdin(argv) ? await readOrcaCliStdin() : undefined)
+    (shouldReadRemoteCliStdin(argv) ? await readKinguCliStdin() : undefined)
   const env = pickRemoteCliEnv(process.env)
   const requestParams: RemoteArtifactCliForwardingParams = {
     argv,
@@ -81,7 +81,7 @@ export async function runRelayOrcaCliChannel(
       {
         jsonrpc: '2.0',
         id: requestId,
-        method: 'orca.cli',
+        method: 'kingu.cli',
         params: requestParams
       },
       nextSeq++,
@@ -101,7 +101,7 @@ export async function runRelayOrcaCliChannel(
         {
           jsonrpc: '2.0',
           id: postOutputRequestId,
-          method: 'orca.cli.postOutput',
+          method: 'kingu.cli.postOutput',
           params: { postOutput, env: pickRemoteCliEnv(process.env) }
         },
         nextSeq++,
@@ -157,7 +157,7 @@ export async function runRelayOrcaCliChannel(
     // Why exit inside the write callback: stderr is async on pipe transports, so exiting early
     // drops the only evidence this failure ever produces — the same reason relay-handshake.ts
     // writes its mismatch line this way.
-    process.stderr.write(`[orca-cli] Relay protocol error: ${error.message}\n`, () => {
+    process.stderr.write(`[kingu-cli] Relay protocol error: ${error.message}\n`, () => {
       sock.destroy()
       process.exit(1)
     })
@@ -208,7 +208,7 @@ export async function runRelayOrcaCliChannel(
   }, onDecodeError)
 
   const connectTimeout = setTimeout(() => {
-    process.stderr.write(`[orca-cli] Relay connection timed out after ${CONNECT_TIMEOUT_MS}ms\n`)
+    process.stderr.write(`[kingu-cli] Relay connection timed out after ${CONNECT_TIMEOUT_MS}ms\n`)
     sock.destroy()
     process.exit(1)
   }, CONNECT_TIMEOUT_MS)
@@ -235,12 +235,12 @@ export async function runRelayOrcaCliChannel(
 
   sock.on('error', (error) => {
     clearTimeout(connectTimeout)
-    process.stderr.write(`[orca-cli] Relay socket error: ${error.message}\n`)
+    process.stderr.write(`[kingu-cli] Relay socket error: ${error.message}\n`)
     process.exit(1)
   })
 }
 
-async function readOrcaCliStdin(): Promise<string | undefined> {
+async function readKinguCliStdin(): Promise<string | undefined> {
   if (process.stdin.isTTY) {
     return undefined
   }

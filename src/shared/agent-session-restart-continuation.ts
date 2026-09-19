@@ -1,4 +1,4 @@
-// The one message Orca sends when a user asks an interrupted agent to carry on.
+// The one message Kingu sends when a user asks an interrupted agent to carry on.
 //
 // ONE constant, identical for both providers, and deliberately not promptless. Codex's `turn/start`
 // would accept an empty `input`, but Claude's SDK has no promptless form, so a bare continuation
@@ -10,10 +10,10 @@
 // resume surface contains no send at all.
 
 export const AGENT_SESSION_RESTART_CONTINUATION_MESSAGE =
-  "Orca restarted, so your previous reply was cut off partway through. Before continuing, check whether your most recent action completed — don't repeat it if it did. Then carry on."
+  "Kingu restarted, so your previous reply was cut off partway through. Before continuing, check whether your most recent action completed — don't repeat it if it did. Then carry on."
 
 /**
- * Host-authored journal note marking the send as Orca's rather than the user's.
+ * Host-authored journal note marking the send as Kingu's rather than the user's.
  *
  * Attribution lives in the journal, not on the provider wire. Codex's `turn/start` has no parameter
  * we already send that could carry it, and adding one would be a new client-controlled field on a
@@ -23,4 +23,4 @@ export const AGENT_SESSION_RESTART_CONTINUATION_MESSAGE =
  * session history.
  */
 export const AGENT_SESSION_RESTART_CONTINUATION_NOTE =
-  'Orca asked this agent to continue after a restart. Your own prompt was not re-sent.'
+  'Kingu asked this agent to continue after a restart. Your own prompt was not re-sent.'

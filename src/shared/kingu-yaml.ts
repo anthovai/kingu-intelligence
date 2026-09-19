@@ -1,16 +1,16 @@
 import { parseDocument } from 'yaml'
 import type {
-  OrcaDefaultTabTemplate,
-  OrcaHooks,
-  OrcaVmRecipe,
-  OrcaVmRecipeDiagnostic
-} from './orca-yaml-hook-types'
+  KinguDefaultTabTemplate,
+  KinguHooks,
+  KinguVmRecipe,
+  KinguVmRecipeDiagnostic
+} from './kingu-yaml-hook-types'
 import {
-  isOrcaYamlFieldWithinLimit,
-  isOrcaYamlTextWithinLimit,
-  MAX_ORCA_YAML_ALIAS_COUNT,
-  MAX_ORCA_YAML_COLLECTION_ENTRIES
-} from './orca-yaml-file-limit'
+  isKinguYamlFieldWithinLimit,
+  isKinguYamlTextWithinLimit,
+  MAX_KINGU_YAML_ALIAS_COUNT,
+  MAX_KINGU_YAML_COLLECTION_ENTRIES
+} from './kingu-yaml-file-limit'
 
 function asRecord(value: unknown): Record<string, unknown> | null {
   return value !== null && typeof value === 'object' && !Array.isArray(value)
@@ -19,7 +19,7 @@ function asRecord(value: unknown): Record<string, unknown> | null {
 }
 
 function asTrimmedString(value: unknown): string | undefined {
-  if (typeof value !== 'string' || !isOrcaYamlFieldWithinLimit(value)) {
+  if (typeof value !== 'string' || !isKinguYamlFieldWithinLimit(value)) {
     return undefined
   }
   const trimmed = value.trim()
@@ -27,8 +27,8 @@ function asTrimmedString(value: unknown): string | undefined {
 }
 
 const DEFAULT_TAB_COLOR_RE = /^#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?$/
-export const ORCA_VM_RECIPE_ID_PATTERN = /^[a-z0-9][a-z0-9._-]{0,63}$/
-export const ORCA_VM_RECIPE_ID_RULE =
+export const KINGU_VM_RECIPE_ID_PATTERN = /^[a-z0-9][a-z0-9._-]{0,63}$/
+export const KINGU_VM_RECIPE_ID_RULE =
   'Use 1-64 lowercase letters, numbers, dots, underscores, or hyphens, starting with a letter or number.'
 
 // Why: bound the work one repo file can request; entries beyond this are ignored.
@@ -71,8 +71,8 @@ function normalizeSharedDirectories(value: unknown): string[] {
   return Array.from(seen)
 }
 
-function normalizeDefaultTabs(value: unknown): OrcaDefaultTabTemplate[] {
-  if (!Array.isArray(value) || value.length > MAX_ORCA_YAML_COLLECTION_ENTRIES) {
+function normalizeDefaultTabs(value: unknown): KinguDefaultTabTemplate[] {
+  if (!Array.isArray(value) || value.length > MAX_KINGU_YAML_COLLECTION_ENTRIES) {
     return []
   }
 
@@ -95,26 +95,26 @@ function normalizeDefaultTabs(value: unknown): OrcaDefaultTabTemplate[] {
         ...(command ? { command } : {})
       }
     })
-    .filter((entry): entry is OrcaDefaultTabTemplate => entry !== null)
+    .filter((entry): entry is KinguDefaultTabTemplate => entry !== null)
 }
 
 type VmRecipeParseResult = {
-  recipes: OrcaVmRecipe[]
-  diagnostics: OrcaVmRecipeDiagnostic[]
+  recipes: KinguVmRecipe[]
+  diagnostics: KinguVmRecipeDiagnostic[]
 }
 
 function normalizeVmRecipes(value: unknown): VmRecipeParseResult {
-  const diagnostics: OrcaVmRecipeDiagnostic[] = []
+  const diagnostics: KinguVmRecipeDiagnostic[] = []
   if (!Array.isArray(value)) {
     return { recipes: [], diagnostics }
   }
-  if (value.length > MAX_ORCA_YAML_COLLECTION_ENTRIES) {
+  if (value.length > MAX_KINGU_YAML_COLLECTION_ENTRIES) {
     return {
       recipes: [],
       diagnostics: [
         {
-          index: MAX_ORCA_YAML_COLLECTION_ENTRIES,
-          message: `At most ${MAX_ORCA_YAML_COLLECTION_ENTRIES} environment recipes are supported.`
+          index: MAX_KINGU_YAML_COLLECTION_ENTRIES,
+          message: `At most ${MAX_KINGU_YAML_COLLECTION_ENTRIES} environment recipes are supported.`
         }
       ]
     }
@@ -138,11 +138,11 @@ function normalizeVmRecipes(value: unknown): VmRecipeParseResult {
         diagnostics.push({ index, field: 'id', message: 'Recipe id is required.' })
         return null
       }
-      if (!ORCA_VM_RECIPE_ID_PATTERN.test(id)) {
+      if (!KINGU_VM_RECIPE_ID_PATTERN.test(id)) {
         diagnostics.push({
           index,
           field: 'id',
-          message: `Invalid recipe id "${id}". ${ORCA_VM_RECIPE_ID_RULE}`
+          message: `Invalid recipe id "${id}". ${KINGU_VM_RECIPE_ID_RULE}`
         })
         return null
       }
@@ -165,11 +165,15 @@ function normalizeVmRecipes(value: unknown): VmRecipeParseResult {
       seenIds.add(id)
       const description = asTrimmedString(record.description)
       const checkoutMode = asTrimmedString(record.checkoutMode)
-      if (checkoutMode && checkoutMode !== 'orca-worktree' && checkoutMode !== 'provisioned-root') {
+      if (
+        checkoutMode &&
+        checkoutMode !== 'kingu-worktree' &&
+        checkoutMode !== 'provisioned-root'
+      ) {
         diagnostics.push({
           index,
           field: 'checkoutMode',
-          message: `Recipe "${id}" checkoutMode must be "orca-worktree" or "provisioned-root".`
+          message: `Recipe "${id}" checkoutMode must be "kingu-worktree" or "provisioned-root".`
         })
         return null
       }
@@ -189,15 +193,15 @@ function normalizeVmRecipes(value: unknown): VmRecipeParseResult {
         ...(destroyDisabled ? { destroyDisabled: true } : {})
       }
     })
-    .filter((entry): entry is OrcaVmRecipe => entry !== null)
+    .filter((entry): entry is KinguVmRecipe => entry !== null)
   return { recipes, diagnostics }
 }
 
 /**
- * Parse the supported project defaults from `orca.yaml`.
+ * Parse the supported project defaults from `kingu.yaml`.
  */
-export function parseOrcaYaml(content: string): OrcaHooks | null {
-  if (!isOrcaYamlTextWithinLimit(content)) {
+export function parseKinguYaml(content: string): KinguHooks | null {
+  if (!isKinguYamlTextWithinLimit(content)) {
     return null
   }
 
@@ -212,7 +216,7 @@ export function parseOrcaYaml(content: string): OrcaHooks | null {
     if (document.errors.length > 0) {
       return null
     }
-    root = document.toJS({ maxAliasCount: MAX_ORCA_YAML_ALIAS_COUNT })
+    root = document.toJS({ maxAliasCount: MAX_KINGU_YAML_ALIAS_COUNT })
   } catch {
     return null
   }

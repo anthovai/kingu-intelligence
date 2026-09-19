@@ -313,7 +313,7 @@ describe('terminal send CLI', () => {
         enter: true,
         interrupt: false,
         agentPrompt: true,
-        client: { id: 'orca-cli', type: 'desktop' }
+        client: { id: 'kingu-cli', type: 'desktop' }
       },
       { terminalPromptPreflight: { runtimeId: 'runtime-current' } }
     )
@@ -391,7 +391,7 @@ describe('terminal send CLI', () => {
 
     expect(client.getCliStatus).toHaveBeenCalledOnce()
     expect(console.log).toHaveBeenCalledWith(
-      expect.stringMatching(/Structured Chat.*Switch it to Terminal.*orca terminal send/s)
+      expect.stringMatching(/Structured Chat.*Switch it to Terminal.*kingu terminal send/s)
     )
     expect(process.exitCode).toBe(1)
   })
@@ -426,14 +426,14 @@ describe('terminal send CLI', () => {
       text: 'x',
       enter: false,
       interrupt: false,
-      client: { id: 'orca-cli', type: 'desktop' }
+      client: { id: 'kingu-cli', type: 'desktop' }
     })
     expect(call).toHaveBeenNthCalledWith(2, 'terminal.send', {
       terminal: 'term-1',
       text: undefined,
       enter: true,
       interrupt: false,
-      client: { id: 'orca-cli', type: 'desktop' }
+      client: { id: 'kingu-cli', type: 'desktop' }
     })
   })
 

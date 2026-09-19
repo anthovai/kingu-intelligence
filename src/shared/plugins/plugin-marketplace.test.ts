@@ -125,9 +125,9 @@ describe('pluginMarketplaceSchema', () => {
 
 describe('marketplace provenance contracts', () => {
   it.each([
-    ['stablyai.orca-skills', true, true],
-    ['stablyai.skills', true, false],
-    ['community.orca-skills', true, false],
+    ['anthovai.kingu-skills', true, true],
+    ['anthovai.skills', true, false],
+    ['community.kingu-skills', true, false],
     ['community.skills', false, false],
     ['invalid', false, false]
   ])('classifies %s', (pluginKey, reserved, official) => {
@@ -136,27 +136,29 @@ describe('marketplace provenance contracts', () => {
   })
 
   it.each([
-    'https://github.com/stablyai/orca-skills.git',
-    'ssh://git@github.com/stablyai/orca-skills.git',
-    'git@github.com:stablyai/orca-skills.git'
+    'https://github.com/anthovai/kingu-intelligence-skills.git',
+    'ssh://git@github.com/anthovai/kingu-intelligence-skills.git',
+    'git@github.com:anthovai/kingu-intelligence-skills.git'
   ])('accepts official organization source %s', (source) => {
     expect(isOfficialOrganizationGitSource(source)).toBe(true)
   })
 
   it('does not trust lookalike organizations or hosts', () => {
-    expect(isOfficialOrganizationGitSource('https://github.com/stablyai-fakes/orca-skills')).toBe(
+    expect(isOfficialOrganizationGitSource('https://github.com/anthovai-fakes/kingu-skills')).toBe(
       false
     )
-    expect(isOfficialOrganizationGitSource('https://gitlab.com/stablyai/orca-skills')).toBe(false)
+    expect(
+      isOfficialOrganizationGitSource('https://gitlab.com/anthovai/kingu-intelligence-skills')
+    ).toBe(false)
   })
 
   it('recognizes only the canonical official marketplace repository', () => {
     expect(
       isOfficialMarketplaceGitSource(
-        `git@github.com:stablyai/${OFFICIAL_MARKETPLACE_REPOSITORY}.git`
+        `git@github.com:anthovai/${OFFICIAL_MARKETPLACE_REPOSITORY}.git`
       )
     ).toBe(true)
-    expect(isOfficialMarketplaceGitSource('git@github.com:stablyai/plugins.git')).toBe(false)
+    expect(isOfficialMarketplaceGitSource('git@github.com:anthovai/plugins.git')).toBe(false)
   })
 
   it('parses nested repository paths without confusing the repository name', () => {

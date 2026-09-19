@@ -184,19 +184,19 @@ function buildRecipeEnv(
   return {
     ...process.env,
     ...env,
-    ORCA_VM_MODE: mode,
-    ORCA_VM_INSTANCE_ID: context.instanceId ?? '',
-    ORCA_RECIPE_ID: context.recipeId,
-    ORCA_PROJECT_ID: context.projectId ?? '',
-    ORCA_WORKSPACE_ID: context.workspaceId ?? '',
-    ORCA_WORKSPACE_NAME: context.workspaceName ?? '',
-    ORCA_REPO_PATH: context.repoPath,
-    ORCA_REPO_URL: context.repoUrl ?? '',
-    ORCA_REPO_BRANCH: context.branch ?? '',
-    ORCA_REPO_REF: context.ref ?? '',
-    ORCA_REPO_REF_HEAD: context.expectedRefHead ?? '',
-    ORCA_RECIPE_RESULT_SCHEMA_VERSION: String(resultSchemaVersion),
-    ORCA_VERSION: context.orcaVersion ?? ''
+    KINGU_VM_MODE: mode,
+    KINGU_VM_INSTANCE_ID: context.instanceId ?? '',
+    KINGU_RECIPE_ID: context.recipeId,
+    KINGU_PROJECT_ID: context.projectId ?? '',
+    KINGU_WORKSPACE_ID: context.workspaceId ?? '',
+    KINGU_WORKSPACE_NAME: context.workspaceName ?? '',
+    KINGU_REPO_PATH: context.repoPath,
+    KINGU_REPO_URL: context.repoUrl ?? '',
+    KINGU_REPO_BRANCH: context.branch ?? '',
+    KINGU_REPO_REF: context.ref ?? '',
+    KINGU_REPO_REF_HEAD: context.expectedRefHead ?? '',
+    KINGU_RECIPE_RESULT_SCHEMA_VERSION: String(resultSchemaVersion),
+    KINGU_VERSION: context.kinguVersion ?? ''
   }
 }
 

@@ -1,4 +1,4 @@
-// Wire-level handshake helpers for the Orca relay.
+// Wire-level handshake helpers for the Kingu relay.
 
 import { dirname, join } from 'node:path'
 import { existsSync, readFileSync, realpathSync } from 'node:fs'
@@ -83,15 +83,15 @@ export function setupDaemonHandshake(sock: Socket, cb: DaemonHandshakeCallbacks)
     decoder.feed(chunk)
   }
   sock.on('data', onHandshakeData)
-  ;(sock as Socket & { __orcaOnHandshake?: typeof onHandshakeData }).__orcaOnHandshake =
+  ;(sock as Socket & { __kinguOnHandshake?: typeof onHandshakeData }).__kinguOnHandshake =
     onHandshakeData
 }
 
 export function detachHandshakeListener(sock: Socket): void {
-  const tagged = sock as Socket & { __orcaOnHandshake?: (chunk: Buffer) => void }
-  if (tagged.__orcaOnHandshake) {
-    sock.removeListener('data', tagged.__orcaOnHandshake)
-    delete tagged.__orcaOnHandshake
+  const tagged = sock as Socket & { __kinguOnHandshake?: (chunk: Buffer) => void }
+  if (tagged.__kinguOnHandshake) {
+    sock.removeListener('data', tagged.__kinguOnHandshake)
+    delete tagged.__kinguOnHandshake
   }
 }
 
@@ -116,7 +116,7 @@ function handleDaemonHandshakeFrame(
     sock.destroy()
     return false
   }
-  if (msg.type !== 'orca-relay-handshake') {
+  if (msg.type !== 'kingu-relay-handshake') {
     relayLogLine(`[relay] Unexpected handshake type from client: ${msg.type}; closing socket`)
     sock.destroy()
     return false
@@ -128,7 +128,7 @@ function handleDaemonHandshakeFrame(
     try {
       sock.write(
         encodeHandshakeFrame({
-          type: 'orca-relay-handshake-mismatch',
+          type: 'kingu-relay-handshake-mismatch',
           expected: launchVersion,
           got: msg.version
         })
@@ -143,7 +143,7 @@ function handleDaemonHandshakeFrame(
   if (endpointCredential !== undefined && presented !== endpointCredential) {
     relayLogLine('[relay] Endpoint credential mismatch; closing socket')
     try {
-      sock.write(encodeHandshakeFrame({ type: 'orca-relay-handshake-credential-mismatch' }))
+      sock.write(encodeHandshakeFrame({ type: 'kingu-relay-handshake-credential-mismatch' }))
     } catch {
       /* best-effort — the close alone still refuses */
     }
@@ -151,7 +151,7 @@ function handleDaemonHandshakeFrame(
     return false
   }
   process.stderr.write(`[relay] Handshake OK from version=${msg.version}\n`)
-  sock.write(encodeHandshakeFrame({ type: 'orca-relay-handshake-ok', version: launchVersion }))
+  sock.write(encodeHandshakeFrame({ type: 'kingu-relay-handshake-ok', version: launchVersion }))
   return true
 }
 
@@ -193,7 +193,7 @@ export function runConnectHandshake(
         sock.destroy()
         process.exit(1)
       }
-      if (msg.type === 'orca-relay-handshake-ok') {
+      if (msg.type === 'kingu-relay-handshake-ok') {
         process.stderr.write(`[relay-connect] Handshake OK at version=${msg.version}\n`)
         handshakeDone = true
         const leftover = decoder.drain()
@@ -201,7 +201,7 @@ export function runConnectHandshake(
         cb.onAccepted(leftover)
         return
       }
-      if (msg.type === 'orca-relay-handshake-mismatch') {
+      if (msg.type === 'kingu-relay-handshake-mismatch') {
         // Why: exit inside the write callback; stderr is async on pipe transports, so exiting early drops the version detail.
         process.stderr.write(
           `[relay-connect] Handshake mismatch: expected=${msg.expected}, daemon=${msg.got}; exiting ${EXIT_CODE_VERSION_MISMATCH}\n`,
@@ -212,7 +212,7 @@ export function runConnectHandshake(
         )
         return
       }
-      if (msg.type === 'orca-relay-handshake-credential-mismatch') {
+      if (msg.type === 'kingu-relay-handshake-credential-mismatch') {
         process.stderr.write(
           `[relay-connect] Endpoint credential refused by daemon; exiting ${EXIT_CODE_CREDENTIAL_MISMATCH}\n`,
           () => {
@@ -241,7 +241,7 @@ export function runConnectHandshake(
 
   sock.write(
     encodeHandshakeFrame({
-      type: 'orca-relay-handshake',
+      type: 'kingu-relay-handshake',
       version: myVersion,
       ...(endpointCredential ? { endpointCredential } : {})
     })

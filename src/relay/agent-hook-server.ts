@@ -3,8 +3,8 @@ import { randomUUID } from 'node:crypto'
 import { join } from 'node:path'
 
 import {
-  ORCA_HOOK_PROTOCOL_VERSION,
-  ORCA_HOOK_RAW_JSON_TRANSPORT
+  KINGU_HOOK_PROTOCOL_VERSION,
+  KINGU_HOOK_RAW_JSON_TRANSPORT
 } from '../shared/agent-hook-types'
 import {
   clearAllListenerCaches,
@@ -47,7 +47,7 @@ import { MAX_CACHED_PANES, selectReplayableCachedPanes } from './agent-hook-cach
 export type RelayHookForward = (envelope: AgentHookRelayEnvelope) => void
 
 export type RelayHookServerOptions = {
-  /** Where to put endpoint.env / endpoint.cmd. Defaults to `$HOME/.orca-relay/agent-hooks`. */
+  /** Where to put endpoint.env / endpoint.cmd. Defaults to `$HOME/.kingu-relay/agent-hooks`. */
   endpointDir?: string
   /** Env tag forwarded into hook payloads. Defaults to "remote", which main excludes from dev-vs-prod mismatch warnings. */
   env?: string
@@ -187,8 +187,8 @@ export class RelayAgentHookServer {
       port: this.port,
       token: this.token,
       env: this.env,
-      version: ORCA_HOOK_PROTOCOL_VERSION,
-      transport: ORCA_HOOK_RAW_JSON_TRANSPORT
+      version: KINGU_HOOK_PROTOCOL_VERSION,
+      transport: KINGU_HOOK_RAW_JSON_TRANSPORT
     })
     return this.endpointFileWritten
   }
@@ -254,7 +254,7 @@ export class RelayAgentHookServer {
       res.end()
       return
     }
-    if (req.headers['x-orca-agent-hook-token'] !== this.token) {
+    if (req.headers['x-kingu-agent-hook-token'] !== this.token) {
       res.writeHead(403)
       res.end()
       return

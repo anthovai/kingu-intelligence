@@ -73,7 +73,7 @@ describe('GitHandler', () => {
     expect(methods).toContain('git.removeWorktree')
     expect(methods).toContain('git.worktreeIsClean')
     expect(methods).toContain('git.refreshLocalBaseRefForWorktreeCreate')
-    expect(methods).toContain('git.markRemoteOrcaCreated')
+    expect(methods).toContain('git.markRemoteKinguCreated')
     expect(methods).toContain('git.renameCurrentBranch')
     expect(methods).toContain('git.forceDeletePreservedBranch')
     expect(methods).toContain('git.exec')
@@ -198,21 +198,21 @@ describe('GitHandler', () => {
     })
   })
 
-  describe('markRemoteOrcaCreated', () => {
+  describe('markRemoteKinguCreated', () => {
     it('writes the provenance marker via config, not the generic git.exec path', async () => {
       gitInit(tmpDir)
-      execFileSync('git', ['remote', 'add', 'pr-contributor-orca', 'https://example.com/x.git'], {
+      execFileSync('git', ['remote', 'add', 'pr-contributor-kingu', 'https://example.com/x.git'], {
         cwd: tmpDir
       })
 
-      await dispatcher.callRequest('git.markRemoteOrcaCreated', {
+      await dispatcher.callRequest('git.markRemoteKinguCreated', {
         repoPath: tmpDir,
-        remoteName: 'pr-contributor-orca'
+        remoteName: 'pr-contributor-kingu'
       })
 
       const value = execFileSync(
         'git',
-        ['config', '--get', 'remote.pr-contributor-orca.orca-created'],
+        ['config', '--get', 'remote.pr-contributor-kingu.kingu-created'],
         { cwd: tmpDir, encoding: 'utf-8' }
       ).trim()
       expect(value).toBe('true')
@@ -221,7 +221,7 @@ describe('GitHandler', () => {
     it('rejects a remote name that is not a plain config-key segment', async () => {
       gitInit(tmpDir)
       await expect(
-        dispatcher.callRequest('git.markRemoteOrcaCreated', {
+        dispatcher.callRequest('git.markRemoteKinguCreated', {
           repoPath: tmpDir,
           remoteName: 'bad name; rm -rf'
         })

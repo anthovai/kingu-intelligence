@@ -85,7 +85,7 @@ function formatUnavailable(reason: 'disabled' | 'not-ready' | 'no-service'): str
   }
   return [
     'This host runs no session search service.',
-    'An Orca host older than session search answers the same way; update it and try again.'
+    'An Kingu host older than session search answers the same way; update it and try again.'
   ].join('\n')
 }
 
