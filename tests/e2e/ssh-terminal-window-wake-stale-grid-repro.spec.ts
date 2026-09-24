@@ -1,4 +1,4 @@
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import path from 'node:path'
 import { test, expect } from './helpers/kingu-app'
 import { connectDockerSshRelayTarget } from './helpers/docker-ssh-relay-connection'

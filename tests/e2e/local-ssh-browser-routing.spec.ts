@@ -1,6 +1,6 @@
 import { createServer, type Server } from 'node:http'
 import type { AddressInfo } from 'node:net'
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import { expect, test } from './helpers/kingu-app'
 import { waitForSessionReady } from './helpers/store'
 import {

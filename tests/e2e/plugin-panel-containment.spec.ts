@@ -11,7 +11,7 @@ import { createServer, type Server } from 'node:http'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import type { AddressInfo } from 'node:net'
-import type { ElectronApplication, FrameLocator, Page, TestInfo } from '@anthovai/playwright-test'
+import type { ElectronApplication, FrameLocator, Page, TestInfo } from '@stablyai/playwright-test'
 import { expect, test } from './helpers/kingu-app'
 import {
   readPanelNavigationObserver,

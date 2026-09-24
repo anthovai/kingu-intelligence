@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import type { Page, TestInfo } from '@anthovai/playwright-test'
+import type { Page, TestInfo } from '@stablyai/playwright-test'
 import { expect, test } from './helpers/kingu-app'
 import { ensureTerminalVisible, waitForSessionReady } from './helpers/store'
 import {

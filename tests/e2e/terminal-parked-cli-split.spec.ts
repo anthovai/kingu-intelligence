@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 import path from 'node:path'
 import { performance } from 'node:perf_hooks'
 import { promisify } from 'node:util'
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import { RuntimeClient } from '../../src/cli/runtime/client'
 import type {
   RuntimeTerminalListResult,

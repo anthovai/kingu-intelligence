@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
-import type { Page, TestInfo } from '@anthovai/playwright-test'
+import type { Page, TestInfo } from '@stablyai/playwright-test'
 import { test, expect } from './helpers/kingu-app'
 import { ensureTerminalVisible, waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import {

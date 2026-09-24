@@ -4,7 +4,7 @@
  * Verifies search + selection persist through the existing RepoIcon
  * contract, and captures the new picker for the PR screenshot record.
  */
-import type { Page, TestInfo } from '@anthovai/playwright-test'
+import type { Page, TestInfo } from '@stablyai/playwright-test'
 import { expect, test } from './helpers/kingu-app'
 import { getStoreState, waitForSessionReady } from './helpers/store'
 import type { Repo } from '../../src/shared/repo-types'

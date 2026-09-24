@@ -1,6 +1,6 @@
 import { createServer } from 'node:http'
 import type { AddressInfo } from 'node:net'
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import { expect } from './kingu-app'
 import { readRestartRendererState } from './kingu-restart'
 import type { PairedElectronClient } from './paired-electron-client'

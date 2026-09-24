@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { _electron as electron } from '@anthovai/playwright-test'
+import { _electron as electron } from '@stablyai/playwright-test'
 import { execFileSync } from 'node:child_process'
 import { createHash, randomUUID } from 'node:crypto'
 import { existsSync } from 'node:fs'

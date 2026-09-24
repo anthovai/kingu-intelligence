@@ -1,4 +1,4 @@
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 
 /**
  * Measures what an active preedit overlay hides, against what it renders.

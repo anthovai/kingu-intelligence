@@ -8,7 +8,7 @@ import {
   type ElectronApplication,
   type Page,
   type TestInfo
-} from '@anthovai/playwright-test'
+} from '@stablyai/playwright-test'
 
 import { expect, forwardElectronProcessLogs, test } from './helpers/kingu-app'
 import { getE2ECompletedOnboardingProfile } from './helpers/e2e-completed-onboarding-profile'

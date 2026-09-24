@@ -1,6 +1,6 @@
 import { test, expect } from './helpers/kingu-app'
 import { getStoreState, waitForSessionReady } from './helpers/store'
-import type { ElectronApplication } from '@anthovai/playwright-test'
+import type { ElectronApplication } from '@stablyai/playwright-test'
 
 async function openFeatureTourFromMenu(electronApp: ElectronApplication): Promise<void> {
   await electronApp.evaluate(({ BrowserWindow, Menu }) => {

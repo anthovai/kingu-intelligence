@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import type { ElectronApplication, Page } from '@stablyai/playwright-test'
 import { DEFAULT_LOCAL_KINGU_PROFILE_ID } from '../../src/shared/kingu-profiles'
 import { PTY_SESSION_ID_SEPARATOR } from '../../src/shared/pty-session-id-format'
 import { test, expect } from './helpers/kingu-app'

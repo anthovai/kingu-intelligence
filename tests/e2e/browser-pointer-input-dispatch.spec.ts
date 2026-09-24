@@ -7,7 +7,7 @@
  */
 
 import { createServer, type Server } from 'node:http'
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import { test, expect } from './helpers/kingu-app'
 import { ensureTerminalVisible, getActiveWorktreeId, waitForActiveWorktree } from './helpers/store'
 

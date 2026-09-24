@@ -8,7 +8,7 @@ import { execFileSync } from 'node:child_process'
 import { mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import type { ElectronApplication, Page } from '@stablyai/playwright-test'
 import { test, expect } from './helpers/kingu-app'
 import {
   execInTerminal,

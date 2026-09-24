@@ -1,4 +1,4 @@
-import type { Locator, Page } from '@anthovai/playwright-test'
+import type { Locator, Page } from '@stablyai/playwright-test'
 
 import { expect, test } from './helpers/kingu-app'
 import {

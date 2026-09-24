@@ -21,7 +21,7 @@
  */
 import { rmSync } from 'node:fs'
 import path from 'node:path'
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import {
   toWebTerminalSurfaceTabId,
   WEB_TERMINAL_SURFACE_TAB_PREFIX

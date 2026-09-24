@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process'
-import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import type { ElectronApplication, Page } from '@stablyai/playwright-test'
 import { test, expect } from './helpers/kingu-app'
 import { waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import { waitForActivePanePtyId, waitForActiveTerminalManager } from './helpers/terminal'

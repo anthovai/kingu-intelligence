@@ -5,7 +5,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { getDockerSshRelayImage } from './docker-ssh-relay-image'
 
-import type { TestInfo } from '@anthovai/playwright-test'
+import type { TestInfo } from '@stablyai/playwright-test'
 
 export const DOCKER_SSH_RELAY_REMOTE_REPO_PATH = '/tmp/kingu-docker-relay-perf-repo'
 export const DOCKER_SSH_PROXY_JUMP_REMOTE_REPO_PATH = '/tmp/kingu-docker-proxy-jump-repo'

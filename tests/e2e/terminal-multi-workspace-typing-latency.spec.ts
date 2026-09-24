@@ -18,7 +18,7 @@
  * config/scripts/run-multi-workspace-typing-bench.mjs for knobs). Results are
  * written as JSON to tests/tools/benchmarks/results/ for A/B comparison.
  */
-import type { Page, TestInfo } from '@anthovai/playwright-test'
+import type { Page, TestInfo } from '@stablyai/playwright-test'
 import { type ChildProcess, spawn } from 'node:child_process'
 import { createHash, randomUUID } from 'node:crypto'
 import {

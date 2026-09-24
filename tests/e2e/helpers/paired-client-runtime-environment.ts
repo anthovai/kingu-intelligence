@@ -1,4 +1,4 @@
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import type { PairedElectronClient, RuntimeDesktopPairingOffer } from './paired-electron-client'
 import { revealPairedClientWindow } from './paired-client-window-reveal'
 

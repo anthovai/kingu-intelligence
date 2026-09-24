@@ -1,4 +1,4 @@
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 
 /**
  * Census for the paired HTML preview journey. Since STA-5557 the preview is a client-local

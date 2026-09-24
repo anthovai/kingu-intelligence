@@ -20,7 +20,7 @@
  * The second is not a nicety. Without it the first passes on any app that resumes nothing at all,
  * which is exactly the failure mode a refuse-everything gate would ship.
  */
-import type { ElectronApplication, TestInfo } from '@anthovai/playwright-test'
+import type { ElectronApplication, TestInfo } from '@stablyai/playwright-test'
 import { test, expect } from './helpers/kingu-app'
 import { createRestartSession } from './helpers/kingu-restart'
 import { connectDockerSshRelayTarget } from './helpers/docker-ssh-relay-connection'

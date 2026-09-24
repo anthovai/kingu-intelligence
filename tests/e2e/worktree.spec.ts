@@ -20,7 +20,7 @@ import { openSidebarWorkspaceComposer } from './helpers/sidebar-project-dialog'
  * crash in whatever replaces it.
  */
 
-import type { ConsoleMessage } from '@anthovai/playwright-test'
+import type { ConsoleMessage } from '@stablyai/playwright-test'
 import { test, expect } from './helpers/kingu-app'
 import {
   waitForSessionReady,

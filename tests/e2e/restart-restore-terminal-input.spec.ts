@@ -23,7 +23,7 @@
 import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
-import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import type { ElectronApplication, Page } from '@stablyai/playwright-test'
 import { test, expect } from './helpers/kingu-app'
 import { TEST_REPO_PATH_FILE } from './global-setup'
 import {

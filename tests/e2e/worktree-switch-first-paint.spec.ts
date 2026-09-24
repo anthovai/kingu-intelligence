@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process'
 import { mkdtempSync, realpathSync, rmSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import type { Page, TestInfo } from '@anthovai/playwright-test'
+import type { Page, TestInfo } from '@stablyai/playwright-test'
 import { expect, test } from './helpers/kingu-app'
 import { loadWorktreesUntilPathsPresent } from './helpers/worktree-registration'
 import {

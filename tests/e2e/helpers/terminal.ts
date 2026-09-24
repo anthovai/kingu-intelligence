@@ -1,5 +1,5 @@
-import type { Page } from '@anthovai/playwright-test'
-import { expect } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
+import { expect } from '@stablyai/playwright-test'
 import {
   getTerminalContent,
   readPaneIdentitySnapshot,
@@ -24,6 +24,11 @@ import {
   waitForPaneCount as waitForPaneCountImpl,
   waitForTerminalOutput as waitForTerminalOutputImpl
 } from './terminal-pane-operations'
+
+export {
+  expectTerminalAccessibilityText,
+  readTerminalAccessibilityText
+} from './terminal-accessibility-tree'
 
 export {
   getTerminalContent,

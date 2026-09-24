@@ -17,7 +17,7 @@
  */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import type { ElectronApplication } from '@anthovai/playwright-test'
+import type { ElectronApplication } from '@stablyai/playwright-test'
 import { test, expect } from './helpers/kingu-app'
 import { TEST_REPO_PATH_FILE } from './global-setup'
 import {

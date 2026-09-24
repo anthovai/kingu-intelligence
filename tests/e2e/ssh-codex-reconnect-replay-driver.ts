@@ -1,6 +1,6 @@
 import { installSshReplayReplyProbe, readSshReplayReplies } from './ssh-codex-replay-reply-probe'
 import { execFileSync } from 'node:child_process'
-import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import type { ElectronApplication, Page } from '@stablyai/playwright-test'
 import { expect } from './helpers/kingu-app'
 import {
   DOCKER_SSH_RELAY_REMOTE_REPO_PATH,

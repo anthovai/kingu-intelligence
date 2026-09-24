@@ -1,4 +1,4 @@
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { waitForRestoredTerminalInputReady } from './helpers/restored-terminal-input-readiness'
 

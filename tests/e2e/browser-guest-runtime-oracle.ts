@@ -1,4 +1,4 @@
-import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import type { ElectronApplication, Page } from '@stablyai/playwright-test'
 import { expect } from './helpers/kingu-app'
 import { switchToOtherWorktree, switchToWorktree } from './helpers/store'
 

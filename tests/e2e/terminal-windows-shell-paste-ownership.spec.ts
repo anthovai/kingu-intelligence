@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 import { rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import { WINDOWS_GIT_BASH_SHELL } from '../../src/shared/windows-terminal-shell'
 import { test, expect } from './helpers/kingu-app'
 import {

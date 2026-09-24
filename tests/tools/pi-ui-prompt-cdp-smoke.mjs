@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict'
 import { mkdir } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
-import { chromium, expect } from '@anthovai/playwright-test'
+import { chromium, expect } from '@stablyai/playwright-test'
 
 const [endpoint, outputDirectory] = process.argv.slice(2)
 assert.ok(endpoint && outputDirectory, 'Pass the CDP endpoint and screenshot directory')

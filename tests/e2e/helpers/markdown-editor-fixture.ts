@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto'
 import { mkdir, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import type { Locator, Page } from '@anthovai/playwright-test'
-import { expect } from '@anthovai/playwright-test'
+import type { Locator, Page } from '@stablyai/playwright-test'
+import { expect } from '@stablyai/playwright-test'
 
 const MARKDOWN_HYDRATION_TIMEOUT_MS = 25_000
 

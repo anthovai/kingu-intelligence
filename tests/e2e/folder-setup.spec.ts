@@ -6,7 +6,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { test, expect } from './helpers/kingu-app'
 import { waitForSessionReady } from './helpers/store'
-import type { ElectronApplication, Locator } from '@anthovai/playwright-test'
+import type { ElectronApplication, Locator } from '@stablyai/playwright-test'
 
 const IMPORT_AS_GROUP_BUTTON_NAME = 'Yes, import as group'
 

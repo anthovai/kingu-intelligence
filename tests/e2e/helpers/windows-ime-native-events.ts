@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs'
-import type { CDPSession } from '@anthovai/playwright-test'
+import type { CDPSession } from '@stablyai/playwright-test'
 
 export function readPtyInputs(inputLogPath: string): string[] {
   return readFileSync(inputLogPath, 'utf8')

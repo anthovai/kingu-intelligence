@@ -1,4 +1,4 @@
-import type { Locator, Page } from '@anthovai/playwright-test'
+import type { Locator, Page } from '@stablyai/playwright-test'
 import { mkdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { test, expect } from './helpers/kingu-app'

@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import type { ElectronApplication } from '@anthovai/playwright-test'
+import type { ElectronApplication } from '@stablyai/playwright-test'
 import { test, expect } from './helpers/kingu-app'
 import { waitForSessionReady } from './helpers/store'
 import { readHookEndpoint } from './helpers/agent-hook-endpoint'

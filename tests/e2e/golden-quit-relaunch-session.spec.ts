@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs'
-import type { ElectronApplication } from '@anthovai/playwright-test'
+import type { ElectronApplication } from '@stablyai/playwright-test'
 import { expect, test } from './helpers/kingu-app'
 import { openFileExplorer } from './helpers/file-explorer'
 import { attachRepoAndOpenTerminal, createRestartSession } from './helpers/kingu-restart'

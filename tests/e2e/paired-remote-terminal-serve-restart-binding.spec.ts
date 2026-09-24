@@ -10,7 +10,7 @@
  */
 import { readFileSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import type { ElectronApplication, Page } from '@stablyai/playwright-test'
 import { getHistorySessionDirName } from '../../src/main/daemon/history-paths'
 import { LOG_HEADER_BYTES } from '../../src/main/daemon/terminal-history-log'
 import { DEFAULT_LOCAL_KINGU_PROFILE_ID } from '../../src/shared/kingu-profiles'

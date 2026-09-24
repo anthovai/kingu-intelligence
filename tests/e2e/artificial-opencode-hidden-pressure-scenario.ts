@@ -1,5 +1,5 @@
-import type { Page, TestInfo } from '@anthovai/playwright-test'
-import { expect } from '@anthovai/playwright-test'
+import type { Page, TestInfo } from '@stablyai/playwright-test'
+import { expect } from '@stablyai/playwright-test'
 import { randomUUID } from 'node:crypto'
 import { rmSync } from 'node:fs'
 import path from 'node:path'

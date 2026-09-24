@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import type { ElectronApplication, Page } from '@stablyai/playwright-test'
 import { expect, test } from './helpers/kingu-app'
 import type { AiVaultSession } from '../../src/shared/ai-vault-types'
 import type { AiVaultDeleteSessionResult } from '../../src/shared/ai-vault-session-deletion'

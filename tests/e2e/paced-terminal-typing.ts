@@ -1,4 +1,4 @@
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import { existsSync, readFileSync } from 'node:fs'
 import { focusActiveTerminalInput } from './helpers/terminal'
 import {

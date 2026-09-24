@@ -14,7 +14,7 @@
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { expect, type Page } from '@anthovai/playwright-test'
+import { expect, type Page } from '@stablyai/playwright-test'
 
 export type RuntimeRpcCall = <TResult>(method: string, params: unknown) => Promise<TResult>
 

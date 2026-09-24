@@ -1,6 +1,6 @@
 import { rmSync } from 'node:fs'
 import path from 'node:path'
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import { gitExecFileAsync } from '../../src/main/git/runner'
 import { listWorktreesStrict } from '../../src/main/git/worktree'
 import { areWorktreePathsEqual } from '../../src/main/ipc/worktree-path-comparison'

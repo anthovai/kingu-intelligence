@@ -1,4 +1,4 @@
-import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import type { ElectronApplication, Page } from '@stablyai/playwright-test'
 
 /**
  * Reveals a paired client's window so its renderer unparks runtime subscriptions. Leave the client

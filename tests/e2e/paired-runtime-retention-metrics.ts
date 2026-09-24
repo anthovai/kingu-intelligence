@@ -1,4 +1,4 @@
-import type { JSHandle, Page } from '@anthovai/playwright-test'
+import type { JSHandle, Page } from '@stablyai/playwright-test'
 
 export type PairedRetentionSample = {
   bufferCells: number

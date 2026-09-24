@@ -1,4 +1,4 @@
-import type { ElectronApplication } from '@anthovai/playwright-test'
+import type { ElectronApplication } from '@stablyai/playwright-test'
 
 type ReplayPayload = { id: string; length: number; preview: string; source: 'spawn-reply' }
 type SpawnHandler = (event: unknown, args: Record<string, unknown>) => Promise<unknown>

@@ -18,7 +18,7 @@
  * behavior that needs a real process, a real title, or a real pane.
  */
 import { test, expect } from './helpers/kingu-app'
-import type { ElectronApplication, Page, TestInfo } from '@anthovai/playwright-test'
+import type { ElectronApplication, Page, TestInfo } from '@stablyai/playwright-test'
 import { randomUUID } from 'node:crypto'
 import { writeFileSync } from 'node:fs'
 import {

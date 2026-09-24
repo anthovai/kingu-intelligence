@@ -1,7 +1,7 @@
 import { rmSync } from 'node:fs'
 import { createServer } from 'node:http'
 import type { AddressInfo } from 'node:net'
-import type { ElectronApplication, Page, TestInfo } from '@anthovai/playwright-test'
+import type { ElectronApplication, Page, TestInfo } from '@stablyai/playwright-test'
 import {
   launchHeadlessPairedRuntimeHost,
   type HeadlessPairedRuntimeHost

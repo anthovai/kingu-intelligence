@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
-import type { Page } from '@anthovai/playwright-test'
-import { expect } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
+import { expect } from '@stablyai/playwright-test'
 import { sendToTerminal } from './helpers/terminal'
 import {
   getTerminalContentForPtyId,

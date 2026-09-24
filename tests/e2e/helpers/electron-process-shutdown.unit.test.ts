@@ -1,7 +1,7 @@
 import { EventEmitter } from 'node:events'
 import { PassThrough } from 'node:stream'
 import type { ChildProcess } from 'node:child_process'
-import type { ElectronApplication } from '@anthovai/playwright-test'
+import type { ElectronApplication } from '@stablyai/playwright-test'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { closeElectronAppForE2E } from './electron-process-shutdown'
 

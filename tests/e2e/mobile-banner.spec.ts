@@ -1,4 +1,4 @@
-import type { ElectronApplication, Page, TestInfo } from '@anthovai/playwright-test'
+import type { ElectronApplication, Page, TestInfo } from '@stablyai/playwright-test'
 import { test, expect } from './helpers/kingu-app'
 import {
   ensureTerminalVisible,

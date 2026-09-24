@@ -1,5 +1,5 @@
 import { connectSshTestTarget } from './ssh-test-target-connection'
-import { expect, type Page } from '@anthovai/playwright-test'
+import { expect, type Page } from '@stablyai/playwright-test'
 
 import {
   DOCKER_SSH_PROXY_JUMP_REMOTE_REPO_PATH,

@@ -20,7 +20,7 @@ import {
   type Page,
   type ElectronApplication,
   type TestInfo
-} from '@anthovai/playwright-test'
+} from '@stablyai/playwright-test'
 import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
@@ -455,4 +455,4 @@ export const test = base.extend<KinguTestFixtures, KinguWorkerFixtures>({
   }
 })
 
-export { expect } from '@anthovai/playwright-test'
+export { expect } from '@stablyai/playwright-test'

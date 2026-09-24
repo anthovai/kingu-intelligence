@@ -6,8 +6,8 @@ import { openSidebarProjectDialog } from './sidebar-project-dialog'
 
 import { mkdirSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import type { ElectronApplication, Locator, Page } from '@anthovai/playwright-test'
-import { expect } from '@anthovai/playwright-test'
+import type { ElectronApplication, Locator, Page } from '@stablyai/playwright-test'
+import { expect } from '@stablyai/playwright-test'
 
 export function makeSshConfigHostPrefix(): string {
   return `e2e-ssh-cfg-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`

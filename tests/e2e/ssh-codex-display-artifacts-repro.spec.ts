@@ -1,4 +1,4 @@
-import type { TestInfo } from '@anthovai/playwright-test'
+import type { TestInfo } from '@stablyai/playwright-test'
 import { test, expect } from './helpers/kingu-app'
 import {
   ensureTerminalVisible,

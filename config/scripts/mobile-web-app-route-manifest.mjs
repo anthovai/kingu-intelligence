@@ -1,5 +1,6 @@
 import { readdir } from 'node:fs/promises'
 import { extname, join, relative } from 'node:path'
+import * as esbuild from 'esbuild'
 
 /** The route subtree the page mounts. The rest of mobile/app is native-only (pairing, settings). */
 export const MOBILE_WEB_APP_ROUTE_ROOT = 'h'
@@ -50,7 +51,42 @@ export async function collectMobileWebAppRoutes(appDir, routeRoot = MOBILE_WEB_A
   if (routes.length === 0) {
     throw new Error(`[mobile-web-app] no routes under ${join(appDir, routeRoot)}`)
   }
-  return routes.sort((left, right) => (left.key < right.key ? -1 : 1))
+  const rootLayout = await pageRootLayout(appDir)
+  return (rootLayout ? [...routes, rootLayout] : routes).sort((left, right) =>
+    left.key < right.key ? -1 : 1
+  )
+}
+
+/**
+ * The page's root layout: the web sibling of `app/_layout.tsx`, never the native file, which owns
+ * pairing and push. Without one expo-router mounts `DefaultNavigator`, an all-edges SafeAreaView.
+ */
+async function pageRootLayout(appDir) {
+  const entries = await readdir(appDir, { withFileTypes: true })
+  const files = new Set(entries.filter((entry) => entry.isFile()).map((entry) => entry.name))
+  const override = files.has(ROOT_LAYOUT) ? webSiblingOf(ROOT_LAYOUT, files) : undefined
+  return override ? { key: `./${ROOT_LAYOUT}`, module: join(appDir, override) } : null
+}
+
+const ROOT_LAYOUT = '_layout.tsx'
+
+/**
+ * The URL pattern expo-router gives a route key, or null for a file that is not a screen.
+ *
+ * Dynamic segments are kept as written (`[hostId]`), because what this feeds is a pattern the shell
+ * matches a concrete route against, not a URL anyone visits. `index` names its own directory, and a
+ * file whose name starts with `_` is a layout rather than a screen.
+ */
+export function routePathnameFromKey(key) {
+  const segments = key.replace(/^\.\//, '').replace(ROUTE_FILE, '').split('/')
+  const last = segments.at(-1)
+  if (last === undefined || last.startsWith('_')) {
+    return null
+  }
+  if (last === 'index') {
+    segments.pop()
+  }
+  return `/${segments.join('/')}`
 }
 
 /** The require.context keys alone, for callers that only need the route names. */
@@ -81,21 +117,111 @@ routeContext.id = 'kingu-mobile-web-app-routes'`
 
 /**
  * esbuild has no `require.context`, so the builder synthesizes the RequireContext expo-router's
- * own ExpoRoot consumes. Static imports, not a lazy getter: one chunk, no fetch behind the
- * page's CSP.
+ * own ExpoRoot consumes. The context itself stays synchronous — expo-router reads `keys()` to
+ * build the route tree before anything renders — and only the screen behind each key is deferred,
+ * through the `import()` esbuild splits into a per-route chunk.
+ *
+ * `default` is the whole module: a lazy module cannot answer `unstable_settings` or
+ * `ErrorBoundary`, which expo-router reads synchronously off the namespace. No route in the
+ * mounted subtree exports either, and `assertRoutesCarryNoSynchronousExports` below fails the
+ * build rather than emitting a page that mounts with the export silently gone.
  */
 export function renderMobileWebAppRouteManifest(routes) {
-  const importLines = routes.map(
-    ({ module }, index) => `import * as route${String(index)} from ${JSON.stringify(module)}`
-  )
-  const entryLines = routes.map(
-    ({ key }, index) => `  [${JSON.stringify(key)}]: route${String(index)}`
-  )
-  return `${importLines.join('\n')}
+  const entryLines = routes.map(({ key, module }) => {
+    // The layout commits with the screen below it still behind its own chunk, so it is not what
+    // says the page has something to show.
+    // Optional because the closure builds call this with the page-route list, whose entries carry
+    // no key: that manifest is never loaded, since a route module imports nothing from it.
+    const resolved = key?.endsWith('/_layout.tsx')
+      ? `import(${JSON.stringify(module)})`
+      : `import(${JSON.stringify(module)}).then(withRouteScreenPaintReport)`
+    return `  [${JSON.stringify(key)}]: { default: lazy(() => ${resolved}) }`
+  })
+  return `import { lazy } from "react"
+import { withRouteScreenPaintReport } from "./src/mobile-web-shell/bridge/page-first-paint"
 const modules = {
 ${entryLines.join(',\n')}
 }
 ${ROUTE_CONTEXT_SOURCE}
 export default routeContext
 `
+}
+
+/**
+ * The expo-router exports a route module may carry besides `default`. Read off the namespace while
+ * the tree is built, so a lazy module would drop them silently rather than fail.
+ */
+export const ROUTE_MODULE_SYNCHRONOUS_EXPORTS = ['unstable_settings', 'ErrorBoundary']
+
+/**
+ * How esbuild has to read a route's own source. React Native ships untranspiled JSX inside `.js`,
+ * including expo-router's own build/, so a `.js` route that carries JSX is a syntax error without
+ * this. The builder spreads the same table into its own loaders, which is what keeps the guard
+ * reading a route exactly as the bundle does.
+ */
+export const ROUTE_SOURCE_LOADERS = { '.js': 'jsx' }
+
+/** esbuild's own normalized output for a re-export whose names it did not resolve. */
+const STAR_REEXPORT = /^export \* from "(.*)";$/gm
+
+/**
+ * Which of those a route module puts on its namespace, and which specifiers it re-exports whole.
+ *
+ * Read from esbuild's parse rather than the source text, because the name reaching the namespace
+ * is not the name any declaration carries: `export { settings as unstable_settings }`,
+ * `export class ErrorBoundary` and `export { ErrorBoundary } from './boundary'` are all invisible
+ * to a pattern over declarations, and all three break the lazy manifest the same way.
+ *
+ * `bundle` is off: this asks what one module exports, and following its imports would pull the
+ * whole app in to answer. The cost is `export * from x`, whose names esbuild cannot enumerate
+ * without reading x; those are returned separately so the caller fails closed instead of reading
+ * an unresolved star as clean.
+ */
+export async function routeModuleSynchronousExports(modulePath) {
+  const result = await esbuild.build({
+    entryPoints: [modulePath],
+    bundle: false,
+    write: false,
+    format: 'esm',
+    metafile: true,
+    loader: ROUTE_SOURCE_LOADERS,
+    // Never written; it only names the single output the metafile is keyed by.
+    outdir: 'route-exports',
+    logLevel: 'silent'
+  })
+  const [output] = Object.values(result.metafile.outputs)
+  return {
+    named: (output?.exports ?? []).filter((name) =>
+      ROUTE_MODULE_SYNCHRONOUS_EXPORTS.includes(name)
+    ),
+    starExports: [...result.outputFiles[0].text.matchAll(STAR_REEXPORT)].map((match) => match[1])
+  }
+}
+
+/**
+ * Fails the build on any route the lazy manifest would strip an export from. Runs in the build
+ * and not only in a test, because what it prevents is a page that mounts with `ErrorBoundary`
+ * gone: the throw escapes to the window, nothing paints, and no log says why.
+ *
+ * 14 parses of one module each, so it costs a fraction of the bundle it guards.
+ */
+export async function assertRoutesCarryNoSynchronousExports(routes) {
+  const read = await Promise.all(routes.map(({ module }) => routeModuleSynchronousExports(module)))
+  routes.forEach(({ key }, index) => {
+    const { named, starExports } = read[index]
+    if (named.length > 0) {
+      throw new Error(
+        `[mobile-web-app] ${key} exports ${named.join(', ')}, which expo-router reads off the ` +
+          'module namespace while it builds the route tree. A route behind import() cannot answer ' +
+          'it, so this route needs a static import or the export has to move to a layout.'
+      )
+    }
+    if (starExports.length > 0) {
+      throw new Error(
+        `[mobile-web-app] ${key} re-exports all of ${starExports.join(', ')}, so whether it ` +
+          `carries ${ROUTE_MODULE_SYNCHRONOUS_EXPORTS.join(' or ')} cannot be read without ` +
+          'bundling it. Name the exports instead of re-exporting the module whole.'
+      )
+    }
+  })
 }

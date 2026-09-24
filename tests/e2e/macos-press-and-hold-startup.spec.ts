@@ -15,7 +15,7 @@
  * real home regardless of the harness's HOME isolation, so a run that wrote anything would be
  * writing into a domain shared with every other unpackaged Electron app on the machine.
  */
-import type { ElectronApplication } from '@anthovai/playwright-test'
+import type { ElectronApplication } from '@stablyai/playwright-test'
 import { expect, test } from './helpers/kingu-app'
 
 test.use({ seedTestRepo: false })

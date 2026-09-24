@@ -1,7 +1,7 @@
 import { openSidebarWorkspaceComposer } from './helpers/sidebar-project-dialog'
 import { mkdirSync, writeFileSync, realpathSync } from 'node:fs'
 import path from 'node:path'
-import type { ElectronApplication, Page, TestInfo } from '@anthovai/playwright-test'
+import type { ElectronApplication, Page, TestInfo } from '@stablyai/playwright-test'
 import { test, expect } from './helpers/kingu-app'
 import { removeWorktreeViaStore } from './helpers/dead-terminal'
 import {

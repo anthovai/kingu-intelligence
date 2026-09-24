@@ -17,7 +17,7 @@
  * project with no native input source. The row is written straight to the emulator because the
  * defect is in what the overlay draws over the buffer, not in anything reaching the pty.
  */
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import { expect, test } from './helpers/kingu-app'
 import { closeTerminalImePaneArena, openTerminalImePaneArena } from './terminal-ime-pane-arena'
 import { setImeComposition } from './terminal-ime-cdp-composition'

@@ -3,7 +3,7 @@
  * focus back, early blurs, and blur-commit behavior.
  */
 
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import { test, expect } from './helpers/kingu-app'
 import { splitActiveTerminalPane, waitForPaneCount } from './helpers/terminal'
 import { openTerminalContextMenu } from './helpers/terminal-pane-title-actions'

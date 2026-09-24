@@ -7,7 +7,7 @@ import {
   type ElectronApplication,
   type Page,
   type TestInfo
-} from '@anthovai/playwright-test'
+} from '@stablyai/playwright-test'
 
 import { getE2ECompletedOnboardingProfile } from './e2e-completed-onboarding-profile'
 import { getKinguElectronLaunchArgs } from './electron-launch-args'

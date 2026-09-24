@@ -1,4 +1,4 @@
-import type { Page, TestInfo } from '@anthovai/playwright-test'
+import type { Page, TestInfo } from '@stablyai/playwright-test'
 import { RuntimeClient } from '../../src/cli/runtime/client'
 import { expect, test } from './helpers/kingu-app'
 import { readHostBrowserPageIds, readHostTabs } from './helpers/host-session-tabs'

@@ -18,7 +18,7 @@
  * only have been manufactured by the renderer's input path — which is the half of this that is
  * Kingu's to guarantee, and the half that had no coverage.
  */
-import type { CDPSession, Page } from '@anthovai/playwright-test'
+import type { CDPSession, Page } from '@stablyai/playwright-test'
 import { expect, test } from './helpers/kingu-app'
 import { ensureTerminalVisible, waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import {

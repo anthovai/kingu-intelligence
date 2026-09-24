@@ -1,5 +1,5 @@
-import type { Page } from '@anthovai/playwright-test'
-import { expect } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
+import { expect } from '@stablyai/playwright-test'
 
 /**
  * Samples the xterm preedit overlay's real geometry.

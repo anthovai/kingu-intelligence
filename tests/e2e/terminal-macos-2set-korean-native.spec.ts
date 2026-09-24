@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process'
-import type { Page, TestInfo } from '@anthovai/playwright-test'
+import type { Page, TestInfo } from '@stablyai/playwright-test'
 import { expect, test } from './helpers/kingu-app'
 import { ensureTerminalVisible, waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import {
@@ -119,8 +119,10 @@ async function runNativeScenario(
 
 test.describe('Native macOS 2-Set Korean terminal input @headful', () => {
   test.skip(
-    process.platform !== 'darwin' || process.env.KINGU_E2E_NATIVE_MACOS_KOREAN !== '1',
-    'Requires macOS with 2-Set Korean selected and Accessibility access'
+    process.platform !== 'darwin' ||
+      process.env.KINGU_E2E_NATIVE_MACOS_KOREAN !== '1' ||
+      process.env.KINGU_E2E_FOREGROUND !== '1',
+    'Requires macOS with 2-Set Korean, Accessibility access, and an isolated foreground run'
   )
 
   test('forwards physical Hangul input as exact PTY bytes', async ({

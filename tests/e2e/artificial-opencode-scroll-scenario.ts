@@ -1,4 +1,4 @@
-import type { Page, TestInfo } from '@anthovai/playwright-test'
+import type { Page, TestInfo } from '@stablyai/playwright-test'
 import {
   dispatchActiveTerminalWheelEvent,
   readActiveTerminalScrollState,

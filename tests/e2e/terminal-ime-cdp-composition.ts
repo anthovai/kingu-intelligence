@@ -1,4 +1,4 @@
-import type { CDPSession, Page } from '@anthovai/playwright-test'
+import type { CDPSession, Page } from '@stablyai/playwright-test'
 
 /**
  * Dispatches the key shapes an input source or a system text substitution produces, through CDP.
@@ -74,6 +74,45 @@ export async function dispatchImeSubstitutedTextKey(
     windowsVirtualKeyCode: identity.keyCode,
     nativeVirtualKeyCode: identity.keyCode
   })
+}
+
+/** Same direct commit shape, with Chromium's composing bit set on the idle Process keydown. */
+export async function dispatchImeIdleComposingTextKey(
+  page: Page,
+  identity: ImeKeyIdentity,
+  committedText: string
+): Promise<void> {
+  await page.evaluate(
+    ({ identity: key, committedText: text }) => {
+      const textarea = document.querySelector<HTMLTextAreaElement>('.xterm-helper-textarea:focus')
+      if (!textarea) {
+        throw new Error('xterm helper textarea is not focused')
+      }
+      const event = new KeyboardEvent('keydown', {
+        key: 'Process',
+        code: key.code,
+        bubbles: true,
+        cancelable: true,
+        isComposing: true
+      })
+      Object.defineProperty(event, 'keyCode', { value: key.keyCode })
+      textarea.dispatchEvent(event)
+      textarea.value = text
+      const input = new InputEvent('input', { bubbles: true, composed: true, data: text })
+      Object.defineProperty(input, 'inputType', { value: 'insertText' })
+      textarea.dispatchEvent(input)
+      textarea.dispatchEvent(
+        new KeyboardEvent('keyup', {
+          key: 'Process',
+          code: key.code,
+          bubbles: true,
+          cancelable: true,
+          isComposing: false
+        })
+      )
+    },
+    { identity, committedText }
+  )
 }
 
 export async function dispatchPlainEnter(session: CDPSession): Promise<void> {

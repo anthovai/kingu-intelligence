@@ -1,5 +1,5 @@
 import { openSidebarWorkspaceComposer } from './helpers/sidebar-project-dialog'
-import type { ElectronApplication, Locator, Page } from '@anthovai/playwright-test'
+import type { ElectronApplication, Locator, Page } from '@stablyai/playwright-test'
 import type { GitHubWorkItem } from '../../src/shared/github/work-item-types'
 import type { GitLabWorkItem } from '../../src/shared/gitlab-types'
 import { test, expect } from './helpers/kingu-app'

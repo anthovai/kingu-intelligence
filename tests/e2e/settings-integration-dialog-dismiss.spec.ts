@@ -6,7 +6,7 @@
  * Mirrors the SSH host form modal guard (tests/e2e/ssh-host-form-modal.spec.ts).
  */
 
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import { expect, test } from './helpers/kingu-app'
 import { dismissTransientAnnouncement } from './helpers/ssh-config-host-picker'
 import { waitForSessionReady } from './helpers/store'

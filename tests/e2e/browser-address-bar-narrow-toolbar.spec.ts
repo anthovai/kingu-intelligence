@@ -8,7 +8,7 @@
 import { createServer } from 'node:http'
 import type { AddressInfo } from 'node:net'
 import { expect, test } from './helpers/kingu-app'
-import type { ElectronApplication, Locator, Page } from '@anthovai/playwright-test'
+import type { ElectronApplication, Locator, Page } from '@stablyai/playwright-test'
 import {
   ensureTerminalVisible,
   getActiveTabType,

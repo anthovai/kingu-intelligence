@@ -1,4 +1,4 @@
-import { expect, type CDPSession, type Page, type TestInfo } from '@anthovai/playwright-test'
+import { expect, type CDPSession, type Page, type TestInfo } from '@stablyai/playwright-test'
 import { ensureTerminalVisible, waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 import {
   focusActiveTerminalInput,

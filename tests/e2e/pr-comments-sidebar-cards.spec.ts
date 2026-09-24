@@ -1,4 +1,4 @@
-import type { Locator } from '@anthovai/playwright-test'
+import type { Locator } from '@stablyai/playwright-test'
 import { test, expect } from './helpers/kingu-app'
 import { openChecks } from './helpers/source-control-ai-generation'
 import { seedPRCommentsSidebarFixture } from './helpers/pr-comments-sidebar-fixture'

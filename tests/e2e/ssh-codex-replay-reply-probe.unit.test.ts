@@ -1,4 +1,4 @@
-import type { ElectronApplication } from '@anthovai/playwright-test'
+import type { ElectronApplication } from '@stablyai/playwright-test'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { installSshReplayReplyProbe, readSshReplayReplies } from './ssh-codex-replay-reply-probe'
 

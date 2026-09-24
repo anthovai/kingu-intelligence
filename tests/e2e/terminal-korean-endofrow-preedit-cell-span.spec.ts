@@ -18,7 +18,7 @@
  * claim under test is only that the overlay is materially wider than the single cell the report
  * measured, which is what discriminates the overlay from the cursor.
  */
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import { expect, test } from './helpers/kingu-app'
 import { closeTerminalImePaneArena, openTerminalImePaneArena } from './terminal-ime-pane-arena'
 import { setImeComposition } from './terminal-ime-cdp-composition'

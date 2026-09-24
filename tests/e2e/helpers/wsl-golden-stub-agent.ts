@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process'
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import { buildWslExecArgs } from '../../../src/shared/wsl-login-shell-command'
 
 /** A WSL-only path makes the stub marker proof that the pane ran in the distro. */

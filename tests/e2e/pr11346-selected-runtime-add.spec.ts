@@ -2,7 +2,7 @@ import { expectSidebarProjectVisible } from './helpers/sidebar-project-visibilit
 import { openSidebarProjectDialog } from './helpers/sidebar-project-dialog'
 import { rmSync } from 'node:fs'
 import path from 'node:path'
-import type { ElectronApplication, Locator, Page, TestInfo } from '@anthovai/playwright-test'
+import type { ElectronApplication, Locator, Page, TestInfo } from '@stablyai/playwright-test'
 import { RuntimeClient } from '../../src/cli/runtime/client'
 import type { FolderWorkspace } from '../../src/shared/folder-workspace-types'
 import type { ProjectGroup } from '../../src/shared/project-group-types'

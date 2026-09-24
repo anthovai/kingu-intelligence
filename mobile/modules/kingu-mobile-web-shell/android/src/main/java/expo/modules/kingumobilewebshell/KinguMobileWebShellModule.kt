@@ -8,7 +8,7 @@ class KinguMobileWebShellModule : Module() {
     Name("KinguMobileWebShell")
 
     View(KinguMobileWebShellView::class) {
-      Events("onLoadState", "onBridgeMessage")
+      Events("onLoadState", "onBridgeMessage", "onExternalNavigation")
 
       Prop("generationDirectory") { view: KinguMobileWebShellView, value: String ->
         view.setGenerationDirectory(value)

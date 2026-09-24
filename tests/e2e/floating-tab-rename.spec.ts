@@ -1,5 +1,5 @@
 import path from 'node:path'
-import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import type { ElectronApplication, Page } from '@stablyai/playwright-test'
 import { test, expect } from './helpers/kingu-app'
 import { waitForSessionReady } from './helpers/store'
 import { createRestartSession } from './helpers/kingu-restart'

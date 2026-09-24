@@ -4,7 +4,7 @@ import { mkdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { mkdtemp } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
-import type { ElectronApplication, Locator } from '@anthovai/playwright-test'
+import type { ElectronApplication, Locator } from '@stablyai/playwright-test'
 import { test, expect } from './helpers/kingu-app'
 import { waitForSessionReady } from './helpers/store'
 

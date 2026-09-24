@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import type { Page } from '@anthovai/playwright-test'
-import { expect } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
+import { expect } from '@stablyai/playwright-test'
 
 const ERROR_BOUNDARY_TEXT = 'The rich markdown editor hit an unexpected error'
 const SCHEMA_ERROR_SIGNATURE = 'Invalid content for node'

@@ -10,8 +10,8 @@ import { tmpdir } from 'node:os'
 import { join, sep } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { promisify } from 'node:util'
-import type { Page, TestInfo } from '@anthovai/playwright-test'
-import { expect, test } from '@anthovai/playwright-test'
+import type { Page, TestInfo } from '@stablyai/playwright-test'
+import { expect, test } from '@stablyai/playwright-test'
 import { createRestartSession } from './helpers/kingu-restart'
 
 const execFileAsync = promisify(execFile)

@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs'
 import { isAbsolute } from 'node:path'
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 
 export type StagingSkillSshTarget = {
   host: string

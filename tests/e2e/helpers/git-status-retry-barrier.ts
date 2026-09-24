@@ -1,4 +1,4 @@
-import type { ElectronApplication } from '@anthovai/playwright-test'
+import type { ElectronApplication } from '@stablyai/playwright-test'
 
 type StatusArgs = { worktreePath?: string; admissionTier?: string }
 type StatusHandler = (event: unknown, args?: StatusArgs) => unknown

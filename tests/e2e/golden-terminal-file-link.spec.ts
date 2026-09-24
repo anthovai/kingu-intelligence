@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import { expect, test } from './helpers/kingu-app'
 import { openFileExplorer } from './helpers/file-explorer'
 import { ensureTerminalVisible, waitForActiveWorktree, waitForSessionReady } from './helpers/store'
@@ -246,11 +246,17 @@ test('reuses a terminal file link already open in a sibling workspace @golden', 
 
   await ensureTerminalVisible(kinguPage)
   await waitForActiveTerminalManager(kinguPage, 30_000)
-  await kinguPage.evaluate(() => {
+  await kinguPage.evaluate((sourceWorktreeId) => {
     const state = window.__store?.getState()
     state?.setSidebarOpen(false)
     state?.setRightSidebarOpen(false)
-  })
+    // Why: closing the left sidebar can drop activeWorktreeId on mac CI,
+    // which remounts Landing and leaves terminal.cols at 0.
+    if (state && state.activeWorktreeId !== sourceWorktreeId) {
+      state.setActiveWorktree(sourceWorktreeId)
+    }
+  }, sourceWorktreeId)
+  await ensureTerminalVisible(kinguPage)
   await expect
     .poll(
       () =>

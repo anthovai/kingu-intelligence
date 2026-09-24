@@ -6,7 +6,7 @@ import '../../../src/main/daemon/xterm-env-polyfill'
 import { describe, expect, it } from 'vitest'
 import { Terminal } from '@xterm/headless'
 import { SerializeAddon } from '@xterm/addon-serialize'
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import { findMarkerFrame, readActiveScreen, readRenderedAltScreenFrame } from './alt-screen-frame'
 
 const MARKER = 'DUPLICATE_PTY_REVEAL_TEST'

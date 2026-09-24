@@ -1,4 +1,4 @@
-import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import type { ElectronApplication, Page } from '@stablyai/playwright-test'
 
 const DEFAULT_STATUS_UPDATE_INTERVAL_MS = 100
 const IPC_SETTLE_TIMEOUT_MS = 10_000

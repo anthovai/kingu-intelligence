@@ -32,7 +32,7 @@
  * shape macOS produces with no remap at all (the keydown carries the glyph), and once through the
  * remap path with the substitution set to that character itself, which is the config's second line.
  */
-import type { CDPSession } from '@anthovai/playwright-test'
+import type { CDPSession } from '@stablyai/playwright-test'
 import { expect, test } from './helpers/kingu-app'
 import { closeTerminalImePaneArena, openTerminalImePaneArena } from './terminal-ime-pane-arena'
 import { readTerminalImeBoundaryTrace } from './terminal-ime-boundary-probe'

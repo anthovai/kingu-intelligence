@@ -1,4 +1,4 @@
-import { _electron as electron } from '@anthovai/playwright-test'
+import { _electron as electron } from '@stablyai/playwright-test'
 import { build as buildMain } from 'esbuild'
 import { build as buildRenderer } from 'vite'
 import tailwindcss from '@tailwindcss/vite'

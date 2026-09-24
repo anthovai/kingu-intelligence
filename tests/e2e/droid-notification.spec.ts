@@ -1,5 +1,5 @@
 import { test, expect } from './helpers/kingu-app'
-import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import type { ElectronApplication, Page } from '@stablyai/playwright-test'
 import { getRendererTitleLog, installRendererTitleLog } from './helpers/terminal-title-log'
 import {
   sendToTerminal,

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { _electron as electron } from '@anthovai/playwright-test'
+import { _electron as electron } from '@stablyai/playwright-test'
 import {
   cpSync,
   existsSync,

@@ -2,7 +2,7 @@
  * Geometry and serialized-content readers for visible terminal panes.
  */
 
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import { expect } from './kingu-app'
 import { waitForPaneIdentitySnapshot } from './terminal'
 

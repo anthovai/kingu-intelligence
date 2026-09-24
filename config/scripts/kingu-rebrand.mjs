@@ -18,7 +18,6 @@ const ROOT = path.resolve(
 
 // Order matters: the repository slug before the org, the org before the product.
 const TEXT_RULES = [
-  [/onorca\.dev/g, 'kingu.dev'],
   [/stablyai\/orca/g, 'anthovai/kingu-intelligence'],
   [/stablyai/g, 'anthovai'],
   [/Orca/g, 'Kingu'],
@@ -30,12 +29,27 @@ const TEXT_RULES = [
 const BINARY =
   /\.(png|jpe?g|gif|webp|ico|icns|bmp|ttf|otf|woff2?|mp3|mp4|wav|zip|gz|tgz|node|wasm|pdf|sqlite|jar|keystore|bin)$/i
 
+// npm packages published under the upstream org keep their real names: renaming
+// `@stablyai/playwright-test` breaks every install and import that uses it.
+const KEPT = [/@stablyai\/playwright/g]
+const KEPT_MARK = '\u0000kingu-kept\u0000'
+
 export function rebrandText(text) {
+  const kept = []
   let out = text
+  for (const pattern of KEPT) {
+    out = out.replace(pattern, (match) => {
+      kept.push(match)
+      return `${KEPT_MARK}${kept.length - 1}${KEPT_MARK}`
+    })
+  }
   for (const [pattern, replacement] of TEXT_RULES) {
     out = out.replace(pattern, replacement)
   }
-  return out
+  return out.replace(
+    new RegExp(`${KEPT_MARK}(\\d+)${KEPT_MARK}`, 'g'),
+    (_, index) => kept[Number(index)]
+  )
 }
 
 export function rebrandPath(file) {
@@ -163,7 +177,9 @@ function writeWorkingTree() {
 }
 
 const [mode, a, b] = process.argv.slice(2)
-if (process.argv[1] && import.meta.url !== pathToFileURL(path.resolve(process.argv[1])).href) {
+const isMain =
+  Boolean(process.argv[1]) && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href
+if (!isMain) {
   // Imported, not run.
 } else if (mode === '--check') {
   check(a, b)

@@ -1,4 +1,4 @@
-import type { Page, TestInfo } from '@anthovai/playwright-test'
+import type { Page, TestInfo } from '@stablyai/playwright-test'
 import type { SkillInstallDestination } from '../../src/shared/skill-install-contract'
 import { test, expect } from './helpers/kingu-app'
 import {

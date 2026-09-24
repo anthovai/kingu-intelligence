@@ -15,7 +15,7 @@
  */
 
 import { test, expect } from './helpers/kingu-app'
-import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import type { ElectronApplication, Page } from '@stablyai/playwright-test'
 import { FLOATING_TERMINAL_WORKTREE_ID } from '../../src/shared/constants'
 import {
   execInTerminal,

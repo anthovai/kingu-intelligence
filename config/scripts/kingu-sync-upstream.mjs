@@ -57,13 +57,45 @@ function tree(commit) {
   return map
 }
 
-const blob = (oid) => git(['cat-file', 'blob', oid])
+// Blob contents, read in one `git cat-file --batch` per prefetch: a process per file is
+// what made a sync of a few thousand changed files take longer than half an hour.
+const blobCache = new Map()
+function prefetch(oids) {
+  const wanted = [...new Set(oids)].filter((oid) => oid && !blobCache.has(oid))
+  for (let i = 0; i < wanted.length; i += 2000) {
+    const chunk = wanted.slice(i, i + 2000)
+    const out = git(['cat-file', '--batch'], { input: `${chunk.join('\n')}\n` })
+    let at = 0
+    while (at < out.length) {
+      const end = out.indexOf(10, at)
+      const [oid, , size] = out.subarray(at, end).toString().split(' ')
+      const start = end + 1
+      blobCache.set(oid, out.subarray(start, start + Number(size)))
+      at = start + Number(size) + 1
+    }
+  }
+}
+const blob = (oid) => {
+  if (!blobCache.has(oid)) {
+    prefetch([oid])
+  }
+  return blobCache.get(oid)
+}
 const isBinary = (file, bytes) => BINARY.test(file) || bytes.includes(0)
 const squash = (text) => text.replace(/\s+/g, '')
 
 const B = tree(base)
 const U = tree(upstream)
 const O = tree('HEAD')
+prefetch(
+  [...U].flatMap(([file, u]) => {
+    const b = B.get(file)
+    if (b && b.oid === u.oid) {
+      return []
+    }
+    return [u.oid, b?.oid, O.get(rebrandPath(file))?.oid]
+  })
+)
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'kingu-sync-'))
 
 // Formats a batch of texts with the repo's own formatter, keyed by the path they will live at.
@@ -215,6 +247,10 @@ for (const [target, entry] of result) {
       fs.rmSync(full, { force: true })
       removed++
     }
+    continue
+  }
+  // Kingu's own file, already in the working tree from the `-s ours` merge.
+  if (entry.oid && O.get(target)?.oid === entry.oid && fs.existsSync(full)) {
     continue
   }
   fs.mkdirSync(path.dirname(full), { recursive: true })

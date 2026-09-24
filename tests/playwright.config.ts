@@ -1,4 +1,4 @@
-import { defineConfig } from '@anthovai/playwright-test'
+import { defineConfig } from '@stablyai/playwright-test'
 
 /**
  * Playwright config for Kingu E2E tests.

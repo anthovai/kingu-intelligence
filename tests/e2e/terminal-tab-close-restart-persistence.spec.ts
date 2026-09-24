@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs'
-import type { ElectronApplication } from '@anthovai/playwright-test'
+import type { ElectronApplication } from '@stablyai/playwright-test'
 import { test, expect } from './helpers/kingu-app'
 import { TEST_REPO_PATH_FILE } from './global-setup'
 import { waitForActiveTerminalManager, waitForPaneCount } from './helpers/terminal'

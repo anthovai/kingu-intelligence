@@ -1,6 +1,6 @@
 import { mkdirSync } from 'node:fs'
 import { runProcess } from '../../src/shared/child-process/run-process'
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import { test, expect } from './helpers/kingu-app'
 import { waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 

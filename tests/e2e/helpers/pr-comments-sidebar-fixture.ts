@@ -1,4 +1,4 @@
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 import type { PRComment } from '../../../src/shared/github/comment-types'
 import type { PRInfo } from '../../../src/shared/github/pull-request-types'
 

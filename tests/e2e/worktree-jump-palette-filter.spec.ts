@@ -1,4 +1,4 @@
-import type { Locator, Page } from '@anthovai/playwright-test'
+import type { Locator, Page } from '@stablyai/playwright-test'
 import type { ExecutionHostId } from '../../src/shared/execution-host'
 import { getPaletteWorktreeIdentity } from '../../src/renderer/src/lib/palette-repo-resolution'
 import { encodePaletteIdentity } from '../../src/renderer/src/lib/palette-match/palette-ranking'

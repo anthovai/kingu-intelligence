@@ -10,7 +10,7 @@ const require = createRequire(import.meta.url)
 
 it('native Playwright test-list preserves full discovery, serial suites, skips and headful filtering', async () => {
   const directory = realpathSync(mkdtempSync(join(tmpdir(), 'kingu-playwright-shards-')))
-  const testPackage = JSON.stringify(require.resolve('@anthovai/playwright-test'))
+  const testPackage = JSON.stringify(require.resolve('@stablyai/playwright-test'))
   const config = join(directory, 'playwright.config.cjs')
   writeFileSync(
     config,

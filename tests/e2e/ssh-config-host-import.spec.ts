@@ -4,7 +4,7 @@
  * ssh-config-host-picker.spec.ts.
  */
 
-import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import type { ElectronApplication, Page } from '@stablyai/playwright-test'
 import { expect, test } from './helpers/kingu-app'
 import { waitForSessionReady } from './helpers/store'
 import {

@@ -20,7 +20,7 @@
  *
  * Keep this out of acceptance timing runs (gate: KINGU_TYPING_BENCH_GRAPH_PROBE=1).
  */
-import type { ElectronApplication, Page } from '@anthovai/playwright-test'
+import type { ElectronApplication, Page } from '@stablyai/playwright-test'
 
 const GRAPH_CHANNEL = 'runtime:syncWindowGraph'
 

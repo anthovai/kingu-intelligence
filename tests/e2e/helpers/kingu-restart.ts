@@ -14,7 +14,7 @@ import {
   type ElectronApplication,
   type Page,
   type TestInfo
-} from '@anthovai/playwright-test'
+} from '@stablyai/playwright-test'
 import { execSync } from 'node:child_process'
 import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:net'

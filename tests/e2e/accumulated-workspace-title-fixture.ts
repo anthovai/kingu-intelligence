@@ -1,4 +1,4 @@
-import type { Page } from '@anthovai/playwright-test'
+import type { Page } from '@stablyai/playwright-test'
 
 type TitleFixtureWindow = Window & {
   __accumulatedFixtureTitleTrafficStop?: () => { updates: number }
