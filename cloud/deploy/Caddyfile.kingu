@@ -1,0 +1,12 @@
+# Add to the server's Caddyfile (it already runs Caddy), then `caddy reload`
+# or `systemctl reload caddy`. Caddy gets the HTTPS certificate itself once
+# the A record for kingu points here.
+kingu.anthovai.com {
+	# Skill packages are up to 40 MiB.
+	request_body {
+		max_size 50MB
+	}
+	# If Caddy runs in Docker, point this at the host instead
+	# (e.g. host.docker.internal:8787 or the compose network).
+	reverse_proxy 127.0.0.1:8787
+}

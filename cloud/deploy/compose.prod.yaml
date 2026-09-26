@@ -1,0 +1,48 @@
+# Kingu cloud in production: the API and its Postgres on one server, behind
+# the server's Caddy (see Caddyfile.kingu), which terminates HTTPS for
+# kingu.anthovai.com and proxies to 127.0.0.1:8787.
+#
+#   cp .env.example .env   # then fill in the secrets
+#   docker compose -f deploy/compose.prod.yaml --env-file deploy/.env up -d --build
+#
+# Run from the cloud/ directory. There is no dev sign-in here: the API
+# refuses KINGU_API_DEV_AUTH when NODE_ENV=production.
+name: kingu-cloud
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: kingu
+      POSTGRES_USER: kingu
+      POSTGRES_PASSWORD: ${KINGU_POSTGRES_PASSWORD:?set KINGU_POSTGRES_PASSWORD in deploy/.env}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U kingu -d kingu']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: '8080'
+      DATABASE_URL: postgres://kingu:${KINGU_POSTGRES_PASSWORD}@postgres:5432/kingu
+      KINGU_API_PUBLIC_URL: ${KINGU_API_PUBLIC_URL:-https://kingu.anthovai.com}
+      KINGU_API_GRANT_SECRET: ${KINGU_API_GRANT_SECRET:?set KINGU_API_GRANT_SECRET in deploy/.env}
+      KINGU_API_STATIC_TOKENS: ${KINGU_API_STATIC_TOKENS:-}
+    # Only the local Caddy reaches the API; nothing else on the internet does.
+    ports:
+      - '127.0.0.1:8787:8080'
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
