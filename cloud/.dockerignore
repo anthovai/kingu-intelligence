@@ -2,8 +2,8 @@
 .github/
 .local/
 .terraform/
-node_modules/
-dist/
+**/node_modules/
+**/dist/
 coverage/
 .env
 .env.local

@@ -1,0 +1,44 @@
+# Kingu's own cloud on one machine: the API (Artifacts now; Skills and sign-in
+# next) and its Postgres. `docker compose up -d --build` from this directory;
+# the API answers on http://127.0.0.1:8787.
+#
+# KINGU_API_DEV_AUTH=1 accepts the desktop's dev-build tokens as one dev user.
+# It is refused when NODE_ENV=production, so the published image cannot run
+# with it; this local stack sets NODE_ENV=development on purpose.
+name: kingu-cloud
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: kingu
+      POSTGRES_USER: kingu
+      POSTGRES_PASSWORD: ${KINGU_POSTGRES_PASSWORD:-kingu-local}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U kingu -d kingu']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: '8080'
+      DATABASE_URL: postgres://kingu:${KINGU_POSTGRES_PASSWORD:-kingu-local}@postgres:5432/kingu
+      KINGU_API_PUBLIC_URL: ${KINGU_API_PUBLIC_URL:-http://127.0.0.1:8787}
+      KINGU_API_DEV_AUTH: ${KINGU_API_DEV_AUTH:-1}
+    ports:
+      - '127.0.0.1:8787:8080'
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
