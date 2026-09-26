@@ -5,11 +5,11 @@ import { z } from 'zod'
  * The API that the desktop's Artifacts, Skills and cloud sign-in talk to. One
  * origin serves both the JSON API (`/v1/...`) and the public pages
  * (`/a/<slug>`, `/skills/share/<id>`), so a deployment is one service behind
- * one domain (cloud.anthovai.com), and a local run is one port.
+ * one domain (kingu.anthovai.com), and a local run is one port.
  */
 const configSchema = z.object({
   port: z.number().int().positive(),
-  /** Origin the share links point at, e.g. `https://cloud.anthovai.com` or `http://127.0.0.1:8787`. */
+  /** Origin the share links point at, e.g. `https://kingu.anthovai.com` or `http://127.0.0.1:8787`. */
   publicUrl: z.string().url(),
   /** Postgres connection string; unset keeps everything in memory (tests, quick local runs). */
   databaseUrl: z.string().min(1).optional(),
@@ -21,7 +21,11 @@ const configSchema = z.object({
   /** How long an artifact stays shared after its last write. */
   artifactTtlDays: z.number().int().positive(),
   /** Signs skill download grants. Unset, a fresh one per process: grants live 15 minutes, so a restart only fails downloads in flight. */
-  grantSecret: z.string().min(32)
+  grantSecret: z.string().min(32),
+  /** The desktop's OAuth client id (`KINGU_CLOUD_CLIENT_ID`). */
+  clientId: z.string().min(1),
+  /** Who may create an account: addresses, `@domain` entries, or `*` for anyone. Empty: nobody. */
+  allowedEmails: z.array(z.string())
 })
 
 export type ApiConfig = z.infer<typeof configSchema>
@@ -47,7 +51,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     devUserId: env.KINGU_API_DEV_USER_ID ?? 'dev-user',
     staticTokens: parseStaticTokens(env.KINGU_API_STATIC_TOKENS),
     artifactTtlDays: Number(env.KINGU_API_ARTIFACT_TTL_DAYS ?? 30),
-    grantSecret: env.KINGU_API_GRANT_SECRET || randomBytes(32).toString('base64url')
+    grantSecret: env.KINGU_API_GRANT_SECRET || randomBytes(32).toString('base64url'),
+    clientId: env.KINGU_API_CLIENT_ID ?? 'kingu-desktop',
+    allowedEmails: (env.KINGU_API_ALLOWED_EMAILS ?? '').split(',').map((entry) => entry.trim().toLowerCase()).filter(Boolean)
   })
   if (config.devAuth && env.NODE_ENV === 'production') {
     throw new Error('KINGU_API_DEV_AUTH=1 is refused when NODE_ENV=production.')

@@ -1,7 +1,7 @@
 import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto'
 import { Hono, type Context } from 'hono'
 import { z } from 'zod'
-import { resolveCaller, type Caller } from './auth.js'
+import type { Authenticate, Caller } from './auth.js'
 import type { ApiConfig } from './config.js'
 import { readSkillArchive, SKILL_PACKAGE_CONTENT_TYPE, SKILL_PACKAGE_MAX_COMPRESSED_BYTES, SkillArchiveError } from './skill-archive.js'
 import type { SkillStore, StoredSkillPackage, StoredSkillShare, StoredSkillVersion } from './skill-store.js'
@@ -97,11 +97,11 @@ function sameSignature(a: string, b: string): boolean {
   return left.length === right.length && timingSafeEqual(left, right)
 }
 
-export function skillRoutes(config: ApiConfig, store: SkillStore, now: () => Date = () => new Date()) {
+export function skillRoutes(config: ApiConfig, store: SkillStore, authenticate: Authenticate, now: () => Date = () => new Date()) {
   const api = new Hono<{ Variables: Variables }>()
 
   const requireCaller = async (c: Context<{ Variables: Variables }>, next: () => Promise<void>) => {
-    const caller = resolveCaller(config, c.req.header('authorization'))
+    const caller = await authenticate(c.req.header('authorization'))
     if (!caller) {
       return error(c, 401, 'invalid_access_token', 'Sign in to Kingu cloud again.')
     }

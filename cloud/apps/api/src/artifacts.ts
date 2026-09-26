@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto'
 import { Hono, type Context } from 'hono'
 import { z } from 'zod'
-import { resolveCaller, type Caller } from './auth.js'
+import type { Authenticate, Caller } from './auth.js'
 import type { ApiConfig } from './config.js'
 import type { ArtifactStore, StoredArtifact } from './artifact-store.js'
 import { notFoundPage, renderArtifact, SHARED_PAGE_HEADERS } from './render.js'
@@ -53,11 +53,11 @@ function toListItem(config: ApiConfig, artifact: StoredArtifact) {
  * update and unshare with that token, and owner delete without it. Content is
  * inline JSON; the public page is `/a/<slug>`.
  */
-export function artifactRoutes(config: ApiConfig, store: ArtifactStore, now: () => Date = () => new Date()) {
+export function artifactRoutes(config: ApiConfig, store: ArtifactStore, authenticate: Authenticate, now: () => Date = () => new Date()) {
   const api = new Hono<{ Variables: { caller: Caller } }>()
 
   api.use('*', async (c, next) => {
-    const caller = resolveCaller(config, c.req.header('authorization'))
+    const caller = await authenticate(c.req.header('authorization'))
     if (!caller) {
       return error(c, 401, 'invalid_access_token', 'Sign in to Kingu cloud again.')
     }

@@ -39,6 +39,8 @@ services:
       KINGU_API_PUBLIC_URL: ${KINGU_API_PUBLIC_URL:-https://kingu.anthovai.com}
       KINGU_API_GRANT_SECRET: ${KINGU_API_GRANT_SECRET:?set KINGU_API_GRANT_SECRET in deploy/.env}
       KINGU_API_STATIC_TOKENS: ${KINGU_API_STATIC_TOKENS:-}
+      # Who may create an account on the sign-in page; `*` for anyone.
+      KINGU_API_ALLOWED_EMAILS: ${KINGU_API_ALLOWED_EMAILS:?set KINGU_API_ALLOWED_EMAILS in deploy/.env}
     # Only the local Caddy reaches the API; nothing else on the internet does.
     ports:
       - '127.0.0.1:8787:8080'

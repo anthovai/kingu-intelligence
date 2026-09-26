@@ -18,5 +18,7 @@ Updating: copy the new `cloud/` over and run step 3 again. Data lives in the
 pg_dump -U kingu kingu > backup.sql`.
 
 Desktop builds use `https://kingu.anthovai.com` unless `KINGU_CLOUD_URL`
-says otherwise. Installing from a share link needs no account; publishing
-needs desktop sign-in, which the API does not have yet.
+says otherwise. Signing in from Kingu (Settings → Artifacts or Share Skills
+→ Connect) opens `https://kingu.anthovai.com/v1/desktop/auth/authorize` in
+the browser: sign in, or create an account if the email is allowed by
+`KINGU_API_ALLOWED_EMAILS`. Installing from a share link needs no account.

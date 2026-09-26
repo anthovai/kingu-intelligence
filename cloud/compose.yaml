@@ -36,6 +36,8 @@ services:
       DATABASE_URL: postgres://kingu:${KINGU_POSTGRES_PASSWORD:-kingu-local}@postgres:5432/kingu
       KINGU_API_PUBLIC_URL: ${KINGU_API_PUBLIC_URL:-http://127.0.0.1:8787}
       KINGU_API_DEV_AUTH: ${KINGU_API_DEV_AUTH:-1}
+      # Anyone may create a local account.
+      KINGU_API_ALLOWED_EMAILS: ${KINGU_API_ALLOWED_EMAILS:-*}
     ports:
       - '127.0.0.1:8787:8080'
     restart: unless-stopped
