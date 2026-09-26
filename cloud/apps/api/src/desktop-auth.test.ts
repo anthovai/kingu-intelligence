@@ -48,6 +48,23 @@ function setup(start = new Date('2026-09-26T00:00:00Z')) {
 type Session = { accessToken: string; refreshToken: string; expiresAt: number; cloud: { userId: string; cloudProfileId: string; email: string; activeOrgId: string }; organizations: { orgId: string }[]; capabilities: { flags: Record<string, boolean> } }
 
 describe('desktop sign-in', () => {
+  it('limits wrong passwords per account even when X-Forwarded-For changes every time', async () => {
+    const { signIn, app } = setup()
+    await signIn({ mode: 'signup', email: 'me@example.com', password: 'a-long-password' })
+    const { request } = await signIn({ mode: 'signin', email: 'me@example.com', password: 'a-long-password' })
+    const attempt = (password: string, forwardedFor: string) => app.request('/v1/desktop/auth/authorize', {
+      method: 'POST',
+      headers: { 'x-forwarded-for': forwardedFor },
+      body: new URLSearchParams({ ...request, mode: 'signin', action: 'continue', email: 'me@example.com', password })
+    })
+    const statuses: number[] = []
+    for (let i = 0; i < 11; i++) {
+      statuses.push((await attempt(`wrong-${i}`, `10.0.0.${i}`)).status)
+    }
+    const rightButLocked = await attempt('a-long-password', '10.9.9.9')
+    expect([statuses.slice(0, 10).every((status) => status === 401), statuses[10], rightButLocked.status]).toEqual([true, 429, 429])
+  })
+
   it('creates an account, redirects to the loopback callback and exchanges the code once', async () => {
     const { signIn, json } = setup()
     const flow = await signIn({ mode: 'signup', email: 'Me@Example.com', password: 'a-long-password', name: 'Me' })

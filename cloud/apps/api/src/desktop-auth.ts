@@ -25,7 +25,9 @@ const ACCESS_TTL_MS = 60 * 60_000
 const REFRESH_TTL_MS = 30 * 86_400_000
 /** A lost refresh answer is retried by the desktop; the rotated-away token still works this long. */
 const REFRESH_REUSE_GRACE_MS = 2 * 60_000
-const MAX_FAILED_SIGN_INS = 10
+/** Wrong passwords allowed per account, and per client address, in the window below. */
+const MAX_FAILED_SIGN_INS_PER_EMAIL = 10
+const MAX_FAILED_SIGN_INS_PER_CLIENT = 30
 const FAILED_SIGN_IN_WINDOW_MS = 15 * 60_000
 
 const LOOPBACK_REDIRECT = /^http:\/\/127\.0\.0\.1:(?<port>\d{1,5})\/auth\/callback$/
@@ -128,6 +130,12 @@ function errorPage(message: string): string {
   return page('Kingu sign-in', `<h1>Kingu sign-in</h1><p>${escapeHtml(message)}</p><p>Close this tab and start signing in from Kingu again.</p>`)
 }
 
+/** The address the proxy saw: the last X-Forwarded-For hop, which the client cannot choose. */
+function clientAddress(c: Context): string {
+  const hops = c.req.header('x-forwarded-for')?.split(',').map((hop) => hop.trim()).filter(Boolean) ?? []
+  return hops.at(-1) ?? 'direct'
+}
+
 function redirectTo(redirectUri: string, params: Record<string, string>): string {
   const url = new URL(redirectUri)
   for (const [name, value] of Object.entries(params)) {
@@ -140,13 +148,13 @@ export function desktopAuthRoutes(config: ApiConfig, accounts: AccountStore, now
   const api = new Hono()
   const failures = new Map<string, { count: number; since: number }>()
 
-  const tooManyFailures = (key: string): boolean => {
+  const tooManyFailures = (key: string, max: number): boolean => {
     const entry = failures.get(key)
     if (!entry || now().getTime() - entry.since > FAILED_SIGN_IN_WINDOW_MS) {
       failures.delete(key)
       return false
     }
-    return entry.count >= MAX_FAILED_SIGN_INS
+    return entry.count >= max
   }
 
   const recordFailure = (key: string) => {
@@ -240,8 +248,12 @@ export function desktopAuthRoutes(config: ApiConfig, accounts: AccountStore, now
     if (!z.string().email().max(254).safeParse(email).success) {
       return again('Enter a valid email address.')
     }
-    const limitKey = `${email}|${c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ?? ''}`
-    if (tooManyFailures(limitKey)) {
+    // Counted per account whatever the address, so rotating addresses (or a
+    // spoofed X-Forwarded-For) buys no extra guesses; and per client, taken
+    // from the last X-Forwarded-For entry — the one our Caddy appends.
+    const emailKey = `email:${email}`
+    const clientKey = `client:${clientAddress(c)}`
+    if (tooManyFailures(emailKey, MAX_FAILED_SIGN_INS_PER_EMAIL) || tooManyFailures(clientKey, MAX_FAILED_SIGN_INS_PER_CLIENT)) {
       return again('Too many attempts. Wait a few minutes and try again.', 429)
     }
 
@@ -270,7 +282,8 @@ export function desktopAuthRoutes(config: ApiConfig, accounts: AccountStore, now
     } else {
       const found = await accounts.findUserByEmail(email)
       if (!found || !(await verifyPassword(password, found.passwordHash))) {
-        recordFailure(limitKey)
+        recordFailure(emailKey)
+        recordFailure(clientKey)
         return again('The email or password is not right.', 401)
       }
       user = found
