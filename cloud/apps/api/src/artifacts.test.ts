@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { createApp } from './app.js'
 import { MemoryArtifactStore } from './artifact-store.js'
+import { MemorySkillStore } from './skill-store.js'
 import { loadConfig } from './config.js'
 
 const config = loadConfig({ PORT: '8787', KINGU_API_PUBLIC_URL: 'http://127.0.0.1:8787', KINGU_API_DEV_AUTH: '1', KINGU_API_STATIC_TOKENS: 'other-token=other-user' })
 
 function setup(start = new Date('2026-09-26T00:00:00Z')) {
   let now = start
-  const app = createApp(config, { artifacts: new MemoryArtifactStore() }, () => now)
+  const app = createApp(config, { artifacts: new MemoryArtifactStore(), skills: new MemorySkillStore() }, () => now)
   const call = (method: string, path: string, init: { token?: string; body?: unknown; headers?: Record<string, string> } = {}) =>
     app.request(path, {
       method,

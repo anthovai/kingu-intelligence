@@ -1,4 +1,4 @@
-# Kingu's own cloud on one machine: the API (Artifacts now; Skills and sign-in
+# Kingu's own cloud on one machine: the API (Artifacts and Skills now; sign-in
 # next) and its Postgres. `docker compose up -d --build` from this directory;
 # the API answers on http://127.0.0.1:8787.
 #

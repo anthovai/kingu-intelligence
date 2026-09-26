@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto'
 import { z } from 'zod'
 
 /**
@@ -18,7 +19,9 @@ const configSchema = z.object({
   /** `token=userId` pairs accepted as bearer tokens, for scripts and the CLI before real sign-in exists. */
   staticTokens: z.map(z.string(), z.string()),
   /** How long an artifact stays shared after its last write. */
-  artifactTtlDays: z.number().int().positive()
+  artifactTtlDays: z.number().int().positive(),
+  /** Signs skill download grants. Unset, a fresh one per process: grants live 15 minutes, so a restart only fails downloads in flight. */
+  grantSecret: z.string().min(32)
 })
 
 export type ApiConfig = z.infer<typeof configSchema>
@@ -43,7 +46,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     devAuth: env.KINGU_API_DEV_AUTH === '1',
     devUserId: env.KINGU_API_DEV_USER_ID ?? 'dev-user',
     staticTokens: parseStaticTokens(env.KINGU_API_STATIC_TOKENS),
-    artifactTtlDays: Number(env.KINGU_API_ARTIFACT_TTL_DAYS ?? 30)
+    artifactTtlDays: Number(env.KINGU_API_ARTIFACT_TTL_DAYS ?? 30),
+    grantSecret: env.KINGU_API_GRANT_SECRET || randomBytes(32).toString('base64url')
   })
   if (config.devAuth && env.NODE_ENV === 'production') {
     throw new Error('KINGU_API_DEV_AUTH=1 is refused when NODE_ENV=production.')
