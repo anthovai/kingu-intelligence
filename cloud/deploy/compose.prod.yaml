@@ -41,9 +41,11 @@ services:
       KINGU_API_STATIC_TOKENS: ${KINGU_API_STATIC_TOKENS:-}
       # Who may create an account on the sign-in page; `*` for anyone.
       KINGU_API_ALLOWED_EMAILS: ${KINGU_API_ALLOWED_EMAILS:?set KINGU_API_ALLOWED_EMAILS in deploy/.env}
-    # Only the local Caddy reaches the API; nothing else on the internet does.
+    # Only the server's Caddy reaches the API; nothing else on the internet
+    # does. On k-garden-server Caddy is a container, so the API binds the
+    # Docker bridge address (172.17.0.1), like the server's other apps.
     ports:
-      - '127.0.0.1:8787:8080'
+      - '${KINGU_API_BIND:-127.0.0.1:8787}:8080'
     restart: unless-stopped
 
 volumes:
