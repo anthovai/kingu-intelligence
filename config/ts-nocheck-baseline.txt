@@ -42,6 +42,7 @@ src/main/runtime/kingu-runtime-get-agent-session-execution-namespace.ts
 src/main/runtime/kingu-runtime-get-orchestration-dispatch-authority.ts
 src/main/runtime/kingu-runtime-get-pty-record-for-pane-key.ts
 src/main/runtime/kingu-runtime-get-runtime-id.ts
+src/main/runtime/kingu-runtime-get-structured-agent-session-create-support.ts
 src/main/runtime/kingu-runtime-get-terminal-interactive-wait.ts
 src/main/runtime/kingu-runtime-get-unpersisted-tracked-title-for-pty.ts
 src/main/runtime/kingu-runtime-get-worktree-ps.ts
@@ -75,7 +76,6 @@ src/main/runtime/kingu-runtime-pick-most-recent-actor.ts
 src/main/runtime/kingu-runtime-postlude.ts
 src/main/runtime/kingu-runtime-prepare-pty-execution-context.ts
 src/main/runtime/kingu-runtime-preserved-branch-cleanup.ts
-src/main/runtime/kingu-runtime-prove-recovered-structured-tui-pty-process.ts
 src/main/runtime/kingu-runtime-prune-mobile-session-tab-group-layout.ts
 src/main/runtime/kingu-runtime-pty-foreground-process-reads.ts
 src/main/runtime/kingu-runtime-publish-pty-backed-mobile-session-terminal.ts
@@ -96,7 +96,6 @@ src/main/runtime/kingu-runtime-resolve-browser-network-execution-host-for-worktr
 src/main/runtime/kingu-runtime-resolve-exit-waiters.ts
 src/main/runtime/kingu-runtime-resolve-known-workspace-file-target.ts
 src/main/runtime/kingu-runtime-resolve-mobile-session-terminal-command.ts
-src/main/runtime/kingu-runtime-resolve-recovered-structured-tui-transcript.ts
 src/main/runtime/kingu-runtime-resolve-terminal-pane.ts
 src/main/runtime/kingu-runtime-resolve-terminal-split-source-authority.ts
 src/main/runtime/kingu-runtime-resolve-waiter.ts
@@ -120,12 +119,8 @@ src/main/runtime/kingu-runtime-state-fields.ts
 src/main/runtime/kingu-runtime-stop-exact-terminals-for-worktree.ts
 src/main/runtime/kingu-runtime-stop-explicitly-closed-tab-ptys.ts
 src/main/runtime/kingu-runtime-stop-requested-pty-ids.ts
-src/main/runtime/kingu-runtime-stop-structured-session-process.ts
 src/main/runtime/kingu-runtime-stop-terminals-for-worktree.ts
 src/main/runtime/kingu-runtime-stored-mobile-snapshot-has-stale-preserved-tab.ts
-src/main/runtime/kingu-runtime-structured-agent-session-launch-tui.ts
-src/main/runtime/kingu-runtime-structured-agent-session-recover-tui-owner.ts
-src/main/runtime/kingu-runtime-structured-agent-session-reprove-tui-owner.ts
 src/main/runtime/kingu-runtime-subscribe-to-terminal-resize.ts
 src/main/runtime/kingu-runtime-sync-mobile-session-tabs.ts
 src/main/runtime/kingu-runtime-sync-window-graph.ts

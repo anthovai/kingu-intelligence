@@ -3,6 +3,8 @@
 ; electron-builder accepts exactly ONE `nsis.include` file, so every customInstall /
 ; customUnInstall hook Kingu needs lives here.
 
+!include "${__FILEDIR__}\kingu-process-check.nsh"
+
 ; ---------------------------------------------------------------------------
 ; Markdown "Open with Kingu" (issue #10138)
 ;

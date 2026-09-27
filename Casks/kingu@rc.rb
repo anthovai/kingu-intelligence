@@ -5,8 +5,7 @@ cask "kingu@rc" do
   sha256 arm:   "563b6b14323fc9d5489299c82442d514bc12cabffc9d06d3964ed572af4b3955",
          intel: "457088c7021f07de1a419197f7b2bd00092741ad4727d4fef3d86af38a6831e7"
 
-  url "https://github.com/anthovai/kingu-intelligence/releases/download/v#{version}/kingu-macos-#{arch}.dmg",
-      verified: "github.com/anthovai/kingu-intelligence/"
+  url "https://github.com/anthovai/kingu-intelligence/releases/download/v#{version}/kingu-macos-#{arch}.dmg"
   name "Kingu RC"
   desc "IDE for orchestrating AI coding agents across terminals and worktrees"
   homepage "https://onkingu.dev/"
