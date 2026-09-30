@@ -1,5 +1,7 @@
 import { Hono } from 'hono'
+import { accountRoutes } from './account.js'
 import { MemoryAccountStore, type AccountStore } from './account-store.js'
+import { adminRoutes } from './admin.js'
 import type { ArtifactStore } from './artifact-store.js'
 import { createAuthenticator } from './auth.js'
 import { desktopAuthRoutes } from './desktop-auth.js'
@@ -14,6 +16,8 @@ export function createApp(config: ApiConfig, stores: { artifacts: ArtifactStore;
   const app = new Hono()
   app.get('/healthz', (c) => c.json({ ok: true }))
   app.route('/v1/desktop/auth', desktopAuthRoutes(config, accounts, now))
+  app.route('/v1/account', accountRoutes(accounts, authenticate, now))
+  app.route('/v1/admin', adminRoutes(config, accounts, now))
   app.route('/v1/artifacts', artifactRoutes(config, stores.artifacts, authenticate, now))
   app.route('/a', sharedPageRoutes(stores.artifacts, now))
   app.route('/v1', skillRoutes(config, stores.skills, authenticate, now))

@@ -1,5 +1,5 @@
 import pg from 'pg'
-import type { AccountStore, StoredAuthCode, StoredAuthSession, StoredUser } from './account-store.js'
+import type { AccountStore, EntitlementSource, StoredAuthCode, StoredAuthSession, StoredEntitlement, StoredGrantCode, StoredUser } from './account-store.js'
 
 type UserRow = {
   id: string
@@ -36,6 +36,54 @@ type SessionRow = {
   refresh_expires_at: Date
   created_at: Date
   revoked_at: Date | null
+}
+
+type EntitlementRow = {
+  id: string
+  user_id: string
+  plan_id: string
+  starts_at: Date
+  ends_at: Date | null
+  source: EntitlementSource
+  note: string | null
+  granted_by: string | null
+  created_at: Date
+  revoked_at: Date | null
+}
+
+type GrantCodeRow = {
+  code_hash: string
+  plan_id: string
+  days: number
+  max_uses: number
+  uses: number
+  created_at: Date
+}
+
+function entitlementFromRow(row: EntitlementRow): StoredEntitlement {
+  return {
+    id: row.id,
+    userId: row.user_id,
+    planId: row.plan_id,
+    startsAt: row.starts_at,
+    endsAt: row.ends_at,
+    source: row.source,
+    note: row.note,
+    grantedBy: row.granted_by,
+    createdAt: row.created_at,
+    revokedAt: row.revoked_at
+  }
+}
+
+function grantCodeFromRow(row: GrantCodeRow): StoredGrantCode {
+  return {
+    codeHash: row.code_hash,
+    planId: row.plan_id,
+    days: row.days,
+    maxUses: row.max_uses,
+    uses: row.uses,
+    createdAt: row.created_at
+  }
 }
 
 function userFromRow(row: UserRow): StoredUser {
@@ -125,6 +173,27 @@ export class PgAccountStore implements AccountStore {
         revoked_at timestamptz
       );
       CREATE INDEX IF NOT EXISTS auth_sessions_previous_refresh ON auth_sessions (previous_refresh_hash);
+      CREATE TABLE IF NOT EXISTS entitlements (
+        id text PRIMARY KEY,
+        user_id text NOT NULL REFERENCES users (id),
+        plan_id text NOT NULL,
+        starts_at timestamptz NOT NULL,
+        ends_at timestamptz,
+        source text NOT NULL CHECK (source IN ('admin', 'code', 'payment')),
+        note text,
+        granted_by text,
+        created_at timestamptz NOT NULL,
+        revoked_at timestamptz
+      );
+      CREATE INDEX IF NOT EXISTS entitlements_user ON entitlements (user_id);
+      CREATE TABLE IF NOT EXISTS grant_codes (
+        code_hash text PRIMARY KEY,
+        plan_id text NOT NULL,
+        days integer NOT NULL,
+        max_uses integer NOT NULL,
+        uses integer NOT NULL DEFAULT 0,
+        created_at timestamptz NOT NULL
+      );
     `)
   }
 
@@ -181,6 +250,36 @@ export class PgAccountStore implements AccountStore {
   async findSessionByRefresh(refreshHash: string) {
     const result = await this.pool.query<SessionRow>('SELECT * FROM auth_sessions WHERE refresh_hash = $1 OR previous_refresh_hash = $1 LIMIT 1', [refreshHash])
     return result.rows[0] ? sessionFromRow(result.rows[0]) : undefined
+  }
+
+  async insertEntitlement(e: StoredEntitlement) {
+    await this.pool.query(
+      'INSERT INTO entitlements (id, user_id, plan_id, starts_at, ends_at, source, note, granted_by, created_at, revoked_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)',
+      [e.id, e.userId, e.planId, e.startsAt, e.endsAt, e.source, e.note, e.grantedBy, e.createdAt, e.revokedAt]
+    )
+  }
+
+  async listEntitlements(userId: string) {
+    const result = await this.pool.query<EntitlementRow>('SELECT * FROM entitlements WHERE user_id = $1 ORDER BY created_at', [userId])
+    return result.rows.map(entitlementFromRow)
+  }
+
+  async revokeEntitlement(id: string, now: Date) {
+    const result = await this.pool.query('UPDATE entitlements SET revoked_at = $2 WHERE id = $1 AND revoked_at IS NULL', [id, now])
+    return (result.rowCount ?? 0) > 0
+  }
+
+  async insertGrantCode(c: StoredGrantCode) {
+    await this.pool.query(
+      'INSERT INTO grant_codes (code_hash, plan_id, days, max_uses, uses, created_at) VALUES ($1,$2,$3,$4,$5,$6)',
+      [c.codeHash, c.planId, c.days, c.maxUses, c.uses, c.createdAt]
+    )
+  }
+
+  async useGrantCode(codeHash: string) {
+    // One statement, so redemptions racing for the last use cannot both win.
+    const result = await this.pool.query<GrantCodeRow>('UPDATE grant_codes SET uses = uses + 1 WHERE code_hash = $1 AND uses < max_uses RETURNING *', [codeHash])
+    return result.rows[0] ? grantCodeFromRow(result.rows[0]) : undefined
   }
 
   async close(): Promise<void> {

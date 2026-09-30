@@ -4,7 +4,9 @@ import { z } from 'zod'
 import type { AccountStore, StoredAuthSession, StoredUser } from './account-store.js'
 import { bearerToken, hashToken } from './auth.js'
 import type { ApiConfig } from './config.js'
+import { effectivePlan, entitlementView, planView } from './entitlements.js'
 import { hashPassword, verifyPassword } from './passwords.js'
+import { planFlags } from './plans.js'
 import { escapeHtml } from './render.js'
 
 /**
@@ -174,19 +176,24 @@ export function desktopAuthRoutes(config: ApiConfig, accounts: AccountStore, now
     return parsed.data
   }
 
-  const summary = (user: StoredUser, session: Pick<StoredAuthSession, 'cloudProfileId' | 'activeOrgId' | 'createdAt'>) => ({
-    cloud: {
-      cloudProfileId: session.cloudProfileId,
-      userId: user.id,
-      email: user.email,
-      ...(user.displayName ? { displayName: user.displayName } : {}),
-      activeOrgId: session.activeOrgId,
-      activeOrgName: 'Personal',
-      linkedAt: session.createdAt.getTime()
-    },
-    organizations: [{ orgId: user.personalOrgId, name: 'Personal', role: 'owner' }],
-    capabilities: { flags: { share: true, 'share.create': true, 'share.manage': true }, refreshedAt: now().getTime() }
-  })
+  /** Identity, org, and the plan: `capabilities.flags` are the plan's features (sharing for everyone). */
+  const summary = async (user: StoredUser, session: Pick<StoredAuthSession, 'cloudProfileId' | 'activeOrgId' | 'createdAt'>) => {
+    const { plan, entitlement } = await effectivePlan(accounts, user.id, now())
+    return {
+      cloud: {
+        cloudProfileId: session.cloudProfileId,
+        userId: user.id,
+        email: user.email,
+        ...(user.displayName ? { displayName: user.displayName } : {}),
+        activeOrgId: session.activeOrgId,
+        activeOrgName: 'Personal',
+        linkedAt: session.createdAt.getTime()
+      },
+      organizations: [{ orgId: user.personalOrgId, name: 'Personal', role: 'owner' }],
+      plan: { ...planView(plan), entitlement: entitlementView(entitlement) },
+      capabilities: { flags: planFlags(plan), refreshedAt: now().getTime() }
+    }
+  }
 
   /** Rotates both tokens and answers with the ADE's `SessionResponse`. */
   const issue = async (user: StoredUser, session: StoredAuthSession, previousRefreshHash: string | null) => {
@@ -203,7 +210,7 @@ export function desktopAuthRoutes(config: ApiConfig, accounts: AccountStore, now
       refreshExpiresAt: new Date(at.getTime() + REFRESH_TTL_MS)
     }
     await accounts.updateSession(next)
-    return { accessToken, refreshToken, expiresAt: next.accessExpiresAt.getTime(), ...summary(user, next) }
+    return { accessToken, refreshToken, expiresAt: next.accessExpiresAt.getTime(), ...(await summary(user, next)) }
   }
 
   /** The signed-in session behind a Bearer token, with its user. */
@@ -368,7 +375,7 @@ export function desktopAuthRoutes(config: ApiConfig, accounts: AccountStore, now
     if (!signedIn) {
       return c.json({ error: 'invalid_token' }, 401)
     }
-    return c.json(summary(signedIn.user, signedIn.session))
+    return c.json(await summary(signedIn.user, signedIn.session))
   })
 
   api.post('/org', async (c) => {
@@ -380,7 +387,7 @@ export function desktopAuthRoutes(config: ApiConfig, accounts: AccountStore, now
     if (!body.success || body.data.orgId !== signedIn.user.personalOrgId) {
       return c.json({ error: 'org_not_found' }, 403)
     }
-    return c.json(summary(signedIn.user, signedIn.session))
+    return c.json(await summary(signedIn.user, signedIn.session))
   })
 
   api.post('/logout', async (c) => {

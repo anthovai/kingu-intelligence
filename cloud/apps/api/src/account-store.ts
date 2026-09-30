@@ -44,6 +44,34 @@ export type StoredAuthSession = {
   revokedAt: Date | null
 }
 
+/** Where an entitlement came from; a payment provider will add `payment` rows. */
+export type EntitlementSource = 'admin' | 'code' | 'payment'
+
+/** A plan held by a user from `startsAt` until `endsAt` (`null`: no end), unless revoked. */
+export type StoredEntitlement = {
+  id: string
+  userId: string
+  planId: string
+  startsAt: Date
+  endsAt: Date | null
+  source: EntitlementSource
+  note: string | null
+  /** An admin token's name, `cli`, or `code:<hash prefix>` for a redeemed grant code. */
+  grantedBy: string | null
+  createdAt: Date
+  revokedAt: Date | null
+}
+
+/** A code that grants a plan for `days` to up to `maxUses` accounts. Only its sha256 is kept. */
+export type StoredGrantCode = {
+  codeHash: string
+  planId: string
+  days: number
+  maxUses: number
+  uses: number
+  createdAt: Date
+}
+
 export interface AccountStore {
   migrate(): Promise<void>
   findUserByEmail(email: string): Promise<StoredUser | undefined>
@@ -57,6 +85,13 @@ export interface AccountStore {
   findSessionByAccess(accessHash: string): Promise<StoredAuthSession | undefined>
   /** By the current refresh token, or the one just rotated away. */
   findSessionByRefresh(refreshHash: string): Promise<StoredAuthSession | undefined>
+  insertEntitlement(entitlement: StoredEntitlement): Promise<void>
+  listEntitlements(userId: string): Promise<StoredEntitlement[]>
+  /** Revokes a live entitlement; `false` when it is unknown or already revoked. */
+  revokeEntitlement(id: string, now: Date): Promise<boolean>
+  insertGrantCode(code: StoredGrantCode): Promise<void>
+  /** Counts one use and returns the code, or `undefined` if it is unknown or used up. */
+  useGrantCode(codeHash: string): Promise<StoredGrantCode | undefined>
   close(): Promise<void>
 }
 
@@ -65,6 +100,8 @@ export class MemoryAccountStore implements AccountStore {
   private readonly users = new Map<string, StoredUser>()
   private readonly codes = new Map<string, StoredAuthCode>()
   private readonly sessions = new Map<string, StoredAuthSession>()
+  private readonly entitlements = new Map<string, StoredEntitlement>()
+  private readonly grantCodes = new Map<string, StoredGrantCode>()
 
   async migrate(): Promise<void> {}
 
@@ -114,6 +151,36 @@ export class MemoryAccountStore implements AccountStore {
   async findSessionByRefresh(refreshHash: string) {
     const found = [...this.sessions.values()].find((session) => session.refreshHash === refreshHash || session.previousRefreshHash === refreshHash)
     return found ? { ...found } : undefined
+  }
+
+  async insertEntitlement(entitlement: StoredEntitlement) {
+    this.entitlements.set(entitlement.id, { ...entitlement })
+  }
+
+  async listEntitlements(userId: string) {
+    return [...this.entitlements.values()].filter((entitlement) => entitlement.userId === userId).map((entitlement) => ({ ...entitlement }))
+  }
+
+  async revokeEntitlement(id: string, now: Date) {
+    const found = this.entitlements.get(id)
+    if (!found || found.revokedAt) {
+      return false
+    }
+    found.revokedAt = now
+    return true
+  }
+
+  async insertGrantCode(code: StoredGrantCode) {
+    this.grantCodes.set(code.codeHash, { ...code })
+  }
+
+  async useGrantCode(codeHash: string) {
+    const found = this.grantCodes.get(codeHash)
+    if (!found || found.uses >= found.maxUses) {
+      return undefined
+    }
+    found.uses++
+    return { ...found }
   }
 
   async close(): Promise<void> {}
