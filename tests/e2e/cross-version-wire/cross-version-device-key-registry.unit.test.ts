@@ -62,9 +62,9 @@ describe('cross-version: device keys against a released host', () => {
       forkedFrom: legacy.deviceId
     })
     expect(reread.lookupDeviceKey(forked.deviceId)).toMatchObject({ kind: 'found' })
-    expect(JSON.parse(readFileSync(join(userDataPath, 'kingu-devices.json'), 'utf-8'))).toHaveLength(
-      2
-    )
+    expect(
+      JSON.parse(readFileSync(join(userDataPath, 'kingu-devices.json'), 'utf-8'))
+    ).toHaveLength(2)
   })
 
   it('a released host refuses key auth with bad_auth (not unauthorized)', () => {

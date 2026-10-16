@@ -204,7 +204,11 @@ describe('the row an Kingu stop leaves', () => {
   })
 
   it('keeps the host words for a stop Kingu did not cause', () => {
-    const { kinguStop: _kinguStop, presentation: _presentation, ...agentExit } = kinguStopRow('update')
+    const {
+      kinguStop: _kinguStop,
+      presentation: _presentation,
+      ...agentExit
+    } = kinguStopRow('update')
     renderStatus(agentExit, 'studio-mac')
     expect(screen.getByText(LEGACY_TEXT).parentElement?.parentElement).toHaveClass(
       'text-destructive'

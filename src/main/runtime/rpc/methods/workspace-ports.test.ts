@@ -7,7 +7,9 @@ import { WORKSPACE_PORT_METHODS } from './workspace-ports'
 import type { WorkspacePortScanResult } from '../../../../shared/workspace-ports'
 
 function hostScopedRuntime(
-  methods: Partial<Pick<KinguRuntimeService, 'scanWorkspacePortsOnHost' | 'killWorkspacePortOnHost'>>
+  methods: Partial<
+    Pick<KinguRuntimeService, 'scanWorkspacePortsOnHost' | 'killWorkspacePortOnHost'>
+  >
 ): KinguRuntimeService {
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: dispatch reaches only the runtime id and the one host-scoped method each test stubs.
   return { getRuntimeId: () => 'test-runtime', ...methods } as unknown as KinguRuntimeService

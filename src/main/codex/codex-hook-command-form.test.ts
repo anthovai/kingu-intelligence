@@ -181,7 +181,9 @@ describe('the Windows spelling change', () => {
     ['the bare-cmd spelling', WINDOWS_BARE_CMD_SPELLING],
     [
       "main's PowerShell text",
-      buildWindowsHookPowerShellCommand('C:\\Users\\First Last\\.kingu\\agent-hooks\\codex-hook.cmd')
+      buildWindowsHookPowerShellCommand(
+        'C:\\Users\\First Last\\.kingu\\agent-hooks\\codex-hook.cmd'
+      )
     ],
     [
       'the encoded launcher',

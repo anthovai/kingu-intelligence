@@ -20,7 +20,10 @@ const RECEIPT_MAX_BYTES = 64 * 1024
 
 export type ReceiptKind = 'completed' | 'retirement' | 'decision'
 
-export function kingudStopReceiptPath(request: KingudManagedStopRequest, kind: ReceiptKind): string {
+export function kingudStopReceiptPath(
+  request: KingudManagedStopRequest,
+  kind: ReceiptKind
+): string {
   const { transactionId, instance } = KingudManagedStopRequestSchema.parse(request)
   const suffix = kind === 'completed' ? '' : `.${kind}`
   return join(
@@ -56,7 +59,11 @@ export function readKingudStopReceipt<T extends { request: KingudManagedStopRequ
   return receipt
 }
 
-function writeReceipt(request: KingudManagedStopRequest, kind: ReceiptKind, receipt: unknown): void {
+function writeReceipt(
+  request: KingudManagedStopRequest,
+  kind: ReceiptKind,
+  receipt: unknown
+): void {
   if (!writeDurableSecureJsonFile(kingudStopReceiptPath(request, kind), receipt)) {
     throw new Error('kingud_stop_receipt_permissions_unconfirmed')
   }

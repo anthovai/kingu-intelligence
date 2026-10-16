@@ -183,7 +183,9 @@ export const MANAGED_SERVER_HANDLERS: Record<string, CommandHandler> = {
           ? `Recovered ${result.environment.name} (${result.resolution}); active version ${result.activeVersion ?? 'none'}.`
           : 'Nothing to recover.',
       (result) =>
-        !acceptChangedState && 'code' in result && result.code === KINGUD_RECOVERY_CHANGED_STATE_CODE
+        !acceptChangedState &&
+        'code' in result &&
+        result.code === KINGUD_RECOVERY_CHANGED_STATE_CODE
           ? 'To restore it from the CLI, re-run with --accept-changed-state --yes.'
           : null
     )

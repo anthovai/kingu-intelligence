@@ -18,7 +18,10 @@ vi.mock('expo-file-system', mocks['expo-file-system'])
 vi.mock('lucide-react-native', mocks['lucide-react-native'])
 vi.mock('react-native-safe-area-context', mocks['react-native-safe-area-context'])
 vi.mock('expo-router', mocks['expo-router'])
-vi.mock('../../modules/kingu-mobile-web-shell/src', mocks['../../modules/kingu-mobile-web-shell/src'])
+vi.mock(
+  '../../modules/kingu-mobile-web-shell/src',
+  mocks['../../modules/kingu-mobile-web-shell/src']
+)
 vi.mock('../app-update/use-wall-app-update', mocks['../app-update/use-wall-app-update'])
 vi.mock('../transport/client-context', mocks['../transport/client-context'])
 vi.mock('./use-page-host-snapshot', mocks['./use-page-host-snapshot'])

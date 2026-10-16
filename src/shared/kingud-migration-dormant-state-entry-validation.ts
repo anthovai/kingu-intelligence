@@ -177,7 +177,9 @@ export function parseRetiredNames(value: unknown): KingudMigrationDormantRetired
   }
 }
 
-export function parseRetirementNamespace(value: unknown): KingudMigrationDormantRetirementNamespace {
+export function parseRetirementNamespace(
+  value: unknown
+): KingudMigrationDormantRetirementNamespace {
   const record = requiredRecord(value, 'kingud_migration_dormant_retirement_namespace_invalid')
   const sourceNamespaceKeys = stringArray(record.sourceNamespaceKeys)
   if (sourceNamespaceKeys.length === 0) {

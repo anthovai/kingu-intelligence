@@ -244,7 +244,9 @@ describe('hydrateShellPath', () => {
       ])
       proc.stdout.emit(
         'data',
-        Buffer.from('__KINGU_SHELL_PATH__/etc/profiles/per-user/me/bin:/usr/bin__KINGU_SHELL_PATH__')
+        Buffer.from(
+          '__KINGU_SHELL_PATH__/etc/profiles/per-user/me/bin:/usr/bin__KINGU_SHELL_PATH__'
+        )
       )
       proc.emit('close', 0)
 

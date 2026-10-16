@@ -16,7 +16,8 @@ vi.mock('./kingud-ssh-provisioning-handlers', () => ({
   registerKingudSshProvisioningHandlers: mocks.registerProvisioning
 }))
 
-const { registerKingudRuntimeLifecycleHandlers } = await import('./kingud-runtime-lifecycle-handlers')
+const { registerKingudRuntimeLifecycleHandlers } =
+  await import('./kingud-runtime-lifecycle-handlers')
 
 function handler(channel: string): (_event: unknown, args: unknown) => unknown {
   const registration = mocks.handle.mock.calls.find(([name]) => name === channel)

@@ -4,7 +4,10 @@ import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { runProcess } from '@kingu/process-host'
-import { KINGUD_LAUNCHER_FILENAME, KINGUD_SERVER_ENTRY_FILENAME } from '../../shared/kingud-artifacts'
+import {
+  KINGUD_LAUNCHER_FILENAME,
+  KINGUD_SERVER_ENTRY_FILENAME
+} from '../../shared/kingud-artifacts'
 import { NODE_RUNTIME_PIN } from '../../shared/node-runtime-pin'
 import { hashKingudLauncher } from '../../shared/kingud-build-identity'
 import {
@@ -168,7 +171,10 @@ describe.skipIf(skip)('split launcher with the real bundled runtime', () => {
     if (Number(version.stdout.trim().split('.')[0]) >= 18) {
       skip()
     }
-    await writeFile(join(root, KINGUD_SERVER_ENTRY_FILENAME), 'throw new Error("server was loaded")')
+    await writeFile(
+      join(root, KINGUD_SERVER_ENTRY_FILENAME),
+      'throw new Error("server was loaded")'
+    )
     const result = await runProcess({
       program: launcherNode,
       args: [launcher],

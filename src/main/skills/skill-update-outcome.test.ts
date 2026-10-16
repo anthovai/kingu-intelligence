@@ -41,9 +41,9 @@ describe('skillUpdateFailedNames', () => {
   })
 
   it('reports an unreadable copy', () => {
-    expect(skillUpdateFailedNames(['kingu-cli'], [placement('kingu-cli', 'inaccessible')])).toEqual([
-      'kingu-cli'
-    ])
+    expect(skillUpdateFailedNames(['kingu-cli'], [placement('kingu-cli', 'inaccessible')])).toEqual(
+      ['kingu-cli']
+    )
   })
 
   it('reports a skill the run removed outright', () => {

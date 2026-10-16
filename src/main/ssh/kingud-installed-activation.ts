@@ -71,7 +71,10 @@ const UNVERIFIABLE_CENSUS: KingudTerminalCensus = {
   daemonProtocolVersion: null
 }
 
-function countedLockedRecord(options: KingudDeployOptions, record: KingudActivationRecord): boolean {
+function countedLockedRecord(
+  options: KingudDeployOptions,
+  record: KingudActivationRecord
+): boolean {
   const counted = options.censusRecord
   return (
     !counted || (counted.active === record.active && counted.activatedAt === record.activatedAt)

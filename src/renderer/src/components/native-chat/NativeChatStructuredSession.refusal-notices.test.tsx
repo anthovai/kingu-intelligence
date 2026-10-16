@@ -82,7 +82,9 @@ afterEach(() => {
 
     renderPane()
 
-    expect(screen.getAllByText("Kingu couldn't open this chat's history right now.")).toHaveLength(1)
+    expect(screen.getAllByText("Kingu couldn't open this chat's history right now.")).toHaveLength(
+      1
+    )
     expect(screen.queryByText('Could not load conversation')).toBeNull()
     expect(screen.queryByText(/keeps trying/)).toBeNull()
     expect(screen.queryByText(/Try again/)).toBeNull()

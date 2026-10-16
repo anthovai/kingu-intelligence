@@ -10,7 +10,8 @@ import {
   type ShipItStagingDeps
 } from './shipit-leftover-recovery'
 
-const SHIPIT = '/Applications/Kingu Beta.app/Contents/Frameworks/Squirrel.framework/Resources/ShipIt'
+const SHIPIT =
+  '/Applications/Kingu Beta.app/Contents/Frameworks/Squirrel.framework/Resources/ShipIt'
 
 describe('prepareShipItStaging', () => {
   let root: string

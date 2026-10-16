@@ -911,6 +911,8 @@ describe('OpenClaudeHookService-compatible install', () => {
     const command = parsed.hooks.StopFailure[0].hooks[0].command as string
     expect(command).toContain('"${HOME-}/.kingu/agent-hooks/openclaude-hook.sh"')
     expect(command).not.toContain('/home/dev/.kingu/agent-hooks/openclaude-hook.sh')
-    expect(fs.files.get('/home/dev/.kingu/agent-hooks/openclaude-hook.sh')).toContain('/hook/claude')
+    expect(fs.files.get('/home/dev/.kingu/agent-hooks/openclaude-hook.sh')).toContain(
+      '/hook/claude'
+    )
   })
 })

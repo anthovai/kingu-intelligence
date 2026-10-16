@@ -82,7 +82,10 @@ test('a managed kingud stops after idling and starts again on the next connect',
       .catch((error: unknown) => {
         // The server logs what kept it up; without it a timeout explains nothing.
         console.error(
-          execDockerSshHostTargetCommand(target, 'tail -n 40 /root/.kingu-remote/kingud-*/kingud.log')
+          execDockerSshHostTargetCommand(
+            target,
+            'tail -n 40 /root/.kingu-remote/kingud-*/kingud.log'
+          )
         )
         throw error
       })

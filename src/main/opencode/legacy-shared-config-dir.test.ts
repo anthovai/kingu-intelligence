@@ -13,7 +13,9 @@ describe('retired config directory recognition', () => {
     expect(isOpenCodeLegacySharedConfigDir(undefined, root)).toBe(false)
   })
   it.skipIf(process.platform !== 'win32')('handles Windows casing and separators', () => {
-    expect(isOpenCodeLegacySharedConfigDir('C:/KINGU/opencode-hooks/shared/', 'c:\\kingu')).toBe(true)
+    expect(isOpenCodeLegacySharedConfigDir('C:/KINGU/opencode-hooks/shared/', 'c:\\kingu')).toBe(
+      true
+    )
   })
 })
 

@@ -646,7 +646,9 @@ describe('lookupTabSessionHistoryRow', () => {
   })
 
   it('finds a chat-owned row without spending a forced rescan', async () => {
-    const owned = row({ structuredSession: { sessionId: 'kingu-chat-1', workspaceId: WORKTREE_ID } })
+    const owned = row({
+      structuredSession: { sessionId: 'kingu-chat-1', workspaceId: WORKTREE_ID }
+    })
     const listSessions = vi.fn(async (_args: AiVaultListArgs) => listResult([owned]))
     await expect(
       lookupTabSessionHistoryRow(cliSubject, listSessions, lookupOptions)

@@ -12,7 +12,10 @@ import {
 } from '../../shared/kingud-profile-preflight'
 import { readKingudArtifactIdentity } from './kingud-artifact-identity'
 import { KINGUD_EXIT_CONFIGURATION } from './kingud-configuration-exit'
-import { KINGUD_SERVER_ENTRY_FILENAME, KINGUD_VERSION_FILENAME } from '../../shared/kingud-artifacts'
+import {
+  KINGUD_SERVER_ENTRY_FILENAME,
+  KINGUD_VERSION_FILENAME
+} from '../../shared/kingud-artifacts'
 import { KINGUD_NODE_RUNTIME_IDENTITY } from '../../shared/kingud-node-runtime-identity'
 import { runProcess } from '@kingu/process-host'
 import { preflightKingudNativeRuntime } from './kingud-runtime-native-preflight'

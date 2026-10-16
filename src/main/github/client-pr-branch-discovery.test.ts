@@ -99,7 +99,10 @@ describe('getPRForBranch', () => {
     const pr = await getPRForBranch('/repo-root', 'feature/test')
 
     expect(ghExecFileAsyncMock).toHaveBeenCalledWith(
-      ['api', 'repos/anthovai/kingu-intelligence/pulls?head=fork%3Afeature%2Ftest&state=all&per_page=1'],
+      [
+        'api',
+        'repos/anthovai/kingu-intelligence/pulls?head=fork%3Afeature%2Ftest&state=all&per_page=1'
+      ],
       { cwd: '/repo-root' }
     )
     expect(pr).toMatchObject({

@@ -3,7 +3,10 @@ import { windowsPathAccess, type WindowsPathAccess } from '../../../shared/windo
 import type { PublicKnownRuntimeEnvironment } from '../../../shared/runtime-environments'
 import { isWebClientLocation } from './web-client-location'
 
-type WslEnvironmentSource = readonly Pick<PublicKnownRuntimeEnvironment, 'id' | 'kingudDeployment'>[]
+type WslEnvironmentSource = readonly Pick<
+  PublicKnownRuntimeEnvironment,
+  'id' | 'kingudDeployment'
+>[]
 
 // Why an accessor, not an import of the store: path guards load from inside store slices.
 let readKnownEnvironments: () => WslEnvironmentSource = () => []

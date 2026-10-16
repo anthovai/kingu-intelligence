@@ -110,7 +110,13 @@ describe('GC ownership — each model collects only its own namespace', () => {
   })
 
   it('claims nothing it did not create', () => {
-    for (const name of ['.kingu-remote', 'kingud', 'relayish-0.1.0', 'kingud-notaversion', 'node']) {
+    for (const name of [
+      '.kingu-remote',
+      'kingud',
+      'relayish-0.1.0',
+      'kingud-notaversion',
+      'node'
+    ]) {
       expect(remoteInstallDirOwner(name)).toBeNull()
       expect(remoteInstallGcPermits(RELAY_INSTALL_MODEL, name)).toBe(false)
       expect(remoteInstallGcPermits(KINGUD_INSTALL_MODEL, name)).toBe(false)

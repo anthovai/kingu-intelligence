@@ -79,7 +79,11 @@ export function createManagedKingudActions(
     },
     cancelStop: (selector) => cancelManagedKingudStop(userDataPath(), { selector }),
     forget: async (selector) => {
-      const result = await forgetManagedKingudEnvironment(userDataPath(), { selector }, unlinkPolicy)
+      const result = await forgetManagedKingudEnvironment(
+        userDataPath(),
+        { selector },
+        unlinkPolicy
+      )
       if (result.outcome === 'forgotten') {
         options.clearHostServerStatus(result.sshTargetId)
       }

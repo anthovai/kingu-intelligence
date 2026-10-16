@@ -81,7 +81,9 @@ describe('refusing to tree-kill our own Chromium processes', () => {
   })
 
   it('classifies a live renderer as foreign even though its ancestry reaches us', () => {
-    expect(classifyWindowsTreeKillTarget(RENDERER_PID, PROCESS_ROWS, KINGU_MAIN_PID)).toBe('foreign')
+    expect(classifyWindowsTreeKillTarget(RENDERER_PID, PROCESS_ROWS, KINGU_MAIN_PID)).toBe(
+      'foreign'
+    )
   })
 
   it.each([

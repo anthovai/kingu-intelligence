@@ -4,7 +4,10 @@ import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { runProcess, spawnProcess } from '@kingu/process-host'
 import { ExternalChromiumBrowserProcess } from './external-chromium-browser-process'
-import { installedElectronCandidates, resolveKingudBrowserProvider } from './kingud-browser-provider'
+import {
+  installedElectronCandidates,
+  resolveKingudBrowserProvider
+} from './kingud-browser-provider'
 import { kingudAgentBrowserNativeName } from './kingud-agent-browser-binary'
 import {
   runtimeBrowserUnavailableCause,

@@ -99,7 +99,9 @@ const LINUX_GLIBC_ENTRY = {
 
 describe('resolveKingudPrebuildsDir', () => {
   it('looks beside the running bundle', () => {
-    expect(resolveKingudPrebuildsDir('/opt/kingud/kingud.js')).toBe(join('/opt/kingud', 'prebuilds'))
+    expect(resolveKingudPrebuildsDir('/opt/kingud/kingud.js')).toBe(
+      join('/opt/kingud', 'prebuilds')
+    )
   })
 
   it('honours an explicit override', () => {

@@ -102,7 +102,9 @@ test.describe('Tab strip active-tab dock', () => {
 
     const lastTabId = (await readStripSlotIds(kinguPage)).at(-1)!
     await kinguPage.locator(`${slotSelector(lastTabId)} [data-testid="sortable-tab"]`).click()
-    await expect(kinguPage.locator(`${slotSelector(lastTabId)} [data-active="true"]`)).toHaveCount(1)
+    await expect(kinguPage.locator(`${slotSelector(lastTabId)} [data-active="true"]`)).toHaveCount(
+      1
+    )
 
     // Scroll the active last tab's real spot far out of view; sticky layout must hold it at the end.
     await strip.evaluate((el) => {

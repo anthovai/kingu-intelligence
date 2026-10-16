@@ -51,7 +51,12 @@ export type KingudRollbackOptions = {
 }
 
 export type KingudRollbackResult =
-  | { outcome: 'rolled-back'; target: string; discarded: string[]; verdict: KingudActivationVerdict }
+  | {
+      outcome: 'rolled-back'
+      target: string
+      discarded: string[]
+      verdict: KingudActivationVerdict
+    }
   | { outcome: 'refused'; code: string; reason: string }
   | { outcome: 'failed'; code: string; reason: string }
 

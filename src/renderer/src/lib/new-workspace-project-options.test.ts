@@ -130,7 +130,10 @@ describe('buildNewWorkspaceProjectOptions', () => {
     })
 
     expect(options).toEqual([
-      expect.objectContaining({ id: 'github:anthovai/kingu-intelligence', detail: 'anthovai/kingu-intelligence' })
+      expect.objectContaining({
+        id: 'github:anthovai/kingu-intelligence',
+        detail: 'anthovai/kingu-intelligence'
+      })
     ])
   })
 

@@ -374,7 +374,9 @@ export function registerPtyConnectionFreshSpawnGuardsTests(): void {
 
       expect(deps.onPtyErrorRef.current).toHaveBeenCalledWith(
         1,
-        expect.stringContaining('Kingu attempts background recovery for managed local and WSL homes')
+        expect.stringContaining(
+          'Kingu attempts background recovery for managed local and WSL homes'
+        )
       )
     })
 

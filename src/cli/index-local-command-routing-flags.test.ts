@@ -237,7 +237,9 @@ describe('runtime-selector flags on locally pinned CLI commands', () => {
 
   it('reports an unreachable runtime as an error instead of inventing a name', async () => {
     const { RuntimeClientError } = await import('./runtime/types.js')
-    callMock.mockRejectedValue(new RuntimeClientError('runtime_unavailable', 'Kingu is not running'))
+    callMock.mockRejectedValue(
+      new RuntimeClientError('runtime_unavailable', 'Kingu is not running')
+    )
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 
     await main(['host', 'name', '--json'], '/tmp/repo')

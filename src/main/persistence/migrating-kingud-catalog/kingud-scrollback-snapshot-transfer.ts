@@ -138,7 +138,10 @@ export function pruneKingudMigrationSnapshotStaging(
   stagedManifests: readonly KingudMigrationManifest[],
   storage: TerminalScrollbackSnapshotStorage
 ): void {
-  pruneKingudMigrationStagingDirectories(getTerminalScrollbackSnapshotRoot(storage), stagedManifests)
+  pruneKingudMigrationStagingDirectories(
+    getTerminalScrollbackSnapshotRoot(storage),
+    stagedManifests
+  )
 }
 
 function requireDescriptor(

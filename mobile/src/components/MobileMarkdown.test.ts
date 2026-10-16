@@ -33,7 +33,9 @@ describe('normalizeMobileMarkdownPreviewHtml', () => {
 `)
 
     expect(normalized).toContain('# [Kingu](https://onKingu.dev)')
-    expect(normalized).toContain('[GitHub stars](https://github.com/anthovai/kingu-intelligence/stargazers)')
+    expect(normalized).toContain(
+      '[GitHub stars](https://github.com/anthovai/kingu-intelligence/stargazers)'
+    )
     expect(normalized).toContain('**The AI Orchestrator**')
     expect(normalized).not.toContain('<h1')
     expect(normalized).not.toContain('<img')

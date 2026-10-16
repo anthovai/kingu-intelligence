@@ -110,9 +110,9 @@ describe('kingud migration scrollback wire validation', () => {
     expect(() =>
       assertKingudMigrationScrollbackReferences(session, [{ ...first, ref: descriptor(2).ref }])
     ).toThrow('kingud_migration_dormant_scrollback_reference_invalid')
-    expect(() => assertKingudMigrationScrollbackReferences(session, [first, descriptor(2)])).toThrow(
-      'kingud_migration_dormant_scrollback_reference_invalid'
-    )
+    expect(() =>
+      assertKingudMigrationScrollbackReferences(session, [first, descriptor(2)])
+    ).toThrow('kingud_migration_dormant_scrollback_reference_invalid')
   })
 })
 

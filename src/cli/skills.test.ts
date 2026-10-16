@@ -800,7 +800,9 @@ describe('kingu skills CLI', () => {
     const [install, update] = stdoutSpy.mock.calls.map((call) => JSON.parse(String(call[0])))
     // Why: `skills update` follows GitHub HEAD, which runs ahead of this release.
     expect(update.command).toBe(install.command)
-    expect(update.command).toContain(`add https://github.com/anthovai/kingu-intelligence/tree/${COMMIT}`)
+    expect(update.command).toContain(
+      `add https://github.com/anthovai/kingu-intelligence/tree/${COMMIT}`
+    )
   })
 
   it('honours an explicit --agent list for an update', async () => {

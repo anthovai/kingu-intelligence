@@ -633,7 +633,8 @@ describe('terminal wait ownership', () => {
     ],
     [
       'settlement',
-      (runtime: KinguRuntimeService) => runtime['resolvePtyExitWaiters'](makeTuiIdlePty(), 'missing')
+      (runtime: KinguRuntimeService) =>
+        runtime['resolvePtyExitWaiters'](makeTuiIdlePty(), 'missing')
     ],
     [
       'permission',

@@ -58,7 +58,9 @@ vi.mock('./kingud-app-paths', () => ({
 }))
 // The fake store has no account settings; kingud-account-services.test.ts covers the real services.
 vi.mock('./kingud-account-services', () => ({ createKingudAccountServices: () => null }))
-vi.mock('./kingud-browser-provider', () => ({ resolveKingudBrowserProvider: state.browserProvider }))
+vi.mock('./kingud-browser-provider', () => ({
+  resolveKingudBrowserProvider: state.browserProvider
+}))
 vi.mock('./kingud-instance-lock', () => ({
   acquireKingudInstanceLock: () => ({
     path: join(state.root, 'kingud.lock'),

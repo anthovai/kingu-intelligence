@@ -601,8 +601,12 @@ describe('readable Claude thinking', () => {
         (env?.PATH ?? env?.Path ?? '').split(delimiter)
       // The launch's PATH is the probe's plus Kingu's own CLI directory, which holds no `claude` or
       // runtime, so both resolve the same binary and the same shims in the same order.
-      const kinguCliDir = launch.env?.KINGU_CLI_COMMAND ? dirname(launch.env.KINGU_CLI_COMMAND) : null
-      expect(segments(launch.env).filter((dir) => dir !== kinguCliDir)).toEqual(segments(asked?.env))
+      const kinguCliDir = launch.env?.KINGU_CLI_COMMAND
+        ? dirname(launch.env.KINGU_CLI_COMMAND)
+        : null
+      expect(segments(launch.env).filter((dir) => dir !== kinguCliDir)).toEqual(
+        segments(asked?.env)
+      )
       expect(segments(asked?.env)[0] === binDir).toBe(sibling)
       expect(asked?.env).toMatchObject({ PROJECT_SHIM: '1' })
       expect(asked?.env).not.toHaveProperty('ANTHROPIC_API_KEY')

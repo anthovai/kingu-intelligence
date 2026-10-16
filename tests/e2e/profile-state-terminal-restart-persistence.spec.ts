@@ -381,9 +381,11 @@ test.describe('SQLite candidate terminal restart persistence', () => {
       const secondLaunch = await session.launch()
       secondApp = secondLaunch.app
       await waitForSessionReady(secondLaunch.page)
-      expect(await secondLaunch.page.evaluate(() => window.api.kinguProfiles.list())).toMatchObject({
-        activeProfileId: profileState.targetProfileId
-      })
+      expect(await secondLaunch.page.evaluate(() => window.api.kinguProfiles.list())).toMatchObject(
+        {
+          activeProfileId: profileState.targetProfileId
+        }
+      )
       expect(existsSync(targetDatabase)).toBe(true)
 
       await expect(
@@ -426,9 +428,11 @@ test.describe('SQLite candidate terminal restart persistence', () => {
       const targetLaunch = await session.launch()
       secondApp = targetLaunch.app
       await waitForSessionReady(targetLaunch.page)
-      expect(await targetLaunch.page.evaluate(() => window.api.kinguProfiles.list())).toMatchObject({
-        activeProfileId: profileState.targetProfileId
-      })
+      expect(await targetLaunch.page.evaluate(() => window.api.kinguProfiles.list())).toMatchObject(
+        {
+          activeProfileId: profileState.targetProfileId
+        }
+      )
       expect(
         await targetLaunch.page.evaluate(
           (repoId) => window.__store?.getState().repos.some((repo) => repo.id === repoId),
@@ -451,9 +455,11 @@ test.describe('SQLite candidate terminal restart persistence', () => {
       const sourceLaunch = await session.launch()
       thirdApp = sourceLaunch.app
       await waitForSessionReady(sourceLaunch.page)
-      expect(await sourceLaunch.page.evaluate(() => window.api.kinguProfiles.list())).toMatchObject({
-        activeProfileId: profileState.sourceProfileId
-      })
+      expect(await sourceLaunch.page.evaluate(() => window.api.kinguProfiles.list())).toMatchObject(
+        {
+          activeProfileId: profileState.sourceProfileId
+        }
+      )
       expect(
         await sourceLaunch.page.evaluate(
           (repoId) => window.__store?.getState().repos.some((repo) => repo.id === repoId),

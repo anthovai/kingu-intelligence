@@ -38,7 +38,8 @@ export function resolvePiAgentSourceDir(
   }
 
   const overlayKey = kind === 'omp' ? 'KINGU_OMP_CODING_AGENT_DIR' : 'KINGU_PI_CODING_AGENT_DIR'
-  const otherOverlayKey = kind === 'omp' ? 'KINGU_PI_CODING_AGENT_DIR' : 'KINGU_OMP_CODING_AGENT_DIR'
+  const otherOverlayKey =
+    kind === 'omp' ? 'KINGU_PI_CODING_AGENT_DIR' : 'KINGU_OMP_CODING_AGENT_DIR'
 
   const publicDir = readEnvWithProcessFallback(baseEnv, primaryKey)
   const ownOverlayDir = readEnvWithProcessFallback(baseEnv, overlayKey)

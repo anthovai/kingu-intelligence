@@ -12,7 +12,9 @@ import { kingudActivationFenceExists } from './kingud-activation-lock'
 import { isUnconfirmedSshCommandTermination } from './ssh-relay-exec-command'
 import type { KingudRemoteExecTarget } from './kingud-remote-runtime-control'
 
-export type KingudGcTransactionPins = { state: 'pinned'; dirNames: string[] } | { state: 'keep-all' }
+export type KingudGcTransactionPins =
+  | { state: 'pinned'; dirNames: string[] }
+  | { state: 'keep-all' }
 
 function transactionVersions(transaction: KingudActivationTransaction): (string | null)[] {
   const records = [transaction.recordBefore, transaction.recordAfter]

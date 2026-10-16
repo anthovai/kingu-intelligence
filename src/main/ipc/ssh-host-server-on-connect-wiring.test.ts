@@ -25,7 +25,9 @@ vi.mock('../../shared/app-environment', () => ({
 vi.mock('../ssh/ssh-target-registry', () => ({
   getSshTargetRegistryStore: () => mocks.registry.current
 }))
-vi.mock('../ssh/kingud-runtime-deployment', () => ({ createManagedKingudEnvironment: mocks.deploy }))
+vi.mock('../ssh/kingud-runtime-deployment', () => ({
+  createManagedKingudEnvironment: mocks.deploy
+}))
 vi.mock('../ssh/kingud-runtime-conversion', () => ({
   convertSshTargetToManagedKingud: mocks.convert
 }))

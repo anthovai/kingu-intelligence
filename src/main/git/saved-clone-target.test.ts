@@ -66,7 +66,9 @@ describe('reuseSavedCloneTarget', () => {
 
   it('reuses a finished clone of the same repo spelled differently', async () => {
     const project = saved(checkout('git@github.com:anthovai/kingu-intelligence.git'))
-    await expect(decide(project, 'https://github.com/anthovai/kingu-intelligence')).resolves.toBe(project)
+    await expect(decide(project, 'https://github.com/anthovai/kingu-intelligence')).resolves.toBe(
+      project
+    )
   })
 
   // A brand-new repository has no commits, so a repeat clone must not read as a failed one.

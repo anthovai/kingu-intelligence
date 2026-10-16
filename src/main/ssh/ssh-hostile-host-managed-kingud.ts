@@ -92,7 +92,9 @@ async function assertLiveThenDecommissioned(
   version: string
 ): Promise<void> {
   const liveness = async (): Promise<string> =>
-    parseKingudLiveness(await execKingudRemote(slot, kingudLivenessProbeCommand(slot.host, slotDir)))
+    parseKingudLiveness(
+      await execKingudRemote(slot, kingudLivenessProbeCommand(slot.host, slotDir))
+    )
   expect(await liveness()).toBe('LIVE')
   const decommission = await decommissionRemoteKingud({
     ...slot,

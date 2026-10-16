@@ -35,7 +35,10 @@ import { createWslDistroHolder, type WslDistroHolder } from './wsl-distro-holder
 import { wslDistroHolderKey } from './wsl-distro-holder-record'
 import { readWslDistroRegistryIdShared } from './wsl-distro-registry-id'
 import type { WslKingudHostTarget } from './wsl-kingud-host-target'
-import { createWslKingudHostTransport, type WslKingudHostTransport } from './wsl-kingud-host-transport'
+import {
+  createWslKingudHostTransport,
+  type WslKingudHostTransport
+} from './wsl-kingud-host-transport'
 import { readWslKingudIncumbent, type WslKingudIncumbent } from './wsl-kingud-incumbent'
 import { adoptUnrecordedWslKingud } from './wsl-kingud-instance-adoption'
 

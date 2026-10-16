@@ -520,7 +520,9 @@ function retainedRows(): string {
 }
 
 const expectAllRetained = () =>
-  expect(listKingudMigrationSourceCutovers(userDataPath).every((j) => j.sourceRetainedAt)).toBe(true)
+  expect(listKingudMigrationSourceCutovers(userDataPath).every((j) => j.sourceRetainedAt)).toBe(
+    true
+  )
 
 /** What a connect does with a committed head; there is no retirement step any more. */
 async function connectAgain(): Promise<void> {

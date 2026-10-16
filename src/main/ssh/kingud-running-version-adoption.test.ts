@@ -16,7 +16,9 @@ vi.mock('./kingud-activation-fence-hold', () => ({
 }))
 
 vi.mock('./kingud-managed-wake', () => ({ wakeStoppedManagedKingud: mocks.wake }))
-vi.mock('./kingud-activation-record-store', () => ({ readKingudActivationRecord: mocks.readRecord }))
+vi.mock('./kingud-activation-record-store', () => ({
+  readKingudActivationRecord: mocks.readRecord
+}))
 vi.mock('./kingud-remote-build-hash', () => ({ readRemoteKingudBuildHash: async () => 'hash' }))
 vi.mock('./kingud-active-readiness', async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),

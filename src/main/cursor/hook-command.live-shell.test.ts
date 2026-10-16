@@ -38,7 +38,8 @@ const shells =
 const configSchema = z.object({
   hooks: z.record(z.string(), z.array(z.object({ command: z.string() })))
 })
-const hostileLiteral = 'space \' " $KINGU_TEST_EXPAND $(touch injected) `touch backtick-injected` \\'
+const hostileLiteral =
+  'space \' " $KINGU_TEST_EXPAND $(touch injected) `touch backtick-injected` \\'
 const payload = JSON.stringify({ text: `漢字😀${'x'.repeat(256 * 1024)}` })
 
 describe.skipIf(process.platform === 'win32')('local Cursor hooks through login shells', () => {

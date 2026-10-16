@@ -109,7 +109,10 @@ describe('lists while a converted host keeps its source rows', () => {
       const lookup = { getSshTarget: () => FENCED }
       expect(visibleProjectGroups(store, () => userDataPath)).toHaveLength(2)
       expect(isFrozenKingudSourceSessionPartition(lookup, 'ssh:ssh-box')).toBe(true)
-      writeKingudMigrationSourceCutover(userDataPath, { ...cutover, phase: 'destination-committed' })
+      writeKingudMigrationSourceCutover(userDataPath, {
+        ...cutover,
+        phase: 'destination-committed'
+      })
       expect(visibleProjectGroups(store, () => userDataPath)).toHaveLength(1)
       expect(isFrozenKingudSourceSessionPartition(lookup, 'local')).toBe(false)
       const changed = { ...FENCED, kingudFence: { environmentId: 'env-1', sourceChangedAt: 'x' } }

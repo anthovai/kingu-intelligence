@@ -54,7 +54,9 @@ export type KingudManagedConversionArgs = {
   /** The destination's T6-9 catalog client, reached through the server's tunnel. */
   destinationFor: (environment: KnownRuntimeEnvironment) => KingudMigrationDestinationCatalog
   /** The server's own projects, so ones this host already holds at the same path link to them. */
-  serverRepositoriesFor?: (environment: KnownRuntimeEnvironment) => Promise<KingudServerRepository[]>
+  serverRepositoriesFor?: (
+    environment: KnownRuntimeEnvironment
+  ) => Promise<KingudServerRepository[]>
   /** Releases the direct SSH session after the terminal check, before the fence. */
   releaseDirectSession?: (sshTargetId: string) => Promise<void>
   now?: () => Date

@@ -130,9 +130,9 @@ describe('managed stop instance identity', () => {
     })
     expect(fromOlderClient.instance).not.toHaveProperty('linuxStartTicks')
     expect(await completeKingudManagedStop(fromOlderClient, linuxHost(RECORDED, 2))).toBe('exited')
-    expect(JSON.parse(readFileSync(kingudManagedStopRequestPath(request.instance), 'utf8'))).toEqual(
-      fromOlderClient
-    )
+    expect(
+      JSON.parse(readFileSync(kingudManagedStopRequestPath(request.instance), 'utf8'))
+    ).toEqual(fromOlderClient)
   })
 
   it('matches its own receipt when an older client retries without the incarnation', async () => {

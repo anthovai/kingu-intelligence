@@ -35,7 +35,10 @@ import {
   type WslLivenessEvidence,
   type WslLivenessVerdict
 } from './wsl-kingud-liveness-verdict'
-import { WslKingudReconnectBackoff, wslKingudVerifyRetryDelayMs } from './wsl-kingud-reconnect-backoff'
+import {
+  WslKingudReconnectBackoff,
+  wslKingudVerifyRetryDelayMs
+} from './wsl-kingud-reconnect-backoff'
 
 export class WslKingudLivenessSupervisor {
   private readonly supervised = new Map<string, Supervised>()

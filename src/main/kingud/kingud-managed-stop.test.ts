@@ -169,9 +169,9 @@ describe('completing a managed stop', () => {
       options({ probeProcess: () => probes[Math.min(index++, probes.length - 1)] })
     )
     expect(verdict).toBe('exited')
-    expect(JSON.parse(readFileSync(kingudManagedStopRequestPath(request.instance), 'utf8'))).toEqual(
-      request
-    )
+    expect(
+      JSON.parse(readFileSync(kingudManagedStopRequestPath(request.instance), 'utf8'))
+    ).toEqual(request)
     expect(readKingudCompletedStopReceipt(request)).toMatchObject({
       kind: 'kingud_managed_stop_completed',
       exitedAt: '2026-10-01T00:00:00.000Z'

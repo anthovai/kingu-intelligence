@@ -85,7 +85,11 @@ describe('SkillUpdateRow', () => {
   it('keeps the update badge for Kingu’s own skill', async () => {
     await render(
       <SkillUpdateRow
-        group={group({ name: 'kingu-cli', kinguOwned: true, lockSource: 'anthovai/kingu-intelligence' })}
+        group={group({
+          name: 'kingu-cli',
+          kinguOwned: true,
+          lockSource: 'anthovai/kingu-intelligence'
+        })}
         state="available"
       />
     )

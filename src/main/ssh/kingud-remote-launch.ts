@@ -13,7 +13,10 @@
  * still owns a running service.
  */
 import type { KingudLaunchEnvEntry } from './kingud-host-transport'
-import { KINGUD_LAUNCHER_FILENAME, KINGUD_SERVER_ENTRY_FILENAME } from '../../shared/kingud-artifacts'
+import {
+  KINGUD_LAUNCHER_FILENAME,
+  KINGUD_SERVER_ENTRY_FILENAME
+} from '../../shared/kingud-artifacts'
 import { shellEscape } from './ssh-connection-utils'
 import {
   isWindowsRemoteHost,

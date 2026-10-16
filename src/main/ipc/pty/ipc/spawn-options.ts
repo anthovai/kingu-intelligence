@@ -36,7 +36,9 @@ export async function buildPtyIpcSpawnOptions(
   const args = ctx.args
   // Why here: every provider (local, daemon, SSH relay, WSL) spawns from this env.
   ctx.spawnEnv = withCodexTerminalServerIsolationEnv(
-    ctx.preAllocatedHandle ? { ...ctx.env, KINGU_TERMINAL_HANDLE: ctx.preAllocatedHandle } : ctx.env,
+    ctx.preAllocatedHandle
+      ? { ...ctx.env, KINGU_TERMINAL_HANDLE: ctx.preAllocatedHandle }
+      : ctx.env,
     ctx.deps.getSettings?.()
   )
   ctx.combinedEnvToDelete = mergePtyEnvDeletions(

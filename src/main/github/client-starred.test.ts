@@ -25,7 +25,11 @@ vi.mock('./github-api-repository', async (importOriginal) =>
   )
 )
 
-import { __resetKinguStarCheckForTests, checkKinguStarred, starKingu } from './client/fetch/kingu-star'
+import {
+  __resetKinguStarCheckForTests,
+  checkKinguStarred,
+  starKingu
+} from './client/fetch/kingu-star'
 import { resetOriginRepositoryCache } from './client-test-harness'
 
 const { execFileAsyncMock, ghExecFileAsyncMock, acquireMock, releaseMock } = clientMocks

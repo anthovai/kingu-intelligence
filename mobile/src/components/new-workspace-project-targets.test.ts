@@ -51,7 +51,10 @@ describe('new workspace project targets', () => {
       getNewWorkspaceRunTarget({ id: 'local', displayName: 'kingu', path: 'C:\\src\\kingu' })
     ).toMatchObject({ label: 'This computer' })
     expect(
-      getNewWorkspaceRunTarget({ id: 'local', displayName: 'kingu', path: 'C:\\src\\kingu' }, 'win32')
+      getNewWorkspaceRunTarget(
+        { id: 'local', displayName: 'kingu', path: 'C:\\src\\kingu' },
+        'win32'
+      )
     ).toMatchObject({ label: 'Local Windows' })
     expect(
       getNewWorkspaceRunTarget({

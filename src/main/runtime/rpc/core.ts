@@ -1,7 +1,10 @@
 // Why: single boundary between raw RPC frames and KinguRuntimeService; keeps schema, handler, and result type on one object.
 import { ZodError, type ZodType } from 'zod'
 import type { TerminalStreamFrame } from '../../../shared/terminal-stream-protocol'
-import type { KinguRuntimeService, OrchestrationCompatibilityCallerAuthority } from '../kingu-runtime'
+import type {
+  KinguRuntimeService,
+  OrchestrationCompatibilityCallerAuthority
+} from '../kingu-runtime'
 import type {
   DeviceCredentialInstalled,
   PairingGetEndpointsParams,

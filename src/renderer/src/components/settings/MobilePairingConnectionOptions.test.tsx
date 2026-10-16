@@ -90,7 +90,9 @@ describe('MobilePairingConnectionOptions', () => {
     const signIn = screen.getByRole('button', { name: 'Sign in for Relay' })
     expect(signInPanel).toBeVisible()
     expect(
-      screen.getByText(/Signs this desktop in to Kingu and routes the phone through Kingu’s servers/)
+      screen.getByText(
+        /Signs this desktop in to Kingu and routes the phone through Kingu’s servers/
+      )
     ).toBeVisible()
     // Why: CTA must sit between Relay and LAN so it is not buried under LAN.
     expect(

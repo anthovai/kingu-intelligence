@@ -126,6 +126,8 @@ export class StoreRuntimeState {
       fallbackSnapshotRoot: legacySnapshotRoot === profileSnapshotRoot ? null : legacySnapshotRoot
     }
     this.kingudMigrationBlobRoot = join(dirname(this.dataFile), 'kingud-migration-blobs')
-    this.kingudTerminalRestoreHints = new KingudTerminalRestoreHintStore(this.kingudMigrationBlobRoot)
+    this.kingudTerminalRestoreHints = new KingudTerminalRestoreHintStore(
+      this.kingudMigrationBlobRoot
+    )
   }
 }

@@ -9,7 +9,10 @@ import {
   kingudPosixStdioBridgeCommand,
   type KingudStdioBridgeMode
 } from './kingud-stdio-bridge-script'
-import { KingudStdioBridgeDecoder, type KingudStdioBridgeSignal } from './kingud-stdio-bridge-stream'
+import {
+  KingudStdioBridgeDecoder,
+  type KingudStdioBridgeSignal
+} from './kingud-stdio-bridge-stream'
 import { isWslKingudHostTarget, type KingudHostTransport } from './kingud-host-transport'
 import type { RemoteCommandChannel } from './remote-install-transport'
 import { isWindowsRemoteHost } from './ssh-remote-platform'
@@ -32,7 +35,9 @@ export async function resolveKingudStdioBridge(
 ): Promise<KingudStdioBridge> {
   const host = await detectRemoteHostPlatform(conn)
   if (!host) {
-    throw new KingudHostUnsupportedError('This SSH host platform is not supported by managed kingud.')
+    throw new KingudHostUnsupportedError(
+      'This SSH host platform is not supported by managed kingud.'
+    )
   }
   if (!isWindowsRemoteHost(host)) {
     return { command: kingudPosixStdioBridgeCommand(port), mode: 'raw', wrapCommand: true }

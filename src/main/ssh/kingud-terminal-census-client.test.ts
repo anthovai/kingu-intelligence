@@ -4,7 +4,10 @@ import {
   createEnvironmentFromPairingOffer,
   type KnownRuntimeEnvironment
 } from '../../shared/runtime-environments'
-import { emptyKingudActivationRecord, type KingudActivationRecord } from './kingud-activation-record'
+import {
+  emptyKingudActivationRecord,
+  type KingudActivationRecord
+} from './kingud-activation-record'
 
 const mocks = vi.hoisted(() => ({ send: vi.fn(), ensure: vi.fn(), verify: vi.fn() }))
 vi.mock('../../shared/remote-runtime-client', () => ({

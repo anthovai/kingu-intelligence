@@ -111,7 +111,9 @@ export function WorktreeCardParentContent({
         }
         onOpenLinearIssueInKingu={linearIssue?.url ? handleOpenLinearIssueInKingu : undefined}
         onOpenReviewInKingu={
-          hoverReview?.url && hoverReview.provider === 'github' ? handleOpenReviewInKingu : undefined
+          hoverReview?.url && hoverReview.provider === 'github'
+            ? handleOpenReviewInKingu
+            : undefined
         }
         onOpenReviewInBrowser={hoverReview?.url ? handleOpenReviewInBrowser : undefined}
         onOpenAutomation={affiliateListMode ? undefined : handleOpenAutomation}

@@ -76,7 +76,9 @@ export function resolveOrchestrationParty(
     terminalHandle: address,
     paneKey: worker?.paneKey ?? null,
     kinguSessionId:
-      worker && isKinguSessionId(worker.sessionId) ? canonicalKinguSessionId(worker.sessionId) : null
+      worker && isKinguSessionId(worker.sessionId)
+        ? canonicalKinguSessionId(worker.sessionId)
+        : null
   }
 }
 

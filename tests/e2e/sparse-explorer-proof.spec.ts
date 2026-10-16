@@ -154,7 +154,9 @@ test('sparse explorer defaults and outside reveal', async ({ kinguPage }, testIn
     await kinguPage.getByRole('menuitemradio', { name: 'apps/web', exact: true }).click()
     await expect(picker).toContainText('apps/web')
     await kinguPage.getByLabel('Search file contents', { exact: true }).click()
-    await expect(kinguPage.getByText('Search scope: workspace files', { exact: true })).toBeVisible()
+    await expect(
+      kinguPage.getByText('Search scope: workspace files', { exact: true })
+    ).toBeVisible()
     await expect(kinguPage.getByLabel('Search file contents', { exact: true })).toHaveAttribute(
       'data-state',
       'on'

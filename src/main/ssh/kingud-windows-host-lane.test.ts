@@ -56,7 +56,9 @@ describe.runIf(RUN)('managed kingud on a Windows OpenSSH host', () => {
   it(
     'deploys, serves, decommissions by request and exits',
     async () => {
-      const descriptor = readWindowsHostCellDescriptor(process.env.KINGU_SSH_WINDOWS_HOST_CELL ?? '')
+      const descriptor = readWindowsHostCellDescriptor(
+        process.env.KINGU_SSH_WINDOWS_HOST_CELL ?? ''
+      )
       if (!isWindowsKingudCellId(descriptor.cell)) {
         throw new Error(`${descriptor.cell} is not a managed kingud cell`)
       }

@@ -324,7 +324,9 @@ describe('createFilePathLinkProvider range bounds', () => {
   it('does not intercept regular URL clicks in the file-path fallback', async () => {
     setPlatform('Macintosh')
     const rows = [
-      makeBufferLine('PR opened: https://github.com/anthovai/kingu-intelligence-marketing-website/pull/82')
+      makeBufferLine(
+        'PR opened: https://github.com/anthovai/kingu-intelligence-marketing-website/pull/82'
+      )
     ]
     const { terminal, element } = makeFallbackTerminal(rows)
     const disposable = installFilePathLinkClickFallback(1, terminal, {
@@ -363,7 +365,9 @@ describe('createFilePathLinkProvider range bounds', () => {
     setPlatform('Macintosh')
     storeState.settings = { openLinksInApp: false }
     const rows = [
-      makeBufferLine('PR opened: https://github.com/anthovai/kingu-intelligence-marketing-website/pull/82')
+      makeBufferLine(
+        'PR opened: https://github.com/anthovai/kingu-intelligence-marketing-website/pull/82'
+      )
     ]
     const { terminal, element } = makeFallbackTerminal(rows)
     const disposable = installHttpLinkClickFallback(terminal, { worktreeId: 'wt-1' })
@@ -396,7 +400,9 @@ describe('createFilePathLinkProvider range bounds', () => {
     setPlatform('Macintosh')
     storeState.settings = { openLinksInApp: false }
     const rows = [
-      makeBufferLine('PR opened: https://github.com/anthovai/kingu-intelligence-marketing-website/pull/82')
+      makeBufferLine(
+        'PR opened: https://github.com/anthovai/kingu-intelligence-marketing-website/pull/82'
+      )
     ]
     const { terminal, element } = makeFallbackTerminal(rows)
     const disposable = installHttpLinkClickFallback(terminal, { worktreeId: 'wt-1' })
@@ -459,7 +465,9 @@ describe('createFilePathLinkProvider range bounds', () => {
     setPlatform('Macintosh')
     storeState.settings = { openLinksInApp: false, openLinksInAppPreferencePrompted: false }
     const rows = [
-      makeBufferLine('PR opened: https://github.com/anthovai/kingu-intelligence-marketing-website/pull/82')
+      makeBufferLine(
+        'PR opened: https://github.com/anthovai/kingu-intelligence-marketing-website/pull/82'
+      )
     ]
     const requestOpenLinksInAppPreference = vi.fn(async () => {
       storeState.settings = { openLinksInApp: true, openLinksInAppPreferencePrompted: true }

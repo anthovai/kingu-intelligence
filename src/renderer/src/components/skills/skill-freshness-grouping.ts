@@ -123,6 +123,7 @@ export function groupSkillFreshness(
   }
   return groups.sort(
     (left, right) =>
-      Number(right.kinguOwned) - Number(left.kinguOwned) || left.name.localeCompare(right.name, 'en')
+      Number(right.kinguOwned) - Number(left.kinguOwned) ||
+      left.name.localeCompare(right.name, 'en')
   )
 }

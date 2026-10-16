@@ -107,7 +107,8 @@ describe('WSL move shell history blobs', () => {
     const loginShell = await Promise.all(
       blobs.descriptors.map(async (descriptor) => {
         const bytes = await readAll(blobs, descriptor, descriptor.byteLength)
-        return parseKingudMigrationShellHistoryHeader(descriptor.key, bytes, bytes.length).loginShell
+        return parseKingudMigrationShellHistoryHeader(descriptor.key, bytes, bytes.length)
+          .loginShell
       })
     )
     expect(loginShell).toEqual([false, false, true])

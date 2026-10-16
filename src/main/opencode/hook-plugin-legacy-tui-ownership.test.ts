@@ -178,7 +178,11 @@ describe('OpenCode 1 TUI API pane reporting', () => {
 
   it('reproduces the release loader rejection of a combined server and TUI entry', () => {
     expect(() =>
-      readV1Plugin({ default: { server() {}, tui() {} } }, 'kingu-opencode-status-tui/tui.js', 'tui')
+      readV1Plugin(
+        { default: { server() {}, tui() {} } },
+        'kingu-opencode-status-tui/tui.js',
+        'tui'
+      )
     ).toThrow('must default export either server() or tui(), not both')
   })
 

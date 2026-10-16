@@ -55,7 +55,11 @@ describe('classifyDaemonSpawnerPath', () => {
     expect(classifyDaemonSpawnerPath(copy, () => false, prefix)).toBe('missing')
     expect(classifyDaemonSpawnerPath(copy, alwaysExists, null)).toBe('other')
     expect(
-      classifyDaemonSpawnerPath('/Applications/Kingu.app/Contents/MacOS/Kingu', alwaysExists, prefix)
+      classifyDaemonSpawnerPath(
+        '/Applications/Kingu.app/Contents/MacOS/Kingu',
+        alwaysExists,
+        prefix
+      )
     ).toBe('applications')
   })
 })

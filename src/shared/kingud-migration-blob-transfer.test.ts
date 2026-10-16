@@ -23,7 +23,9 @@ import { KINGUD_MIGRATION_BLOB_CHANNEL_RUNTIME_CAPABILITY } from './kingud-runti
 const HASH = 'a'.repeat(16)
 const DIGEST = 'b'.repeat(64)
 
-function blob(overrides: Partial<KingudMigrationBlobDescriptor> = {}): KingudMigrationBlobDescriptor {
+function blob(
+  overrides: Partial<KingudMigrationBlobDescriptor> = {}
+): KingudMigrationBlobDescriptor {
   return {
     blobKind: 'shell-history',
     key: `${HASH}-zsh`,
@@ -180,10 +182,12 @@ describe('kingud migration catalog state with blob uploads', () => {
 
   it('carries blob uploads from a host that has them', () => {
     const uploads = [{ ...blob(), receivedBytes: 10 }]
-    expect(parseKingudMigrationCatalogState({ ...staged, blobUploads: uploads }, manifest)).toEqual({
-      ...staged,
-      blobUploads: uploads
-    })
+    expect(parseKingudMigrationCatalogState({ ...staged, blobUploads: uploads }, manifest)).toEqual(
+      {
+        ...staged,
+        blobUploads: uploads
+      }
+    )
     expect(() =>
       parseKingudMigrationCatalogState(
         { ...staged, blobUploads: [{ ...blob({ key: 'bad' }), receivedBytes: 0 }] },

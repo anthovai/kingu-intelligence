@@ -95,7 +95,10 @@ describe('NativeChatMarkdown visuals', () => {
   it('shows unfinished syntax as text once the reply is no longer streaming', () => {
     const { container } = render(
       withOwner(
-        <NativeChatMarkdown content={'Here it is:\n::kingu-visual{file="usa'} visualMessageId="m1" />
+        <NativeChatMarkdown
+          content={'Here it is:\n::kingu-visual{file="usa'}
+          visualMessageId="m1"
+        />
       )
     )
     expect(container).toHaveTextContent('::kingu-visual{file="usa')

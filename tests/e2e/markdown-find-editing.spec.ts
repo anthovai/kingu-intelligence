@@ -149,10 +149,9 @@ for (const interaction of ['click', 'drag'] as const) {
       .toBeCloseTo(originalScroll, 0)
     await expect(search).toBeVisible()
     await expect(search).toHaveValue('Needle')
-    await expect(kinguPage.getByRole('button', { name: 'Match case', exact: true })).toHaveAttribute(
-      'aria-pressed',
-      'true'
-    )
+    await expect(
+      kinguPage.getByRole('button', { name: 'Match case', exact: true })
+    ).toHaveAttribute('aria-pressed', 'true')
     await expect(
       kinguPage.getByRole('button', { name: 'Match whole word', exact: true })
     ).toHaveAttribute('aria-pressed', 'true')

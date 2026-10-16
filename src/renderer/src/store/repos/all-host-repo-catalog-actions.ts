@@ -111,7 +111,10 @@ export function createAllHostRepoCatalogActions(
               s.setupScriptPromptDismissedRepoIds,
               validRepoHostIdentities
             ),
-            trustedKinguHooks: filterTrustedKinguHooksToValidRepos(s.trustedKinguHooks, validRepoIds)
+            trustedKinguHooks: filterTrustedKinguHooksToValidRepos(
+              s.trustedKinguHooks,
+              validRepoIds
+            )
           }
         })
       }

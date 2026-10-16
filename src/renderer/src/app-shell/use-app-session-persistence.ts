@@ -116,7 +116,10 @@ export function useAppSessionPersistence(): void {
       KINGU_UPDATER_QUIT_AND_INSTALL_ABORTED_EVENT,
       shutdownCheckpoint.abandonAttempt
     )
-    window.addEventListener(KINGU_RENDERER_UNLOAD_PREVENTED_EVENT, shutdownCheckpoint.abandonAttempt)
+    window.addEventListener(
+      KINGU_RENDERER_UNLOAD_PREVENTED_EVENT,
+      shutdownCheckpoint.abandonAttempt
+    )
     return () => {
       window.removeEventListener('beforeunload', persistBeforeUnload)
       window.removeEventListener(

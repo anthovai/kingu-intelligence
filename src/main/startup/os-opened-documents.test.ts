@@ -11,9 +11,9 @@ describe('OsOpenedDocumentState', () => {
     const state = new OsOpenedDocumentState()
     const publish = vi.fn()
 
-    expect(state.capture(['/Applications/Kingu.app/Contents/MacOS/Kingu', '--serve'], publish)).toBe(
-      false
-    )
+    expect(
+      state.capture(['/Applications/Kingu.app/Contents/MacOS/Kingu', '--serve'], publish)
+    ).toBe(false)
     expect(publish).not.toHaveBeenCalled()
     expect(state.consume()).toEqual([])
   })

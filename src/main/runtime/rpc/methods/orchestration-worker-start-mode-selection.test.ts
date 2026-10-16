@@ -160,7 +160,9 @@ describe('worker-start honours the settings default', () => {
     expect(createStructuredWorkerSessionForWorktree).toHaveBeenCalledTimes(1)
     expect(createExistingWorktreeWorkerTerminal).not.toHaveBeenCalled()
     const preamble = sendStructuredWorkerPreamble.mock.calls[0]![0].preamble
-    expect(preamble).toContain(`Your Kingu session ID is: kingu_session_id:${STRUCTURED_SESSION_ID}`)
+    expect(preamble).toContain(
+      `Your Kingu session ID is: kingu_session_id:${STRUCTURED_SESSION_ID}`
+    )
     expect(preamble).toContain('The coordinator cannot see this chat')
     expect(preamble).toContain('it will send this chat a fresh')
     expect(preamble).not.toContain('this terminal')

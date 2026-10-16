@@ -51,12 +51,13 @@ function reconcile(
   existing: RuntimeMobileSessionTabsSnapshot = snapshot
 ): RuntimeMobileSessionTabsSnapshot | undefined {
   const storeMobileSessionSnapshot = vi.fn()
-  const runtime = KinguRuntimeWithReconcileHeadlessMobileSessionBrowserTabs.prototype as unknown as {
-    reconcileHeadlessMobileSessionBrowserTabs(
-      worktreeId: string,
-      existing: RuntimeMobileSessionTabsSnapshot
-    ): void
-  }
+  const runtime =
+    KinguRuntimeWithReconcileHeadlessMobileSessionBrowserTabs.prototype as unknown as {
+      reconcileHeadlessMobileSessionBrowserTabs(
+        worktreeId: string,
+        existing: RuntimeMobileSessionTabsSnapshot
+      ): void
+    }
   runtime.reconcileHeadlessMobileSessionBrowserTabs.call(
     {
       buildHeadlessMobileSessionBrowserTabs: () => host.live ?? [],

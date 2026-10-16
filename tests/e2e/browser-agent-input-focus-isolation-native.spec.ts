@@ -39,7 +39,9 @@ function realKeystrokeReachesTerminal(
     const pageKeysBefore = await evalInPage(kinguPage, pageId, 'JSON.stringify(window.__keys)')
     execFileSync('xdotool', ['key', 'y'])
     await expect.poll(async () => (await readHost(kinguPage)).log.includes('key:y')).toBe(true)
-    expect(await evalInPage(kinguPage, pageId, 'JSON.stringify(window.__keys)')).toBe(pageKeysBefore)
+    expect(await evalInPage(kinguPage, pageId, 'JSON.stringify(window.__keys)')).toBe(
+      pageKeysBefore
+    )
     expect((await readHost(kinguPage)).terminalFocused).toBe(true)
   }
 }

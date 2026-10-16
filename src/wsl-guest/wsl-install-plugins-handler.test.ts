@@ -69,9 +69,9 @@ describe.skipIf(process.platform === 'win32')('createInstallPluginsHandler (gues
       expect(res.installed.opencode2).toBe(true)
       expect(typeof dir).toBe('string')
       // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: Runtime validation or the local test fixture establishes the asserted shape.
-      expect(readFileSync(join(dir as string, 'plugins', 'kingu-opencode2-status.js'), 'utf8')).toBe(
-        source
-      )
+      expect(
+        readFileSync(join(dir as string, 'plugins', 'kingu-opencode2-status.js'), 'utf8')
+      ).toBe(source)
       expect(res.overlayDirs.opencode).toBeUndefined()
     })
   })

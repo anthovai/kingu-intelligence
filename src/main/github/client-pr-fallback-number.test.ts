@@ -167,7 +167,10 @@ describe('getPRForBranch', () => {
     )
     expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(
       2,
-      ['api', 'repos/anthovai/kingu-intelligence/pulls?head=anthovai%3Afeature%2Ftest&state=all&per_page=1'],
+      [
+        'api',
+        'repos/anthovai/kingu-intelligence/pulls?head=anthovai%3Afeature%2Ftest&state=all&per_page=1'
+      ],
       { cwd: '/repo-root' }
     )
   })

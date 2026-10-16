@@ -76,7 +76,10 @@ describe('kingud migration blob chunk capability gate', () => {
     ['an older destination', [KINGUD_MIGRATION_CATALOG_RUNTIME_CAPABILITY]],
     [
       'a destination with only the channel',
-      [KINGUD_MIGRATION_CATALOG_RUNTIME_CAPABILITY, KINGUD_MIGRATION_BLOB_CHANNEL_RUNTIME_CAPABILITY]
+      [
+        KINGUD_MIGRATION_CATALOG_RUNTIME_CAPABILITY,
+        KINGUD_MIGRATION_BLOB_CHANNEL_RUNTIME_CAPABILITY
+      ]
     ]
   ])('never sends a blob to %s, and names the kind', async (_, capabilities) => {
     status.capabilities = capabilities

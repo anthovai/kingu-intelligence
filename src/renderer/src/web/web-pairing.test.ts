@@ -34,7 +34,9 @@ describe('web pairing input', () => {
 
   it('preserves optional paired device identity', () => {
     expect(
-      parseWebPairingInput(`kingu://pair?code=${encodeOffer({ pairedDeviceId: 'paired-device-a' })}`)
+      parseWebPairingInput(
+        `kingu://pair?code=${encodeOffer({ pairedDeviceId: 'paired-device-a' })}`
+      )
     ).toEqual({
       ...offer,
       pairedDeviceId: 'paired-device-a'

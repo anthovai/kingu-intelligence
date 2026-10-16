@@ -534,9 +534,11 @@ test.describe('Onboarding flow', () => {
     await expectAddProjectDialog(kinguPage)
     // The runtime env is selected as the Add Project host and the browse action
     // is host-scoped, proving the server project-setup UI is preserved on skip.
-    await expect(kinguPage.getByText('Existing Git repository or folder on this host')).toBeVisible({
-      timeout: 30_000
-    })
+    await expect(kinguPage.getByText('Existing Git repository or folder on this host')).toBeVisible(
+      {
+        timeout: 30_000
+      }
+    )
     await expect(kinguPage.getByRole('button', { name: /Browse folder/i })).toBeVisible()
     await expect(kinguPage.getByRole('button', { name: /Clone from URL/i })).toBeVisible()
     await expect(kinguPage.getByRole('button', { name: /Create new project/i })).toBeVisible()
@@ -626,7 +628,9 @@ test.describe('Onboarding flow', () => {
       .toBe(1)
   })
 
-  test('final notification step can be dismissed via Escape or click-off', async ({ kinguPage }) => {
+  test('final notification step can be dismissed via Escape or click-off', async ({
+    kinguPage
+  }) => {
     await expect(kinguPage.getByRole('heading', { name: /Pick your default agent/i })).toBeVisible({
       timeout: 15_000
     })

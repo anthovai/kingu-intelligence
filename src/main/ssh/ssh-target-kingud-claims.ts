@@ -188,7 +188,10 @@ export function resolveKingudPreflightTarget(
   }
 }
 
-function collectEmptyTargetBlockers(store: ClaimStore, target: SshTarget): KingudMigrationBlocker[] {
+function collectEmptyTargetBlockers(
+  store: ClaimStore,
+  target: SshTarget
+): KingudMigrationBlocker[] {
   return [
     ...collectTargetCatalogBlockers(store, target),
     ...collectDependentStateBlockers(store, target.id)
@@ -203,7 +206,11 @@ export function collectTargetCatalogBlockers(
   const blockers: KingudMigrationBlocker[] = []
   const holder = targetHolder(target)
   if (holder) {
-    blockers.push({ code: 'kingud_migration_target_owned', category: 'exclusive-ownership', holder })
+    blockers.push({
+      code: 'kingud_migration_target_owned',
+      category: 'exclusive-ownership',
+      holder
+    })
   }
   const repositories = store
     .getRepos()

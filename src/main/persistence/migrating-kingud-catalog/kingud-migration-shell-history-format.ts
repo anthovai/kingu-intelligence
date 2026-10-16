@@ -12,7 +12,8 @@ import { hashWorktreeId } from '../../terminal-history-id'
 /** fish keeps its history in the distro's own fish data dir, not Kingu's store, so it never moves. */
 export const KINGUD_MIGRATION_SHELL_HISTORY_SHELLS = ['zsh', 'bash'] as const
 
-export type KingudMigrationShellHistoryShell = (typeof KINGUD_MIGRATION_SHELL_HISTORY_SHELLS)[number]
+export type KingudMigrationShellHistoryShell =
+  (typeof KINGUD_MIGRATION_SHELL_HISTORY_SHELLS)[number]
 
 export const KINGUD_MIGRATION_SHELL_HISTORY_VERSION = 1
 /** Bounds the scan for the header's newline; a worktree id is a repo id plus one path. */

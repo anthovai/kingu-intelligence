@@ -222,7 +222,9 @@ describe('Windows command lines for both DefaultShells', () => {
 describe('Windows launch report', () => {
   it('reads a PID, a refusal, or a failure', () => {
     expect(
-      readWindowsKingudLaunchReport('KINGU_KINGUD_LAUNCH {"method":"breakaway","pid":9,"inJob":false}')
+      readWindowsKingudLaunchReport(
+        'KINGU_KINGUD_LAUNCH {"method":"breakaway","pid":9,"inJob":false}'
+      )
     ).toBe(9)
     expect(() =>
       readWindowsKingudLaunchReport(
@@ -236,7 +238,9 @@ describe('Windows launch report', () => {
     ).toThrow('open-stdout (code 32)')
     // The relay's report is not kingud's.
     expect(() =>
-      readWindowsKingudLaunchReport('KINGU_RELAY_LAUNCH {"method":"breakaway","pid":9,"inJob":false}')
+      readWindowsKingudLaunchReport(
+        'KINGU_RELAY_LAUNCH {"method":"breakaway","pid":9,"inJob":false}'
+      )
     ).toThrow('no launch report')
   })
 
@@ -248,9 +252,9 @@ describe('Windows launch report', () => {
 describe('Windows build hash and host script', () => {
   it('reads the same marker as POSIX', async () => {
     mockExec.mockResolvedValueOnce('__KINGUD_BUILD_HASH__ ABC123DEF4567890\r\n')
-    await expect(readRemoteKingudBuildHash({ conn: Object.create(null), host }, slot)).resolves.toBe(
-      'abc123def4567890'
-    )
+    await expect(
+      readRemoteKingudBuildHash({ conn: Object.create(null), host }, slot)
+    ).resolves.toBe('abc123def4567890')
   })
 
   it('stages a missing host script through a partial file that installs itself, once per connection', async () => {

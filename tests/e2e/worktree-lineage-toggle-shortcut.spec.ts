@@ -257,7 +257,9 @@ test.describe('Toggle Child Workspaces shortcut', () => {
     await panel.locator('[data-floating-terminal-shortcut-surface]').first().focus()
     await kinguPage.keyboard.press(CHORD)
     await expect(
-      sidebarWorktreeRow(kinguPage, parentId).getByRole('button', { name: 'Hide 1 child workspace' })
+      sidebarWorktreeRow(kinguPage, parentId).getByRole('button', {
+        name: 'Hide 1 child workspace'
+      })
     ).toBeVisible()
     await expect(sidebarWorktreeRow(kinguPage, childId)).toBeVisible()
     await captureEvidence(kinguPage, 'child-toggle-floating-guard.png')

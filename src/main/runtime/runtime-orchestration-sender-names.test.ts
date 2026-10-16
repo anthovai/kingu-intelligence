@@ -160,7 +160,11 @@ afterEach(() => {
   db.close()
 })
 
-const chatParty = { address: `kingu_session_id:${CHAT}`, terminalHandle: null, kinguSessionId: CHAT }
+const chatParty = {
+  address: `kingu_session_id:${CHAT}`,
+  terminalHandle: null,
+  kinguSessionId: CHAT
+}
 const terminalParty = (handle: string) => ({
   address: handle,
   terminalHandle: handle,

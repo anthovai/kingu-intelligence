@@ -83,9 +83,9 @@ describe('media preview protocol', () => {
     }
     authorize.mockResolvedValueOnce(directory)
     expect((await handleMediaPreviewRequest(new Request(result.mediaUrl))).status).toBe(404)
-    expect((await handleMediaPreviewRequest(new Request('kingu-media://file/unknown'))).status).toBe(
-      404
-    )
+    expect(
+      (await handleMediaPreviewRequest(new Request('kingu-media://file/unknown'))).status
+    ).toBe(404)
     expect(readMediaPreview(event, { filePath: join(directory, 'secret.txt') }, store)).toBeNull()
   })
 

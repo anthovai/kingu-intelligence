@@ -154,10 +154,14 @@ test('whole-tab hover cards slide immediately between neighboring tabs', async (
     await first.locator('[data-tab-close-button]').hover()
     await kinguPage.waitForTimeout(100)
     await expect(cardTitle).toHaveText('Build and test the hover cards')
-    await expect(kinguPage.locator('[data-tab-hover-card], [data-tab-close-tooltip]')).toHaveCount(1)
+    await expect(kinguPage.locator('[data-tab-hover-card], [data-tab-close-tooltip]')).toHaveCount(
+      1
+    )
     await kinguPage.waitForTimeout(500)
     await expect(cardTitle).toHaveText('Build and test the hover cards')
-    await expect(kinguPage.locator('[data-tab-hover-card], [data-tab-close-tooltip]')).toHaveCount(1)
+    await expect(kinguPage.locator('[data-tab-hover-card], [data-tab-close-tooltip]')).toHaveCount(
+      1
+    )
     await expect(kinguPage.locator('[data-tab-close-tooltip]')).toBeVisible()
     await expect(card).toHaveCount(0)
     await kinguPage.mouse.move(secondBox.x + 3, secondBox.y + secondBox.height / 2)

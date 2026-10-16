@@ -225,7 +225,9 @@ export function dormantState(): KingudMigrationDormantStatePayload {
   }
 }
 
-export function manifest(overrides: Partial<KingudMigrationManifest> = {}): KingudMigrationManifest {
+export function manifest(
+  overrides: Partial<KingudMigrationManifest> = {}
+): KingudMigrationManifest {
   const unsigned = {
     version: KINGUD_MIGRATION_MANIFEST_VERSION,
     migrationId: 'migration-1',

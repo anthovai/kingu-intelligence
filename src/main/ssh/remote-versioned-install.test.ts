@@ -787,7 +787,9 @@ describe('gcOldRemoteInstallVersions', () => {
 
     const releaseCommands = mockExec.mock.calls
       .map(([, command]) => command)
-      .filter((command) => command.includes('kingud-0.1.0+aaa.gc-claim') && command.startsWith('rm'))
+      .filter(
+        (command) => command.includes('kingud-0.1.0+aaa.gc-claim') && command.startsWith('rm')
+      )
     expect(releaseCommands).toHaveLength(0)
   })
 })

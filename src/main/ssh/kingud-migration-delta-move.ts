@@ -62,7 +62,9 @@ export type KingudDeltaMoveArgs = {
   now?: () => Date
 }
 
-export async function runKingudDeltaMove(args: KingudDeltaMoveArgs): Promise<KingudDeltaMoveResult> {
+export async function runKingudDeltaMove(
+  args: KingudDeltaMoveArgs
+): Promise<KingudDeltaMoveResult> {
   const { userDataPath, store, target } = args
   const now = args.now ?? (() => new Date())
   const plan = planKingudDeltaMove(userDataPath, store, target, { now })

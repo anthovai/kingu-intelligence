@@ -14,7 +14,8 @@ const { readMock, saveMock, clearMock, refreshMock, linkMock } = vi.hoisted(() =
 vi.mock('./profile-cloud-session-store', () => ({
   readKinguCloudSession: readMock,
   saveKinguCloudSession: saveMock,
-  kinguCloudSessionKey: (profileId: string, userDataPath: string) => `${userDataPath}\0${profileId}`,
+  kinguCloudSessionKey: (profileId: string, userDataPath: string) =>
+    `${userDataPath}\0${profileId}`,
   clearKinguCloudSession: clearMock
 }))
 

@@ -94,7 +94,9 @@ describe('github owner/repo resolution', () => {
       owner: 'anthovai',
       repo: 'kingu'
     })
-    expect(parseGitHubOwnerRepo('ssh://git@ssh.github.com:443/anthovai/kingu-intelligence.git')).toEqual({
+    expect(
+      parseGitHubOwnerRepo('ssh://git@ssh.github.com:443/anthovai/kingu-intelligence.git')
+    ).toEqual({
       owner: 'anthovai',
       repo: 'kingu'
     })

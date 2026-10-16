@@ -29,7 +29,10 @@ import {
   type ArtifactSource,
   type ExpectedSha256
 } from './kingud-artifact-source-verification'
-import { KingudArtifactsUnavailableError, KingudHostUnsupportedError } from './kingud-host-unavailable'
+import {
+  KingudArtifactsUnavailableError,
+  KingudHostUnsupportedError
+} from './kingud-host-unavailable'
 
 const Sha256Schema = z.string().regex(/^[a-f0-9]{64}$/u)
 const TemplateTargetSchema = z

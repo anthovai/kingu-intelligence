@@ -185,9 +185,9 @@ describe('remaining dispatch metadata statement compilation', () => {
       const compile = vi.spyOn(DatabaseSync.prototype, 'prepare')
       for (let call = 0; call < 10; call += 1) {
         expect(reader.resolveCreatorDepth({ kind: 'session', kinguSessionId: sessionId })).toBe(2)
-        expect(reader.resolveCreatorDispatchId({ kind: 'session', kinguSessionId: sessionId })).toBe(
-          dispatch.id
-        )
+        expect(
+          reader.resolveCreatorDispatchId({ kind: 'session', kinguSessionId: sessionId })
+        ).toBe(dispatch.id)
       }
       writer.db.prepare('UPDATE dispatch_contexts SET depth = ? WHERE id = ?').run(3, dispatch.id)
       expect(reader.resolveCreatorDepth({ kind: 'session', kinguSessionId: sessionId })).toBe(3)

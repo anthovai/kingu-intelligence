@@ -38,7 +38,8 @@ function shouldRefreshCloudSession(session: KinguCloudSession, now = Date.now())
 
 export function isKinguCloudAuthFailure(error: unknown): boolean {
   return (
-    error instanceof KinguCloudRequestError && (error.statusCode === 401 || error.statusCode === 403)
+    error instanceof KinguCloudRequestError &&
+    (error.statusCode === 401 || error.statusCode === 403)
   )
 }
 

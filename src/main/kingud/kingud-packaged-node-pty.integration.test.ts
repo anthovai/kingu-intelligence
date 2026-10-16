@@ -15,7 +15,9 @@ const pinnedNode = locatePinnedNodeForTests()
 
 const skip = skipForMissingInputs('artifact', [
   ...(pinnedNode ? [] : ['the pinned Node (KINGU_PINNED_NODE or out/runtimes)']),
-  ...(existsSync(join(packageDir, KINGUD_NODE_PTY_DIR)) ? [] : [`out/kingud/${KINGUD_NODE_PTY_DIR}`])
+  ...(existsSync(join(packageDir, KINGUD_NODE_PTY_DIR))
+    ? []
+    : [`out/kingud/${KINGUD_NODE_PTY_DIR}`])
 ])
 
 describe.skipIf(skip)('packaged node-pty under the pinned Node', () => {

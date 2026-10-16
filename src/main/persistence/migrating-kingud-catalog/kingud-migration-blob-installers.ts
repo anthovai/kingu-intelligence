@@ -40,15 +40,16 @@ type KingudMigrationBlobContentCheck = (file: KingudMigrationStagedBlobFile) => 
 
 const UTF8 = new TextDecoder('utf-8', { fatal: true })
 
-const BLOB_CONTENT_CHECKS: Partial<Record<KingudMigrationBlobKind, KingudMigrationBlobContentCheck>> =
-  {
-    'terminal-restore-hints': ({ path }) => {
-      parseKingudMigrationTerminalRestoreHintsText(decodeUtf8(readFileSync(path)))
-    },
-    'shell-history': ({ key, path, manifest }) => {
-      assertKingudMigrationShellHistoryValid(key, path, manifest.payload)
-    }
+const BLOB_CONTENT_CHECKS: Partial<
+  Record<KingudMigrationBlobKind, KingudMigrationBlobContentCheck>
+> = {
+  'terminal-restore-hints': ({ path }) => {
+    parseKingudMigrationTerminalRestoreHintsText(decodeUtf8(readFileSync(path)))
+  },
+  'shell-history': ({ key, path, manifest }) => {
+    assertKingudMigrationShellHistoryValid(key, path, manifest.payload)
   }
+}
 
 /**
  * Bytes that matched their digest but not their format mean a buggy sender. Refusing here, before

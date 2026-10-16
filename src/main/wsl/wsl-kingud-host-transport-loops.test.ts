@@ -3,7 +3,10 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { spawnProcess } from '@kingu/process-host'
 import type { PipedChildProcess, PipedProcessSpec } from '@kingu/process-host/process-spec'
 import { execCommand } from '../ssh/ssh-relay-exec-command'
-import { createWslKingudHostTransport, type WslKingudHostTransport } from './wsl-kingud-host-transport'
+import {
+  createWslKingudHostTransport,
+  type WslKingudHostTransport
+} from './wsl-kingud-host-transport'
 
 const posix = process.platform !== 'win32'
 const children: PipedChildProcess[] = []

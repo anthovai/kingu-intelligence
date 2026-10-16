@@ -55,7 +55,11 @@ function partialPartitions() {
 
 describe('collecting dormant state from partially written session partitions', () => {
   it('neither throws on missing maps nor blocks on a marker both partitions agree on', () => {
-    const inspection = collectKingudMigrationSourceDormantState(partialPartitions(), SOURCE, CATALOG)
+    const inspection = collectKingudMigrationSourceDormantState(
+      partialPartitions(),
+      SOURCE,
+      CATALOG
+    )
     expect(inspection.blockedCounts['workspace-session']).toBe(0)
     expect(inspection.payload.workspaceSession?.defaultTerminalTabsAppliedByWorktreeId).toEqual({
       [WORKTREE]: true

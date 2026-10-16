@@ -121,8 +121,8 @@ describe('kingud migration manifest source on the destination', () => {
       distro: 'Ubuntu',
       targetLabel: 'Ubuntu'
     }
-    expect(() => parseKingudMigrationManifest(manifestWithSource(asOlderDestinationSeesIt))).toThrow(
-      /^kingud_migration_manifest_source/
-    )
+    expect(() =>
+      parseKingudMigrationManifest(manifestWithSource(asOlderDestinationSeesIt))
+    ).toThrow(/^kingud_migration_manifest_source/)
   })
 })

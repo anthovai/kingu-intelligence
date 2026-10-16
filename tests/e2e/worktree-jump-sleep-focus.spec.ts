@@ -56,7 +56,9 @@ test('Cmd+J focuses the terminal after waking a sleeping workspace', async ({
   await expect(dialog).toBeHidden()
   await waitForActiveTerminalManager(kinguPage)
   await waitForActivePanePtyId(kinguPage)
-  const terminal = kinguPage.locator('[data-terminal-tab-id]:visible .xterm-helper-textarea').first()
+  const terminal = kinguPage
+    .locator('[data-terminal-tab-id]:visible .xterm-helper-textarea')
+    .first()
   await kinguPage.screenshot({ path: testInfo.outputPath('wake-focus.png') })
   await expect(terminal).toBeFocused()
   await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 })

@@ -20,7 +20,9 @@ export function formatKingudNativePreflightReport(
 }
 
 /** The last report line in `output`, or null when none parses. */
-export function parseKingudNativePreflightReport(output: string): KingudNativePreflightReport | null {
+export function parseKingudNativePreflightReport(
+  output: string
+): KingudNativePreflightReport | null {
   for (const line of output.split(/\r?\n/u).toReversed()) {
     try {
       const parsed: unknown = JSON.parse(line)

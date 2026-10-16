@@ -137,7 +137,9 @@ describe('runtime Jira client search bounds', () => {
         id: 'rpc-1',
         ok: true,
         result:
-          args.method === 'jira.readStatus' ? { connected: true, viewer: null } : { key: 'KINGU-1' },
+          args.method === 'jira.readStatus'
+            ? { connected: true, viewer: null }
+            : { key: 'KINGU-1' },
         _meta: { runtimeId: 'remote-runtime' }
       }
     })
@@ -147,9 +149,9 @@ describe('runtime Jira client search bounds', () => {
       key: 'KINGU-1'
     })
     await expect(jiraReadStatus(runtimeContext)).resolves.toMatchObject({ connected: true })
-    await expect(jiraLookupIssueSummary(runtimeContext, 'KINGU-1', 'site-1')).resolves.toMatchObject(
-      { key: 'KINGU-1' }
-    )
+    await expect(
+      jiraLookupIssueSummary(runtimeContext, 'KINGU-1', 'site-1')
+    ).resolves.toMatchObject({ key: 'KINGU-1' })
 
     expect(jiraReadStatusLocal).toHaveBeenCalledTimes(1)
     expect(jiraLookupIssueSummaryLocal).toHaveBeenCalledWith({

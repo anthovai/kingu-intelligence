@@ -20,7 +20,9 @@ describe('trustedPackagePath', () => {
       app: join(root, 'app'),
       inside: file(join(root, 'app', 'node_modules', '@kingu', 'windows-security', 'index.js')),
       // A sibling whose name merely starts with the app's must not count as inside it.
-      beside: file(join(root, 'app-evil', 'node_modules', '@kingu', 'windows-security', 'index.js')),
+      beside: file(
+        join(root, 'app-evil', 'node_modules', '@kingu', 'windows-security', 'index.js')
+      ),
       // What a bare specifier finds by walking past the app, e.g. C:\node_modules on a shared host.
       above: file(join(root, 'node_modules', '@kingu', 'windows-security', 'index.js'))
     }

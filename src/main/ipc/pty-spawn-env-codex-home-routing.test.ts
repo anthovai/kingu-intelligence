@@ -170,7 +170,8 @@ describe('registerPtyHandlers', () => {
         KINGU_AGENT_HOOK_ENV: 'production',
         KINGU_AGENT_HOOK_VERSION: 'stale-version',
         KINGU_AGENT_HOOK_ENDPOINT: '/tmp/stale-endpoint.env',
-        KINGU_CLAUDE_AGENT_STATUS_SETTINGS: '/tmp/kingu/agent-hooks/claude-agent-status-settings.json'
+        KINGU_CLAUDE_AGENT_STATUS_SETTINGS:
+          '/tmp/kingu/agent-hooks/claude-agent-status-settings.json'
       })
 
       expect(env.KINGU_AGENT_HOOK_PORT).toBe('5678')
@@ -189,7 +190,8 @@ describe('registerPtyHandlers', () => {
         KINGU_AGENT_HOOK_ENV: 'production',
         KINGU_AGENT_HOOK_VERSION: 'stale-version',
         KINGU_AGENT_HOOK_ENDPOINT: '/tmp/stale-endpoint.env',
-        KINGU_CLAUDE_AGENT_STATUS_SETTINGS: '/tmp/kingu/agent-hooks/claude-agent-status-settings.json'
+        KINGU_CLAUDE_AGENT_STATUS_SETTINGS:
+          '/tmp/kingu/agent-hooks/claude-agent-status-settings.json'
       })
 
       expect(env.KINGU_AGENT_HOOK_PORT).toBeUndefined()

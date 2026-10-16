@@ -43,9 +43,9 @@ describe('managed kingud compile cache', () => {
     expect(kingudCompileCacheEnv('/slot', enabled, managed)).toEqual({
       NODE_COMPILE_CACHE: join('/slot', KINGUD_COMPILE_CACHE_DIRNAME)
     })
-    expect(kingudCompileCacheEnv('/slot', { getCompileCacheDir: () => undefined }, managed)).toEqual(
-      {}
-    )
+    expect(
+      kingudCompileCacheEnv('/slot', { getCompileCacheDir: () => undefined }, managed)
+    ).toEqual({})
     expect(kingudCompileCacheEnv('/slot', {}, managed)).toEqual({})
     // Regression: an unmanaged kingud's own NODE_COMPILE_CACHE stays where the operator put it.
     expect(kingudCompileCacheEnv('/slot', enabled, {})).toEqual({})

@@ -55,7 +55,10 @@ describe('candidate profile readiness', () => {
     expect(KINGUD_NODE_RUNTIME_IDENTITY.runtime).toBe('node')
     expect(() => parse(response, KINGUD_NODE_RUNTIME_IDENTITY)).toThrow()
     expect(() =>
-      parse({ ...response, runtime: 'node', runtimeVersion: '18.0.0' }, KINGUD_NODE_RUNTIME_IDENTITY)
+      parse(
+        { ...response, runtime: 'node', runtimeVersion: '18.0.0' },
+        KINGUD_NODE_RUNTIME_IDENTITY
+      )
     ).toThrow('expected candidate runtime')
   })
 

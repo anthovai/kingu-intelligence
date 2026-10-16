@@ -72,7 +72,9 @@ describe('release channel', () => {
     expect(getReleaseNotesUrlForVersion('1.4.160-adhoc.20260728140533')).toBe(
       'https://github.com/anthovai/kingu-intelligence-adhoc/releases/tag/v1.4.160-adhoc.20260728140533'
     )
-    expect(getReleaseNotesUrlForVersion(null)).toBe('https://github.com/anthovai/kingu-intelligence/releases')
+    expect(getReleaseNotesUrlForVersion(null)).toBe(
+      'https://github.com/anthovai/kingu-intelligence/releases'
+    )
   })
 
   it('round-trips an hourly version stamp as UTC', () => {

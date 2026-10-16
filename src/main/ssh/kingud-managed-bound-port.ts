@@ -52,7 +52,9 @@ export async function readManagedKingudBoundPort(
 }
 
 /** Where a tunnel to this environment must point; independent SSH access keeps its own port. */
-export async function resolveManagedKingudTunnelPort(input: KingudTunnelPortInput): Promise<number> {
+export async function resolveManagedKingudTunnelPort(
+  input: KingudTunnelPortInput
+): Promise<number> {
   const access = getRuntimeSshAccess(input.environment)
   if (!access) {
     throw new Error('Managed kingud environment is missing its SSH tunnel dependency.')

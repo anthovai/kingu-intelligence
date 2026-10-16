@@ -202,9 +202,9 @@ export class KingudCatalogImportPersistence {
 
   /** A migration into this server staged recently and neither committed nor aborted. */
   hasStagedKingudMigrationCatalog(now: number = Date.now()): boolean {
-    return (this[kingudCatalogImportContext].runtime.state.kingudMigrationStagedCatalogs ?? []).some(
-      (entry) => isLiveKingudMigrationStage(entry.stagedAt, now)
-    )
+    return (
+      this[kingudCatalogImportContext].runtime.state.kingudMigrationStagedCatalogs ?? []
+    ).some((entry) => isLiveKingudMigrationStage(entry.stagedAt, now))
   }
 }
 

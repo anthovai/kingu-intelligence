@@ -99,10 +99,14 @@ describe('GitHub GraphQL rate-limit guard', () => {
     ).resolves.toBe(true)
 
     expect(getOwnerRepoMock).not.toHaveBeenCalled()
-    expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(1, ['api', 'repos/anthovai/kingu-intelligence/pulls/7'], {
-      cwd: '/repo-root',
-      host: 'github.com'
-    })
+    expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(
+      1,
+      ['api', 'repos/anthovai/kingu-intelligence/pulls/7'],
+      {
+        cwd: '/repo-root',
+        host: 'github.com'
+      }
+    )
     expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(
       2,
       [
@@ -155,12 +159,24 @@ describe('GitHub GraphQL rate-limit guard', () => {
       })
     ).resolves.toEqual({ ok: true })
 
-    expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(1, ['api', 'repos/anthovai/kingu-intelligence/pulls/7'], {
-      host: 'github.com'
-    })
+    expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(
+      1,
+      ['api', 'repos/anthovai/kingu-intelligence/pulls/7'],
+      {
+        host: 'github.com'
+      }
+    )
     expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(
       2,
-      ['pr', 'view', '7', '--json', 'id,headRefOid,baseRefName', '--repo', 'anthovai/kingu-intelligence'],
+      [
+        'pr',
+        'view',
+        '7',
+        '--json',
+        'id,headRefOid,baseRefName',
+        '--repo',
+        'anthovai/kingu-intelligence'
+      ],
       { host: 'github.com' }
     )
     expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(

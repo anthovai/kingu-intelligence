@@ -75,16 +75,17 @@ function runtime(prompts: string[]): KinguRuntimeService {
   const fake: Pick<
     KinguRuntimeService,
     'getNestedWorkerMaxDepth' | 'getTerminalOrchestrationCliCommand' | 'sendTerminalAgentPrompt'
-  > & { orchestrationSenderNames: Pick<KinguRuntimeService['orchestrationSenderNames'], 'nameOf'> } =
-    {
-      orchestrationSenderNames: { nameOf: () => null },
-      getNestedWorkerMaxDepth: () => 2,
-      getTerminalOrchestrationCliCommand: () => 'kingu',
-      sendTerminalAgentPrompt: async (handle, text) => {
-        prompts.push(text)
-        return { handle, accepted: true, bytesWritten: text.length }
-      }
+  > & {
+    orchestrationSenderNames: Pick<KinguRuntimeService['orchestrationSenderNames'], 'nameOf'>
+  } = {
+    orchestrationSenderNames: { nameOf: () => null },
+    getNestedWorkerMaxDepth: () => 2,
+    getTerminalOrchestrationCliCommand: () => 'kingu',
+    sendTerminalAgentPrompt: async (handle, text) => {
+      prompts.push(text)
+      return { handle, accepted: true, bytesWritten: text.length }
     }
+  }
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: preamble delivery reads only the members the fake implements.
   return fake as KinguRuntimeService
 }

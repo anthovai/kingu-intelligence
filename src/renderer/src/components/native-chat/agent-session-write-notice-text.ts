@@ -64,9 +64,15 @@ const SENTENCES: Record<AgentSessionWriteNoticeSentence, () => string> = {
       COPY.updateKinguToKeepUsing
     ),
   chatSavedByNewerKingu: () =>
-    translate('components.native-chat.writeNotice.chatSavedByNewerKingu', COPY.chatSavedByNewerKingu),
+    translate(
+      'components.native-chat.writeNotice.chatSavedByNewerKingu',
+      COPY.chatSavedByNewerKingu
+    ),
   updateKinguToOpenChat: () =>
-    translate('components.native-chat.writeNotice.updateKinguToOpenChat', COPY.updateKinguToOpenChat),
+    translate(
+      'components.native-chat.writeNotice.updateKinguToOpenChat',
+      COPY.updateKinguToOpenChat
+    ),
   unsupported: () => translate('components.native-chat.writeNotice.unsupported', COPY.unsupported),
   notAvailable: () =>
     translate('components.native-chat.writeNotice.notAvailable', COPY.notAvailable),

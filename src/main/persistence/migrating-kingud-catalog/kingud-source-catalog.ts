@@ -2,7 +2,10 @@ import type { KingudMigrationCatalogPayload } from '../../../shared/kingud-migra
 import type { ProjectGroup } from '../../../shared/project-group-types'
 import type { SshTarget } from '../../../shared/ssh-types'
 import type { Store } from '../../persistence'
-import { kingudSourceFolderWorkspaceIds, repoBelongsToKingudSource } from './kingud-source-ownership'
+import {
+  kingudSourceFolderWorkspaceIds,
+  repoBelongsToKingudSource
+} from './kingud-source-ownership'
 
 type KingudSourceCatalogStore = Pick<Store, 'getFolderWorkspaces' | 'getProjectGroups' | 'getRepos'>
 

@@ -194,7 +194,9 @@ test.describe('Option-composed text in a kitty-keyboard pane', () => {
             .toBe(`${side === 'left' ? '\x1b[46;3u' : '≥'}\x1b[46;3:3u`)
         }
         expect(
-          await kinguPage.evaluate(() => window.__store?.getState().settings?.terminalMacOptionAsAlt)
+          await kinguPage.evaluate(
+            () => window.__store?.getState().settings?.terminalMacOptionAsAlt
+          )
         ).toBe('left')
       }
     } finally {

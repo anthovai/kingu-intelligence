@@ -45,7 +45,9 @@ describe('what a rejection shows the reader', () => {
 
   it('tells the phone how to send it again after a transport failure', () => {
     const phone = structuredAgentSessionRejectionNotice('provider_write_failed', 'composer-send')
-    expect(phone.startsWith("Kingu couldn't reach the agent. Your message was not sent.")).toBe(true)
+    expect(phone.startsWith("Kingu couldn't reach the agent. Your message was not sent.")).toBe(
+      true
+    )
     expect(phone.length).toBeGreaterThan(notice('provider_write_failed').length)
   })
 })

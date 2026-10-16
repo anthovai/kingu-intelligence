@@ -7,7 +7,10 @@ import { KINGUD_STARTUP_PREFLIGHT_FLAG } from '../../shared/kingud-profile-prefl
 import { KingudBundledRuntimeError } from './kingud-bundled-runtime'
 import type * as BundledRuntime from './kingud-bundled-runtime'
 import { resolveKingudExitCode } from './kingud-exit-code'
-import { preflightBundledKingudStartup, runKingudProfilePreflight } from './kingud-profile-preflight'
+import {
+  preflightBundledKingudStartup,
+  runKingudProfilePreflight
+} from './kingud-profile-preflight'
 
 const fixture = vi.hoisted(() => ({
   identity: vi.fn(),
@@ -81,7 +84,11 @@ describe('bundled Kingu startup readiness', () => {
       expect(fixture.run).toHaveBeenCalledOnce()
       expect(fixture.run).toHaveBeenCalledWith({
         program: process.execPath,
-        args: [join('/slot', 'kingud-server.js'), KINGUD_STARTUP_PREFLIGHT_FLAG, expect.any(String)],
+        args: [
+          join('/slot', 'kingud-server.js'),
+          KINGUD_STARTUP_PREFLIGHT_FLAG,
+          expect.any(String)
+        ],
         env: expect.objectContaining({ KINGU_BACKGROUND_LAUNCH: '1' }),
         timeoutMs: 90_000,
         maxOutputBytes: 64 * 1024,

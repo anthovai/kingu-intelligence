@@ -149,7 +149,8 @@ describe('addKinguWslInteropEnv', () => {
 
   it('path-translates a Windows hook endpoint but passes a guest-side one untouched', () => {
     const windowsEnv: Record<string, string> = {
-      KINGU_AGENT_HOOK_ENDPOINT: 'C:\\Users\\jin\\AppData\\Roaming\\Kingu\\agent-hooks\\endpoint.cmd'
+      KINGU_AGENT_HOOK_ENDPOINT:
+        'C:\\Users\\jin\\AppData\\Roaming\\Kingu\\agent-hooks\\endpoint.cmd'
     }
     addKinguWslInteropEnv(windowsEnv)
     expect(windowsEnv.WSLENV).toContain('KINGU_AGENT_HOOK_ENDPOINT/p')

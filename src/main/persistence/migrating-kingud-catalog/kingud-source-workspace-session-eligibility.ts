@@ -76,7 +76,8 @@ export function collectUnsupportedSessionItems(
         ...tabs
           .filter(
             (tab) =>
-              tab.executionHostId !== undefined && !isKingudSourceTabHost(tab.executionHostId, scope)
+              tab.executionHostId !== undefined &&
+              !isKingudSourceTabHost(tab.executionHostId, scope)
           )
           .map(
             (tab) =>

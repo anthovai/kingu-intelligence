@@ -86,7 +86,8 @@ export function isFrozenKingudSourceSessionPartition(
   hostId: string | null | undefined
 ): boolean {
   const parsed = parseExecutionHostId(hostId)
-  const fence = parsed?.kind === 'ssh' ? store.getSshTarget(parsed.targetId)?.kingudFence : undefined
+  const fence =
+    parsed?.kind === 'ssh' ? store.getSshTarget(parsed.targetId)?.kingudFence : undefined
   return fence !== undefined && !fence.sourceChangedAt
 }
 

@@ -70,7 +70,9 @@ export function kingudCandidateLaunchFailureCode(error: unknown): string {
     : 'kingud_candidate_launch_failed'
 }
 
-export function classifyKingudHostUnavailable(failure: unknown): KingudHostUnavailableReason | null {
+export function classifyKingudHostUnavailable(
+  failure: unknown
+): KingudHostUnavailableReason | null {
   if (failure instanceof Error) {
     return UNAVAILABLE_BY_ERROR_NAME[failure.name] ?? null
   }

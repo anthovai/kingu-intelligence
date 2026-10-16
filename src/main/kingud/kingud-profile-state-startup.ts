@@ -1,6 +1,9 @@
 import { createProfileStateStoreForStartup } from '../persistence/profile-state/profile-state-startup-authority'
 import type { ProfileStateStoreFactoryResult } from '../persistence/profile-state/profile-state-store-factory'
-import { ensureActiveKinguProfile, initKinguProfilePaths } from '../kingu-profiles/profile-index-store'
+import {
+  ensureActiveKinguProfile,
+  initKinguProfilePaths
+} from '../kingu-profiles/profile-index-store'
 import { initSshHostKeyStoreFile } from '../ssh/ssh-host-key-store'
 import { initKingudHeldFenceTokenFile } from '../ssh/kingud-held-fence-tokens'
 import { emitKingudProfileStateAuthoritySelected } from './kingud-profile-state-telemetry'

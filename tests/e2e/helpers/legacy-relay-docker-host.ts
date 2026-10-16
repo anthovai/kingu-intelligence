@@ -56,9 +56,13 @@ export async function installReleasedRelayOnDockerHost(
   try {
     const pty = path.join(staging, 'node_modules', 'node-pty')
     cpSync(path.join(kingudTemplateDir, 'node_modules', 'node-pty'), pty, { recursive: true })
-    cpSync(path.join(kingudTemplateDir, 'targets', NODE_PTY_SLOT, 'node_modules', 'node-pty'), pty, {
-      recursive: true
-    })
+    cpSync(
+      path.join(kingudTemplateDir, 'targets', NODE_PTY_SLOT, 'node_modules', 'node-pty'),
+      pty,
+      {
+        recursive: true
+      }
+    )
     // Why dereference: the bundle is a real file here, never the checkout's symlink.
     cpSync(path.join(bundleDir, 'relay.js'), path.join(staging, 'relay.js'), { dereference: true })
     execDockerSshHostTargetCommand(target, `mkdir -p ${quotePosixShell(dir)}`)

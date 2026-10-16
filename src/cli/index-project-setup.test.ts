@@ -139,7 +139,14 @@ describe('kingu cli worktree awareness', () => {
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 
     await main(
-      ['project', 'setups', '--project', 'github:anthovai/kingu-intelligence', '--host', 'runtime:gpu'],
+      [
+        'project',
+        'setups',
+        '--project',
+        'github:anthovai/kingu-intelligence',
+        '--host',
+        'runtime:gpu'
+      ],
       '/tmp/repo'
     )
 

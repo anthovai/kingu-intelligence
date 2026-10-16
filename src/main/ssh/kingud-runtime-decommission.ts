@@ -211,7 +211,8 @@ export function cancelManagedKingudStop(
               outcome: 'refused',
               verdict: 'live',
               code: 'kingud_stop_already_dispatched',
-              reason: 'kingud already acted on the stop and is shutting down; it cannot be canceled.'
+              reason:
+                'kingud already acted on the stop and is shutting down; it cannot be canceled.'
             }
           }
         }

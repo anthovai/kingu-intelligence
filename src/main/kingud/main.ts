@@ -8,7 +8,10 @@ import {
   KINGUD_PROFILE_PREFLIGHT_FLAG,
   KINGUD_STARTUP_PREFLIGHT_FLAG
 } from '../../shared/kingud-profile-preflight'
-import { preflightBundledKingudStartup, runKingudProfilePreflight } from './kingud-profile-preflight'
+import {
+  preflightBundledKingudStartup,
+  runKingudProfilePreflight
+} from './kingud-profile-preflight'
 import { assertKingudServerRuntime } from './kingud-bundled-runtime'
 import {
   formatKingudNativePreflightReport,

@@ -6,7 +6,10 @@ import type { Repo } from '../../../shared/repo-types'
 import { kingudMigrationCutoverFixture } from '../../ssh/kingud-migration-cutover-fixture'
 import { collectKingudMigrationSourceCatalog } from './kingud-source-catalog'
 import { subtractKingudSourceCatalogState } from './kingud-source-catalog-subtraction'
-import { kingudSourceFolderWorkspaceIds, repoBelongsToKingudSource } from './kingud-source-ownership'
+import {
+  kingudSourceFolderWorkspaceIds,
+  repoBelongsToKingudSource
+} from './kingud-source-ownership'
 
 const TARGET = 'ssh-win'
 

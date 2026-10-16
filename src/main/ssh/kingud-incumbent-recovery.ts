@@ -129,7 +129,10 @@ async function decideChangedStateRestore(
   }
 }
 
-async function restoreState(options: KingudSlotOptions, state: KingudSnapshotVerdict): Promise<void> {
+async function restoreState(
+  options: KingudSlotOptions,
+  state: KingudSnapshotVerdict
+): Promise<void> {
   if (state.state === 'pending') {
     throw new Error('The interrupted transaction has no durable snapshot verdict.')
   }

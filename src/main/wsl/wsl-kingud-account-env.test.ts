@@ -123,7 +123,9 @@ describe('withWslKingudAccountEnv', () => {
 
   it('adds the env to a plain shell and over a caller-built agent launch', async () => {
     await expect(run('terminal.create', { worktree: 'id:wt' })).resolves.toMatchObject({
-      params: { env: { KINGU_CLAUDE_PROFILE_POINTER: POINTER, CODEX_HOME: '/home/u/.kingu/codex-b' } }
+      params: {
+        env: { KINGU_CLAUDE_PROFILE_POINTER: POINTER, CODEX_HOME: '/home/u/.kingu/codex-b' }
+      }
     })
     const created = await run('session.tabs.createTerminal', {
       worktree: 'id:wt',

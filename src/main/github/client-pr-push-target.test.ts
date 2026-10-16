@@ -65,9 +65,12 @@ describe('getPRForBranch', () => {
 
     const target = await getPullRequestPushTarget('/repo-root', 1738)
 
-    expect(ghExecFileAsyncMock).toHaveBeenCalledWith(['api', 'repos/anthovai/kingu-intelligence/pulls/1738'], {
-      cwd: '/repo-root'
-    })
+    expect(ghExecFileAsyncMock).toHaveBeenCalledWith(
+      ['api', 'repos/anthovai/kingu-intelligence/pulls/1738'],
+      {
+        cwd: '/repo-root'
+      }
+    )
     expect(target).toEqual({
       pushTarget: {
         remoteName: 'pr-prateek-kingu',

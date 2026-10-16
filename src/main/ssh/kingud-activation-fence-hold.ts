@@ -44,7 +44,8 @@ export async function kingudActivationFenceRefusal(
       cleared: true
     }
   }
-  const stuck = stale || (journal && !(await kingudActivationFenceExists(options).catch(() => true)))
+  const stuck =
+    stale || (journal && !(await kingudActivationFenceExists(options).catch(() => true)))
   return stuck
     ? {
         code: KINGUD_ACTIVATION_RECOVERY_REQUIRED_CODE,

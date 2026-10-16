@@ -92,7 +92,13 @@ describe('useAddRepoCloneFlow', () => {
     mocks.stateSetters = []
     mocks.refIndex = 0
     mocks.refValues = []
-    mocks.stateValues = ['https://github.com/anthovai/kingu-intelligence.git', '/srv', false, null, null]
+    mocks.stateValues = [
+      'https://github.com/anthovai/kingu-intelligence.git',
+      '/srv',
+      false,
+      null,
+      null
+    ]
     mocks.storeState.repos = []
     mocks.storeState.projects = []
     mocks.storeState.projectHostSetups = []

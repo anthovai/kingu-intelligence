@@ -308,6 +308,9 @@ describe('D7 daemon protocol crossing', () => {
       targetDaemonProtocol: PROTOCOL,
       stateWritesSinceActivation: false
     })
-    expect(safety).toMatchObject({ safety: 'unsafe', code: 'kingud_rollback_snapshot_unverifiable' })
+    expect(safety).toMatchObject({
+      safety: 'unsafe',
+      code: 'kingud_rollback_snapshot_unverifiable'
+    })
   })
 })

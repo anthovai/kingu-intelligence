@@ -88,7 +88,10 @@ describe.skipIf(process.platform === 'win32')('PostCompact command execution', (
     const dir = join(home, '.kingu', 'agent-hooks')
     mkdirSync(dir, { recursive: true })
     const script = join(dir, 'claude-hook.sh')
-    writeFileSync(script, '#!/bin/sh\ncat >/dev/null\nprintf "%s" "$KINGU_HOOK_AGENT_PID"\nexit 7\n')
+    writeFileSync(
+      script,
+      '#!/bin/sh\ncat >/dev/null\nprintf "%s" "$KINGU_HOOK_AGENT_PID"\nexit 7\n'
+    )
     chmodSync(script, 0o755)
 
     const result = await run(getManagedEventHook('PostCompact', SCRIPT_PATH).command, {

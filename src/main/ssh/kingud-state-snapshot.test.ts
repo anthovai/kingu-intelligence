@@ -39,11 +39,15 @@ describe('capturing the pre-activation snapshot', () => {
   // The live daemon owns <root>/daemon and outlives every restart. Restoring a stale copy of
   // its socket, PID record and token would break the fence that keeps its terminals adoptable.
   it.each(KINGUD_SNAPSHOT_EXCLUDED)('never captures %s', (excluded) => {
-    expect(captureKingudStateSnapshotCommand(posix, ROOT, SNAP, BASE)).not.toContain(`'${excluded}'`)
+    expect(captureKingudStateSnapshotCommand(posix, ROOT, SNAP, BASE)).not.toContain(
+      `'${excluded}'`
+    )
   })
 
   it.each(KINGUD_SNAPSHOT_EXCLUDED)('never removes or restores over %s', (excluded) => {
-    expect(restoreKingudStateSnapshotCommand(posix, ROOT, SNAP, BASE)).not.toContain(`'${excluded}'`)
+    expect(restoreKingudStateSnapshotCommand(posix, ROOT, SNAP, BASE)).not.toContain(
+      `'${excluded}'`
+    )
   })
 
   it('writes the archive under a temp name and renames, so a killed deploy leaves no torn tar', () => {

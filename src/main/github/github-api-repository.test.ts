@@ -300,7 +300,9 @@ describe('skip missing upstream remote probes', () => {
 
   it('still probes upstream for issue identity when that remote is present', async () => {
     getOwnerRepoForRemoteMock.mockImplementation(async (_path, remote) =>
-      remote === 'upstream' ? { owner: 'anthovai', repo: 'kingu' } : { owner: 'fork', repo: 'kingu' }
+      remote === 'upstream'
+        ? { owner: 'anthovai', repo: 'kingu' }
+        : { owner: 'fork', repo: 'kingu' }
     )
 
     await expect(getIssueGitHubApiRepository('/repo')).resolves.toEqual({

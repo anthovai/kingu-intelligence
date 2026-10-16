@@ -374,7 +374,9 @@ describe('browserManager', () => {
       ).toEqual({ action: 'deny' })
     }
     expect(
-      rendererSendMock.mock.calls.filter(([channel]) => channel === 'browser:open-link-in-kingu-tab')
+      rendererSendMock.mock.calls.filter(
+        ([channel]) => channel === 'browser:open-link-in-kingu-tab'
+      )
     ).toHaveLength(openerlessOpens.length)
     expect(rendererSendMock).toHaveBeenCalledWith('browser:open-link-in-kingu-tab', {
       browserPageId: 'browser-1',
@@ -431,8 +433,9 @@ describe('browserManager', () => {
       })
     }
     const routedTabCount = (): number =>
-      rendererSendMock.mock.calls.filter(([channel]) => channel === 'browser:open-link-in-kingu-tab')
-        .length
+      rendererSendMock.mock.calls.filter(
+        ([channel]) => channel === 'browser:open-link-in-kingu-tab'
+      ).length
 
     const clicks = MAX_PAGE_INITIATED_TABS_PER_WINDOW * 2
     for (let index = 0; index < clicks; index++) {

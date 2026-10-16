@@ -77,7 +77,9 @@ describe('kingud process identity', () => {
     ['different start ticks', { ...incarnation, linuxStartTicks: '9999' }],
     ['a different boot', { ...incarnation, bootId: 'boot-b' }]
   ])('proves reuse on %s', (_name, actual) => {
-    expect(compareKingudProcessIdentity(42, recorded, { incarnation: () => actual })).toBe('differs')
+    expect(compareKingudProcessIdentity(42, recorded, { incarnation: () => actual })).toBe(
+      'differs'
+    )
   })
 
   it('is unknown, never different, when the incarnation cannot be read', () => {

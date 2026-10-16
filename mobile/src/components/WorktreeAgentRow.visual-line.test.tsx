@@ -54,6 +54,8 @@ describe('WorktreeAgentRow visual lines', () => {
   })
 
   it('falls back to the prompt when the reply is only a visual', () => {
-    expect(label(agent('::kingu-visual{file="usage.html" title="Usage"}'))).toBe('Show usage by day')
+    expect(label(agent('::kingu-visual{file="usage.html" title="Usage"}'))).toBe(
+      'Show usage by day'
+    )
   })
 })

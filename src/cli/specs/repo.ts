@@ -30,7 +30,9 @@ export const REPO_COMMAND_SPECS: CommandSpec[] = [
       'show and hide override the global non-Kingu worktree visibility default for this repo; inherit clears the override.',
       'Per-worktree visibility rules still apply.'
     ],
-    examples: ['kingu repo set --repo path:/path/to/repo --external-worktree-visibility show --json']
+    examples: [
+      'kingu repo set --repo path:/path/to/repo --external-worktree-visibility show --json'
+    ]
   },
   {
     path: ['repo', 'set-base-ref'],

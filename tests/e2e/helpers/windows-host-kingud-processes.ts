@@ -48,7 +48,9 @@ export async function listHostAccountProcesses(home: string): Promise<HostProces
 }
 
 export async function listHostKingudProcesses(home: string): Promise<HostProcess[]> {
-  return (await listHostAccountProcesses(home)).filter((entry) => /kingud/iu.test(entry.commandLine))
+  return (await listHostAccountProcesses(home)).filter((entry) =>
+    /kingud/iu.test(entry.commandLine)
+  )
 }
 
 /** The kingud server itself, without the terminal daemon and workers it forks from the same slot. */

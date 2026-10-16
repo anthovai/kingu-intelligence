@@ -127,9 +127,9 @@ describe('activation record store', () => {
   it('reads a newer schema as unreadable and never overwrites it', async () => {
     mockExec.mockResolvedValue(`__KINGUD_RECORD_PRESENT__\n${newer}`)
     await expect(readKingudActivationRecord(options)).rejects.toThrow('schemaVersion 2')
-    await expect(writeKingudActivationRecord(options, emptyKingudActivationRecord())).rejects.toThrow(
-      'Refusing to overwrite'
-    )
+    await expect(
+      writeKingudActivationRecord(options, emptyKingudActivationRecord())
+    ).rejects.toThrow('Refusing to overwrite')
     expect(mockExec.mock.calls.some(([, command]) => String(command).includes('mv -f'))).toBe(false)
   })
 

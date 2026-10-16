@@ -156,12 +156,12 @@ describe('planKingudTransactionRecovery', () => {
   })
 
   it('refuses when the record matches neither side', () => {
-    expect(planKingudTransactionRecovery(activation(), { ...before, previous: null })).toMatchObject(
-      {
-        action: 'refuse',
-        code: 'kingud_recovery_activation_record_changed'
-      }
-    )
+    expect(
+      planKingudTransactionRecovery(activation(), { ...before, previous: null })
+    ).toMatchObject({
+      action: 'refuse',
+      code: 'kingud_recovery_activation_record_changed'
+    })
   })
 })
 

@@ -49,9 +49,13 @@ describe('wslKingudHostSupports', () => {
     registerWslKingudHostEnvironment('env-1', 'Ubuntu')
     observeWslKingudHostResponse('env-1', 'status.get', status([]))
     const readStatus = vi.fn(async () => status([CAPABILITY]))
-    await expect(wslKingudHostSupports('env-1', CAPABILITY, readStatus)).resolves.toBe('unsupported')
+    await expect(wslKingudHostSupports('env-1', CAPABILITY, readStatus)).resolves.toBe(
+      'unsupported'
+    )
     observeWslKingudHostResponse('env-1', 'terminal.list', status([CAPABILITY]))
-    await expect(wslKingudHostSupports('env-1', CAPABILITY, readStatus)).resolves.toBe('unsupported')
+    await expect(wslKingudHostSupports('env-1', CAPABILITY, readStatus)).resolves.toBe(
+      'unsupported'
+    )
     // A reconnect may be a redeployed kingud.
     registerWslKingudHostEnvironment('env-1', 'Ubuntu')
     await expect(wslKingudHostSupports('env-1', CAPABILITY, readStatus)).resolves.toBe('supported')

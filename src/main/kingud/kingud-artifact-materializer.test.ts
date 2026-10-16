@@ -198,9 +198,9 @@ describe('assembleKingudArtifact', () => {
     const fixture = createTemplate(target)
     const artifactDir = await assembleKingudArtifact({ ...fixture, target })
 
-    expect(readFileSync(join(artifactDir, KINGUD_NODE_RUNTIME_MARKER_FILENAME), 'utf8').trim()).toBe(
-      NODE_RUNTIME_COMPAT_ASSETS[target].executableSha256
-    )
+    expect(
+      readFileSync(join(artifactDir, KINGUD_NODE_RUNTIME_MARKER_FILENAME), 'utf8').trim()
+    ).toBe(NODE_RUNTIME_COMPAT_ASSETS[target].executableSha256)
     expect(
       readFileSync(join(artifactDir, 'node_modules/node-pty/build/Release/pty.node'), 'utf8')
     ).toBe(`${target}:node_modules/node-pty/build/Release/pty.node`)
@@ -244,9 +244,9 @@ describe('assembleKingudArtifact', () => {
     expect(readFileSync(join(artifactDir, KINGUD_SERVER_TARGET_FILENAME), 'utf8').trim()).toBe(
       TARGET
     )
-    expect(readFileSync(join(artifactDir, KINGUD_NODE_RUNTIME_MARKER_FILENAME), 'utf8').trim()).toBe(
-      NODE_RUNTIME_ASSETS[TARGET].executableSha256
-    )
+    expect(
+      readFileSync(join(artifactDir, KINGUD_NODE_RUNTIME_MARKER_FILENAME), 'utf8').trim()
+    ).toBe(NODE_RUNTIME_ASSETS[TARGET].executableSha256)
     for (const filename of kingudArtifactFilenames(TARGET)) {
       expect(readFileSync(join(artifactDir, filename)).byteLength).toBeGreaterThan(0)
     }

@@ -161,7 +161,10 @@ function removeInheritedDevAgentHookEndpoint(
   env: Record<string, string>,
   explicitEnv: Record<string, string> | undefined
 ): void {
-  if (explicitEnv?.KINGU_AGENT_HOOK_ENV === 'development' && !explicitEnv.KINGU_AGENT_HOOK_ENDPOINT) {
+  if (
+    explicitEnv?.KINGU_AGENT_HOOK_ENV === 'development' &&
+    !explicitEnv.KINGU_AGENT_HOOK_ENDPOINT
+  ) {
     // Why: strip only stale inherited endpoints; a fresh explicit one is needed by hooks that scrub token-like env vars before exec.
     delete env.KINGU_AGENT_HOOK_ENDPOINT
   }

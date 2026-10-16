@@ -153,12 +153,16 @@ describe('Windows kingud GC', () => {
     await gcOldKingudVersions(gcOptions())
     const passOptions = vi.mocked(gcOldRemoteInstallVersions).mock.calls[0]?.[5]
     return (
-      (await passOptions?.resolveExtraPinnedDirNames?.(['kingud-a', 'kingud-b', 'kingud-c'])) ?? null
+      (await passOptions?.resolveExtraPinnedDirNames?.(['kingud-a', 'kingud-b', 'kingud-c'])) ??
+      null
     )
   }
 
   it('screens every candidate in one node.exe and pins all but the proven dead', async () => {
-    expect(await screen('__KINGUD_LIVENESS__ LIVE,DEAD,UNKNOWN\r\n')).toEqual(['kingud-a', 'kingud-c'])
+    expect(await screen('__KINGUD_LIVENESS__ LIVE,DEAD,UNKNOWN\r\n')).toEqual([
+      'kingud-a',
+      'kingud-c'
+    ])
     const screens = mockExec.mock.calls.filter(([, command]) =>
       String(command).includes('liveness-many')
     )

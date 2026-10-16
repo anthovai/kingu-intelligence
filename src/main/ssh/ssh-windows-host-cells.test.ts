@@ -33,7 +33,12 @@ describe('Windows SSH-host cells', () => {
       parseWindowsHostCellDescriptor(JSON.stringify({ ...DESCRIPTOR, ...patch }))
     expect(() => parse({ cell: 'pinned-cmd' })).toThrow('Unknown Windows host cell')
     expect(() => parse({ cell: 'kingud-cli-relay-kept' })).toThrow('Unknown Windows host cell')
-    for (const cell of ['kingud-cmd', 'kingud-convert', 'kingud-cli-managed', 'kingud-cli-convert']) {
+    for (const cell of [
+      'kingud-cmd',
+      'kingud-convert',
+      'kingud-cli-managed',
+      'kingud-cli-convert'
+    ]) {
       expect(parseWindowsHostCellDescriptor(JSON.stringify({ ...DESCRIPTOR, cell })).cell).toBe(
         cell
       )

@@ -34,7 +34,9 @@ vi.mock('../../shared/app-environment', () => ({
   getAppEnvironment: () => ({ getVersion: () => '1.5.0', getPath: () => '/user-data' })
 }))
 vi.mock('../ssh/ssh-relay-exec-command', () => ({ execCommand: mocks.exec }))
-vi.mock('../ssh/kingud-remote-context', () => ({ resolveKingudRemoteContext: mocks.resolveContext }))
+vi.mock('../ssh/kingud-remote-context', () => ({
+  resolveKingudRemoteContext: mocks.resolveContext
+}))
 vi.mock('../ssh/kingud-activation-recovery', () => ({
   recoverInterruptedKingudActivation: mocks.recover
 }))
@@ -178,7 +180,11 @@ describe('deployAndLaunchWslKingud', () => {
       target: 'linux-x64-glibc',
       recordedNodeRuntimeProbe: true
     })
-    const newer = { ...emptyKingudActivationRecord(), active: '2.0.0+cd', activeAppVersion: '2.0.0' }
+    const newer = {
+      ...emptyKingudActivationRecord(),
+      active: '2.0.0+cd',
+      activeAppVersion: '2.0.0'
+    }
     expect(options.admitRecord(newer, '1.5.0+ab')).toBe(
       "Kingu 2.0.0 last ran this host's server, newer than this Kingu (1.5.0). Update Kingu to start it."
     )

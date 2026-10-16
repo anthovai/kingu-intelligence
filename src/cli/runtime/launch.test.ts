@@ -24,7 +24,12 @@ vi.mock('child_process', () => ({
   spawnSync: spawnSyncMock
 }))
 
-import { getExecutableAppArgs, launchKinguApp, serveKinguApp, stripElectronRunAsNode } from './launch'
+import {
+  getExecutableAppArgs,
+  launchKinguApp,
+  serveKinguApp,
+  stripElectronRunAsNode
+} from './launch'
 
 class FakeChildProcess extends EventEmitter {
   stdout = new EventEmitter()

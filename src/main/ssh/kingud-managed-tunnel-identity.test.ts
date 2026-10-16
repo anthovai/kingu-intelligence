@@ -58,7 +58,10 @@ describe('classifyKingudTunnelIdentityFailure', () => {
       'remote_runtime_unavailable',
       'Could not connect to the remote Kingu runtime: ECONNREFUSED'
     ),
-    new RemoteRuntimeClientError('runtime_timeout', 'Timed out waiting for the remote Kingu runtime')
+    new RemoteRuntimeClientError(
+      'runtime_timeout',
+      'Timed out waiting for the remote Kingu runtime'
+    )
   ])('never reads silence as another server: %s', (error) => {
     expect(classifyKingudTunnelIdentityFailure(error).verdict).toBe('unreachable')
   })

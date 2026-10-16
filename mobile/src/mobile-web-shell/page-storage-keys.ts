@@ -98,7 +98,10 @@ export function pageRouteWorkspace(
   }
 }
 
-const WORKSPACE_KEY_PREFIXES = ['kingu:nativeChatTabs:', 'kingu:terminalLiveInputDisabled:'] as const
+const WORKSPACE_KEY_PREFIXES = [
+  'kingu:nativeChatTabs:',
+  'kingu:terminalLiveInputDisabled:'
+] as const
 
 /** Both workspace-scoped keys are built the same way, so the shape is written once. */
 function workspaceScopedKey(prefix: string, hostId: string, worktreeId: string): string {

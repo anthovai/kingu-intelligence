@@ -443,7 +443,9 @@ describe('deployKingud', () => {
       if (String(command).startsWith('chmod 755 ')) {
         throw new Error('chmod failed')
       }
-      return String(command).includes('__KINGUD_RECORD_ABSENT__') ? '__KINGUD_RECORD_ABSENT__\n' : ''
+      return String(command).includes('__KINGUD_RECORD_ABSENT__')
+        ? '__KINGUD_RECORD_ABSENT__\n'
+        : ''
     })
     await expect(deployKingud(options())).rejects.toThrow('chmod failed')
     expect(vi.mocked(finalizeInstall)).not.toHaveBeenCalled()

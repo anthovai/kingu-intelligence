@@ -35,7 +35,9 @@ test.describe('Tab strip tab render isolation', () => {
     await ensureTerminalVisible(kinguPage)
   })
 
-  test('a title change or a tab switch re-renders only the tabs involved', async ({ kinguPage }) => {
+  test('a title change or a tab switch re-renders only the tabs involved', async ({
+    kinguPage
+  }) => {
     const worktreeId = await waitForActiveWorktree(kinguPage)
     const ptyId = await waitForActivePanePtyId(kinguPage)
     const tabIds = await kinguPage.evaluate(

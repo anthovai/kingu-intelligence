@@ -11,7 +11,10 @@ import {
   kingudPosixStdioBridgeCommand,
   type KingudStdioBridgeMode
 } from './kingud-stdio-bridge-script'
-import { KingudStdioBridgeBase64Encoder, KingudStdioBridgeDecoder } from './kingud-stdio-bridge-stream'
+import {
+  KingudStdioBridgeBase64Encoder,
+  KingudStdioBridgeDecoder
+} from './kingud-stdio-bridge-stream'
 import { spawnLocalBridgeChannel, startEchoServer } from './kingud-stdio-bridge-test-channel'
 import { KINGUD_WINDOWS_HOST_SCRIPT } from './kingud-windows-host-script'
 import type { KingudHostTransport } from './kingud-host-transport'

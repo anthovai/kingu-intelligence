@@ -83,7 +83,10 @@ describe('the WSL launch (setsid)', () => {
       const runtime = join(dir, 'fake-node')
       writeFileSync(runtime, `#!/bin/sh\necho '{"type":"kingu_server_ready"}'\nsleep 30\n`)
       chmodSync(runtime, 0o755)
-      const out = execFileSync('sh', ['-c', kingudLaunchCommand(host, spec(dir, runtime), 'setsid')])
+      const out = execFileSync('sh', [
+        '-c',
+        kingudLaunchCommand(host, spec(dir, runtime), 'setsid')
+      ])
       const pid = Number(out.toString().trim())
       try {
         expect(Number.isSafeInteger(pid) && pid > 0).toBe(true)
@@ -95,7 +98,11 @@ describe('the WSL launch (setsid)', () => {
         expect(ps('args', pid)).toContain(join(dir, 'kingud.js'))
         expect(ps('sid', pid)).toBe(String(pid))
         expect(ps('sid', pid)).not.toBe(ps('sid', process.pid))
-        for (let i = 0; i < 50 && !readFileSync(join(dir, KINGUD_READINESS_FILENAME), 'utf8'); i++) {
+        for (
+          let i = 0;
+          i < 50 && !readFileSync(join(dir, KINGUD_READINESS_FILENAME), 'utf8');
+          i++
+        ) {
           execFileSync('sleep', ['0.05'])
         }
         expect(readFileSync(join(dir, KINGUD_READINESS_FILENAME), 'utf8')).toContain(

@@ -199,9 +199,12 @@ describe('detectRepoIcon', () => {
   it('falls back to the GitHub owner avatar for GitHub repos', async () => {
     const repoPath = await makeTempRepoDir()
     await gitExecFileAsync(['init'], { cwd: repoPath })
-    await gitExecFileAsync(['remote', 'add', 'origin', 'git@github.com:anthovai/kingu-intelligence.git'], {
-      cwd: repoPath
-    })
+    await gitExecFileAsync(
+      ['remote', 'add', 'origin', 'git@github.com:anthovai/kingu-intelligence.git'],
+      {
+        cwd: repoPath
+      }
+    )
 
     await expect(
       detectRepoIcon({ repoPath, kind: 'git', executionHostId: 'local' })
@@ -220,9 +223,12 @@ describe('detectRepoIcon', () => {
       JSON.stringify({ homepage: 'https://github.com/anthovai/kingu-intelligence' })
     )
     await gitExecFileAsync(['init'], { cwd: repoPath })
-    await gitExecFileAsync(['remote', 'add', 'origin', 'https://github.com/anthovai/kingu-intelligence.git'], {
-      cwd: repoPath
-    })
+    await gitExecFileAsync(
+      ['remote', 'add', 'origin', 'https://github.com/anthovai/kingu-intelligence.git'],
+      {
+        cwd: repoPath
+      }
+    )
 
     await expect(
       detectRepoIcon({ repoPath, kind: 'git', executionHostId: 'local' })
@@ -251,9 +257,12 @@ describe('detectRepoIcon', () => {
     await gitExecFileAsync(['remote', 'add', 'origin', 'git@github.com:tmchow/kingu.git'], {
       cwd: repoPath
     })
-    await gitExecFileAsync(['remote', 'add', 'upstream', 'git@github.com:anthovai/kingu-intelligence.git'], {
-      cwd: repoPath
-    })
+    await gitExecFileAsync(
+      ['remote', 'add', 'upstream', 'git@github.com:anthovai/kingu-intelligence.git'],
+      {
+        cwd: repoPath
+      }
+    )
 
     await expect(
       detectRepoIconAndUpstream({ repoPath, kind: 'git', executionHostId: 'local' })

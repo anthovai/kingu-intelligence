@@ -179,7 +179,11 @@ export async function fenceKingudMigrationSource(args: {
   return { outcome: 'fenced', cutover, resumed: false }
 }
 
-type FenceReleaseArgs = { userDataPath: string; claims: SshTargetKingudClaims; signal?: AbortSignal }
+type FenceReleaseArgs = {
+  userDataPath: string
+  claims: SshTargetKingudClaims
+  signal?: AbortSignal
+}
 
 /** Undoes a fence nothing remote has seen. */
 export async function releaseUnstagedFence(

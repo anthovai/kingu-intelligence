@@ -16,7 +16,10 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { spawnProcess } from '@kingu/process-host'
 import type { PipedChildProcess } from '@kingu/process-host/process-spec'
 import { uploadDirectoryIntoWsl, wslGuestSourcePath } from './wsl-directory-upload'
-import { createWslKingudHostTransport, type WslKingudHostTransport } from './wsl-kingud-host-transport'
+import {
+  createWslKingudHostTransport,
+  type WslKingudHostTransport
+} from './wsl-kingud-host-transport'
 
 function hasSha256sum(): boolean {
   try {

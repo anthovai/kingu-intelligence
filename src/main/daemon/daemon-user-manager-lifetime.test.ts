@@ -24,7 +24,8 @@ function cgroupFile(contents: string): string {
 
 const SYSTEM_SERVICE = '0::/system.slice/kingu-serve.service\n'
 const SSH_SESSION = '0::/user.slice/user-1000.slice/session-4.scope\n'
-const DESKTOP_APP = '0::/user.slice/user-1000.slice/user@1000.service/app.slice/app-kingu-12.scope\n'
+const DESKTOP_APP =
+  '0::/user.slice/user-1000.slice/user@1000.service/app.slice/app-kingu-12.scope\n'
 
 describe('cgroupIsInsideUserManager', () => {
   it.each([

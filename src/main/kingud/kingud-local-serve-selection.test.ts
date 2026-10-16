@@ -133,7 +133,10 @@ describe('kingu serve runtime selection', () => {
   })
 
   it('keeps kingud for SSH profiles when kingud is asked for by name', async () => {
-    const named = input({ env: { [SERVE_RUNTIME_ENV]: 'kingud' }, profileHasSshTargets: () => true })
+    const named = input({
+      env: { [SERVE_RUNTIME_ENV]: 'kingud' },
+      profileHasSshTargets: () => true
+    })
     expect(await selectServeRuntime(named)).toMatchObject({ kind: 'kingud' })
   })
 

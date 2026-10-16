@@ -39,7 +39,9 @@ export {
 } from './kingud-migration-dormant-value-validation'
 
 export const KINGUD_MIGRATION_DORMANT_STATE_VERSION = 1 as const
-export function parseKingudMigrationDormantState(value: unknown): KingudMigrationDormantStatePayload {
+export function parseKingudMigrationDormantState(
+  value: unknown
+): KingudMigrationDormantStatePayload {
   const record = requiredRecord(value, 'kingud_migration_dormant_state_invalid')
   if (record.version !== KINGUD_MIGRATION_DORMANT_STATE_VERSION) {
     throw new Error('kingud_migration_dormant_state_version_unsupported')

@@ -271,7 +271,13 @@ describe('OpenCodeHookService buildPtyEnv / clearPty round-trip', () => {
   it('repairs late and overwritten legacy plugins atomically on the same service', () => {
     const service = new OpenCodeHookService()
     service.refreshLegacySharedPlugin()
-    const path = join(userDataDir, 'opencode-hooks', 'shared', 'plugins', 'kingu-opencode-status.js')
+    const path = join(
+      userDataDir,
+      'opencode-hooks',
+      'shared',
+      'plugins',
+      'kingu-opencode-status.js'
+    )
     mkdirSync(join(path, '..'), { recursive: true })
     for (const stale of ['// late old install', '// old process overwrote repair']) {
       writeFileSync(path, stale)
@@ -292,7 +298,13 @@ describe('OpenCodeHookService buildPtyEnv / clearPty round-trip', () => {
 
   it('reports repair failures and retries after the obstruction is removed', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const path = join(userDataDir, 'opencode-hooks', 'shared', 'plugins', 'kingu-opencode-status.js')
+    const path = join(
+      userDataDir,
+      'opencode-hooks',
+      'shared',
+      'plugins',
+      'kingu-opencode-status.js'
+    )
     const service = new OpenCodeHookService()
     try {
       service.refreshLegacySharedPlugin()

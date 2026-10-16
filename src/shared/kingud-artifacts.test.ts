@@ -92,7 +92,9 @@ describe('standalone runtime artifacts', () => {
       expect(kingudArtifactFilenames(target)).toContain(KINGUD_WINDOWS_SECURITY_FILENAME)
       expect(kingudTemplateTargetFilenames(target)).toContain(KINGUD_WINDOWS_SECURITY_FILENAME)
     }
-    expect(kingudArtifactFilenames('linux-x64-glibc')).not.toContain(KINGUD_WINDOWS_SECURITY_FILENAME)
+    expect(kingudArtifactFilenames('linux-x64-glibc')).not.toContain(
+      KINGUD_WINDOWS_SECURITY_FILENAME
+    )
     expect(kingudArtifactFilenames('darwin-arm64')).not.toContain(KINGUD_WINDOWS_SECURITY_FILENAME)
   })
 

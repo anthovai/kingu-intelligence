@@ -1,9 +1,14 @@
 import { ipcMain } from 'electron'
 import { registerManagedServerActions } from '../runtime/managed-server-actions-registry'
-import { createManagedKingudActions, type ManagedKingudActionOptions } from './managed-kingud-actions'
+import {
+  createManagedKingudActions,
+  type ManagedKingudActionOptions
+} from './managed-kingud-actions'
 import { requiredString } from './kingud-runtime-lifecycle-handlers'
 
-export function registerKingudRuntimeMaintenanceHandlers(options: ManagedKingudActionOptions): void {
+export function registerKingudRuntimeMaintenanceHandlers(
+  options: ManagedKingudActionOptions
+): void {
   const actions = createManagedKingudActions(options)
   // Why: the CLI reaches these same actions over runtime RPC (managedServer.*).
   registerManagedServerActions(actions)

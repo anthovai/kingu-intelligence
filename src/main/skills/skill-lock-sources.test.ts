@@ -49,7 +49,10 @@ describe('skills.sh lock sources', () => {
     await mkdir(join(stateHome, 'skills'), { recursive: true })
     await writeFile(
       join(stateHome, 'skills', '.skill-lock.json'),
-      JSON.stringify({ version: 3, skills: { 'kingu-cli': { source: 'anthovai/kingu-intelligence' } } })
+      JSON.stringify({
+        version: 3,
+        skills: { 'kingu-cli': { source: 'anthovai/kingu-intelligence' } }
+      })
     )
 
     await expect(readSkillLockSources({ homeDir: root, stateHome })).resolves.toEqual(

@@ -521,7 +521,9 @@ describe('SkillFreshnessUpdateDialog', () => {
         placement('computer-use', { lockSource: 'acme/agent-skills' }),
         placement('linear-tickets', { lockSource: null }),
         placement('kingu-cli'),
-        placement('orchestration', { lockSource: 'https://github.com/anthovai/kingu-intelligence.git' })
+        placement('orchestration', {
+          lockSource: 'https://github.com/anthovai/kingu-intelligence.git'
+        })
       ],
       eligibleUpdateNames: ['computer-use', 'linear-tickets', 'kingu-cli', 'orchestration'],
       scanIssues: [],

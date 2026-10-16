@@ -53,7 +53,9 @@ describe('terminal restore hints document', () => {
     )
     expect(() =>
       parseKingudMigrationTerminalRestoreHintsDocument(
-        document(Array.from({ length: MAX_KINGUD_MIGRATION_TERMINAL_RESTORE_HINTS + 1 }, () => hint))
+        document(
+          Array.from({ length: MAX_KINGUD_MIGRATION_TERMINAL_RESTORE_HINTS + 1 }, () => hint)
+        )
       )
     ).toThrow('kingud_migration_terminal_restore_hints_invalid')
     expect(() =>

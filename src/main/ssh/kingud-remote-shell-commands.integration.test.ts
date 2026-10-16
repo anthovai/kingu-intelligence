@@ -506,7 +506,9 @@ describe('liveness and stop commands, run for real', () => {
     expect(parseKingudLiveness(neverLaunched)).toBe('UNKNOWN')
     expect(kingudLivenessAnswerBlocksGc(neverLaunched)).toBe(false)
     writeFileSync(join(versionDir, KINGUD_READINESS_FILENAME), '')
-    expect(kingudLivenessAnswerBlocksGc(sh(kingudLivenessProbeCommand(host, versionDir)))).toBe(true)
+    expect(kingudLivenessAnswerBlocksGc(sh(kingudLivenessProbeCommand(host, versionDir)))).toBe(
+      true
+    )
     expect(parseKingudLiveness(sh(kingudLivenessProbeCommand(host, versionDir)))).toBe('UNKNOWN')
     writeFileSync(join(versionDir, KINGUD_PID_FILENAME), 'not-a-pid')
     expect(parseKingudLiveness(sh(kingudLivenessProbeCommand(host, versionDir)))).toBe('UNKNOWN')

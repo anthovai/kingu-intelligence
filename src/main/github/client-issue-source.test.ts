@@ -222,9 +222,13 @@ describe('GitHub issue source split', () => {
 
     await listWorkItems('/repo-root', 10)
 
-    expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(1, issueSearchArgs('anthovai/kingu-intelligence'), {
-      cwd: '/repo-root'
-    })
+    expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(
+      1,
+      issueSearchArgs('anthovai/kingu-intelligence'),
+      {
+        cwd: '/repo-root'
+      }
+    )
     expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(2, prListArgs('fork/kingu'), {
       cwd: '/repo-root'
     })
@@ -268,7 +272,11 @@ describe('GitHub issue source split', () => {
       {}
     )
     expect(getOwnerRepoMock).toHaveBeenCalledWith('/home/jinwoo/kingu', 'openclaw-2', {})
-    expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(1, issueSearchArgs('anthovai/kingu-intelligence'), {})
+    expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(
+      1,
+      issueSearchArgs('anthovai/kingu-intelligence'),
+      {}
+    )
     expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(2, prListArgs('fork/kingu'), {})
   })
 
@@ -338,9 +346,13 @@ describe('GitHub issue source split', () => {
 
     await listWorkItems('/repo-root', 10, undefined, undefined, 'upstream')
 
-    expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(2, prListArgs('anthovai/kingu-intelligence'), {
-      cwd: '/repo-root'
-    })
+    expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(
+      2,
+      prListArgs('anthovai/kingu-intelligence'),
+      {
+        cwd: '/repo-root'
+      }
+    )
   })
 
   it("uses upstream for queried PRs when preference='upstream'", async () => {
@@ -727,9 +739,13 @@ describe('GitHub issue source split', () => {
       const result = await listWorkItems('/repo-root', 10, undefined, undefined, 'auto')
 
       expect(resolveIssueSourceMock).toHaveBeenCalledWith('/repo-root', 'auto', undefined, {})
-      expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(1, issueSearchArgs('anthovai/kingu-intelligence'), {
-        cwd: '/repo-root'
-      })
+      expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(
+        1,
+        issueSearchArgs('anthovai/kingu-intelligence'),
+        {
+          cwd: '/repo-root'
+        }
+      )
       expect(result.issueSourceFellBack).toBeUndefined()
     })
 

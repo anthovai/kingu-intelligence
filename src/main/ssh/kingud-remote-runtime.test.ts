@@ -149,7 +149,10 @@ describe.skipIf(process.platform === 'win32')('POSIX slot runtime selection', ()
     writeFileSync(join(slot, '.kingud-pid'), String(process.pid))
     const result = runProcessSync({
       program: '/bin/sh',
-      args: ['-c', stopKingudCommand(host, slot, { waitSeconds: 1, nodePath: '/missing-host-node' })]
+      args: [
+        '-c',
+        stopKingudCommand(host, slot, { waitSeconds: 1, nodePath: '/missing-host-node' })
+      ]
     })
     // No readiness file: the pinned runtime ran and reported no PID, so the verdict is unverifiable.
     expect(result).toMatchObject({ code: 0, stdout: 'UNKNOWN\n' })

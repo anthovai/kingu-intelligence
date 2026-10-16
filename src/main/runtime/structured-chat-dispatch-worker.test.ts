@@ -206,7 +206,11 @@ describe('a chat as the assignee of orchestration dispatch', () => {
 
     const error = await refusal(
       'orchestration.dispatch',
-      { task: taskId, to: formatKinguSessionAddress(testKinguSessionId(COORDINATOR)), inject: true },
+      {
+        task: taskId,
+        to: formatKinguSessionAddress(testKinguSessionId(COORDINATOR)),
+        inject: true
+      },
       COORDINATOR
     )
 

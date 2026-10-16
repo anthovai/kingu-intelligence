@@ -22,7 +22,9 @@ export type KingudManagedStopDecisionValue = KingudManagedStopDecision['decision
 export function readKingudManagedStopDecision(
   request: KingudManagedStopRequest
 ): KingudManagedStopDecisionValue | null {
-  return readKingudStopReceipt(request, 'decision', KingudManagedStopDecisionSchema)?.decision ?? null
+  return (
+    readKingudStopReceipt(request, 'decision', KingudManagedStopDecisionSchema)?.decision ?? null
+  )
 }
 
 /** Returns the decision that stands: ours if we created it first, otherwise the other side's. */

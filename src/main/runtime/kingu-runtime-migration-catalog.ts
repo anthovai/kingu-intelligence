@@ -75,9 +75,8 @@ export abstract class KinguRuntimeWithMigrationCatalog extends KinguRuntimeWithR
     request: KingudMigrationBlobChunkRequest
   ): KingudMigrationBlobChunkResult {
     // SAFETY: The virtual Store may differ from the checked Store; preserve its native failure.
-    return this.requireMigrationStore('stageKingudMigrationBlobChunk').stageKingudMigrationBlobChunk!(
-      request
-    )
+    return this.requireMigrationStore('stageKingudMigrationBlobChunk')
+      .stageKingudMigrationBlobChunk!(request)
   }
 
   async abortStagedKingudMigrationCatalog(

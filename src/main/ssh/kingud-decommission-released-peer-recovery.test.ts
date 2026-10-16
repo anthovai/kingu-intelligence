@@ -115,7 +115,9 @@ describe('a released desktop recovering a newer desktop’s interrupted stop', (
     ['stop-dispatched', dispatched],
     ['process-exited', exited]
   ])('never downgrades the host from %s', (_phase, transaction: KingudDecommissionTransaction) => {
-    expect(releasedPeerAfterRecovery(serializeKingudActivationTransaction(transaction))).toBe('skip')
+    expect(releasedPeerAfterRecovery(serializeKingudActivationTransaction(transaction))).toBe(
+      'skip'
+    )
   })
 
   it('would downgrade it if the journal named the dispatched phase at the top level', () => {

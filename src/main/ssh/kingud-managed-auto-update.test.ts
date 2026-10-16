@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { emptyKingudActivationRecord, type KingudActivationRecord } from './kingud-activation-record'
+import {
+  emptyKingudActivationRecord,
+  type KingudActivationRecord
+} from './kingud-activation-record'
 import { KingudHostUnsupportedError } from '../kingud/kingud-host-unavailable'
 
 const mocks = vi.hoisted(() => {

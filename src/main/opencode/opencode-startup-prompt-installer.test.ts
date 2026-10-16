@@ -205,7 +205,9 @@ describe('OpenCode startup prompt installer', () => {
     expect(env.KINGU_OPENCODE_CONFIG_DIR).toBe(env.OPENCODE_CONFIG_DIR)
     expect(env.OPENCODE_CONFIG_CONTENT).toBe('{"model":"opencode/model"}')
     expect(
-      existsSync(join(env.OPENCODE_CONFIG_DIR, 'plugins', 'kingu-opencode-startup-prompt', 'tui.js'))
+      existsSync(
+        join(env.OPENCODE_CONFIG_DIR, 'plugins', 'kingu-opencode-startup-prompt', 'tui.js')
+      )
     ).toBe(true)
     expect(existsSync(join(env.OPENCODE_CONFIG_DIR, 'plugins', 'kingu-opencode-status.js'))).toBe(
       false

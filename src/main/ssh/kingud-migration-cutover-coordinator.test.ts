@@ -76,9 +76,11 @@ describe('migration cutover coordinator', () => {
       phase: 'destination-staged'
     })
     expect(h.journal()?.phase).toBe('destination-staged')
-    await expect(commitKingudMigrationDestination(h.context, h.migrationId)).resolves.toMatchObject({
-      phase: 'destination-committed'
-    })
+    await expect(commitKingudMigrationDestination(h.context, h.migrationId)).resolves.toMatchObject(
+      {
+        phase: 'destination-committed'
+      }
+    )
     expect(h.journal()?.phase).toBe('destination-committed')
     await commitKingudMigrationDestination(h.context, h.migrationId)
     expect(h.destination.commits).toBe(1)
@@ -92,9 +94,11 @@ describe('migration cutover coordinator', () => {
       await commit(manifest)
       throw new Error('socket closed')
     })
-    await expect(commitKingudMigrationDestination(h.context, h.migrationId)).resolves.toMatchObject({
-      phase: 'destination-committed'
-    })
+    await expect(commitKingudMigrationDestination(h.context, h.migrationId)).resolves.toMatchObject(
+      {
+        phase: 'destination-committed'
+      }
+    )
     expect(h.destination.commits).toBe(1)
   })
 
@@ -122,9 +126,11 @@ describe('migration cutover coordinator', () => {
     expect(h.owner()).toBe('env-1')
 
     diskFull = false
-    await expect(commitKingudMigrationDestination(h.context, h.migrationId)).resolves.toMatchObject({
-      phase: 'destination-committed'
-    })
+    await expect(commitKingudMigrationDestination(h.context, h.migrationId)).resolves.toMatchObject(
+      {
+        phase: 'destination-committed'
+      }
+    )
   })
 
   it('keeps the journal at staged when the commit reply and the re-read are both lost', async () => {

@@ -444,7 +444,9 @@ describe('SmartWorkspaceNameField Jira accessibility', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Jira' }))
 
-    expect(await screen.findByRole('button', { name: /KINGU-7.*Decode utf-8 names/ })).not.toBeNull()
+    expect(
+      await screen.findByRole('button', { name: /KINGU-7.*Decode utf-8 names/ })
+    ).not.toBeNull()
     expect(jiraSearchMock).toHaveBeenCalledTimes(2)
     expect(jiraSearchMock).toHaveBeenNthCalledWith(1, 'key = "UTF-8"', 12, expect.anything())
     expect(jiraSearchMock).toHaveBeenNthCalledWith(2, 'text ~ "utf 8*"', 12, expect.anything())

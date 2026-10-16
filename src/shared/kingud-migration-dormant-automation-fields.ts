@@ -30,7 +30,10 @@ export function parseOutputSnapshot(value: unknown): void {
   if (record.format !== 'plain_text') {
     throw new Error('kingud_migration_dormant_automation_output_format_invalid')
   }
-  requiredStringOrEmpty(record.content, 'kingud_migration_dormant_automation_output_content_invalid')
+  requiredStringOrEmpty(
+    record.content,
+    'kingud_migration_dormant_automation_output_content_invalid'
+  )
   requiredFinite(record.capturedAt, 'kingud_migration_dormant_automation_output_time_invalid')
   requiredBoolean(record.truncated, 'kingud_migration_dormant_automation_output_truncated_invalid')
 }
@@ -39,7 +42,10 @@ export function parsePrecheckResult(value: unknown): void {
   if (value === null) {
     return
   }
-  const record = requiredRecord(value, 'kingud_migration_dormant_automation_precheck_result_invalid')
+  const record = requiredRecord(
+    value,
+    'kingud_migration_dormant_automation_precheck_result_invalid'
+  )
   requiredString(
     record.command,
     'kingud_migration_dormant_automation_precheck_result_command_invalid'
@@ -95,7 +101,11 @@ export function parseUsage(value: unknown): void {
     'totalTokens',
     'estimatedCostUsd'
   ] as const) {
-    optionalFinite(record[field], `kingud_migration_dormant_automation_usage_${field}_invalid`, true)
+    optionalFinite(
+      record[field],
+      `kingud_migration_dormant_automation_usage_${field}_invalid`,
+      true
+    )
   }
   requiredFinite(record.collectedAt, 'kingud_migration_dormant_automation_usage_collected_invalid')
 }

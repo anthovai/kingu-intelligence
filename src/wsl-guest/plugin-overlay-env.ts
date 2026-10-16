@@ -54,7 +54,8 @@ export function resolvePiSourceAgentDir(
   }
 
   const overlayKey = kind === 'omp' ? 'KINGU_OMP_CODING_AGENT_DIR' : 'KINGU_PI_CODING_AGENT_DIR'
-  const otherOverlayKey = kind === 'omp' ? 'KINGU_PI_CODING_AGENT_DIR' : 'KINGU_OMP_CODING_AGENT_DIR'
+  const otherOverlayKey =
+    kind === 'omp' ? 'KINGU_PI_CODING_AGENT_DIR' : 'KINGU_OMP_CODING_AGENT_DIR'
 
   // Why: a mismatched Kingu overlay shadow means this shell inherited the other
   // Pi-compatible agent's PTY overlay. Do not remirror that overlay into this

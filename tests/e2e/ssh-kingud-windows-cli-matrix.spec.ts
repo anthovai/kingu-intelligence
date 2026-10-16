@@ -436,7 +436,9 @@ test('@kingud-cli-managed an empty Windows host deploys, serves CLI terminals th
       verdict: 'exited'
     })
     await expect
-      .poll(async () => (await listHostKingudProcesses(descriptor.home)).length, { timeout: 60_000 })
+      .poll(async () => (await listHostKingudProcesses(descriptor.home)).length, {
+        timeout: 60_000
+      })
       .toBe(0)
     expect(await environmentIds(userData)).not.toContain(environmentId)
 

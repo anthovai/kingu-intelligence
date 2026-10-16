@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- Why: the Kingu rebrand lengthens names past the formatter width; upstream keeps this file at the limit. */
 import { tokenizeCommandLine } from '../../shared/agent-command-line-entrypoint'
 import { qoderHookService } from '../qoder/hook-service'
 import { describe, expect, it, vi } from 'vitest'
@@ -419,7 +420,9 @@ describe('remote hook service installers', () => {
     expect(commandCodeConfig.hooks.PostToolUse?.[0]?.matcher).toBe('.*')
     expect(commandCodeConfig.hooks.Stop?.[0]?.matcher).toBeUndefined()
 
-    const grokConfig = JSON.parse(grok.fs.files.get('/home/dev/.grok/hooks/kingu-status.json')!) as {
+    const grokConfig = JSON.parse(
+      grok.fs.files.get('/home/dev/.grok/hooks/kingu-status.json')!
+    ) as {
       hooks: Record<string, { matcher?: string; hooks?: { command: string }[] }[]>
     }
     for (const eventName of [
@@ -472,7 +475,9 @@ describe('remote hook service installers', () => {
       expect(command).toContain('/home/dev/.kingu/agent-hooks/devin-hook.sh')
       expect(command).toMatch(/^if \[ -f /)
     }
-    expect(devin.fs.files.get('/home/dev/.kingu/agent-hooks/devin-hook.sh')).toContain('/hook/devin')
+    expect(devin.fs.files.get('/home/dev/.kingu/agent-hooks/devin-hook.sh')).toContain(
+      '/hook/devin'
+    )
   })
 
   it('installs remote Grok config in the explicit guest GROK_HOME', async () => {

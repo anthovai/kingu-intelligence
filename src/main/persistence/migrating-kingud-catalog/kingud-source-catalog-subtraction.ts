@@ -6,7 +6,10 @@
 import type { StoreRuntimeState } from '../loading-store/store-runtime-state'
 import type { KingudMigrationManifest } from '../../../shared/kingud-migration-manifest'
 import { requireKingudMigrationSshSource } from '../../../shared/kingud-migration-source-kind'
-import { kingudSourceFolderWorkspaceIds, repoBelongsToKingudSource } from './kingud-source-ownership'
+import {
+  kingudSourceFolderWorkspaceIds,
+  repoBelongsToKingudSource
+} from './kingud-source-ownership'
 
 export function subtractKingudSourceCatalogState(
   state: StoreRuntimeState['state'],

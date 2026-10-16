@@ -261,7 +261,11 @@ describe.skipIf(process.platform !== 'win32' || !tempIsCmdSafe)('native agent ho
     expect(result.ms).toBeGreaterThanOrEqual(1400)
     expect(result.ms).toBeLessThan(5000)
 
-    const refused = await run(exePath, ['claude'], paneEnv(listener, { KINGU_AGENT_HOOK_PORT: '1' }))
+    const refused = await run(
+      exePath,
+      ['claude'],
+      paneEnv(listener, { KINGU_AGENT_HOOK_PORT: '1' })
+    )
     expect(refused.code).toBe(0)
     expect(refused.stdout.trim()).toBe('{}')
   })

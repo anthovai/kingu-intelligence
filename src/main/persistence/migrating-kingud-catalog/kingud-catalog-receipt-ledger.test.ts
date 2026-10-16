@@ -46,7 +46,9 @@ describe('kingud migration receipt ledger', () => {
     const stagedAt = '2026-10-01T00:00:00.000Z'
     state.kingudMigrationStagedCatalogs = [{ version: 1, manifest: manifest(), stagedAt }]
     const start = Date.parse(stagedAt)
-    expect(expireKingudMigrationStages(state, start + KINGUD_MIGRATION_STAGE_TTL_MS - 1)).toBe(false)
+    expect(expireKingudMigrationStages(state, start + KINGUD_MIGRATION_STAGE_TTL_MS - 1)).toBe(
+      false
+    )
     expect(expireKingudMigrationStages(state, start + KINGUD_MIGRATION_STAGE_TTL_MS)).toBe(true)
     expect(state.kingudMigrationStagedCatalogs).toEqual([])
   })

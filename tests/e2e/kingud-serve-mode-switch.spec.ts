@@ -48,7 +48,10 @@ let scratch = ''
 let clientScript = ''
 
 test.beforeAll(async () => {
-  test.skip(!RUN, 'Set KINGU_E2E_KINGUD_SERVE=1 (and build out/kingud) to run the serve mode switch.')
+  test.skip(
+    !RUN,
+    'Set KINGU_E2E_KINGUD_SERVE=1 (and build out/kingud) to run the serve mode switch.'
+  )
   expect(kingudRuntime, 'pnpm build:kingud must produce a packaged slot in out/kingud').toBeTruthy()
   // Short root: macOS caps a unix socket path at 104 bytes, and the daemon's lives in userData.
   scratch = mkdtempSync(path.join(process.platform === 'win32' ? os.tmpdir() : '/tmp', 'kingu-d7-'))

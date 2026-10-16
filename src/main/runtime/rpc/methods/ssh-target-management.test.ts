@@ -212,7 +212,9 @@ describe('server SSH target management RPC', () => {
       ok: true,
       result: { removed: true }
     })
-    mocks.mutations.remove.mockRejectedValueOnce(new Error('This host runs a managed Kingu server.'))
+    mocks.mutations.remove.mockRejectedValueOnce(
+      new Error('This host runs a managed Kingu server.')
+    )
     await expect(dispatch('ssh.removeTarget', { targetId: 'ssh-2' })).resolves.toMatchObject({
       ok: false
     })

@@ -76,7 +76,10 @@ describe('OpenCode Go main-owned API key file', () => {
     const store = await import('./opencode-go-api-key-store')
     expect(() => store.saveOpenCodeGoApiKey(' ')).toThrow('required')
     store.saveOpenCodeGoApiKey('fake-key')
-    writeFileSync(join(home.directory, '.kingu', 'opencode-go-api-key.enc'), 'fake-invalid-envelope')
+    writeFileSync(
+      join(home.directory, '.kingu', 'opencode-go-api-key.enc'),
+      'fake-invalid-envelope'
+    )
     vi.resetModules()
     const restarted = await import('./opencode-go-api-key-store')
     expect(() => restarted.readOpenCodeGoApiKey()).toThrow(

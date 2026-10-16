@@ -266,7 +266,9 @@ test.describe('Activity Agent Pane Isolation', () => {
       })
   })
 
-  test('workspace card agent rows focus the matching terminal split pane', async ({ kinguPage }) => {
+  test('workspace card agent rows focus the matching terminal split pane', async ({
+    kinguPage
+  }) => {
     await splitActiveTerminalPane(kinguPage, 'vertical')
     await waitForPaneCount(kinguPage, 2)
     const snapshot = await waitForPaneIdentitySnapshot(kinguPage, 2)

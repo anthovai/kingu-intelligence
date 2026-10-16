@@ -192,7 +192,9 @@ describe('structured agent session message sender', () => {
   // A failure before any request went out that trying again won't clear: not sent, at once.
   it('gives back at once, with its own words, a send this client and the server cannot talk on', async () => {
     const blocked = Object.assign(
-      new Error('The selected Kingu server is too old for this client. Update Kingu on the server.'),
+      new Error(
+        'The selected Kingu server is too old for this client. Update Kingu on the server.'
+      ),
       { code: 'runtime_compat_block' }
     )
     mocks.compatible.mockRejectedValue(blocked)

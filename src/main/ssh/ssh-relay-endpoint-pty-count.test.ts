@@ -77,7 +77,10 @@ describe('relayBridgeConnectCommand', () => {
 
   it('declines an endpoint that does not sit in its own version directory', () => {
     expect(
-      relayBridgeConnectCommand('/usr/bin/node', '/tmp/.kingu-relay-1000/relay-1a2b/relay-92ff.sock')
+      relayBridgeConnectCommand(
+        '/usr/bin/node',
+        '/tmp/.kingu-relay-1000/relay-1a2b/relay-92ff.sock'
+      )
     ).toBeNull()
     expect(
       relayBridgeConnectCommand('/usr/bin/node', '/home/dev/.kingu-remote/relay-92ff.sock')

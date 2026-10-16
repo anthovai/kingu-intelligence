@@ -88,7 +88,9 @@ test('CLI file positioning preserves background navigation and reveals the reque
           requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
         )
     )
-    expect(await kinguPage.evaluate(() => window.__store?.getState().pendingEditorReveal)).toBeNull()
+    expect(
+      await kinguPage.evaluate(() => window.__store?.getState().pendingEditorReveal)
+    ).toBeNull()
     expect(await cursor()).toMatchObject({ line: 1, column: 1 })
     await open(['--line', '300', '--column', '7', '--focus'])
     await expect

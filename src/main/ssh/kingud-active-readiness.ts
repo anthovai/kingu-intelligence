@@ -1,5 +1,8 @@
 /** Proving that the kingud an activation record names is the one actually serving. */
-import { evaluateKingudActivation, type KingudActivationExpectation } from './kingud-activation-gate'
+import {
+  evaluateKingudActivation,
+  type KingudActivationExpectation
+} from './kingud-activation-gate'
 import {
   kingudLivenessProbeCommand,
   parseKingudLiveness,

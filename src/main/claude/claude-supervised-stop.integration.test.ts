@@ -149,7 +149,14 @@ async function spawnClaude(env: Record<string, string> = {}) {
   )
   const pids = await readPids(child, ['claude', 'tool', 'daemon'])
   const close = (): Promise<boolean> => proveClaudeChildExit({ managed })
-  return { child, managed, exit, pids, close, marker: String(options.env.KINGU_TEST_SIGTERM_MARKER) }
+  return {
+    child,
+    managed,
+    exit,
+    pids,
+    close,
+    marker: String(options.env.KINGU_TEST_SIGTERM_MARKER)
+  }
 }
 
 afterEach(() => {

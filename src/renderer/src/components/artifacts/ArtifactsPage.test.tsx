@@ -173,7 +173,9 @@ describe('ArtifactsPage', () => {
 
     fireEvent.click(copyButton)
     await waitFor(() =>
-      expect(mocks.writeClipboardText).toHaveBeenCalledWith('https://share.onkingu.dev/a/report-123')
+      expect(mocks.writeClipboardText).toHaveBeenCalledWith(
+        'https://share.onkingu.dev/a/report-123'
+      )
     )
     expect(mocks.toastSuccess).toHaveBeenCalledWith('Artifact link copied')
 
@@ -354,7 +356,9 @@ describe('ArtifactsPage', () => {
     resolveRefresh()
 
     await waitFor(() =>
-      expect(screen.queryByText('Sign in to Kingu again to load artifacts.')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Sign in to Kingu again to load artifacts.')
+      ).not.toBeInTheDocument()
     )
   })
 
@@ -394,7 +398,9 @@ describe('ArtifactsPage', () => {
     resolveRefresh()
 
     await waitFor(() =>
-      expect(screen.queryByText('Sign in to Kingu again to load artifacts.')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Sign in to Kingu again to load artifacts.')
+      ).not.toBeInTheDocument()
     )
   })
 

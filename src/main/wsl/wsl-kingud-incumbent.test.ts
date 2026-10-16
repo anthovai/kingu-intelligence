@@ -98,10 +98,12 @@ function dependencies(overrides: Partial<WslKingudIncumbentDependencies> = {}) {
 describe('readWslKingudIncumbent', () => {
   it('asks a serving incumbent over a bridge to its bound port, then closes the bridge', async () => {
     const { deps, close } = dependencies()
-    await expect(readWslKingudIncumbent({ context: context(), slot }, deps)).resolves.toMatchObject({
-      census: LIVE,
-      readiness: READINESS
-    })
+    await expect(readWslKingudIncumbent({ context: context(), slot }, deps)).resolves.toMatchObject(
+      {
+        census: LIVE,
+        readiness: READINESS
+      }
+    )
     expect(deps.probe).toHaveBeenCalledWith(
       expect.objectContaining({
         remoteInstallDir: '/home/u/.kingu-remote/kingud-1.4.0+aa'
@@ -139,10 +141,12 @@ describe('readWslKingudIncumbent', () => {
         daemonProtocolVersion: 3
       }))
     })
-    await expect(readWslKingudIncumbent({ context: context(), slot }, deps)).resolves.toMatchObject({
-      census: { liveSessions: 0 },
-      readiness: READINESS
-    })
+    await expect(readWslKingudIncumbent({ context: context(), slot }, deps)).resolves.toMatchObject(
+      {
+        census: { liveSessions: 0 },
+        readiness: READINESS
+      }
+    )
     expect(deps.probe).not.toHaveBeenCalled()
   })
 
@@ -164,10 +168,12 @@ describe('readWslKingudIncumbent', () => {
         throw new Error('socket closed')
       })
     })
-    await expect(readWslKingudIncumbent({ context: context(), slot }, deps)).resolves.toMatchObject({
-      census: UNVERIFIABLE,
-      readiness: READINESS
-    })
+    await expect(readWslKingudIncumbent({ context: context(), slot }, deps)).resolves.toMatchObject(
+      {
+        census: UNVERIFIABLE,
+        readiness: READINESS
+      }
+    )
     expect(close).toHaveBeenCalledTimes(1)
   })
 

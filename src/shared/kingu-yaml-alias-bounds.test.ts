@@ -62,7 +62,9 @@ it('bounds repeated conversion of nested values inside merge sources', () => {
   const fields = Array.from({ length: 1100 }, (_, index) => `    ignored${index}: x`).join('\n')
   const tabs = Array.from({ length: 256 }, () => '  - <<: *base').join('\n')
   expect(
-    parseKinguYaml(`base: &base\n  command: pnpm dev\n  nested:\n${fields}\ndefaultTabs:\n${tabs}\n`)
+    parseKinguYaml(
+      `base: &base\n  command: pnpm dev\n  nested:\n${fields}\ndefaultTabs:\n${tabs}\n`
+    )
   ).toBeNull()
   expect(toJS).not.toHaveBeenCalled()
 })

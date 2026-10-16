@@ -13,7 +13,10 @@ import {
   agentSessionLeaseFixture,
   agentSessionRecordFixture
 } from '../../../shared/agent-session-record.test-fixture'
-import { formatKinguSessionAddress, type KinguSessionId } from '../../../shared/kingu-session-address'
+import {
+  formatKinguSessionAddress,
+  type KinguSessionId
+} from '../../../shared/kingu-session-address'
 import { testKinguSessionId } from '../../../shared/kingu-session-address-test-fixture'
 
 const hostRef: { current: unknown } = { current: null }

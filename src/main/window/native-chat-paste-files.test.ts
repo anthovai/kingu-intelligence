@@ -223,9 +223,11 @@ describe('native-chat paste folder on disk', () => {
     rmSync(folder, { recursive: true })
     symlinkSync(outside, folder)
 
-    await expect(restoreNativeChatPastes([path.join(folder, 'kingu-paste-1.png')])).resolves.toEqual(
-      [{ path: path.join(folder, 'kingu-paste-1.png'), kept: false, exists: false }]
-    )
+    await expect(
+      restoreNativeChatPastes([path.join(folder, 'kingu-paste-1.png')])
+    ).resolves.toEqual([
+      { path: path.join(folder, 'kingu-paste-1.png'), kept: false, exists: false }
+    ])
     await sweepExpiredNativeChatPastes()
     expect(existsSync(path.join(outside, 'kingu-paste-1.png'))).toBe(true)
     expect(existsSync(path.join(outside, 'tax-return.pdf'))).toBe(true)
@@ -246,9 +248,11 @@ describe('native-chat paste folder on disk', () => {
 
   it('reports nothing kept when the folder does not exist yet', async () => {
     rmSync(folder, { recursive: true })
-    await expect(restoreNativeChatPastes([path.join(folder, 'kingu-paste-1.png')])).resolves.toEqual(
-      [{ path: path.join(folder, 'kingu-paste-1.png'), kept: false, exists: false }]
-    )
+    await expect(
+      restoreNativeChatPastes([path.join(folder, 'kingu-paste-1.png')])
+    ).resolves.toEqual([
+      { path: path.join(folder, 'kingu-paste-1.png'), kept: false, exists: false }
+    ])
   })
 
   it('expires old pastes only, and never follows a symlink or enters a folder', async () => {

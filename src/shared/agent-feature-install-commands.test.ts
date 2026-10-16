@@ -58,7 +58,9 @@ describe('agent feature skill commands', () => {
   it('keeps the copyable Settings commands interactive by default', () => {
     // Why: -y skips the agent picker. A human pasting from Settings should still
     // get it; only an unattended spawn opts in.
-    expect(buildAgentFeatureSkillInstallCommand(['kingu-cli'], { sourceCommit })).not.toContain('-y')
+    expect(buildAgentFeatureSkillInstallCommand(['kingu-cli'], { sourceCommit })).not.toContain(
+      '-y'
+    )
   })
 
   it('refuses to skip prompts without an install target', () => {

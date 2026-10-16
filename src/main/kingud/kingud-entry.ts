@@ -245,7 +245,8 @@ async function startKingudRuntime(
   accountLaunch?.attachToRuntime(runtime)
 
   // Why before any launch: a desktop that owns this host's accounts pushed them on an earlier run.
-  const { restoreKingudHostAccountLaunchEnv } = await import('./kingud-host-account-launch-env-store')
+  const { restoreKingudHostAccountLaunchEnv } =
+    await import('./kingud-host-account-launch-env-store')
   restoreKingudHostAccountLaunchEnv(runtime, runtimeUserDataPath)
 
   const { installKingudSessionSearchService } = await import('./kingud-session-search')

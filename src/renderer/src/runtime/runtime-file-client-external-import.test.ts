@@ -399,7 +399,9 @@ describe('runtime file client', () => {
       results: [{ status: 'failed', reason: 'disk full' }]
     })
 
-    expect(uploadRequests()[0]?.relativePath).toMatch(/^uploads\/assets\/\.logo\.png\.kingu-upload-/)
+    expect(uploadRequests()[0]?.relativePath).toMatch(
+      /^uploads\/assets\/\.logo\.png\.kingu-upload-/
+    )
     expect(runtimeEnvironmentCall).toHaveBeenLastCalledWith({
       selector: 'env-1',
       method: 'files.delete',

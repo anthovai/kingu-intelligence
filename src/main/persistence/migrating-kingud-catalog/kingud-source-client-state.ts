@@ -130,7 +130,9 @@ function collectUiRouting(
   if (ui.lastActiveWorktreeId && kingudMigrationOwnerMatchesScope(ui.lastActiveWorktreeId, scope)) {
     result.lastActiveWorktreeId = unqualifyKingudMigrationOwnerKey(ui.lastActiveWorktreeId)
   }
-  const filterRepoIds = ui.filterRepoIds.filter((repoId) => kingudMigrationOwnsRepoId(scope, repoId))
+  const filterRepoIds = ui.filterRepoIds.filter((repoId) =>
+    kingudMigrationOwnsRepoId(scope, repoId)
+  )
   if (filterRepoIds.length > 0) {
     result.filterRepoIds = filterRepoIds
   }

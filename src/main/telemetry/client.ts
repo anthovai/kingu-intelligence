@@ -25,7 +25,8 @@ const TELEMETRY_ENABLED = true
 const BUILD_IDENTITY: 'stable' | 'rc' | null =
   typeof KINGU_BUILD_IDENTITY !== 'undefined'
     ? KINGU_BUILD_IDENTITY
-    : ((globalThis as { KINGU_BUILD_IDENTITY?: 'stable' | 'rc' | null }).KINGU_BUILD_IDENTITY ?? null)
+    : ((globalThis as { KINGU_BUILD_IDENTITY?: 'stable' | 'rc' | null }).KINGU_BUILD_IDENTITY ??
+      null)
 const WRITE_KEY: string | null =
   typeof KINGU_POSTHOG_WRITE_KEY !== 'undefined'
     ? KINGU_POSTHOG_WRITE_KEY

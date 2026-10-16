@@ -122,7 +122,8 @@ describe('Codex WSL runtime hook install', () => {
       await new Promise<void>((resolve) => releases.push(resolve))
       return null
     })
-    const firstHome = '\\\\wsl$\\Ubuntu\\home\\Alice\\.local\\share\\kingu\\codex-runtime-home\\home'
+    const firstHome =
+      '\\\\wsl$\\Ubuntu\\home\\Alice\\.local\\share\\kingu\\codex-runtime-home\\home'
     const alias = firstHome.replace('\\\\wsl$', '\\\\wsl.localhost')
     const independent = firstHome.replace('\\Alice\\', '\\Bob\\')
 

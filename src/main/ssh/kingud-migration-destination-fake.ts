@@ -17,7 +17,8 @@ export type FakeKingudMigrationDestination = { commits: number } & {
  */
 export function fakeKingudMigrationDestination(): FakeKingudMigrationDestination {
   const states = new Map<string, 'absent' | 'staged' | 'committed'>()
-  const stateOf = (manifest: KingudMigrationManifest) => states.get(manifest.migrationId) ?? 'absent'
+  const stateOf = (manifest: KingudMigrationManifest) =>
+    states.get(manifest.migrationId) ?? 'absent'
   const view = (manifest: KingudMigrationManifest): KingudMigrationCatalogState => {
     const state = stateOf(manifest)
     const base = { migrationId: manifest.migrationId, manifestSha256: manifest.manifestSha256 }

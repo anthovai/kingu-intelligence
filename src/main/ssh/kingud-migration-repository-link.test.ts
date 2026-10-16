@@ -229,7 +229,9 @@ describe('moving onto a server another desktop already added the same project to
         'kingud_migration_linked_project_terminals:/root/migrepo'
       )
       expect(serverRepoIds()).toEqual(['server-repo'])
-      expect(listKingudMigrationSourceCutovers(userDataPath)[0]?.linkedRepositoryIds).toBeUndefined()
+      expect(
+        listKingudMigrationSourceCutovers(userDataPath)[0]?.linkedRepositoryIds
+      ).toBeUndefined()
     })
 
     it.each([

@@ -96,7 +96,9 @@ export function kingudNodePtySlotFiles(target: string): string[] {
 }
 
 export function kingudNodePtyNativeArtifacts(target: string): string[] {
-  return kingudNodePtySlotFiles(target).map((file) => `${KINGUD_NODE_PTY_DIR}/build/Release/${file}`)
+  return kingudNodePtySlotFiles(target).map(
+    (file) => `${KINGUD_NODE_PTY_DIR}/build/Release/${file}`
+  )
 }
 
 export const KINGUD_PARCEL_WATCHER_ENTRY = 'node_modules/@parcel/watcher/index.js'

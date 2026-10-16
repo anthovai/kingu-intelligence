@@ -28,7 +28,8 @@ export const KINGUD_STATE_MUTATION_LOCK_DIRNAME = 'kingud-state-mutation.lock'
  */
 export const KINGUD_STATE_MUTATION_FENCE_HEARTBEAT_SECONDS = 60
 /** How long a lock an exited desktop process left must sit untouched before it is reclaimed. */
-export const KINGUD_EXITED_OWN_LOCK_QUIET_SECONDS = 3 * KINGUD_STATE_MUTATION_FENCE_HEARTBEAT_SECONDS
+export const KINGUD_EXITED_OWN_LOCK_QUIET_SECONDS =
+  3 * KINGUD_STATE_MUTATION_FENCE_HEARTBEAT_SECONDS
 
 /** A state mutation found another still running, so it did nothing. */
 export const KINGUD_STATE_MUTATION_BUSY = 'STATE_MUTATION_BUSY'

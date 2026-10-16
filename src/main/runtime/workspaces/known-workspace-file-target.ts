@@ -24,7 +24,9 @@ export abstract class KinguRuntimeWithResolveKnownWorkspaceFileTarget extends Ki
     ...args: Parameters<
       KinguRuntimeWithListManagedWorktrees['buildRuntimeVisibilitySourceMatchersByRepoId']
     >
-  ): ReturnType<KinguRuntimeWithListManagedWorktrees['buildRuntimeVisibilitySourceMatchersByRepoId']>
+  ): ReturnType<
+    KinguRuntimeWithListManagedWorktrees['buildRuntimeVisibilitySourceMatchersByRepoId']
+  >
   protected abstract isRuntimeWorktreeVisible(
     ...args: Parameters<KinguRuntimeWithListManagedWorktrees['isRuntimeWorktreeVisible']>
   ): ReturnType<KinguRuntimeWithListManagedWorktrees['isRuntimeWorktreeVisible']>

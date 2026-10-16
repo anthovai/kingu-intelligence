@@ -333,7 +333,10 @@ export function registerJournalTerminalSettlementValidationTests(): void {
       expect(journal.itemBody('kingu:extension-7')).toHaveProperty('laterField', {
         kind: 'tool-call'
       })
-      expect(journal.itemBody('kingu:extension-6')).toHaveProperty('contextUsage', laterContextUsage)
+      expect(journal.itemBody('kingu:extension-6')).toHaveProperty(
+        'contextUsage',
+        laterContextUsage
+      )
       expect(journal.runningTurn()?.turnId ?? null).toBeNull()
       expect(journal.snapshot().items).toHaveLength(inputs.length + 1)
       const ended = journal.snapshot()

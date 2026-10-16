@@ -69,8 +69,12 @@ describe('CommentMarkdown', () => {
     )
 
     expect(markup).toContain('href="https://example.com/already-linked"')
-    expect(markup).not.toContain('href="https://github.com/anthovai/kingu-intelligence/issues/2316"')
-    expect(markup).not.toContain('href="https://github.com/anthovai/kingu-intelligence/issues/2317"')
+    expect(markup).not.toContain(
+      'href="https://github.com/anthovai/kingu-intelligence/issues/2316"'
+    )
+    expect(markup).not.toContain(
+      'href="https://github.com/anthovai/kingu-intelligence/issues/2317"'
+    )
   })
 
   it('keeps remote compact markdown images as links', () => {

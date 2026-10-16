@@ -12,7 +12,8 @@ export function getStatusPluginFactorySource(options: {
   // Why: opencode and opencode2 share one config dir, so both plugin files load in
   // either binary. Distinct ids keep the loader from reporting a duplicate-id
   // collision as an 'kingu-opencode-status' plugin failure.
-  const pluginID = expectedAgent === 'opencode2' ? 'kingu-opencode2-status' : 'kingu-opencode-status'
+  const pluginID =
+    expectedAgent === 'opencode2' ? 'kingu-opencode2-status' : 'kingu-opencode-status'
   return [
     ...(options.emitNextEvents ? getOpenCode2EventNormalizationSource() : []),
     '// Why: accept the factory argument as an optional opaque parameter instead',

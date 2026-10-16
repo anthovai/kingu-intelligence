@@ -89,7 +89,10 @@ export async function createManagedKingudEnvironment(
     if (targetGeneration === undefined) {
       throw new Error('The managed Kingu SSH registration has no durable generation.')
     }
-    if (registered && getKingudSshDeployment(registered)?.sshTargetGeneration !== targetGeneration) {
+    if (
+      registered &&
+      getKingudSshDeployment(registered)?.sshTargetGeneration !== targetGeneration
+    ) {
       throw new Error('The saved managed Kingu server has a stale SSH target generation.')
     }
     let environmentRegistered = false

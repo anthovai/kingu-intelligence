@@ -1,4 +1,7 @@
-import { parseKinguSessionAddress, type KinguSessionId } from '../../../shared/kingu-session-address'
+import {
+  parseKinguSessionAddress,
+  type KinguSessionId
+} from '../../../shared/kingu-session-address'
 import { structuredWorkerKinguSessionIdForIncarnation } from '../structured-worker-identity'
 import { canonicalKinguSessionId } from './canonical-kingu-session-id'
 

@@ -176,7 +176,9 @@ function ownedWorkerIncarnation(db: OrchestrationDb, record: AgentSessionRecord)
     return null
   }
   const incarnation = structuredWorkerProcessIncarnation(
-    isKinguSessionId(record.sessionId) ? canonicalKinguSessionId(record.sessionId) : record.sessionId
+    isKinguSessionId(record.sessionId)
+      ? canonicalKinguSessionId(record.sessionId)
+      : record.sessionId
   )
   const owned = db.db
     .prepare(

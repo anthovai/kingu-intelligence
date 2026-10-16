@@ -30,7 +30,10 @@ function lastArgv(): string[] {
 function fencedEcho(payload = ''): void {
   runProcessMock.mockImplementation(async (spec: { args: string[] }) => {
     const script = spec.args.at(-1) ?? ''
-    const begin = (/__KINGU_WSL_CAPTURE_BEGIN_ [a-z0-9]+__/.exec(script)?.[0] ?? '').replace(' ', '')
+    const begin = (/__KINGU_WSL_CAPTURE_BEGIN_ [a-z0-9]+__/.exec(script)?.[0] ?? '').replace(
+      ' ',
+      ''
+    )
     const end = (/__KINGU_WSL_CAPTURE_END_ [a-z0-9]+__/.exec(script)?.[0] ?? '').replace(' ', '')
     return {
       environmentResolved: true,

@@ -63,8 +63,10 @@ export const managedKingudApi: ManagedKingudPreloadApi = {
   unlinkSshAccess: (args) => ipcRenderer.invoke('runtimeEnvironments:unlinkSshAccess', args),
   convertSshHost: (args) =>
     ipcRenderer.invoke('runtimeEnvironments:convertSshHostToManagedKingud', args),
-  listPendingMigrations: () => ipcRenderer.invoke('runtimeEnvironments:listPendingKingudMigrations'),
-  previewDeltaMove: (args) => ipcRenderer.invoke('runtimeEnvironments:previewKingudDeltaMove', args),
+  listPendingMigrations: () =>
+    ipcRenderer.invoke('runtimeEnvironments:listPendingKingudMigrations'),
+  previewDeltaMove: (args) =>
+    ipcRenderer.invoke('runtimeEnvironments:previewKingudDeltaMove', args),
   moveDelta: (args) => ipcRenderer.invoke('runtimeEnvironments:moveKingudDelta', args),
   keepServerVersion: (args) =>
     ipcRenderer.invoke('runtimeEnvironments:keepKingudServerVersion', args),

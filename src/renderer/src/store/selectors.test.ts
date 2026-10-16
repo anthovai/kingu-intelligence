@@ -561,10 +561,15 @@ describe('store selectors', () => {
       projectHostSetups
     })
 
-    expect(projection.projects.map((project) => project.id)).toEqual(['github:anthovai/kingu-intelligence'])
+    expect(projection.projects.map((project) => project.id)).toEqual([
+      'github:anthovai/kingu-intelligence'
+    ])
     expect(projection.setups).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ id: 'local-setup', projectId: 'github:anthovai/kingu-intelligence' }),
+        expect.objectContaining({
+          id: 'local-setup',
+          projectId: 'github:anthovai/kingu-intelligence'
+        }),
         expect.objectContaining({ id: 'vm-setup', projectId: 'github:anthovai/kingu-intelligence' })
       ])
     )

@@ -115,7 +115,11 @@ describe('WslHostService', () => {
 
     expect(connector.connect).toHaveBeenCalledWith('Ubuntu')
     expect(listEnvironments(userDataPath)).toMatchObject([
-      { id: 'wsl:ubuntu', name: 'Ubuntu (WSL)', kingudDeployment: { kind: 'wsl', distro: 'Ubuntu' } }
+      {
+        id: 'wsl:ubuntu',
+        name: 'Ubuntu (WSL)',
+        kingudDeployment: { kind: 'wsl', distro: 'Ubuntu' }
+      }
     ])
     expect(findWslHostDeployment(userDataPath, 'wsl:ubuntu')?.distroId).toBe(UBUNTU_ID)
     expect(ready).toHaveBeenCalledWith('wsl:ubuntu')

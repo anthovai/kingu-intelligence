@@ -175,7 +175,11 @@ test.describe('browser split grab shortcut', () => {
       second: server.pageUrl('b', 1, 'localhost')
     })
     await waitForGuestUrl(kinguPage, fixture.firstBrowserTabId, server.pageUrl('a', 1))
-    await waitForGuestUrl(kinguPage, fixture.secondBrowserTabId, server.pageUrl('b', 1, 'localhost'))
+    await waitForGuestUrl(
+      kinguPage,
+      fixture.secondBrowserTabId,
+      server.pageUrl('b', 1, 'localhost')
+    )
 
     await reloadButton(kinguPage, fixture.firstBrowserTabId).focus()
     await waitForFocusedGroup(kinguPage, fixture.firstBrowserGroupId)
@@ -193,7 +197,11 @@ test.describe('browser split grab shortcut', () => {
       second: server.pageUrl('b', 1, 'localhost')
     })
     await waitForGuestUrl(kinguPage, fixture.firstBrowserTabId, server.pageUrl('a', 1))
-    await waitForGuestUrl(kinguPage, fixture.secondBrowserTabId, server.pageUrl('b', 1, 'localhost'))
+    await waitForGuestUrl(
+      kinguPage,
+      fixture.secondBrowserTabId,
+      server.pageUrl('b', 1, 'localhost')
+    )
 
     await pressKeyInBrowserGuest(
       kinguPage,

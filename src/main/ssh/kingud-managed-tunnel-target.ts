@@ -83,7 +83,9 @@ export type KingudTunnelStartChecks = Pick<
 export async function environmentForwardChecks(
   targeting: KingudManagedTunnelTargeting,
   input: KingudTunnelPortInput
-): Promise<Required<Pick<VerifiedKingudForwardArgs, 'remotePort' | 'rereadRemotePort' | 'verify'>>> {
+): Promise<
+  Required<Pick<VerifiedKingudForwardArgs, 'remotePort' | 'rereadRemotePort' | 'verify'>>
+> {
   return {
     remotePort: await targeting.resolveRemotePort(input),
     rereadRemotePort: async () => {

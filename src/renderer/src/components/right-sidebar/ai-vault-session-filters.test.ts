@@ -379,7 +379,10 @@ describe('deriveAiVaultWorkspaceScopePaths', () => {
         path: '/Users/ada/workspaces/kingu/fix-agent-history',
         priorWorktreeIds: ['repo1::/Users/ada/workspaces/kingu/bream']
       })
-    ).toEqual(['/Users/ada/workspaces/kingu/fix-agent-history', '/Users/ada/workspaces/kingu/bream'])
+    ).toEqual([
+      '/Users/ada/workspaces/kingu/fix-agent-history',
+      '/Users/ada/workspaces/kingu/bream'
+    ])
   })
 
   it('strips folder-workspace instance suffixes from prior ids', () => {

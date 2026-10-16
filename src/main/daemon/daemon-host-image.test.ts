@@ -85,7 +85,9 @@ describe('inspectDaemonHostImage', () => {
   })
 
   it('is severed once the mount is gone from the daemon mount table', () => {
-    expect(verdict(record(), proc({ exe: `${OLD_MOUNT}/kingu-ide`, mountinfo: '' }))).toBe('severed')
+    expect(verdict(record(), proc({ exe: `${OLD_MOUNT}/kingu-ide`, mountinfo: '' }))).toBe(
+      'severed'
+    )
   })
 
   it('is severed when a lazy unmount leaves a path relative to the detached root', () => {
@@ -109,7 +111,9 @@ describe('inspectDaemonHostImage', () => {
     })
     expect(verdict(installed, proc({ exe: '/opt/Kingu/kingu-ide' }))).toBe('not-ephemeral')
     // An in-place package upgrade is not an ephemeral image; stale-bundle policy owns it.
-    expect(verdict(installed, proc({ exe: '/opt/Kingu/kingu-ide (deleted)' }))).toBe('not-ephemeral')
+    expect(verdict(installed, proc({ exe: '/opt/Kingu/kingu-ide (deleted)' }))).toBe(
+      'not-ephemeral'
+    )
   })
 
   it('says nothing when the pid is not the recorded incarnation or cannot be read', () => {

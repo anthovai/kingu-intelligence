@@ -26,7 +26,9 @@ it('prefers host colours, then spawn colours, then the default, skipping unusabl
   expect(resolvePtyOwnerColorQueryColors(null, unusable)).toBe(
     KINGU_DEFAULT_COLOR_QUERY_REPLY_COLORS
   )
-  expect(resolvePtyOwnerColorQueryColors(undefined, {})).toBe(KINGU_DEFAULT_COLOR_QUERY_REPLY_COLORS)
+  expect(resolvePtyOwnerColorQueryColors(undefined, {})).toBe(
+    KINGU_DEFAULT_COLOR_QUERY_REPLY_COLORS
+  )
 })
 
 it('keeps only a wire pair that answers both slots', () => {

@@ -3,7 +3,10 @@
 // journal each time, never stored: the client shows Continue from it, and the host re-checks it
 // under the session lock before Continue sends anything.
 
-import { readAgentSessionKinguStop, type AgentSessionKinguStopCause } from './agent-session-kingu-stop'
+import {
+  readAgentSessionKinguStop,
+  type AgentSessionKinguStopCause
+} from './agent-session-kingu-stop'
 import { isRootAgentJournalItem } from './agent-session-journal-producer'
 import type { AgentJournalRenderItem, AgentJournalSubmission } from './agent-session-journal-types'
 import { STALE_SESSION_ROW_PREFIX } from './agent-session-stop-row-identity'
@@ -24,7 +27,9 @@ export function kinguShutdownRowClientMessageId(
 }
 
 /** Why Kingu stopped, from a status row the host wrote about it; null for any other row. */
-export function kinguStopCauseOfRow(item: AgentJournalRenderItem): AgentSessionKinguStopCause | null {
+export function kinguStopCauseOfRow(
+  item: AgentJournalRenderItem
+): AgentSessionKinguStopCause | null {
   return item.body.kind === 'status'
     ? (readAgentSessionKinguStop(item.body.kinguStop)?.cause ?? null)
     : null

@@ -62,9 +62,9 @@ it('is tri-state at every level, each node over every chat under it', () => {
   ])
 
   act(() => chatBox('in-child').click())
-  expect([machine, 'kingu', 'parent', 'child', 'other'].map((name) => state(nodeBox(name)))).toEqual(
-    ['mixed', 'mixed', 'mixed', 'mixed', 'true']
-  )
+  expect(
+    [machine, 'kingu', 'parent', 'child', 'other'].map((name) => state(nodeBox(name)))
+  ).toEqual(['mixed', 'mixed', 'mixed', 'mixed', 'true'])
   expect(countOf(machine)).toBe('3 of 4')
   expect(countOf('child')).toBe('1 of 2')
 

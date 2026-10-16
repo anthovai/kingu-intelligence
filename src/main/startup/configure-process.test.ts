@@ -405,7 +405,10 @@ describe('configureKinguUserDataPathEnv', () => {
 
     try {
       configureKinguUserDataPathEnv()
-      inherited = [process.env.KINGU_RUNTIME_SOURCE_ID, process.env.KINGU_RUNTIME_SOURCE_INCARNATION]
+      inherited = [
+        process.env.KINGU_RUNTIME_SOURCE_ID,
+        process.env.KINGU_RUNTIME_SOURCE_INCARNATION
+      ]
     } finally {
       process.env = saved
     }

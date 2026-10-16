@@ -165,11 +165,10 @@ export async function installKingudWindowsHostScript(
     op: KingudWindowsHostOp,
     args: string[]
   ): Promise<boolean> => {
-    const command = kingudWindowsNodeCommandLine(kingudWindowsPinnedNodePath(target.host, baseDir), [
-      script,
-      op,
-      ...args
-    ])
+    const command = kingudWindowsNodeCommandLine(
+      kingudWindowsPinnedNodePath(target.host, baseDir),
+      [script, op, ...args]
+    )
     const answer = await execCommand(target.conn, command, {
       wrapCommand: false,
       signal: target.signal

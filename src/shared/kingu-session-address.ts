@@ -42,7 +42,9 @@ export function formatKinguSessionAddress(kinguSessionId: KinguSessionId): Kingu
 }
 
 /** The bare Kingu session id of an `kingu_session_id:<id>` address; anything else reads as null. */
-export function parseKinguSessionAddress(address: string | null | undefined): KinguSessionId | null {
+export function parseKinguSessionAddress(
+  address: string | null | undefined
+): KinguSessionId | null {
   if (!address?.startsWith(KINGU_SESSION_ADDRESS_PREFIX)) {
     return null
   }

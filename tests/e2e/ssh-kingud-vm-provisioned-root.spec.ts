@@ -190,9 +190,13 @@ ${docker} rm -f ${quotePosixShell(target.containerName)} >/dev/null
   execFileSync('git', ['init'], { cwd: repoPath })
   execFileSync('git', ['config', 'user.email', 'e2e@test.local'], { cwd: repoPath })
   execFileSync('git', ['config', 'user.name', 'Kingu E2E'], { cwd: repoPath })
-  execFileSync('git', ['remote', 'add', 'origin', 'https://github.com/anthovai/kingu-intelligence.git'], {
-    cwd: repoPath
-  })
+  execFileSync(
+    'git',
+    ['remote', 'add', 'origin', 'https://github.com/anthovai/kingu-intelligence.git'],
+    {
+      cwd: repoPath
+    }
+  )
   execFileSync('git', ['add', '.'], { cwd: repoPath })
   execFileSync('git', ['commit', '-m', 'seed recipe'], { cwd: repoPath })
   const expectedRefHead = execFileSync('git', ['rev-parse', 'HEAD'], {

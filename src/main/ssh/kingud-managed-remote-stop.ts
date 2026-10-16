@@ -23,7 +23,10 @@ import {
   readKingudWindowsEncodedAnswer
 } from './kingud-remote-windows-node'
 import { KINGUD_WINDOWS_RUNTIME_MARKER } from './kingud-windows-host-script'
-import { KINGUD_LOCK_FILE_NAME, parseKingudInstanceLockRecord } from '../kingud/kingud-instance-lock'
+import {
+  KINGUD_LOCK_FILE_NAME,
+  parseKingudInstanceLockRecord
+} from '../kingud/kingud-instance-lock'
 import {
   KINGUD_CANCEL_MANAGED_STOP_FLAG,
   KINGUD_COMPLETE_MANAGED_STOP_FLAG,

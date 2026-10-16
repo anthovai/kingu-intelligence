@@ -40,7 +40,10 @@ async function cleanupFailedProvider(
   try {
     await processHandle.stop()
   } catch (cleanupError) {
-    throw new KingudBrowserCleanupError([startupError, cleanupError], 'kingud_browser_cleanup_failed')
+    throw new KingudBrowserCleanupError(
+      [startupError, cleanupError],
+      'kingud_browser_cleanup_failed'
+    )
   }
   throw startupError
 }
@@ -89,7 +92,9 @@ export function installedElectronCandidates(
       ...(environment.LOCALAPPDATA
         ? [joinPath(environment.LOCALAPPDATA, 'Programs', 'Kingu', 'Kingu.exe')]
         : []),
-      ...(environment.ProgramFiles ? [joinPath(environment.ProgramFiles, 'Kingu', 'Kingu.exe')] : [])
+      ...(environment.ProgramFiles
+        ? [joinPath(environment.ProgramFiles, 'Kingu', 'Kingu.exe')]
+        : [])
     ]
   }
   return [

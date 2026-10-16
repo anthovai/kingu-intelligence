@@ -41,7 +41,10 @@ import {
   getKinguProfileStateDatabaseFile
 } from '../kingu-profiles/profile-storage-paths'
 import type { SshConnection } from '../ssh/ssh-connection'
-import { emptyKingudActivationRecord, kingudGcPinnedDirNames } from '../ssh/kingud-activation-record'
+import {
+  emptyKingudActivationRecord,
+  kingudGcPinnedDirNames
+} from '../ssh/kingud-activation-record'
 import { gcOldKingudVersions } from '../ssh/kingud-remote-gc'
 import {
   KINGUD_PID_FILENAME,

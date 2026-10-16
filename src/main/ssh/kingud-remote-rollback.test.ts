@@ -55,7 +55,10 @@ vi.mock('./kingud-rollback-terminal-barrier', async (importOriginal) => ({
 import { execCommand } from './ssh-relay-exec-command'
 import { writeAtomicKingudRemoteRecord } from './kingud-remote-record-file'
 import { rollbackKingud, type KingudRollbackOptions } from './kingud-remote-rollback'
-import { emptyKingudActivationRecord, type KingudActivationRecord } from './kingud-activation-record'
+import {
+  emptyKingudActivationRecord,
+  type KingudActivationRecord
+} from './kingud-activation-record'
 import { getRemoteHostPlatform } from './ssh-remote-platform'
 import { isReadinessRead } from './kingud-activation-host-test-harness'
 import { isSnapshotCaptureCommand } from './kingud-snapshot-capture-command'

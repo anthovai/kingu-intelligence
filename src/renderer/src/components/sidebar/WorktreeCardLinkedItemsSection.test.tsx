@@ -176,7 +176,9 @@ describe('workspace linked references in hover details', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Hover workspace' }))
     parentClick.mockClear()
     fireEvent.click(screen.getByRole('button', { name: 'Open MR !42' }))
-    expect(openUrl).toHaveBeenCalledWith('https://gitlab.example.com/team/kingu/-/merge_requests/42')
+    expect(openUrl).toHaveBeenCalledWith(
+      'https://gitlab.example.com/team/kingu/-/merge_requests/42'
+    )
     expect(parentClick).not.toHaveBeenCalled()
     expect(container.querySelector('[data-hover-open]')?.getAttribute('data-hover-open')).toBe(
       'false'

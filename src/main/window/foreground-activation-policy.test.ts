@@ -34,7 +34,9 @@ describe('isBackgroundLaunch', () => {
   })
 
   it('keeps an explicit background request despite inherited foreground flags', () => {
-    expect(isBackgroundLaunch({ KINGU_BACKGROUND_LAUNCH: '1', KINGU_E2E_FOREGROUND: '1' })).toBe(true)
+    expect(isBackgroundLaunch({ KINGU_BACKGROUND_LAUNCH: '1', KINGU_E2E_FOREGROUND: '1' })).toBe(
+      true
+    )
   })
 
   it('treats the kingud browser sidecar as an explicit background launch', () => {

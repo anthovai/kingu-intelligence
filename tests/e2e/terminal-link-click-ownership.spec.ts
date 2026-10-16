@@ -111,7 +111,9 @@ async function openLegacyDisabledLinkSettings(kinguPage: Page): Promise<void> {
   })
   await expect
     .poll(() =>
-      kinguPage.evaluate(() => window.__store?.getState().settings?.terminalLinkActionPopoverEnabled)
+      kinguPage.evaluate(
+        () => window.__store?.getState().settings?.terminalLinkActionPopoverEnabled
+      )
     )
     .toBe(false)
   await kinguPage.evaluate(() => {

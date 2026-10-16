@@ -114,7 +114,10 @@ function isMigratedAutomation(value: unknown): value is Automation {
   if (!['existing', 'new_per_run'].includes(String(record.workspaceMode))) {
     throw new Error('kingud_migration_dormant_automation_workspace_mode_invalid')
   }
-  optionalNullableString(record.workspaceId, 'kingud_migration_dormant_automation_workspace_invalid')
+  optionalNullableString(
+    record.workspaceId,
+    'kingud_migration_dormant_automation_workspace_invalid'
+  )
   optionalNullableString(record.baseBranch, 'kingud_migration_dormant_automation_branch_invalid')
   if (
     record.setupDecision !== undefined &&
@@ -183,7 +186,10 @@ function isMigratedAutomationRun(value: unknown): value is AutomationRun {
     'terminalPtyId',
     'error'
   ] as const) {
-    optionalNullableString(record[field], `kingud_migration_dormant_automation_run_${field}_invalid`)
+    optionalNullableString(
+      record[field],
+      `kingud_migration_dormant_automation_run_${field}_invalid`
+    )
   }
   parseOutputSnapshot(record.outputSnapshot)
   parsePrecheckResult(record.precheckResult)
@@ -195,7 +201,10 @@ function isMigratedAutomationRun(value: unknown): value is AutomationRun {
     true
   )
   requiredFinite(record.createdAt, 'kingud_migration_dormant_automation_run_created_invalid')
-  optionalPositiveInteger(record.runNumber, 'kingud_migration_dormant_automation_run_number_invalid')
+  optionalPositiveInteger(
+    record.runNumber,
+    'kingud_migration_dormant_automation_run_number_invalid'
+  )
   optionalPositiveInteger(
     record.occurrenceCount,
     'kingud_migration_dormant_automation_occurrence_count_invalid'

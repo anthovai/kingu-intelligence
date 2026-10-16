@@ -97,7 +97,9 @@ describe('remote kingud migration catalog client', () => {
       result: { ...request, acknowledgedOffset: 1 }
     })
     await expect(
-      stageRemoteKingudMigrationSnapshotChunk(pairingCode, request, { expectedRuntimeId: 'runtime' })
+      stageRemoteKingudMigrationSnapshotChunk(pairingCode, request, {
+        expectedRuntimeId: 'runtime'
+      })
     ).rejects.toThrow('destination_runtime_mismatch')
     sendRequest.mockResolvedValue({
       ok: true,
@@ -105,7 +107,9 @@ describe('remote kingud migration catalog client', () => {
       result: { ...request, acknowledgedOffset: 1 }
     })
     await expect(
-      stageRemoteKingudMigrationSnapshotChunk(pairingCode, request, { expectedRuntimeId: 'runtime' })
+      stageRemoteKingudMigrationSnapshotChunk(pairingCode, request, {
+        expectedRuntimeId: 'runtime'
+      })
     ).resolves.toMatchObject({ acknowledgedOffset: 1 })
   })
 

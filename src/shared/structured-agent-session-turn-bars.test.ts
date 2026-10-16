@@ -232,7 +232,10 @@ describe('a send queued behind a running Claude turn', () => {
     // Not 65 s from B's send, and not Claude's own 69.6 s, which counts from turn 1's start.
     expect(settledTurns.get('kingu:B')).toEqual({ startedAt: B.started, workedSeconds: 51 })
     // The turn before A never overlapped a send; its duration is unchanged.
-    expect(settledTurns.get('kingu:prior')).toEqual({ startedAt: PRIOR.startedAt, workedSeconds: 7 })
+    expect(settledTurns.get('kingu:prior')).toEqual({
+      startedAt: PRIOR.startedAt,
+      workedSeconds: 7
+    })
 
     const liveOriginB = structuredAgentTurnOrigin(
       selectStructuredAgentTurnBars(whileB.items, whileB.submissions, whileB.turnId).runningTiming!

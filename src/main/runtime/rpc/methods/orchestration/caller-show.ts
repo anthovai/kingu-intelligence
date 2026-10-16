@@ -27,7 +27,10 @@ export const ORCHESTRATION_CALLER_METHODS = [
     // and a session it cannot admit never reaches here: its refusal is the answer.
     handler: (_params, { orchestrationCaller }): OrchestrationCallerShowResult => ({
       caller: orchestrationCaller
-        ? { kinguSessionId: formatKinguSessionAddress(orchestrationCaller.kinguSessionId), live: true }
+        ? {
+            kinguSessionId: formatKinguSessionAddress(orchestrationCaller.kinguSessionId),
+            live: true
+          }
         : null
     })
   }),

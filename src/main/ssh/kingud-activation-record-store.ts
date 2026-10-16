@@ -68,7 +68,9 @@ export async function writeKingudActivationRecord(
 ): Promise<void> {
   const existing = await readActivationRecordState(options)
   if (existing.state === 'unreadable') {
-    throw new Error(`Refusing to overwrite this host's kingud activation record: ${existing.reason}`)
+    throw new Error(
+      `Refusing to overwrite this host's kingud activation record: ${existing.reason}`
+    )
   }
   await writeAtomicKingudRemoteRecord(
     options,

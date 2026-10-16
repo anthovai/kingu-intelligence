@@ -298,7 +298,9 @@ describe('reconcileRealHomeCodexHookEntries', () => {
   })
 
   it('keeps one copy, alone and last, moving the approvals of user hooks that shift', async () => {
-    writeHooks({ hooks: { Stop: [USER_A, kinguGroup(), USER_B, kinguGroup(), USER_C, kinguGroup()] } })
+    writeHooks({
+      hooks: { Stop: [USER_A, kinguGroup(), USER_B, kinguGroup(), USER_C, kinguGroup()] }
+    })
     upsertHookTrustEntries(configPath(), [
       { ...stopEntryAt(2, USER_B), trustedHash: 'sha256:user-b' },
       { ...stopEntryAt(4, USER_C), trustedHash: 'sha256:user-c' },

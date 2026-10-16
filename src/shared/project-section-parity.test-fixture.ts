@@ -116,7 +116,10 @@ const WORKSPACE = {
 }
 // Why 'kingu', not the server's 'Kingu': the later host's derived project name wins the merge.
 const WINDOWS = { key: 'project:github:anthovai/kingu-intelligence', label: 'jinwo/kingu/kingu' }
-const M4 = { key: 'project:github:anthovai/kingu-intelligence::setup:m4-kingu', label: 'm4air/kingu/kingu' }
+const M4 = {
+  key: 'project:github:anthovai/kingu-intelligence::setup:m4-kingu',
+  label: 'm4air/kingu/kingu'
+}
 const M4_TWO = {
   key: 'project:github:anthovai/kingu-intelligence::setup:m4-kingu-two',
   label: 'm4air/kingu-two/kingu'

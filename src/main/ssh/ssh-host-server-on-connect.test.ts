@@ -478,7 +478,8 @@ describe('which server an SSH host runs on connect', () => {
     })
 
     it('records a rolled-back update so the same app version does not retry it', async () => {
-      const reason = 'Candidate failed readiness. kingud 0.1.0+a was restarted and is serving again.'
+      const reason =
+        'Candidate failed readiness. kingud 0.1.0+a was restarted and is serving again.'
       const failed = managed({ autoUpdate: async () => ({ outcome: 'failed', reason }) })
       await expect(resolveHostServerOnConnect(target, failed)).resolves.toMatchObject({
         route: 'managed',

@@ -397,6 +397,8 @@ test.describe('Terminal output scheduler', () => {
       })
       .toBe(true)
 
-    expect(await getTerminalContent(kinguPage)).not.toContain('Kingu skipped hidden terminal output')
+    expect(await getTerminalContent(kinguPage)).not.toContain(
+      'Kingu skipped hidden terminal output'
+    )
   })
 })

@@ -36,7 +36,9 @@ vi.mock('./ssh-target-registry', () => ({
 vi.mock('./kingud-remote-context', () => ({ resolveKingudRemoteContext: mocks.resolveContext }))
 vi.mock('./kingud-terminal-census-client', () => ({ collectManagedTerminalCensus: mocks.census }))
 vi.mock('./kingud-remote-decommission', () => ({ decommissionRemoteKingud: mocks.decommission }))
-vi.mock('./kingud-activation-recovery', () => ({ recoverInterruptedKingudActivation: mocks.recover }))
+vi.mock('./kingud-activation-recovery', () => ({
+  recoverInterruptedKingudActivation: mocks.recover
+}))
 vi.mock('./kingud-activation-transaction-store', () => ({
   readKingudActivationTransaction: async () => mocks.state.transaction
 }))
@@ -47,7 +49,9 @@ vi.mock('./kingud-activation-lock', () => ({
   ) => run({ retain: () => {} })
 }))
 vi.mock('./kingud-managed-remote-stop', () => ({ cancelRemoteKingudManagedStop: mocks.cancel }))
-vi.mock('./kingud-decommission-recovery', () => ({ reconcileKingudDecommission: mocks.keepServing }))
+vi.mock('./kingud-decommission-recovery', () => ({
+  reconcileKingudDecommission: mocks.keepServing
+}))
 vi.mock('./kingud-managed-tunnel', () => ({
   closeKingudManagedTunnel: mocks.closeTunnel,
   ensureKingudManagedTunnel: mocks.ensureTunnel

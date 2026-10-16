@@ -46,8 +46,12 @@ vi.mock('./ssh-target-registry', () => ({
   getSshTargetRegistryStore: () => mocks.state.store
 }))
 vi.mock('./kingud-remote-context', () => ({ resolveKingudRemoteContext: mocks.resolveContext }))
-vi.mock('./kingud-activation-recovery', () => ({ recoverInterruptedKingudActivation: mocks.recover }))
-vi.mock('./kingud-activation-record-store', () => ({ readKingudActivationRecord: mocks.readRecord }))
+vi.mock('./kingud-activation-recovery', () => ({
+  recoverInterruptedKingudActivation: mocks.recover
+}))
+vi.mock('./kingud-activation-record-store', () => ({
+  readKingudActivationRecord: mocks.readRecord
+}))
 vi.mock('./kingud-activation-transaction-store', () => ({
   readKingudActivationTransaction: mocks.readTransaction
 }))

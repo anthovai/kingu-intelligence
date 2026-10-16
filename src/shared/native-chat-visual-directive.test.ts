@@ -47,9 +47,9 @@ describe('parseNativeChatVisualDirectiveLine', () => {
   })
 
   it('ignores unknown attributes but refuses a repeated one', () => {
-    expect(parseNativeChatVisualDirectiveLine('::kingu-visual{file="a.html" height="300"}')).toEqual(
-      { file: 'a.html', title: null }
-    )
+    expect(
+      parseNativeChatVisualDirectiveLine('::kingu-visual{file="a.html" height="300"}')
+    ).toEqual({ file: 'a.html', title: null })
     expect(
       parseNativeChatVisualDirectiveLine('::kingu-visual{file="a.html" file="b.html"}')
     ).toBeNull()

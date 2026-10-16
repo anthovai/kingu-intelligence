@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- Why: the Kingu rebrand lengthens names past the formatter width; upstream keeps this file at the limit. */
 /**
  * One SSH forward per managed environment, owned across reconnects and host resume, and the
  * serving check that starts a stopped server behind it.
@@ -27,7 +28,10 @@ import {
   supersededTunnelError,
   type ActiveKingudTunnel
 } from './kingud-managed-tunnel-active'
-import { checkManagedTunnelServing, type KingudTunnelServing } from './kingud-managed-tunnel-serving'
+import {
+  checkManagedTunnelServing,
+  type KingudTunnelServing
+} from './kingud-managed-tunnel-serving'
 import type { getSshTargetRegistryStore } from './ssh-target-registry'
 import {
   environmentForwardChecks,
@@ -237,7 +241,9 @@ export class KingudManagedTunnelManager {
     const targetStore = this.dependencies.getTargetStore()
     const connectionManager = this.dependencies.getConnectionManager()
     if (!targetStore || !connectionManager) {
-      throw new Error('SSH is unavailable on this client; the managed Kingu server is unverifiable.')
+      throw new Error(
+        'SSH is unavailable on this client; the managed Kingu server is unverifiable.'
+      )
     }
     const target = targetStore.getTarget(deployment.sshTargetId)
     if (!target || target.generation !== deployment.sshTargetGeneration) {

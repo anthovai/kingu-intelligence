@@ -73,7 +73,10 @@ test('concurrent registration keeps one identity, including nested and linked pa
   await expect
     .poll(() => kinguPage.evaluate(() => window.__store!.getState().repos.map((repo) => repo.id)))
     .toEqual(result.persistedIds)
-  const linked = await kinguPage.evaluate(async (path) => window.api.repos.add({ path }), linkedPath)
+  const linked = await kinguPage.evaluate(
+    async (path) => window.api.repos.add({ path }),
+    linkedPath
+  )
   expect('repo' in linked && linked.repo.id).toBe(result.ids[0])
   const missing = await kinguPage.evaluate(
     async (path) => window.api.repos.add({ path }),

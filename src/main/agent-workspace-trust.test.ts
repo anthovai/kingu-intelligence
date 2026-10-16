@@ -129,7 +129,10 @@ describe('applyAgentWorkspaceTrust on this machine', () => {
   })
 
   // Why: a config dir that does not exist keeps a regression here from writing a real config.
-  const noConfig = { ...local, env: { CLAUDE_CONFIG_DIR: join(tmpdir(), 'kingu-no-claude-config') } }
+  const noConfig = {
+    ...local,
+    env: { CLAUDE_CONFIG_DIR: join(tmpdir(), 'kingu-no-claude-config') }
+  }
   it.each([
     ['the home folder', homedir(), noConfig],
     [

@@ -1,7 +1,10 @@
 import type { RunRow } from './types'
 import { isEquivalentPaneKey } from './db/pane-key-match'
 import { currentRunCoordinatorKinguSessionId } from './db/runs/run-coordinator-kingu-session'
-import { formatKinguSessionAddress, type KinguSessionId } from '../../../shared/kingu-session-address'
+import {
+  formatKinguSessionAddress,
+  type KinguSessionId
+} from '../../../shared/kingu-session-address'
 import type { OrchestrationPartyIdentity } from '../../../shared/orchestration-party-identity'
 
 /** Who an orchestration caller is; shared so a queued message can name its sender the same way. */

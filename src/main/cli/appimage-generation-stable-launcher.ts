@@ -11,7 +11,9 @@ import {
  * instead would break once a later update prunes that generation.
  */
 export function resolveGenerationStableLauncherPath(resourcesPath: string): string | null {
-  const generation = resolveAppImageGenerationOfExecutable(join(dirname(resourcesPath), 'kingu-ide'))
+  const generation = resolveAppImageGenerationOfExecutable(
+    join(dirname(resourcesPath), 'kingu-ide')
+  )
   if (!generation || !isAppImageStableLauncherReady(generation.cacheRootPath)) {
     return null
   }

@@ -71,7 +71,8 @@ it.skipIf(process.env.KINGU_REAL_QODER_CLI_TEST !== '1')(
         KINGU_PANE_KEY: makePaneKey(randomUUID(), randomUUID()),
         KINGU_BACKGROUND_LAUNCH: '1'
       }
-      const command = process.env.KINGU_QODER_CLI_PATH ?? join(realHome, '.local', 'bin', 'qodercli')
+      const command =
+        process.env.KINGU_QODER_CLI_PATH ?? join(realHome, '.local', 'bin', 'qodercli')
       const version = await runProcess({ program: command, args: ['--version'], env })
       expect(version.code).toBe(0)
       const args = [

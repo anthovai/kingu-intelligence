@@ -6,7 +6,10 @@
  * so the delta manifest carries only rows and dormant state no earlier migration owns. Nothing
  * that overlaps an earlier migration is merged into the server.
  */
-import type { KingudDeltaMovePreview, KingudDeltaMoveRow } from '../../shared/kingud-managed-runtime'
+import type {
+  KingudDeltaMovePreview,
+  KingudDeltaMoveRow
+} from '../../shared/kingud-managed-runtime'
 import type {
   KingudMigrationCatalogPayload,
   KingudMigrationManifest

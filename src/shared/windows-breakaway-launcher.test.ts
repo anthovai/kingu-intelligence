@@ -215,15 +215,15 @@ describe('kingud Windows breakaway launcher', () => {
   const kingudRuntime = { execPath: kingudArgv[0], script: kingudArgv[1], cwd: 'C:/slot' }
 
   it('splits on its own args flag, not the relay one', () => {
-    expect(parseWindowsBreakawayLaunchRequest(KINGUD_WINDOWS_BREAKAWAY_CONTRACT, kingudArgv)).toEqual(
-      {
-        stdoutPath: 'C:/slot/.kingud-readiness',
-        stderrPath: 'C:/slot/kingud.log',
-        processFilePath: 'C:/slot/.kingud-process.json',
-        env: {},
-        programArgs: ['--json', '--bind', '127.0.0.1']
-      }
-    )
+    expect(
+      parseWindowsBreakawayLaunchRequest(KINGUD_WINDOWS_BREAKAWAY_CONTRACT, kingudArgv)
+    ).toEqual({
+      stdoutPath: 'C:/slot/.kingud-readiness',
+      stderrPath: 'C:/slot/kingud.log',
+      processFilePath: 'C:/slot/.kingud-process.json',
+      env: {},
+      programArgs: ['--json', '--bind', '127.0.0.1']
+    })
   })
 
   it('collects --env assignments for the launched process and refuses a malformed one', () => {
@@ -266,7 +266,10 @@ describe('kingud Windows breakaway launcher', () => {
   })
 
   it('records the PID with its creation time so a reused PID is never mistaken for it', () => {
-    const request = parseWindowsBreakawayLaunchRequest(KINGUD_WINDOWS_BREAKAWAY_CONTRACT, kingudArgv)
+    const request = parseWindowsBreakawayLaunchRequest(
+      KINGUD_WINDOWS_BREAKAWAY_CONTRACT,
+      kingudArgv
+    )
     if (!request) {
       throw new Error('expected a launch request')
     }
@@ -287,7 +290,10 @@ describe('kingud Windows breakaway launcher', () => {
   })
 
   it('fails the launch and stops the process when its record cannot be written', () => {
-    const request = parseWindowsBreakawayLaunchRequest(KINGUD_WINDOWS_BREAKAWAY_CONTRACT, kingudArgv)
+    const request = parseWindowsBreakawayLaunchRequest(
+      KINGUD_WINDOWS_BREAKAWAY_CONTRACT,
+      kingudArgv
+    )
     if (!request) {
       throw new Error('expected a launch request')
     }

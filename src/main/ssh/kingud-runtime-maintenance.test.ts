@@ -37,7 +37,9 @@ vi.mock('./kingud-remote-context', () => ({ resolveKingudRemoteContext: mocks.re
 vi.mock('./kingud-terminal-census-client', () => ({ collectManagedTerminalCensus: mocks.census }))
 vi.mock('./kingud-remote-deploy', () => ({ deployKingud: mocks.deploy }))
 vi.mock('./kingud-remote-rollback', () => ({ rollbackKingud: mocks.rollback }))
-vi.mock('./kingud-activation-recovery', () => ({ recoverInterruptedKingudActivation: mocks.recover }))
+vi.mock('./kingud-activation-recovery', () => ({
+  recoverInterruptedKingudActivation: mocks.recover
+}))
 vi.mock('./kingud-active-readiness', () => ({ probeActiveKingudReadiness: mocks.probe }))
 vi.mock('./kingud-remote-build-hash', () => ({ readRemoteKingudBuildHash: mocks.buildHash }))
 vi.mock('../kingud/kingud-artifact-materializer', () => ({

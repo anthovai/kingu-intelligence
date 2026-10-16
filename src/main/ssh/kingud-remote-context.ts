@@ -58,7 +58,9 @@ export async function resolveKingudRemoteContext<Target extends KingudHostTarget
 ): Promise<KingudRemoteContext<Target>> {
   const host = detectedHost ?? (await detectRemoteHostPlatform(connection, { signal }))
   if (!host) {
-    throw new KingudHostUnsupportedError('This SSH host platform is not supported by managed kingud.')
+    throw new KingudHostUnsupportedError(
+      'This SSH host platform is not supported by managed kingud.'
+    )
   }
   const remote = { conn: connection, host, signal }
   const { kingudHome: remoteHome, userDataDir } = await resolveKingudMachineHome(

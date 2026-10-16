@@ -51,7 +51,10 @@ describe('retaining a committed migration source', () => {
       })
     }
     expect(() =>
-      writeKingudMigrationSourceCutover(userDataPath, kingudMigrationCutoverFixture('m-new', 'ssh-9'))
+      writeKingudMigrationSourceCutover(
+        userDataPath,
+        kingudMigrationCutoverFixture('m-new', 'ssh-9')
+      )
     ).not.toThrow()
   })
 })

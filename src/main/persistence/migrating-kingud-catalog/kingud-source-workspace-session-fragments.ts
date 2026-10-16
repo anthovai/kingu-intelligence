@@ -137,7 +137,9 @@ function agreesOnOwner(
     }
     const value: unknown = Object.getOwnPropertyDescriptor(fragment[field] ?? {}, ownerKey)?.value
     const seen = keyedValues.get(`${field}\0${ownerKey}`)
-    return value === undefined || seen === undefined || seen === serializeKingudMigrationValue(value)
+    return (
+      value === undefined || seen === undefined || seen === serializeKingudMigrationValue(value)
+    )
   })
 }
 

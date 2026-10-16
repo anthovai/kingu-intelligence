@@ -98,7 +98,10 @@ export function writeKingudMigrationSourceCutover(
   journals.write(userDataPath, parsed)
 }
 
-export function removeKingudMigrationSourceCutover(userDataPath: string, migrationId: string): void {
+export function removeKingudMigrationSourceCutover(
+  userDataPath: string,
+  migrationId: string
+): void {
   journals.remove(userDataPath, migrationId)
 }
 

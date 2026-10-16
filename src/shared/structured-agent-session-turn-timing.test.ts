@@ -326,7 +326,9 @@ describe('coalesced sends and canonical rows', () => {
     }
     const timings = selectStructuredAgentTurnTimings([user('kingu:u9'), canonical])
     expect(timings.get('kingu:u9')).toMatchObject({ state: 'completed', durationMs: 7_172 })
-    expect(selectStructuredAgentSettledTurns([user('kingu:u9'), canonical]).get('kingu:u9')).toEqual({
+    expect(
+      selectStructuredAgentSettledTurns([user('kingu:u9'), canonical]).get('kingu:u9')
+    ).toEqual({
       startedAt: 1_000,
       workedSeconds: 7
     })

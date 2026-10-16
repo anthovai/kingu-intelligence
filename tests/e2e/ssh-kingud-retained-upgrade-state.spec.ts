@@ -11,7 +11,10 @@ import { toSshExecutionHostId } from '../../src/shared/execution-host'
 
 const HOST = process.env.KINGU_E2E_KINGUD_CONVERT_HOST
 const TEMPLATE = process.env.KINGU_E2E_KINGUD_CONVERT_TEMPLATE
-test.skip(!HOST || !TEMPLATE, 'Set KINGU_E2E_KINGUD_CONVERT_HOST and KINGU_E2E_KINGUD_CONVERT_TEMPLATE')
+test.skip(
+  !HOST || !TEMPLATE,
+  'Set KINGU_E2E_KINGUD_CONVERT_HOST and KINGU_E2E_KINGUD_CONVERT_TEMPLATE'
+)
 
 test('cross-host history, closed-pane resumes and stale local snapshots survive an SSH upgrade', async ({
   testRepoPath

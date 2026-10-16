@@ -6,7 +6,10 @@
  * installed build must all name the same process. Then the record and pid file are rewritten under
  * the activation fence. A different version is then handled by the usual update gate.
  */
-import { KINGUD_LOCK_FILE_NAME, parseKingudInstanceLockRecord } from '../kingud/kingud-instance-lock'
+import {
+  KINGUD_LOCK_FILE_NAME,
+  parseKingudInstanceLockRecord
+} from '../kingud/kingud-instance-lock'
 import type { KingudActivationRecord } from '../ssh/kingud-activation-record'
 import {
   readKingudActivationRecord,
@@ -77,7 +80,10 @@ async function readSlotPid(slot: KingudSlotOptions, version: string): Promise<nu
 }
 
 /** The holder's slot must publish readiness for this pid, from the build installed there. */
-async function proveHolderServesItsSlot(slot: KingudSlotOptions, holder: LockHolder): Promise<void> {
+async function proveHolderServesItsSlot(
+  slot: KingudSlotOptions,
+  holder: LockHolder
+): Promise<void> {
   const label = `An kingud (pid ${holder.pid}, ${holder.version}) is running in this distro but is not the recorded one`
   const dirName = remoteInstallDirName(KINGUD_INSTALL_MODEL, holder.version)
   if (!remoteInstallVersionDirRegex(KINGUD_INSTALL_MODEL).test(dirName)) {

@@ -437,7 +437,9 @@ test.describe('Multi-workspace sustained typing latency bench', () => {
   }, testInfo) => {
     await waitForSessionReady(kinguPage)
     const typingWorktreeId = await waitForActiveWorktree(kinguPage)
-    const loadWorktreeId = (await getAllWorktreeIds(kinguPage)).find((id) => id !== typingWorktreeId)
+    const loadWorktreeId = (await getAllWorktreeIds(kinguPage)).find(
+      (id) => id !== typingWorktreeId
+    )
     expect(Boolean(loadWorktreeId), 'bench needs the seeded secondary worktree').toBe(true)
     if (!loadWorktreeId) {
       return

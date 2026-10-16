@@ -4,7 +4,10 @@ import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { runProcess } from '@kingu/process-host'
-import { KINGUD_LAUNCHER_FILENAME, KINGUD_SERVER_ENTRY_FILENAME } from '../../shared/kingud-artifacts'
+import {
+  KINGUD_LAUNCHER_FILENAME,
+  KINGUD_SERVER_ENTRY_FILENAME
+} from '../../shared/kingud-artifacts'
 
 let directory = ''
 let launcher = ''

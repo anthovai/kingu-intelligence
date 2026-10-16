@@ -156,7 +156,9 @@ describe('wsl login shell command helpers', () => {
     // Why the captured form: an interactive login shell also prints the distro's
     // rc/motd to stdout (stock Ubuntu ships a sudo hint), so a raw login-shell
     // read cannot be compared byte-for-byte on a real distro.
-    const captured = buildWslCapturedLoginShellCommand('kingu_value=ok; printf "<%s>" "$kingu_value"')
+    const captured = buildWslCapturedLoginShellCommand(
+      'kingu_value=ok; printf "<%s>" "$kingu_value"'
+    )
 
     expect(
       captured.readStdout(
@@ -245,7 +247,8 @@ describe('wsl login shell command helpers', () => {
       // Why a per-call nonce: `cat` of a file quoting a fixed marker would
       // otherwise be truncated at the quote.
       const captured = buildWslCapturedLoginShellCommand('cat -- /f', 'nonce2')
-      const payload = 'see __KINGU_WSL_CAPTURE_BEGIN_nonce1__ and __KINGU_WSL_CAPTURE_END_nonce1__\n'
+      const payload =
+        'see __KINGU_WSL_CAPTURE_BEGIN_nonce1__ and __KINGU_WSL_CAPTURE_END_nonce1__\n'
 
       expect(
         captured.readStdout(

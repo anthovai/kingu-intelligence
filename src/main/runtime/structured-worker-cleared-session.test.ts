@@ -457,9 +457,9 @@ describe.each(['live', 'at-rest'] as const)(
 
     it("reports the successor's status to @idle", async () => {
       const identity = registerWorker()
-      await expect(new KinguRuntimeService().getAgentStatusForHandle(identity.handle)).resolves.toBe(
-        'idle'
-      )
+      await expect(
+        new KinguRuntimeService().getAgentStatusForHandle(identity.handle)
+      ).resolves.toBe('idle')
       expect(journalAsked).toEqual([SUCCESSOR])
     })
 

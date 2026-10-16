@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- Why: the Kingu rebrand lengthens names past the formatter width; upstream keeps this file at the limit. */
 /**
  * The desktop's connection to one WSL distro's kingud: deploy and launch (C4), the `wsl.exe` stdio
  * bridge listener, and kingud's pairing offer rewritten to that listener's loopback port. One per
@@ -77,7 +78,10 @@ export type WslKingudConnectOptions = {
   status?: WslKingudConnectStatus
 }
 
-type WslKingudConnectStatus = { pending: WslKingudConnectionStatus; ready: WslKingudConnectionStatus }
+type WslKingudConnectStatus = {
+  pending: WslKingudConnectionStatus
+  ready: WslKingudConnectionStatus
+}
 
 const CONNECTING: WslKingudConnectionStatus = { state: 'connecting' }
 const READY: WslKingudConnectionStatus = { state: 'ready', census: null }
@@ -90,7 +94,10 @@ export type WslKingudConnectionDependencies = {
     transport: KingudHostTransport,
     options: WslKingudStdioBridgeOptions
   ) => Promise<StartedPortForward>
-  verifyIdentity?: (pairingOffer: string, readiness: ServeReadiness) => Promise<KingudTunnelIdentity>
+  verifyIdentity?: (
+    pairingOffer: string,
+    readiness: ServeReadiness
+  ) => Promise<KingudTunnelIdentity>
   /** A connection (re)opened, its offer changed, or its status moved; null once it closed. */
   onChange?: (
     distro: string,
@@ -260,7 +267,9 @@ export class WslKingudConnectionManager {
       }
       if (identity.verdict === 'unreachable') {
         // Why not fail: a server that is still starting is not a wrong server.
-        console.warn(`[wsl] Kingu server in ${distro} did not answer its bridge: ${identity.detail}`)
+        console.warn(
+          `[wsl] Kingu server in ${distro} did not answer its bridge: ${identity.detail}`
+        )
       }
       if (this.generation(key) !== generation) {
         throw new WslKingudConnectionSupersededError(distro)

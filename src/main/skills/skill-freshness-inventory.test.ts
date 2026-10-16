@@ -61,7 +61,10 @@ async function fixture() {
   const unreleasedMarkdown =
     '---\nname: kingu-cli\ndescription: Main between releases.\n---\n\n# Unreleased\n'
   await Promise.all([
-    writeSkillLock(homeDir, { source: 'anthovai/kingu-intelligence', skillFolderHash: 'b'.repeat(40) }),
+    writeSkillLock(homeDir, {
+      source: 'anthovai/kingu-intelligence',
+      skillFolderHash: 'b'.repeat(40)
+    }),
     writeFile(
       join(resourceRoot, 'skills', 'current-manifest.json'),
       `${JSON.stringify({ schemaVersion: 3, skills: [bundleEntry(currentMarkdown)] }, null, 2)}\n`
@@ -537,7 +540,11 @@ describe('read-only skill freshness inventory', () => {
         })
       ])
       expect(inventory.installations).toEqual([
-        expect.objectContaining({ name: 'kingu-cli', status: 'current', topology: 'canonical-copy' })
+        expect.objectContaining({
+          name: 'kingu-cli',
+          status: 'current',
+          topology: 'canonical-copy'
+        })
       ])
     },
     90_000

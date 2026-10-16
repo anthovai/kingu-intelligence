@@ -230,7 +230,9 @@ export function buildWorktreeCardPresentation(card: WorktreeCardController) {
         onEditIssue={affiliateListMode ? undefined : handleEditIssue}
         onEditComment={affiliateListMode ? undefined : handleEditComment}
         onOpenGitHubIssueInKingu={
-          metaIssue && 'url' in metaIssue && metaIssue.url ? handleOpenGitHubIssueInKingu : undefined
+          metaIssue && 'url' in metaIssue && metaIssue.url
+            ? handleOpenGitHubIssueInKingu
+            : undefined
         }
         onOpenIssueInBrowser={
           metaIssue && 'url' in metaIssue && metaIssue.url ? handleOpenIssueInBrowser : undefined

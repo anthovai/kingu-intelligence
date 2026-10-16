@@ -27,7 +27,10 @@ import type {
 export type KingudStdioBridgeDependencies = {
   resolveBridge: (conn: KingudHostTransport, port: number) => Promise<KingudStdioBridge>
   checkBridge: (conn: KingudHostTransport, bridge: KingudStdioBridge) => Promise<unknown>
-  openChannel: (conn: KingudHostTransport, bridge: KingudStdioBridge) => Promise<RemoteCommandChannel>
+  openChannel: (
+    conn: KingudHostTransport,
+    bridge: KingudStdioBridge
+  ) => Promise<RemoteCommandChannel>
 }
 
 export const KINGUD_STDIO_BRIDGE_DEPENDENCIES: KingudStdioBridgeDependencies = {

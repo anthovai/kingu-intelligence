@@ -137,7 +137,10 @@ function deepFreeze<T>(value: T): T {
 describe('kingud migration path-rewrite stage', () => {
   it('is exact under the identity: same value, same bytes, same key order, input untouched', () => {
     const input = deepFreeze(payloadWithEveryField())
-    const output = rewriteKingudMigrationPayloadPaths(input, IDENTITY_KINGUD_MIGRATION_PATH_REWRITER)
+    const output = rewriteKingudMigrationPayloadPaths(
+      input,
+      IDENTITY_KINGUD_MIGRATION_PATH_REWRITER
+    )
     expect(output).not.toBe(input)
     expect(output).toEqual(input)
     expect(JSON.stringify(output)).toBe(JSON.stringify(input))
