@@ -12,7 +12,7 @@ import { waitForSessionReady } from './helpers/store'
 import type { Page } from '@stablyai/playwright-test'
 import type { GlobalSettings } from '../../src/shared/global-settings-types'
 import type { TuiAgent } from '../../src/shared/tui-agent'
-import { ONBOARDING_FINAL_STEP } from '../../src/shared/constants'
+import { ONBOARDING_FINAL_STEP } from '../../src/shared/onboarding-defaults'
 import { encodePairingOffer, PAIRING_OFFER_VERSION } from '../../src/shared/pairing'
 
 type OnboardingState = {
@@ -160,10 +160,13 @@ test.describe('Onboarding flow', () => {
     await waitForSessionReady(kinguPage)
   })
 
-  test('renders on first launch with the agent step active', async ({ kinguPage }) => {
+  test('Continue advances steps, persists progress, and applies user-visible settings', async ({
+    kinguPage
+  }) => {
     await expect(kinguPage.getByRole('heading', { name: /Pick your default agent/i })).toBeVisible({
       timeout: 15_000
     })
+
     await expectOnboardingProgress(kinguPage, /^1 of [345]$/)
     await expect(onboardingFooterButton(kinguPage, /^Continue\b/)).toBeVisible()
     await expect(onboardingFooterButton(kinguPage, SKIP_TO_PROJECT_SETUP_BUTTON)).toBeVisible()
@@ -180,14 +183,6 @@ test.describe('Onboarding flow', () => {
         .filter({ hasText: /⌘|Ctrl/ })
         .first()
     ).toBeVisible()
-  })
-
-  test('Continue advances steps, persists progress, and applies user-visible settings', async ({
-    kinguPage
-  }) => {
-    await expect(kinguPage.getByRole('heading', { name: /Pick your default agent/i })).toBeVisible({
-      timeout: 15_000
-    })
 
     // --- Step 1: agent ---
     // Force a deterministic, non-default selection so the assertion below
@@ -196,7 +191,7 @@ test.describe('Onboarding flow', () => {
     // agents are detected, otherwise behind the "Show N more agents" details
     // expander — open it if codex isn't visible.
     const targetAgent: TuiAgent = 'codex'
-    const codexButton = kinguPage.getByRole('button', { name: /^Codex\s/ })
+    const codexButton = kinguPage.getByRole('button', { name: 'Codex', exact: true })
     // Why: isVisible() is a one-shot probe — on slow renderer paint it would
     // race the wizard mount and falsely take the "show more agents" branch.
     // waitFor with a small timeout actually retries until the button paints.
@@ -209,6 +204,7 @@ test.describe('Onboarding flow', () => {
       await kinguPage.getByText(/Show \d+ more agents/).click()
     }
     await codexButton.click()
+    await expect(codexButton).toHaveAttribute('aria-pressed', 'true')
 
     await continueOnboarding(kinguPage)
     await expect(kinguPage.getByRole('heading', { name: /Make it feel like home/i })).toBeVisible()
@@ -348,7 +344,7 @@ test.describe('Onboarding flow', () => {
     await expect(kinguPage.getByRole('heading', { name: /Pick your default agent/i })).toBeVisible({
       timeout: 15_000
     })
-    const codexButton = kinguPage.getByRole('button', { name: /^Codex\s/ })
+    const codexButton = kinguPage.getByRole('button', { name: 'Codex', exact: true })
     const codexVisible = await codexButton
       .first()
       .waitFor({ state: 'visible', timeout: 1_000 })
@@ -538,68 +534,14 @@ test.describe('Onboarding flow', () => {
     await expectAddProjectDialog(kinguPage)
     // The runtime env is selected as the Add Project host and the browse action
     // is host-scoped, proving the server project-setup UI is preserved on skip.
-    await expect(kinguPage.getByText('Existing Git repository or folder on this host')).toBeVisible(
-      {
-        timeout: 30_000
-      }
-    )
+    await expect(kinguPage.getByText('Existing Git repository or folder on this host')).toBeVisible({
+      timeout: 30_000
+    })
     await expect(kinguPage.getByRole('button', { name: /Browse folder/i })).toBeVisible()
     await expect(kinguPage.getByRole('button', { name: /Clone from URL/i })).toBeVisible()
     await expect(kinguPage.getByRole('button', { name: /Create new project/i })).toBeVisible()
     await expect(onboardingFooterButton(kinguPage, SKIP_TO_PROJECT_SETUP_BUTTON)).toHaveCount(0)
     expect((await getOnboardingState(kinguPage)).closedAt).not.toBeNull()
-  })
-
-  test('Skip from notifications does not request permission', async ({ kinguPage }) => {
-    await expect(kinguPage.getByRole('heading', { name: /Pick your default agent/i })).toBeVisible({
-      timeout: 15_000
-    })
-    await continueOnboarding(kinguPage)
-    await expect(kinguPage.getByRole('heading', { name: /Make it feel like home/i })).toBeVisible()
-    await continueFromThemeToNotifications(kinguPage)
-
-    await kinguPage.evaluate(() => {
-      localStorage.removeItem('kingu.e2e.notificationPermissionRequested')
-      window.api.notifications.requestPermission = async () => {
-        localStorage.setItem('kingu.e2e.notificationPermissionRequested', '1')
-        return { supported: true, platform: 'darwin', requested: true }
-      }
-    })
-    await expectOnboardingNotificationSound(kinguPage, /System Default/i)
-
-    await expect(onboardingFooterButton(kinguPage, SKIP_TO_PROJECT_SETUP_BUTTON)).toHaveCount(0)
-    await continueOnboarding(kinguPage)
-
-    await expectAddProjectDialog(kinguPage)
-    await expect
-      .poll(
-        async () =>
-          kinguPage.evaluate(() =>
-            localStorage.getItem('kingu.e2e.notificationPermissionRequested')
-          ),
-        { timeout: 5_000 }
-      )
-      .toBeNull()
-  })
-
-  test('selected agent button reports aria-pressed=true', async ({ kinguPage }) => {
-    await expect(kinguPage.getByRole('heading', { name: /Pick your default agent/i })).toBeVisible({
-      timeout: 15_000
-    })
-
-    const codexButton = kinguPage.getByRole('button', { name: /^Codex\s/ })
-    const codexVisible = await codexButton
-      .first()
-      .waitFor({ state: 'visible', timeout: 1_000 })
-      .then(() => true)
-      .catch(() => false)
-    if (!codexVisible) {
-      await kinguPage.getByText(/Show \d+ more agents/).click()
-    }
-    await codexButton.click()
-    // Why: AgentButton now sets aria-pressed so screen readers and assistive
-    // tech can announce the selection. Verify the attribute reflects state.
-    await expect(codexButton).toHaveAttribute('aria-pressed', 'true')
   })
 
   test('notification sound choice persists on Continue', async ({ kinguPage }) => {
@@ -684,9 +626,7 @@ test.describe('Onboarding flow', () => {
       .toBe(1)
   })
 
-  test('final notification step can be dismissed via Escape or click-off', async ({
-    kinguPage
-  }) => {
+  test('final notification step can be dismissed via Escape or click-off', async ({ kinguPage }) => {
     await expect(kinguPage.getByRole('heading', { name: /Pick your default agent/i })).toBeVisible({
       timeout: 15_000
     })

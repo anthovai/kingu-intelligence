@@ -6,7 +6,7 @@
 !include "${__FILEDIR__}\kingu-process-check.nsh"
 
 ; ---------------------------------------------------------------------------
-; Markdown "Open with Kingu" (issue #10138)
+; Markdown and CSV/TSV "Open with Kingu" (issues #10138, #23225)
 ;
 ; Why hand-rolled instead of electron-builder's `fileAssociations` on Windows:
 ; app-builder-lib emits !insertmacro APP_ASSOCIATE, whose first line is
@@ -21,29 +21,36 @@
 ; exactly where the user left it. Never add a `Software\Classes\.<ext>` default
 ; value here.
 ;
-; MARKDOWN_PROGID must stay in sync with the extension list handled by
-; isMarkdownDocumentName() in src/main/ipc/markdown-documents.ts.
+; Keep the extension list in sync with isOsOpenedDocumentName().
 ; ---------------------------------------------------------------------------
 !define MARKDOWN_PROGID "Kingu.Markdown"
+!define TABULAR_PROGID "Kingu.Tabular"
 
-!macro KINGU_REGISTER_MARKDOWN_OPEN_WITH EXT
-  WriteRegNone SHELL_CONTEXT "Software\Classes\${EXT}\OpenWithProgids" "${MARKDOWN_PROGID}"
+!macro KINGU_REGISTER_DOCUMENT_OPEN_WITH EXT PROGID
+  WriteRegNone SHELL_CONTEXT "Software\Classes\${EXT}\OpenWithProgids" "${PROGID}"
   WriteRegStr SHELL_CONTEXT "Software\Classes\Applications\${APP_EXECUTABLE_FILENAME}\SupportedTypes" "${EXT}" ""
 !macroend
 
-!macro KINGU_UNREGISTER_MARKDOWN_OPEN_WITH EXT
-  DeleteRegValue SHELL_CONTEXT "Software\Classes\${EXT}\OpenWithProgids" "${MARKDOWN_PROGID}"
+!macro KINGU_UNREGISTER_DOCUMENT_OPEN_WITH EXT PROGID
+  DeleteRegValue SHELL_CONTEXT "Software\Classes\${EXT}\OpenWithProgids" "${PROGID}"
   DeleteRegValue SHELL_CONTEXT "Software\Classes\Applications\${APP_EXECUTABLE_FILENAME}\SupportedTypes" "${EXT}"
 !macroend
 
+!macro KINGU_REGISTER_DOCUMENT_PROGID PROGID NAME
+  WriteRegStr SHELL_CONTEXT "Software\Classes\${PROGID}" "" "${NAME}"
+  WriteRegStr SHELL_CONTEXT "Software\Classes\${PROGID}\DefaultIcon" "" "$appExe,0"
+  WriteRegStr SHELL_CONTEXT "Software\Classes\${PROGID}\shell\open" "" "Open with ${PRODUCT_NAME}"
+  WriteRegStr SHELL_CONTEXT "Software\Classes\${PROGID}\shell\open\command" "" '"$appExe" "%1"'
+!macroend
+
 !macro customInstall
-  WriteRegStr SHELL_CONTEXT "Software\Classes\${MARKDOWN_PROGID}" "" "Markdown Document"
-  WriteRegStr SHELL_CONTEXT "Software\Classes\${MARKDOWN_PROGID}\DefaultIcon" "" "$appExe,0"
-  WriteRegStr SHELL_CONTEXT "Software\Classes\${MARKDOWN_PROGID}\shell\open" "" "Open with ${PRODUCT_NAME}"
-  WriteRegStr SHELL_CONTEXT "Software\Classes\${MARKDOWN_PROGID}\shell\open\command" "" '"$appExe" "%1"'
-  !insertmacro KINGU_REGISTER_MARKDOWN_OPEN_WITH ".md"
-  !insertmacro KINGU_REGISTER_MARKDOWN_OPEN_WITH ".markdown"
-  !insertmacro KINGU_REGISTER_MARKDOWN_OPEN_WITH ".mdx"
+  !insertmacro KINGU_REGISTER_DOCUMENT_PROGID "${MARKDOWN_PROGID}" "Markdown Document"
+  !insertmacro KINGU_REGISTER_DOCUMENT_PROGID "${TABULAR_PROGID}" "Tabular Document"
+  !insertmacro KINGU_REGISTER_DOCUMENT_OPEN_WITH ".md" "${MARKDOWN_PROGID}"
+  !insertmacro KINGU_REGISTER_DOCUMENT_OPEN_WITH ".markdown" "${MARKDOWN_PROGID}"
+  !insertmacro KINGU_REGISTER_DOCUMENT_OPEN_WITH ".mdx" "${MARKDOWN_PROGID}"
+  !insertmacro KINGU_REGISTER_DOCUMENT_OPEN_WITH ".csv" "${TABULAR_PROGID}"
+  !insertmacro KINGU_REGISTER_DOCUMENT_OPEN_WITH ".tsv" "${TABULAR_PROGID}"
   ; Why: Explorer caches the association list until told otherwise.
   System::Call "shell32::SHChangeNotify(i,i,i,i) (0x08000000, 0x1000, 0, 0)"
 !macroend
@@ -52,7 +59,7 @@
 ; Clean up the relocated terminal daemon on a REAL uninstall.
 ;
 ; Why: the daemon host is deliberately copied OUT of the install dir into
-; %LOCALAPPDATA%\Kingu\daemon-host so that app UPDATES cannot kill it —
+; %LOCALAPPDATA%\Kingu\daemon-host-profiles so that app UPDATES cannot kill it —
 ; electron-builder's kill sweep selects processes whose image path is under
 ; $INSTDIR, and that relocation is what keeps terminals alive across updates.
 ; The same design means a normal uninstall's process sweep and file removal both
@@ -96,12 +103,16 @@
     ; Give the OS a moment to release the image lock before removing the tree.
     Sleep 500
     RMDir /r "$LOCALAPPDATA\Kingu\daemon-host"
+    RMDir /r "$LOCALAPPDATA\Kingu\daemon-host-profiles"
   ${endIf}
   ; Why outside the ${isUpdated} guard: customInstall rewrites these on every update, so
   ; dropping them during uninstallOldVersion is correct and keeps the pair symmetric.
   DeleteRegKey SHELL_CONTEXT "Software\Classes\${MARKDOWN_PROGID}"
-  !insertmacro KINGU_UNREGISTER_MARKDOWN_OPEN_WITH ".md"
-  !insertmacro KINGU_UNREGISTER_MARKDOWN_OPEN_WITH ".markdown"
-  !insertmacro KINGU_UNREGISTER_MARKDOWN_OPEN_WITH ".mdx"
+  DeleteRegKey SHELL_CONTEXT "Software\Classes\${TABULAR_PROGID}"
+  !insertmacro KINGU_UNREGISTER_DOCUMENT_OPEN_WITH ".md" "${MARKDOWN_PROGID}"
+  !insertmacro KINGU_UNREGISTER_DOCUMENT_OPEN_WITH ".markdown" "${MARKDOWN_PROGID}"
+  !insertmacro KINGU_UNREGISTER_DOCUMENT_OPEN_WITH ".mdx" "${MARKDOWN_PROGID}"
+  !insertmacro KINGU_UNREGISTER_DOCUMENT_OPEN_WITH ".csv" "${TABULAR_PROGID}"
+  !insertmacro KINGU_UNREGISTER_DOCUMENT_OPEN_WITH ".tsv" "${TABULAR_PROGID}"
   System::Call "shell32::SHChangeNotify(i,i,i,i) (0x08000000, 0x1000, 0, 0)"
 !macroend

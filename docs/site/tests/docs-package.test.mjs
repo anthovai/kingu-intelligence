@@ -45,7 +45,7 @@ test('docs package has an isolated, reproducible app contract', async () => {
 
   assert.equal(packageJson.name, '@kingu/docs')
   assert.equal(packageJson.private, true)
-  assert.equal(packageJson.packageManager, 'pnpm@10.24.0')
+  assert.equal(packageJson.packageManager, 'pnpm@10.34.6')
   assert.equal(packageJson.engines.node, '22.x')
   assert.equal(packageJson.scripts.build, 'next build')
   assert.equal(packageJson.scripts.postinstall, 'fumadocs-mdx')
@@ -210,10 +210,7 @@ test('docs routes stay namespaced and the generated source uses /docs as its bas
 
 test('GIF media helpers use the shared poster and video variants', async () => {
   const media = await import(pathToFileURL(path.join(siteRoot, 'src', 'lib', 'demoMedia.mjs')).href)
-  assert.equal(
-    media.posterFor('/docs/kingu-design-mode.gif'),
-    '/docs/posters/kingu-design-mode.jpg'
-  )
+  assert.equal(media.posterFor('/docs/kingu-design-mode.gif'), '/docs/posters/kingu-design-mode.jpg')
   assert.equal(media.videoFor('/docs/kingu-design-mode.gif'), '/docs/videos/kingu-design-mode.mp4')
   assert.equal(media.posterFor('/docs/tab-split.gif'), '/docs/posters/tab-split.jpg')
   assert.equal(media.videoFor('/docs/tab-split.gif'), '/docs/videos/tab-split.mp4')

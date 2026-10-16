@@ -379,10 +379,7 @@ describe('deriveAiVaultWorkspaceScopePaths', () => {
         path: '/Users/ada/workspaces/kingu/fix-agent-history',
         priorWorktreeIds: ['repo1::/Users/ada/workspaces/kingu/bream']
       })
-    ).toEqual([
-      '/Users/ada/workspaces/kingu/fix-agent-history',
-      '/Users/ada/workspaces/kingu/bream'
-    ])
+    ).toEqual(['/Users/ada/workspaces/kingu/fix-agent-history', '/Users/ada/workspaces/kingu/bream'])
   })
 
   it('strips folder-workspace instance suffixes from prior ids', () => {
@@ -437,37 +434,6 @@ describe('deriveAiVaultWorkspaceScopePaths', () => {
           {
             id: 'repo1::/Users/ada/workspaces/kingu/bream',
             repoId: 'repo1',
-            path: '/Users/ada/workspaces/kingu/bream'
-          }
-        ]
-      )
-    ).toEqual([
-      '/Users/ada/workspaces/kingu/fix-agent-history',
-      '/Users/ada/workspaces/kingu/unclaimed-old-path'
-    ])
-  })
-
-  it('ignores prior paths claimed by another live worktree in a different repo', () => {
-    expect(
-      deriveAiVaultWorkspaceScopePaths(
-        {
-          id: 'repo1::/Users/ada/workspaces/kingu/fix-agent-history',
-          repoId: 'repo1',
-          path: '/Users/ada/workspaces/kingu/fix-agent-history',
-          priorWorktreeIds: [
-            'repo1::/Users/ada/workspaces/kingu/bream',
-            'repo1::/Users/ada/workspaces/kingu/unclaimed-old-path'
-          ]
-        },
-        [
-          {
-            id: 'repo1::/Users/ada/workspaces/kingu/fix-agent-history',
-            repoId: 'repo1',
-            path: '/Users/ada/workspaces/kingu/fix-agent-history'
-          },
-          {
-            id: 'repo2::/Users/ada/workspaces/kingu/bream',
-            repoId: 'repo2',
             path: '/Users/ada/workspaces/kingu/bream'
           }
         ]

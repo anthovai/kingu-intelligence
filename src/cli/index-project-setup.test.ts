@@ -139,14 +139,7 @@ describe('kingu cli worktree awareness', () => {
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 
     await main(
-      [
-        'project',
-        'setups',
-        '--project',
-        'github:anthovai/kingu-intelligence',
-        '--host',
-        'runtime:gpu'
-      ],
+      ['project', 'setups', '--project', 'github:anthovai/kingu-intelligence', '--host', 'runtime:gpu'],
       '/tmp/repo'
     )
 
@@ -783,7 +776,10 @@ describe('kingu cli worktree awareness', () => {
     })
   })
 
-  it('deletes project host setup metadata through the project-first runtime API', async () => {
+  it.each([
+    { flags: [], force: false },
+    { flags: ['--force'], force: true }
+  ])('deletes project host setup metadata with force=$force', async ({ flags, force }) => {
     queueFixtures(
       callMock,
       okFixture('req_project_setup_delete', {
@@ -813,10 +809,11 @@ describe('kingu cli worktree awareness', () => {
     )
     vi.spyOn(console, 'log').mockImplementation(() => {})
 
-    await main(['project', 'setup-delete', '--setup', 'setup-gpu', '--json'], '/tmp/repo')
+    await main(['project', 'setup-delete', '--setup', 'setup-gpu', ...flags, '--json'], '/tmp/repo')
 
     expect(callMock).toHaveBeenCalledWith('projectHostSetup.delete', {
-      setupId: 'setup-gpu'
+      setupId: 'setup-gpu',
+      force
     })
   })
 })

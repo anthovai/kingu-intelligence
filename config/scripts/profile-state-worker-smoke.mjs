@@ -6,12 +6,14 @@ import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { Worker } from 'node:worker_threads'
-import { runProcessSync } from './script-child-process.mjs'
+import { runProcessSync } from '@kingu/process-host'
+import { describeProcessFailure } from './process-failure-message.mjs'
 import {
   KINGUD_PROFILE_PREFLIGHT_FLAG,
   parseKingudProfilePreflight
 } from '../../src/shared/kingud-profile-preflight.ts'
-import { KINGUD_BUN_VERSION } from '../../src/shared/kingud-bun-runtime.ts'
+import { KINGUD_SERVER_ENTRY_FILENAME } from '../../src/shared/kingud-artifacts.ts'
+import { NODE_RUNTIME_PIN } from '../../src/shared/node-runtime-pin.ts'
 
 async function initializeFixture(directory, databasePath, profileId) {
   const fixture = join(directory, 'initialize.cjs')
@@ -88,15 +90,20 @@ export async function smokeProfileStateWorkers(outDir, { timeoutMs = 30_000, run
     const nonce = randomUUID()
     const result = runProcessSync({
       program: runtimePath,
-      args: [join(outDir, 'kingud.js'), KINGUD_PROFILE_PREFLIGHT_FLAG, nonce],
+      args: [join(outDir, KINGUD_SERVER_ENTRY_FILENAME), KINGUD_PROFILE_PREFLIGHT_FLAG, nonce],
       env: { ...process.env, KINGU_BACKGROUND_LAUNCH: '1' },
       timeoutMs,
       maxOutputBytes: 64 * 1024
     })
     if (result.code !== 0 || result.timedOut || result.outputTruncated) {
-      throw new Error(`Packaged profile runtime preflight failed: ${result.stderr}`)
+      throw new Error(
+        `Packaged profile runtime preflight failed: ${describeProcessFailure(result)}`
+      )
     }
-    parseKingudProfilePreflight(result.stdout, nonce, KINGUD_BUN_VERSION)
+    parseKingudProfilePreflight(result.stdout, nonce, {
+      runtime: 'node',
+      runtimeVersion: NODE_RUNTIME_PIN.version
+    })
     return
   }
   const directory = mkdtempSync(join(tmpdir(), 'kingu-profile-worker-smoke-'))

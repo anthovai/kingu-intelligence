@@ -31,9 +31,11 @@ import {
 } from './mobile-tasks-legacy-foundation'
 
 export function useMobileTasksWorkspaceAndProjectState(model: RouteAndItemStateModel) {
+  // Both repo-unscoped providers land here: neither Linear nor Jira carries a repo, so the
+  // target has to be picked rather than defaulted to the first one.
   const [workspaceRepoPickerItem, setWorkspaceRepoPickerItem] = useState<Extract<
     TaskItem,
-    { provider: 'linear' }
+    { provider: 'linear' | 'jira' }
   > | null>(null)
   const [workspaceCreateDraft, setWorkspaceCreateDraft] = useState<WorkspaceCreateDraft | null>(
     null
@@ -87,9 +89,7 @@ export function useMobileTasksWorkspaceAndProjectState(model: RouteAndItemStateM
   const [taskStateHydrated, setTaskStateHydrated] = useState(false)
   const [runtimeTaskSettings, setRuntimeTaskSettings] = useState<RuntimeTaskSettings>({})
   const [trustedKinguHooks, setTrustedKinguHooks] = useState<PersistedTrustedKinguHooks>({})
-  const [kinguYamlTrustPrompt, setKinguYamlTrustPrompt] = useState<KinguYamlTrustPrompt | null>(
-    null
-  )
+  const [kinguYamlTrustPrompt, setKinguYamlTrustPrompt] = useState<KinguYamlTrustPrompt | null>(null)
   const [githubProjectSettings, setGithubProjectSettings] = useState<GitHubProjectSettings>(
     EMPTY_GITHUB_PROJECT_SETTINGS
   )

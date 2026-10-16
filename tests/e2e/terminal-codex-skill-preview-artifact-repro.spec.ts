@@ -30,8 +30,7 @@ const CODEX_READY_RE = /Ask Codex|OpenAI Codex/i
 const CODEX_TRUST_PROMPT_RE =
   /Do you trust|trust this folder|Trust this|Working with untrusted contents/i
 const CODEX_UPDATE_PROMPT_RE = /update available|install update|Skip for now|Skip until next/i
-const CODEX_SKILL_PREVIEW_RE =
-  /Press enter to insert|esc to close|electron|kingu-cli|kingu-emulator/i
+const CODEX_SKILL_PREVIEW_RE = /Press enter to insert|esc to close|electron|kingu-cli|kingu-emulator/i
 const SETUP_PANE_ACTIVITY_RE = /install-kingu-skills|pnpm|Progress:|Packages:|Lockfile/i
 const CLEAN_SKILL_ROW_RE = /^  [A-Za-z][A-Za-z0-9 .-]{1,32}\s+\[Skill\]\s/
 const CODEX_READY_SETTLE_MS = 3_500
@@ -120,7 +119,7 @@ async function addRealKinguRepo(page: Page, repoPath: string): Promise<string> {
       throw new Error('window.__store unavailable')
     }
     const state = store.getState()
-    await state.fetchRepos()
+    await state.fetchRepos({ runtimeEnvironmentId: null, throwOnError: true })
     const repo = store.getState().repos.find((candidate) => candidate.path === repoPath)
     if (!repo) {
       throw new Error(`Real Kingu repo did not load: ${repoPath}`)

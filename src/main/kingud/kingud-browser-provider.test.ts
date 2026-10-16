@@ -2,19 +2,16 @@ import { chmod, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { runProcess, spawnProcess } from '../../shared/child-process/run-process'
+import { runProcess, spawnProcess } from '@kingu/process-host'
 import { ExternalChromiumBrowserProcess } from './external-chromium-browser-process'
-import {
-  installedElectronCandidates,
-  resolveKingudBrowserProvider
-} from './kingud-browser-provider'
+import { installedElectronCandidates, resolveKingudBrowserProvider } from './kingud-browser-provider'
 import { kingudAgentBrowserNativeName } from './kingud-agent-browser-binary'
 import {
   runtimeBrowserUnavailableCause,
   setRuntimeBrowserUnavailableCause
 } from '../runtime/runtime-browser-commands-factory'
 
-vi.mock('../../shared/child-process/run-process', () => ({
+vi.mock('@kingu/process-host', () => ({
   runProcess: vi.fn(),
   spawnProcess: vi.fn()
 }))

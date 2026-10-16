@@ -190,4 +190,59 @@ describe('task workspace create params', () => {
       createdWithAgent: 'grok'
     })
   })
+
+  it('links Jira through linkedWorkItem because worktree.create has no flat Jira field', () => {
+    const params = buildTaskWorkspaceCreateParams({
+      item: {
+        provider: 'jira',
+        source: {
+          key: 'KINGU-123',
+          title: 'Add Jira to mobile',
+          url: 'https://acme.atlassian.net/browse/KINGU-123'
+        }
+      },
+      targetRepoId: 'repo-jira',
+      setupDecision: 'inherit',
+      agent: 'claude',
+      note: 'mobile parity'
+    })
+
+    expect(params).toMatchObject({
+      repo: 'id:repo-jira',
+      name: 'kingu-123',
+      displayName: 'KINGU-123 Add Jira to mobile',
+      startupDraft: 'https://acme.atlassian.net/browse/KINGU-123',
+      createdWithAgent: 'claude',
+      comment: 'mobile parity',
+      linkedWorkItem: {
+        provider: 'jira',
+        type: 'issue',
+        number: 0,
+        title: 'Add Jira to mobile',
+        url: 'https://acme.atlassian.net/browse/KINGU-123',
+        jiraIdentifier: 'KINGU-123'
+      }
+    })
+    // A stray linkedLinearIssue would relink the workspace to the wrong provider.
+    expect(params).not.toHaveProperty('linkedLinearIssue')
+  })
+
+  it('keeps a user-edited workspace name over the derived Jira name', () => {
+    expect(
+      buildTaskWorkspaceCreateParams({
+        item: {
+          provider: 'jira',
+          source: {
+            key: 'KINGU-9',
+            title: 'Rename me',
+            url: 'https://acme.atlassian.net/browse/KINGU-9'
+          }
+        },
+        targetRepoId: 'repo-jira',
+        setupDecision: 'inherit',
+        workspaceName: 'my-branch',
+        nameIsAutoManaged: false
+      })
+    ).toMatchObject({ name: 'my-branch' })
+  })
 })

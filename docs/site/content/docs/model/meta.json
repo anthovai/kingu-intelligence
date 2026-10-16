@@ -1,5 +1,12 @@
 {
   "title": "The Kingu Model",
   "defaultOpen": true,
-  "pages": ["worktrees", "tabs-panes-splits", "agents-sessions", "session-restore", "quick-open"]
+  "pages": [
+    "worktrees",
+    "kingu-yaml",
+    "tabs-panes-splits",
+    "agents-sessions",
+    "session-restore",
+    "quick-open"
+  ]
 }

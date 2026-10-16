@@ -22,11 +22,10 @@ describe('the keys a page may read and write', () => {
     expect(isPageStorageKey('kingu:nativeChatTabs:host-1:wt-1')).toBe(true)
   })
 
-  it('refuses the rest of the namespace, including the flag that turns this on', () => {
+  it('refuses the rest of the namespace', () => {
     // Everything the app stores lives under `kingu:`, so a page that could write any of it could
-    // turn the hybrid shell on for a build that never offered it.
+    // rewrite the app's pairings and push registrations.
     for (const key of [
-      'kingu:mobileWebShellEnabled',
       'kingu:remotePushHostRegistrations',
       'kingu:pushServiceNotificationsEnabled',
       'kingu:home-snapshot:v1',

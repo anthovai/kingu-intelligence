@@ -1,8 +1,6 @@
+import './unused-default-rpc-methods.test-fixture'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import {
-  formatKinguSessionAddress,
-  type KinguSessionId
-} from '../../../shared/kingu-session-address'
+import { formatKinguSessionAddress, type KinguSessionId } from '../../../shared/kingu-session-address'
 import { testKinguSessionId } from '../../../shared/kingu-session-address-test-fixture'
 import { ORCHESTRATION_SESSION_CALLER_ERROR_CODES as CODES } from '../../../shared/orchestration-session-caller-codes'
 import {

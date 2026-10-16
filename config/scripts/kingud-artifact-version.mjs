@@ -1,14 +1,11 @@
 import { createHash } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import {
-  KINGUD_VERSION,
-  kingudArtifactFilenames,
-  kingudArtifactHashPrefix
-} from '../../src/shared/kingud-artifacts.ts'
+import { KINGUD_VERSION, kingudArtifactFilenames } from '../../src/shared/kingud-artifacts.ts'
 
-export function computeKingudFullVersion(artifactDir, { target = '', agentBrowserFilename } = {}) {
-  const hash = createHash('sha256').update(kingudArtifactHashPrefix(target))
+/** The runtime enters through `.runtime-node`'s executableSha256 string, never its bytes (design D2). */
+export function computeKingudFullVersion(artifactDir, { target, agentBrowserFilename }) {
+  const hash = createHash('sha256')
   for (const filename of kingudArtifactFilenames(target)) {
     const artifactPath = join(artifactDir, filename)
     if (!existsSync(artifactPath)) {

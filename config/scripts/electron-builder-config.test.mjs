@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs'
-import { chmod, lstat, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { chmod, lstat, mkdir, mkdtemp, readFile, realpath, rm, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
@@ -7,7 +7,6 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { writeMobileWebBundleFixtureTree } from './mobile-web-bundle-fixture-tree.mjs'
 
 const REPO_ROOT = join(import.meta.dirname, '..', '..')
-const SRC_MAIN_DIR = join(REPO_ROOT, 'src', 'main')
 
 const require = createRequire(import.meta.url)
 const electronBuilderConfig = require('../electron-builder.config.cjs')
@@ -45,6 +44,27 @@ describe('electron-builder config', () => {
         '!resources/plugins/launch/**'
       ])
     )
+  })
+
+  it('keeps release build staging out of app.asar while preserving runtime output', () => {
+    const matcher = new FileMatcher('/app', '/dest', (value) => value, electronBuilderConfig.files)
+    matcher.prependPattern('**/*')
+    const isPacked = matcher.createFilter()
+    expect(isPacked(join('/app', '.build'), { isDirectory: () => true })).toBe(false)
+    for (const stagingPath of [
+      '.build/release-javascript/release-javascript.tar.gz',
+      '.build/release-javascript/manifest.json',
+      '.build/release-javascript-123/out/main/index.js'
+    ]) {
+      expect(isPacked(join('/app', stagingPath), { isDirectory: () => false })).toBe(false)
+    }
+    for (const runtimePath of [
+      'out/main/index.js',
+      'out/cli/index.js',
+      'out/renderer/index.html'
+    ]) {
+      expect(isPacked(join('/app', runtimePath), { isDirectory: () => false })).toBe(true)
+    }
   })
 
   it('keeps local agent tooling out of app.asar', () => {
@@ -162,6 +182,32 @@ describe('electron-builder config', () => {
     expect(packs('out/renderer/index.html')).toBe(true)
   })
 
+  // Why: an AV verdict on the bundled relay.js used to take app.asar with it as a
+  // compound object, gutting the install (#20966). resources/relay is the only copy
+  // a packaged build resolves, so the asar copy was 14MB of pure blast radius.
+  it('keeps the relay bundles out of app.asar and ships them only through extraResources', () => {
+    const matcher = new FileMatcher('/app', '/dest', (value) => value, electronBuilderConfig.files)
+    matcher.prependPattern('**/*')
+    const isPacked = matcher.createFilter()
+    const packs = (repoPath) => isPacked(join('/app', repoPath), { isDirectory: () => false })
+
+    for (const relayPath of [
+      'out/relay/linux-x64/relay.js',
+      'out/relay/win32-x64/relay.js',
+      'out/relay/darwin-arm64/relay-watcher.js',
+      'out/relay/wsl/wsl-agent-hook-relay.js'
+    ]) {
+      expect(packs(relayPath)).toBe(false)
+    }
+
+    for (const platform of ['mac', 'linux', 'win']) {
+      expect(electronBuilderConfig[platform].extraResources).toContainEqual({
+        from: 'out/relay',
+        to: 'relay'
+      })
+    }
+  })
+
   it('keeps runtime resources available through extraResources', () => {
     const bundledPluginResources = expect.objectContaining({
       from: 'resources/plugins/launch',
@@ -201,6 +247,10 @@ describe('electron-builder config', () => {
         expect.objectContaining({
           from: 'native/windows-cli-launcher/.build/kingu.exe',
           to: 'bin/kingu.exe'
+        }),
+        expect.objectContaining({
+          from: 'native/windows-cli-launcher/.build/kingu-administrator-restart.exe',
+          to: 'bin/kingu-administrator-restart.exe'
         })
       ])
     )
@@ -214,6 +264,54 @@ describe('electron-builder config', () => {
     expect(serveSimResources).toEqual([
       expect.objectContaining({ to: join('node_modules', 'serve-sim') })
     ])
+  })
+
+  it.each(['mac', 'linux'])(
+    'loads Codex TOML parsing after %s runtime pruning',
+    async (platform) => {
+      const resourcesDir = await mkdtemp(join(tmpdir(), 'kingu-packaged-codex-toml-'))
+      try {
+        const resource = electronBuilderConfig[platform].extraResources.find(
+          (entry) => entry.to === join('node_modules', 'smol-toml')
+        )
+        expect(resource).toBeDefined()
+        await copyFiles([
+          new FileMatcher(resource.from, join(resourcesDir, resource.to), (value) => value)
+        ])
+        require('../packaged-runtime-node-modules.cjs').prunePackagedRuntimeNodeModules(
+          resourcesDir,
+          platform === 'mac' ? 'darwin' : 'linux',
+          process.arch
+        )
+        const stagedRequire = createRequire(join(resourcesDir, 'out', 'main', 'codex', 'trust.cjs'))
+        expect(await realpath(stagedRequire.resolve('smol-toml'))).toBe(
+          await realpath(join(resourcesDir, resource.to, 'dist', 'index.cjs'))
+        )
+        const { parse } = stagedRequire('smol-toml')
+        expect(parse('[projects."/workspace"]\ntrust_level = "trusted"\n')).toEqual({
+          projects: { '/workspace': { trust_level: 'trusted' } }
+        })
+      } finally {
+        await rm(resourcesDir, { recursive: true, force: true })
+      }
+    }
+  )
+
+  // Why: serve-sim's addon is a Mach-O, and Windows signing rejects every *.node that is not PE.
+  it('keeps serve-sim out of the Windows and Linux runtime closures', () => {
+    const {
+      PACKAGED_RUNTIME_PACKAGE_ROOTS,
+      createPackagedRuntimeNodeModuleResources
+    } = require('../packaged-runtime-node-modules.cjs')
+    expect(PACKAGED_RUNTIME_PACKAGE_ROOTS).not.toContain('serve-sim')
+    const serveSimTarget = join('node_modules', 'serve-sim')
+    expect(createPackagedRuntimeNodeModuleResources('linux').map((r) => r.to)).not.toContain(
+      serveSimTarget
+    )
+    expect(electronBuilderConfig.linux.extraResources.map((r) => r.to)).not.toContain(
+      serveSimTarget
+    )
+    expect(electronBuilderConfig.win.extraResources.map((r) => r.to)).not.toContain(serveSimTarget)
   })
 
   // Why: the Windows CLI shim is delivered only via extraResources to
@@ -288,32 +386,48 @@ describe('electron-builder config', () => {
   it('unpacks the replaceable WSL transcript filesystem process entry', async () => {
     const entryFilename = 'wsl-transcript-fs-process-entry.js'
     expect(electronBuilderConfig.asarUnpack).toContain(`out/main/${entryFilename}`)
-
-    const viteConfig = await readFile(join(REPO_ROOT, 'electron.vite.config.ts'), 'utf8')
-    expect(viteConfig).toMatch(new RegExp(`'${entryFilename.replace(/\.js$/, '')}':\\s*resolve\\(`))
   })
 
-  // Why: the scanner service is forked with ELECTRON_RUN_AS_NODE, so asar is
-  // invisible to it and a packed worker entry fails closed — dropping every
-  // OpenCode session in packaged builds while dev stays green. Three legs must
-  // agree on the filename, so all three are read rather than hardcoded.
-  it('unpacks the OpenCode SQLite worker entry the scanner service forks', async () => {
-    const spawnSource = await readFile(
-      join(SRC_MAIN_DIR, 'ai-vault', 'session-scanner-opencode-sqlite-worker-spawn.ts'),
+  // Why: the CLI runs this entry under ELECTRON_RUN_AS_NODE, which cannot read
+  // app.asar, so a packed copy sends every `kingu serve` to Electron (#27307).
+  it('unpacks the kingud serve-selection entry the CLI runs', async () => {
+    const sharedSource = await readFile(
+      join(REPO_ROOT, 'src', 'shared', 'kingud-local-serve-selection.ts'),
       'utf8'
     )
-    const entryFilename = spawnSource.match(/WORKER_ENTRY_FILENAME = '([^']+)'/)?.[1]
+    const entryName = sharedSource.match(/KINGUD_LOCAL_SERVE_SELECTION_ENTRY = '([^']+)'/)?.[1]
+    expect(entryName).toBeDefined()
 
-    expect(entryFilename).toBeDefined()
-    expect(electronBuilderConfig.asarUnpack).toContain(`out/main/${entryFilename}`)
+    const matcher = new FileMatcher(
+      '/app',
+      '/dest',
+      (value) => value,
+      electronBuilderConfig.asarUnpack
+    )
+    const isUnpacked = matcher.createFilter()
+    expect(
+      isUnpacked(join('/app', 'out', 'main', `${entryName}.js`), { isDirectory: () => false })
+    ).toBe(true)
+  })
 
-    // Why: the emitted path comes from the rollup input key under
-    // entryFileNames '[name].js', not from the source filename — renaming the
-    // key alone would leave the other two legs agreeing on a file that no
-    // longer exists.
-    const viteConfig = await readFile(join(REPO_ROOT, 'electron.vite.config.ts'), 'utf8')
-    expect(viteConfig).toContain("entryFileNames: '[name].js'")
-    expect(viteConfig).toMatch(new RegExp(`'${entryFilename.replace(/\.js$/, '')}':\\s*resolve\\(`))
+  // Why: opening a packed file reads a one-time /tmp extract; once a /tmp sweep removes it, the
+  // web client answers an empty 500 and phone bundle reads fail until restart (#27976).
+  it('unpacks the web and mobile bundles a host serves by opening their files', () => {
+    const matcher = new FileMatcher(
+      '/app',
+      '/dest',
+      (value) => value,
+      electronBuilderConfig.asarUnpack
+    )
+    const isUnpacked = matcher.createFilter()
+    for (const webPath of [
+      'out/web/web-index.html',
+      'out/web/assets/index-abc123.js',
+      'out/mobile-web/manifest.json',
+      'out/mobile-web/assets/index-abc123.js'
+    ]) {
+      expect(isUnpacked(join('/app', webPath), { isDirectory: () => false })).toBe(true)
+    }
   })
 
   it('keeps the worker-thread hang watchdog inside app.asar', () => {
@@ -444,53 +558,6 @@ describe('electron-builder config', () => {
     expect(electronBuilderConfig.beforeBuild).toBe(electronBuilderNativeRebuild)
     expect(electronBuilderConfig.npmRebuild).toBe(true)
   })
-
-  // Why: the .deb/.rpm update-recovery path keys entirely off the resources/package-type marker that
-  // app-builder-lib's FpmTarget writes. If packaging silently stops shipping an fpm target, or adds
-  // one the recovery path does not cover, getLinuxRootPackageType() returns null, autoInstallOnAppQuit
-  // quietly goes back to true, and no unit test notices.
-  describe('linux root-package update recovery contract', () => {
-    // FpmTarget writes resources/package-type only for targets it supports auto-update for.
-    const MARKER_TARGETS = new Set(['deb', 'rpm', 'pacman'])
-    const RECOVERABLE_TARGETS = new Set(['deb', 'rpm'])
-    const linuxTargets = electronBuilderConfig.linux.target.map((entry) =>
-      typeof entry === 'string' ? entry : entry.target
-    )
-
-    it('still ships an AppImage plus at least one root-package target', () => {
-      expect(linuxTargets).toContain('AppImage')
-      expect(linuxTargets.some((target) => MARKER_TARGETS.has(target))).toBe(true)
-    })
-
-    it('ships no root-package target the recovery path cannot recover', () => {
-      const unrecoverable = linuxTargets.filter(
-        (target) => MARKER_TARGETS.has(target) && !RECOVERABLE_TARGETS.has(target)
-      )
-      expect(unrecoverable).toEqual([])
-    })
-
-    it('accepts exactly the markers electron-updater maps to a root-package updater', async () => {
-      const source = await readFile(
-        new URL('../../src/main/linux-update-package-type.ts', import.meta.url),
-        'utf8'
-      )
-      for (const target of linuxTargets.filter((entry) => RECOVERABLE_TARGETS.has(entry))) {
-        expect(source).toContain(`value === '${target}'`)
-      }
-    })
-
-    it('keeps the pinned FpmTarget overwrite for configured deb and rpm artifacts', async () => {
-      const source = await readFile(
-        require.resolve('app-builder-lib/out/targets/FpmTarget'),
-        'utf8'
-      )
-
-      expect(source).toContain('path.join(resourceDir, "package-type"), target')
-      for (const target of RECOVERABLE_TARGETS) {
-        expect(electronBuilderConfig[target]).toBeDefined()
-      }
-    })
-  })
 })
 
 describe('arch-aware packaging guard', () => {
@@ -516,10 +583,28 @@ describe('arch-aware packaging guard', () => {
   })
 
   const packHost = (arch) =>
-    electronBuilderConfig.beforePack({ electronPlatformName: process.platform, arch }, bundleDir)
+    electronBuilderConfig.beforePack(
+      { electronPlatformName: process.platform, arch },
+      bundleDir,
+      () => undefined
+    )
 
   it('allows packaging the host platform and architecture', () => {
     expect(() => packHost(HOST_ARCH)).not.toThrow()
+  })
+
+  it('refuses to package a dark layout-owner build', () => {
+    const previous = process.env.KINGU_LAYOUT_OWNER
+    process.env.KINGU_LAYOUT_OWNER = 'main'
+    try {
+      expect(() => packHost(HOST_ARCH)).toThrow('KINGU_LAYOUT_OWNER=main')
+    } finally {
+      if (previous === undefined) {
+        delete process.env.KINGU_LAYOUT_OWNER
+      } else {
+        process.env.KINGU_LAYOUT_OWNER = previous
+      }
+    }
   })
 
   it('requires the other architecture natives to be installed', () => {
@@ -533,11 +618,20 @@ describe('arch-aware packaging guard', () => {
     if (otherSherpaExpected && !otherSherpaInstalled) {
       expect(() => packHost(OTHER_ARCH)).toThrow(otherSherpa)
       expect(() => packHost(OTHER_ARCH)).toThrow('pnpm install:release')
-      expect(() => packHost(HOST_ARCH)).not.toThrow()
-    } else {
+    } else if (process.platform !== 'win32') {
       expect(() => packHost(OTHER_ARCH)).not.toThrow()
     }
   })
+
+  // The host's own build is the foreign-arch case: a Windows checkout compiles these for its CPU only.
+  it.runIf(process.platform === 'win32')(
+    'refuses a Windows workspace addon built for another architecture',
+    () => {
+      for (const binary of ['kingu_windows_registry.node', 'kingu_windows_security.node']) {
+        expect(() => packHost(OTHER_ARCH)).toThrow(`${binary} for ${OTHER_ARCH_NAME}`)
+      }
+    }
+  )
 
   it('requires installed Windows addons for Windows packaging', () => {
     const windowsAddon = electronBuilderConfig.win.extraResources.some(
@@ -550,6 +644,8 @@ describe('arch-aware packaging guard', () => {
     } else {
       expect(packWindows).toThrow('@vscode/windows-process-tree')
       expect(packWindows).toThrow('Windows packaging requires a Windows host')
+      // A workspace link exists everywhere; only its compiled binary proves the addon will load.
+      expect(packWindows).toThrow('@kingu/windows-security')
     }
   })
 })

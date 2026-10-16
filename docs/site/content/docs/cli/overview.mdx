@@ -38,8 +38,11 @@ kingu status --json
 ```
 kingu worktree ps --json
 kingu worktree create --repo id:<repoId> --name my-task --issue 123 --json
+kingu worktree create --repo id:<repoId> --name review-pr-123 --pr 123 --json
 kingu worktree current --json
 kingu worktree set --worktree active --comment "reproduced bug" --json
+kingu worktree set --worktree active --gitlab-issue 42 --gitlab-mr 77 --json
+kingu worktree set --worktree active --pr null --json
 kingu worktree rm --worktree id:<id> --force --json
 ```
 
@@ -60,7 +63,7 @@ For tracked multi-agent work, use [Orchestration](/docs/cli/orchestration) inste
 
 ## File commands
 
-Open files and diffs in the active Kingu worktree from a shell:
+Open files and diffs as tabs in their Kingu worktree from a shell. They open without changing what you are looking at; add `--focus` to be brought to the file:
 
 ```
 kingu file open src/App.tsx

@@ -34,9 +34,7 @@ describe('web pairing input', () => {
 
   it('preserves optional paired device identity', () => {
     expect(
-      parseWebPairingInput(
-        `kingu://pair?code=${encodeOffer({ pairedDeviceId: 'paired-device-a' })}`
-      )
+      parseWebPairingInput(`kingu://pair?code=${encodeOffer({ pairedDeviceId: 'paired-device-a' })}`)
     ).toEqual({
       ...offer,
       pairedDeviceId: 'paired-device-a'
@@ -49,6 +47,17 @@ describe('web pairing input', () => {
     ['http://proxy.example:8080/kingu/runtime', 'ws://proxy.example:8080/kingu/runtime']
   ])('preserves reverse-proxy endpoint routing for %s', (endpoint, expected) => {
     expect(parseWebPairingInput(encodeOffer({ endpoint }))).toMatchObject({ endpoint: expected })
+  })
+
+  it('keeps a readable host descriptor and drops an unreadable one without refusing', () => {
+    const hostDescriptor = { installationId: '11111111-1111-4111-8111-111111111111' }
+    expect(parseWebPairingInput(encodeOffer({ hostDescriptor }))).toEqual({
+      ...offer,
+      hostDescriptor
+    })
+    expect(parseWebPairingInput(encodeOffer({ hostDescriptor: { installationId: 7 } }))).toEqual(
+      offer
+    )
   })
 
   it('treats invalid device scope metadata as unknown', () => {

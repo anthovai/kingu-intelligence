@@ -8,7 +8,7 @@ import {
 } from './pty-ipc-mock-registry'
 import { posixOnlyIt, TEST_CODEX_HOME, TEST_CODEX_AUTH_JSON } from './pty-ipc-test-constants'
 import { setupPtyIpcSuite } from './pty-ipc-test-harness'
-import { registerPtyHandlers } from './pty'
+import { registerPtyHandlers } from './pty/register-handlers'
 
 vi.mock('electron', () => import('./pty-ipc-mock-registry').then((m) => m.electronModuleMock()))
 vi.mock('fs', () => import('./pty-ipc-mock-registry').then((m) => m.fsModuleMock()))
@@ -170,8 +170,7 @@ describe('registerPtyHandlers', () => {
         KINGU_AGENT_HOOK_ENV: 'production',
         KINGU_AGENT_HOOK_VERSION: 'stale-version',
         KINGU_AGENT_HOOK_ENDPOINT: '/tmp/stale-endpoint.env',
-        KINGU_CLAUDE_AGENT_STATUS_SETTINGS:
-          '/tmp/kingu/agent-hooks/claude-agent-status-settings.json'
+        KINGU_CLAUDE_AGENT_STATUS_SETTINGS: '/tmp/kingu/agent-hooks/claude-agent-status-settings.json'
       })
 
       expect(env.KINGU_AGENT_HOOK_PORT).toBe('5678')
@@ -190,8 +189,7 @@ describe('registerPtyHandlers', () => {
         KINGU_AGENT_HOOK_ENV: 'production',
         KINGU_AGENT_HOOK_VERSION: 'stale-version',
         KINGU_AGENT_HOOK_ENDPOINT: '/tmp/stale-endpoint.env',
-        KINGU_CLAUDE_AGENT_STATUS_SETTINGS:
-          '/tmp/kingu/agent-hooks/claude-agent-status-settings.json'
+        KINGU_CLAUDE_AGENT_STATUS_SETTINGS: '/tmp/kingu/agent-hooks/claude-agent-status-settings.json'
       })
 
       expect(env.KINGU_AGENT_HOOK_PORT).toBeUndefined()

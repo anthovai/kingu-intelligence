@@ -1,3 +1,4 @@
+import '../unused-default-rpc-methods.test-fixture'
 import { describe, expect, it, vi } from 'vitest'
 import { RpcDispatcher } from '../dispatcher'
 import type { RpcRequest } from '../core'
@@ -626,10 +627,13 @@ describe('github RPC methods', () => {
       })
     )
 
-    expect(runtime.addRepoIssueComment).toHaveBeenCalledWith('repo-1', 3, 'Looks good', {
-      owner: 'acme',
-      repo: 'widgets'
-    })
+    expect(runtime.addRepoIssueComment).toHaveBeenCalledWith(
+      'repo-1',
+      3,
+      'Looks good',
+      { owner: 'acme', repo: 'widgets' },
+      'pr'
+    )
     expect(response).toMatchObject({ ok: true, result: { ok: true, comment: { id: 1 } } })
   })
 
@@ -751,10 +755,7 @@ describe('github RPC methods', () => {
       repo: 'kingu',
       seedLogins: ['octo']
     })
-    expect(runtime.listGitHubIssueTypesBySlug).toHaveBeenCalledWith({
-      owner: 'acme',
-      repo: 'kingu'
-    })
+    expect(runtime.listGitHubIssueTypesBySlug).toHaveBeenCalledWith({ owner: 'acme', repo: 'kingu' })
     expect(labels).toMatchObject({ ok: true, result: { ok: true, labels: ['bug'] } })
     expect(users).toMatchObject({ ok: true, result: { ok: true, users: [{ login: 'octo' }] } })
     expect(issueTypes).toMatchObject({ ok: true, result: { ok: true, types: [{ id: 'it-1' }] } })

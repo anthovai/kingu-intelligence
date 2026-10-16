@@ -47,9 +47,7 @@ vi.mock('@/components/ui/tooltip', () => ({
   TooltipContent: ({ children }: { children: ReactNode }) => <div>{children}</div>
 }))
 
-vi.mock('@/runtime/runtime-rpc-client', () => ({
-  callRuntimeRpc: mocks.rpc
-}))
+vi.mock('@/runtime/runtime-rpc-client', () => ({ callRuntimeRpc: mocks.rpc }))
 
 vi.mock('@/store', () => ({
   useAppStore: Object.assign(
@@ -175,9 +173,7 @@ describe('ArtifactsPage', () => {
 
     fireEvent.click(copyButton)
     await waitFor(() =>
-      expect(mocks.writeClipboardText).toHaveBeenCalledWith(
-        'https://share.onkingu.dev/a/report-123'
-      )
+      expect(mocks.writeClipboardText).toHaveBeenCalledWith('https://share.onkingu.dev/a/report-123')
     )
     expect(mocks.toastSuccess).toHaveBeenCalledWith('Artifact link copied')
 
@@ -358,9 +354,7 @@ describe('ArtifactsPage', () => {
     resolveRefresh()
 
     await waitFor(() =>
-      expect(
-        screen.queryByText('Sign in to Kingu again to load artifacts.')
-      ).not.toBeInTheDocument()
+      expect(screen.queryByText('Sign in to Kingu again to load artifacts.')).not.toBeInTheDocument()
     )
   })
 
@@ -400,9 +394,7 @@ describe('ArtifactsPage', () => {
     resolveRefresh()
 
     await waitFor(() =>
-      expect(
-        screen.queryByText('Sign in to Kingu again to load artifacts.')
-      ).not.toBeInTheDocument()
+      expect(screen.queryByText('Sign in to Kingu again to load artifacts.')).not.toBeInTheDocument()
     )
   })
 

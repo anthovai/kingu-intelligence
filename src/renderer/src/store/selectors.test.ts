@@ -12,6 +12,7 @@ import {
   getWorktreeMapFromState,
   resetFloatingVisibleTabCountSelectorCacheForTest,
   resetFloatingWorkspaceUnreadSelectorCacheForTest,
+  selectKnownWorktreeById,
   selectRepoByIdForActiveWorkspace,
   selectFloatingVisibleTabCount,
   selectFloatingWorkspaceHasUnread
@@ -136,6 +137,7 @@ describe('store selectors', () => {
         }
       }
     })
+    // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the selector reads only each tab's contentType and entityId, which every fixture entry sets; the omitted Tab fields are never read.
     const unifiedTabs = [
       {
         id: 'unified-term-1',
@@ -174,6 +176,16 @@ describe('store selectors', () => {
         createdAt: 4
       },
       {
+        // A structured chat is its own backing record, so it counts like a simulator.
+        id: 'chat-1',
+        entityId: 'session-1',
+        worktreeId,
+        contentType: 'agent-session',
+        label: 'Claude Chat',
+        sortOrder: 4,
+        createdAt: 5
+      },
+      {
         id: 'unified-stale-terminal',
         entityId: 'missing-term',
         worktreeId,
@@ -190,10 +202,10 @@ describe('store selectors', () => {
       unifiedTabsByWorktree: { [worktreeId]: unifiedTabs }
     } satisfies Parameters<typeof selectFloatingVisibleTabCount>[0]
 
-    expect(selectFloatingVisibleTabCount(state)).toBe(4)
+    expect(selectFloatingVisibleTabCount(state)).toBe(5)
     expect(openFileScans).toBe(1)
 
-    expect(selectFloatingVisibleTabCount({ ...state })).toBe(4)
+    expect(selectFloatingVisibleTabCount({ ...state })).toBe(5)
     expect(openFileScans).toBe(1)
   })
 
@@ -369,6 +381,43 @@ describe('store selectors', () => {
     ).toBe(ssh)
   })
 
+  it('resolves the active worktree id on the active workspace host', () => {
+    const local = {
+      ...makeWorktree({ id: 'repo::/same', repoId: 'repo', displayName: 'local' }),
+      path: '/local/same',
+      hostId: 'local' as const
+    }
+    const ssh = {
+      ...makeWorktree({ id: 'repo::/same', repoId: 'repo', displayName: 'ssh' }),
+      path: '/ssh/same',
+      hostId: toSshExecutionHostId('target-1')
+    }
+    const catalog = {
+      worktreesByRepo: { repo: [local, ssh] },
+      detectedWorktreesByRepo: {},
+      folderWorkspaces: [],
+      floatingWorkspacePath: null
+    }
+
+    expect(
+      selectKnownWorktreeById(
+        {
+          ...catalog,
+          activeWorktreeId: 'repo::/same',
+          activeWorkspaceExecutionHostId: toSshExecutionHostId('target-1')
+        },
+        'repo::/same'
+      )
+    ).toBe(ssh)
+    expect(
+      selectKnownWorktreeById(
+        { ...catalog, activeWorktreeId: 'repo::/same', activeWorkspaceExecutionHostId: null },
+        'repo::/same',
+        toSshExecutionHostId('target-1')
+      )
+    ).toBe(ssh)
+  })
+
   it('keeps every non-paired-hub host mismatch failing closed', () => {
     // Why: the paired-hub exemption is ssh-selection-over-runtime-repo only; anything else is a wrong host.
     const runtime = makeRepo({
@@ -512,15 +561,10 @@ describe('store selectors', () => {
       projectHostSetups
     })
 
-    expect(projection.projects.map((project) => project.id)).toEqual([
-      'github:anthovai/kingu-intelligence'
-    ])
+    expect(projection.projects.map((project) => project.id)).toEqual(['github:anthovai/kingu-intelligence'])
     expect(projection.setups).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({
-          id: 'local-setup',
-          projectId: 'github:anthovai/kingu-intelligence'
-        }),
+        expect.objectContaining({ id: 'local-setup', projectId: 'github:anthovai/kingu-intelligence' }),
         expect.objectContaining({ id: 'vm-setup', projectId: 'github:anthovai/kingu-intelligence' })
       ])
     )

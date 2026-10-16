@@ -99,6 +99,21 @@ const EnvSchema = z.object({
   KINGU_RELAY_PUBLIC_ASSIGNMENTS_ENABLED: EnvironmentBooleanSchema,
   KINGU_RELAY_REGIONAL_PLACEMENT_ENABLED: EnvironmentBooleanSchema,
   KINGU_RELAY_REGION_CORRECTION_COHORT_PERCENT: z.coerce.number().int().min(0).max(100).default(0),
+  // Step 5 on directors: `off` (default) is today's path; `dry-run` asks the picked cell to
+  // check a booking without making it, and logs the answer; `on` places on switched-on cells.
+  KINGU_RELAY_RESERVE_PLACEMENT: z.enum(['off', 'dry-run', 'on']).default('off'),
+  // Step 3 shadow directory: unset or empty polls no cell; `all` or a comma list of cell ids.
+  KINGU_RELAY_SHADOW_SEAT_FEED_CELLS: z
+    .string()
+    .default('')
+    .transform((value) =>
+      value.trim() === 'all'
+        ? ('all' as const)
+        : value
+            .split(',')
+            .map((cellId) => cellId.trim())
+            .filter((cellId) => cellId.length > 0)
+    ),
   KINGU_RELAY_PUBLIC_ASSIGNMENT_CONCURRENCY: z.coerce.number().int().positive().max(100).default(2),
   KINGU_RELAY_PUBLIC_STICKY_CONCURRENCY: z.coerce.number().int().positive().max(100).default(1),
   KINGU_RELAY_PUBLIC_STICKY_QUEUE_MAX: z.coerce.number().int().positive().max(4_096).default(64),
@@ -109,6 +124,17 @@ const EnvSchema = z.object({
     .positive()
     .max(60)
     .default(2),
+  // Borrowed from placement concurrency, which always keeps at least one permit.
+  KINGU_RELAY_DRAIN_RETURN_CONCURRENCY: z.coerce.number().int().positive().max(4).default(1),
+  KINGU_RELAY_DRAIN_RETURN_QUEUE_MAX: z.coerce.number().int().positive().max(64).default(4),
+  KINGU_RELAY_DRAIN_RETURN_WAIT_MS: z.coerce.number().int().positive().max(10_000).default(3_000),
+  // The desktop parser caps a Retry-After at 5 minutes; a larger value is truncated there.
+  KINGU_RELAY_DRAIN_RETURN_MAX_RETRY_AFTER_SECONDS: z.coerce
+    .number()
+    .int()
+    .min(2)
+    .max(300)
+    .default(300),
   KINGU_RELAY_PUBLIC_ASSIGNMENT_QUEUE_MAX: z.coerce
     .number()
     .int()
@@ -194,6 +220,8 @@ export type RelayConfig = {
   fenceBrokerServiceAccount?: string
   rehomeDirectorServiceAccount?: string
   rehomeAudience?: string
+  shadowSeatFeedCells?: 'all' | string[]
+  reservePlacement?: 'off' | 'dry-run' | 'on'
   runtimeServiceAccount: string
   directorUrl?: string
   heartbeatAudience?: string
@@ -217,6 +245,10 @@ export type RelayConfig = {
   publicStickyQueueMax?: number
   publicStickyWaitMs?: number
   publicStickyRetryAfterSeconds?: number
+  drainReturnConcurrency?: number
+  drainReturnQueueMax?: number
+  drainReturnWaitMs?: number
+  drainReturnMaxRetryAfterSeconds?: number
   databaseUrl?: string
   dataDir: string
 }
@@ -339,6 +371,8 @@ export function loadRelayConfig(env: NodeJS.ProcessEnv = process.env): RelayConf
     fenceBrokerServiceAccount: parsed.KINGU_RELAY_FENCE_BROKER_SERVICE_ACCOUNT,
     rehomeDirectorServiceAccount: parsed.KINGU_RELAY_REHOME_DIRECTOR_SERVICE_ACCOUNT,
     rehomeAudience: parsed.KINGU_RELAY_REHOME_AUDIENCE,
+    shadowSeatFeedCells: parsed.KINGU_RELAY_SHADOW_SEAT_FEED_CELLS,
+    reservePlacement: parsed.KINGU_RELAY_RESERVE_PLACEMENT,
     runtimeServiceAccount:
       parsed.KINGU_RELAY_RUNTIME_SERVICE_ACCOUNT ?? parsed.KINGU_RELAY_DEPLOY_SERVICE_ACCOUNT,
     directorUrl,
@@ -367,6 +401,10 @@ export function loadRelayConfig(env: NodeJS.ProcessEnv = process.env): RelayConf
     publicStickyQueueMax: parsed.KINGU_RELAY_PUBLIC_STICKY_QUEUE_MAX,
     publicStickyWaitMs: parsed.KINGU_RELAY_PUBLIC_STICKY_WAIT_MS,
     publicStickyRetryAfterSeconds: parsed.KINGU_RELAY_PUBLIC_STICKY_RETRY_AFTER_SECONDS,
+    drainReturnConcurrency: parsed.KINGU_RELAY_DRAIN_RETURN_CONCURRENCY,
+    drainReturnQueueMax: parsed.KINGU_RELAY_DRAIN_RETURN_QUEUE_MAX,
+    drainReturnWaitMs: parsed.KINGU_RELAY_DRAIN_RETURN_WAIT_MS,
+    drainReturnMaxRetryAfterSeconds: parsed.KINGU_RELAY_DRAIN_RETURN_MAX_RETRY_AFTER_SECONDS,
     databaseUrl: parsed.DATABASE_URL,
     dataDir: parsed.KINGU_RELAY_DATA_DIR
   }

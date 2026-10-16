@@ -1,5 +1,5 @@
 import { realpathSync } from 'node:fs'
-import { runProcess } from '../../shared/child-process/run-process'
+import { runProcess } from '@kingu/process-host'
 import {
   PROFILE_STATE_RECOVERY_FLAG,
   PROFILE_STATE_RECOVERY_RESULT_PREFIX,
@@ -14,9 +14,10 @@ import {
   stripElectronRunAsNode
 } from './launch'
 import { RuntimeClientError } from './types'
+import { canStartKinguServer } from './serve-app-launcher'
 
 export function canLaunchProfileStateRecovery(): boolean {
-  return process.env.ELECTRON_RUN_AS_NODE === '1' || !!process.env.KINGU_APP_EXECUTABLE?.trim()
+  return canStartKinguServer(process.env)
 }
 
 export async function launchProfileStateRecovery(

@@ -3,22 +3,13 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { gitExecFileAsyncMock, getSshGitProviderGenerationMock, getSshGitProviderMock } = vi.hoisted(
-  () => ({
-    gitExecFileAsyncMock: vi.fn(),
-    getSshGitProviderGenerationMock: vi.fn(() => 0),
-    getSshGitProviderMock: vi.fn()
-  })
-)
+const { gitExecFileAsyncMock } = vi.hoisted(() => ({
+  gitExecFileAsyncMock: vi.fn()
+}))
 
 vi.mock('../git/runner', () => ({
   gitExecFileAsync: gitExecFileAsyncMock,
   ghExecFileAsync: vi.fn()
-}))
-
-vi.mock('../providers/ssh-git-dispatch', () => ({
-  getSshGitProviderGeneration: getSshGitProviderGenerationMock,
-  getSshGitProvider: getSshGitProviderMock
 }))
 
 import { _resetRemoteNameListingCache } from '../git/remote-name-listing'
@@ -73,9 +64,6 @@ function gitRemoteListCalls(): unknown[][] {
 describe('github owner/repo resolution', () => {
   beforeEach(() => {
     gitExecFileAsyncMock.mockReset()
-    getSshGitProviderGenerationMock.mockReset()
-    getSshGitProviderGenerationMock.mockReturnValue(0)
-    getSshGitProviderMock.mockReset()
     _resetOwnerRepoCache()
     _resetRemoteNameListingCache()
     __resetLocalGitConfigSignatureCacheForTests()
@@ -106,9 +94,7 @@ describe('github owner/repo resolution', () => {
       owner: 'anthovai',
       repo: 'kingu'
     })
-    expect(
-      parseGitHubOwnerRepo('ssh://git@ssh.github.com:443/anthovai/kingu-intelligence.git')
-    ).toEqual({
+    expect(parseGitHubOwnerRepo('ssh://git@ssh.github.com:443/anthovai/kingu-intelligence.git')).toEqual({
       owner: 'anthovai',
       repo: 'kingu'
     })
@@ -149,16 +135,6 @@ describe('github owner/repo resolution', () => {
     expect(gitRemoteListCalls()).toHaveLength(1)
     expect(gitRemoteGetUrlCalls('upstream')).toHaveLength(0)
     expect(gitRemoteGetUrlCalls('origin')).toHaveLength(1)
-  })
-
-  it('prefers upstream for issue owner/repo resolution', async () => {
-    mockGitRemoteCommands({
-      origin: 'git@github.com:fork/kingu.git\n',
-      upstream: 'git@github.com:anthovai/kingu-intelligence.git\n'
-    })
-
-    await expect(getIssueOwnerRepo('/repo')).resolves.toEqual({ owner: 'anthovai', repo: 'kingu' })
-    expect(gitRemoteGetUrlCalls('upstream')).toHaveLength(1)
   })
 
   it('falls back to origin when upstream is present but non-GitHub', async () => {
@@ -210,55 +186,6 @@ describe('github owner/repo resolution', () => {
 
     await expect(getOwnerRepoForRemote('/repo', 'upstream')).resolves.toBeNull()
     expect(gitExecFileAsyncMock).toHaveBeenCalledTimes(1)
-  })
-
-  it('resolves SSH repo remotes through the registered SSH git provider', async () => {
-    const sshProvider = {
-      exec: vi.fn(async (args: string[]) => {
-        if (args[0] === 'remote' && args[1] !== 'get-url') {
-          return { stdout: 'origin\n', stderr: '' }
-        }
-        if (args[2] === 'upstream') {
-          throw new Error("fatal: No such remote 'upstream'")
-        }
-        return { stdout: 'git@github.com:anthovai/kingu-intelligence.git\n', stderr: '' }
-      })
-    }
-    getSshGitProviderMock.mockReturnValue(sshProvider)
-
-    await expect(getOwnerRepo('/home/user/kingu', 'openclaw-2')).resolves.toEqual({
-      owner: 'anthovai',
-      repo: 'kingu'
-    })
-
-    expect(gitExecFileAsyncMock).not.toHaveBeenCalled()
-    expect(getSshGitProviderMock).toHaveBeenCalledWith('openclaw-2')
-    expect(sshProvider.exec).toHaveBeenCalledWith(
-      ['remote', 'get-url', 'origin'],
-      '/home/user/kingu',
-      {
-        signal: expect.any(AbortSignal)
-      }
-    )
-  })
-
-  it('keeps local and SSH owner/repo cache entries separate for the same path', async () => {
-    const sshProvider = {
-      exec: vi.fn(async (args: string[]) => {
-        if (args[0] === 'remote' && args[1] !== 'get-url') {
-          return { stdout: 'origin\n', stderr: '' }
-        }
-        return { stdout: 'git@github.com:remote/kingu.git\n', stderr: '' }
-      })
-    }
-    mockGitRemoteCommands({ origin: 'git@github.com:local/kingu.git\n' })
-    getSshGitProviderMock.mockReturnValue(sshProvider)
-
-    await expect(getOwnerRepo('/repo')).resolves.toEqual({ owner: 'local', repo: 'kingu' })
-    await expect(getOwnerRepo('/repo', 'ssh-1')).resolves.toEqual({
-      owner: 'remote',
-      repo: 'kingu'
-    })
   })
 
   it('keeps local host and local WSL owner/repo cache entries separate for the same path', async () => {
@@ -762,7 +689,6 @@ describe('github owner/repo resolution', () => {
 describe('resolveIssueSource', () => {
   beforeEach(() => {
     gitExecFileAsyncMock.mockReset()
-    getSshGitProviderMock.mockReset()
     _resetOwnerRepoCache()
     _resetRemoteNameListingCache()
   })

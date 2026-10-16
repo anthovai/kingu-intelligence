@@ -1,4 +1,5 @@
 import { parseDocument } from 'yaml'
+import { isKinguYamlConversionWithinLimit } from './kingu-yaml-merge-expansion'
 import type {
   KinguDefaultTabTemplate,
   KinguHooks,
@@ -165,11 +166,7 @@ function normalizeVmRecipes(value: unknown): VmRecipeParseResult {
       seenIds.add(id)
       const description = asTrimmedString(record.description)
       const checkoutMode = asTrimmedString(record.checkoutMode)
-      if (
-        checkoutMode &&
-        checkoutMode !== 'kingu-worktree' &&
-        checkoutMode !== 'provisioned-root'
-      ) {
+      if (checkoutMode && checkoutMode !== 'kingu-worktree' && checkoutMode !== 'provisioned-root') {
         diagnostics.push({
           index,
           field: 'checkoutMode',
@@ -209,11 +206,12 @@ export function parseKinguYaml(content: string): KinguHooks | null {
   try {
     const document = parseDocument(content, {
       keepSourceTokens: false,
+      merge: true,
       logLevel: 'silent',
       prettyErrors: false,
       uniqueKeys: true
     })
-    if (document.errors.length > 0) {
+    if (document.errors.length > 0 || !isKinguYamlConversionWithinLimit(document)) {
       return null
     }
     root = document.toJS({ maxAliasCount: MAX_KINGU_YAML_ALIAS_COUNT })

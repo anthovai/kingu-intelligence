@@ -13,8 +13,11 @@ import {
   browserOverlay,
   createBrowserSplit,
   createTerminalBrowserSplit,
+  guestModifier,
+  pressKeyInBrowserGuest,
   shortcutModifier,
-  waitForFocusedGroup
+  waitForFocusedGroup,
+  type GuestModifier
 } from './helpers/browser-split-fixture'
 import { waitForGuestUrl } from './helpers/browser-split-guest-probes'
 import {
@@ -23,9 +26,20 @@ import {
 } from './helpers/browser-split-page-server'
 
 const copyChord = `${shortcutModifier}+c`
+// Default annotate chord: Cmd+Shift+C on macOS, Alt+Shift+N on Linux and Windows.
+const annotateGuestChord: { keyCode: string; modifiers: GuestModifier[] } =
+  process.platform === 'darwin'
+    ? { keyCode: 'C', modifiers: [guestModifier, 'shift'] }
+    : { keyCode: 'N', modifiers: ['alt', 'shift'] }
 
 function grabBanner(page: Page, browserTabId: string) {
   return browserOverlay(page, browserTabId).getByText(/Click or hover an element|Grab failed/)
+}
+
+function annotateBanner(page: Page, browserTabId: string) {
+  return browserOverlay(page, browserTabId).getByText(
+    'Click an element to add feedback for the agent.'
+  )
 }
 
 function reloadButton(page: Page, browserTabId: string) {
@@ -161,11 +175,7 @@ test.describe('browser split grab shortcut', () => {
       second: server.pageUrl('b', 1, 'localhost')
     })
     await waitForGuestUrl(kinguPage, fixture.firstBrowserTabId, server.pageUrl('a', 1))
-    await waitForGuestUrl(
-      kinguPage,
-      fixture.secondBrowserTabId,
-      server.pageUrl('b', 1, 'localhost')
-    )
+    await waitForGuestUrl(kinguPage, fixture.secondBrowserTabId, server.pageUrl('b', 1, 'localhost'))
 
     await reloadButton(kinguPage, fixture.firstBrowserTabId).focus()
     await waitForFocusedGroup(kinguPage, fixture.firstBrowserGroupId)
@@ -173,6 +183,28 @@ test.describe('browser split grab shortcut', () => {
 
     await expect(grabBanner(kinguPage, fixture.firstBrowserTabId)).toBeVisible()
     await expect(grabBanner(kinguPage, fixture.secondBrowserTabId)).toBeHidden()
+  })
+
+  test('annotate chord typed in one guest arms annotate only in that split', async ({
+    kinguPage
+  }) => {
+    const fixture = await createBrowserSplit(kinguPage, {
+      first: server.pageUrl('a', 1),
+      second: server.pageUrl('b', 1, 'localhost')
+    })
+    await waitForGuestUrl(kinguPage, fixture.firstBrowserTabId, server.pageUrl('a', 1))
+    await waitForGuestUrl(kinguPage, fixture.secondBrowserTabId, server.pageUrl('b', 1, 'localhost'))
+
+    await pressKeyInBrowserGuest(
+      kinguPage,
+      fixture.firstBrowserTabId,
+      fixture.firstBrowserPageId,
+      annotateGuestChord.keyCode,
+      annotateGuestChord.modifiers
+    )
+
+    await expect(annotateBanner(kinguPage, fixture.firstBrowserTabId)).toBeVisible()
+    await expect(annotateBanner(kinguPage, fixture.secondBrowserTabId)).toBeHidden()
   })
 
   test('copy chord with native chat text selected copies instead of arming grab', async ({

@@ -99,8 +99,7 @@ function createWslRunner(
         throw new Error('__KINGU_CONFLICT__')
       }
       const launcher =
-        command.match(/cat > "\$command_tmp" <<'KINGU_WSL_CLI'\n([\s\S]*)\nKINGU_WSL_CLI/)?.[1] ??
-        ''
+        command.match(/cat > "\$command_tmp" <<'KINGU_WSL_CLI'\n([\s\S]*)\nKINGU_WSL_CLI/)?.[1] ?? ''
       const bridge =
         command.match(
           /cat > "\$bridge_tmp" <<'KINGU_WSL_BRIDGE'\n([\s\S]*)\nKINGU_WSL_BRIDGE/
@@ -438,6 +437,7 @@ describe('WslCliInstaller', () => {
         isPackaged: true,
         userDataPath: '/user-data',
         listDistros: async () => ['Ubuntu'],
+        listRunningDistros: async () => ['Ubuntu'],
         registry: {
           getCandidates: async () => ['Ubuntu'],
           recordObservations: async () => undefined
@@ -732,8 +732,7 @@ describe('WslCliInstaller', () => {
         platform: 'win32',
         distro: 'Ubuntu',
         hostInstaller: {
-          getStatus: async () =>
-            makeHostStatus('C:\\Program Files\\Kingu\\resources\\bin\\kingu.exe')
+          getStatus: async () => makeHostStatus('C:\\Program Files\\Kingu\\resources\\bin\\kingu.exe')
         },
         wslRunner: runner
       })
@@ -777,9 +776,7 @@ describe('WslCliInstaller', () => {
     await expect(installer.repairManagedRegistration()).resolves.toMatchObject({ changed: true })
     await expect(installer.repairManagedRegistration()).resolves.toMatchObject({ changed: false })
     expect(wsl.calls.filter((command) => command.includes('cat > "$command_tmp"'))).toHaveLength(1)
-    expect(wsl.getFile()).toContain(
-      "KINGU_WIN_LAUNCHER='D:\\Custom Kingu\\resources\\bin\\kingu.exe'"
-    )
+    expect(wsl.getFile()).toContain("KINGU_WIN_LAUNCHER='D:\\Custom Kingu\\resources\\bin\\kingu.exe'")
   })
 
   it('settles when wsl.exe never reports completion', async () => {

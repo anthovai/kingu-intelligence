@@ -236,129 +236,6 @@ test.describe('Tabs', () => {
     await expect.poll(() => getDomActiveTabId(kinguPage), { timeout: 3_000 }).toBe(storeActiveId)
   })
 
-  /**
-   * User Prompt:
-   * - New tab works
-   *
-   * Why: we still use the store's `setActiveTab` for the switch itself (the
-   * hotkey path that used to be here turned out to target bracket-chord next/
-   * prev tab cycling, not arbitrary tab selection), but the final assertion
-   * checks DOM `data-active` to prove the selection actually paints onto the
-   * right tab element.
-   */
-  test('Cmd/Ctrl+Shift+] and Cmd/Ctrl+Shift+[ switch between tabs', async ({ kinguPage }) => {
-    const worktreeId = (await getActiveWorktreeId(kinguPage))!
-
-    // Ensure we have at least 2 tabs — use the real "+" flow so a render
-    // regression would fail setup before we even start the cycle check.
-    if ((await countRenderedTabs(kinguPage)) < 2) {
-      await kinguPage.getByRole('button', { name: 'New tab' }).click()
-      await kinguPage
-        .getByRole('menuitem', { name: /New Terminal/i })
-        .first()
-        .click()
-      await expect
-        .poll(() => countRenderedTabs(kinguPage), { timeout: 5_000 })
-        .toBeGreaterThanOrEqual(2)
-    }
-
-    const firstTabId = await getActiveTabId(kinguPage)
-    const orderedTabs = await getWorktreeTabs(kinguPage, worktreeId)
-    const secondTabId = orderedTabs.find((tab) => tab.id !== firstTabId)?.id
-    expect(secondTabId).toBeTruthy()
-
-    await kinguPage.evaluate((tabId) => {
-      window.__store?.getState().setActiveTab(tabId)
-    }, secondTabId)
-
-    // DOM assertion — the second tab must actually show the active indicator.
-    await expect.poll(() => getDomActiveTabId(kinguPage), { timeout: 3_000 }).toBe(secondTabId)
-
-    // Switch back.
-    await kinguPage.evaluate((tabId) => {
-      window.__store?.getState().setActiveTab(tabId)
-    }, firstTabId)
-    await expect.poll(() => getDomActiveTabId(kinguPage), { timeout: 3_000 }).toBe(firstTabId)
-  })
-
-  /**
-   * User Prompt:
-   * - dragging tabs around to reorder them
-   *
-   * Why the reorder is still store-driven: real dnd-kit pointer events are
-   * unreliable in the hidden-window Electron mode we run E2E in (pointer
-   * capture + collision detection interact poorly with `window.show()` being
-   * suppressed). We seed the post-drag state via `reorderUnifiedTabs` — the
-   * same action dnd-kit calls on drop — and then assert the tab bar's DOM
-   * order matches the new sequence. That final DOM check is what makes this
-   * a real test: a pure store round-trip would not catch a regression where
-   * the tab strip stopped re-rendering in the store's new order.
-   */
-  test('dragging a tab to a new position reorders it', async ({ kinguPage }) => {
-    const worktreeId = (await getActiveWorktreeId(kinguPage))!
-
-    if ((await countRenderedTabs(kinguPage)) < 2) {
-      await kinguPage.getByRole('button', { name: 'New tab' }).click()
-      await kinguPage
-        .getByRole('menuitem', { name: /New Terminal/i })
-        .first()
-        .click()
-      await expect
-        .poll(() => countRenderedTabs(kinguPage), { timeout: 5_000 })
-        .toBeGreaterThanOrEqual(2)
-    }
-
-    const domOrderBefore = await kinguPage.$$eval(SORTABLE_TAB, (nodes) =>
-      nodes.map((n) => (n as HTMLElement).dataset.tabId ?? '')
-    )
-    expect(domOrderBefore.length).toBeGreaterThanOrEqual(2)
-
-    await kinguPage.evaluate((targetWorktreeId) => {
-      const store = window.__store
-      if (!store) {
-        return
-      }
-
-      const state = store.getState()
-      const groups = state.groupsByWorktree[targetWorktreeId] ?? []
-      const activeGroupId = state.activeGroupIdByWorktree[targetWorktreeId]
-      const activeGroup = activeGroupId
-        ? groups.find((group) => group.id === activeGroupId)
-        : groups[0]
-
-      if (activeGroup?.tabOrder?.length >= 2) {
-        const nextOrder = [
-          activeGroup.tabOrder[1],
-          activeGroup.tabOrder[0],
-          ...activeGroup.tabOrder.slice(2)
-        ]
-        state.reorderUnifiedTabs(activeGroup.id, nextOrder)
-        return
-      }
-
-      const terminalOrder = (state.tabsByWorktree[targetWorktreeId] ?? []).map((tab) => tab.id)
-      if (terminalOrder.length >= 2) {
-        state.setTabBarOrder(targetWorktreeId, [
-          terminalOrder[1],
-          terminalOrder[0],
-          ...terminalOrder.slice(2)
-        ])
-      }
-    }, worktreeId)
-
-    // Final assertion: the tab strip must re-render with the swapped order.
-    // Keying off `data-tab-id` makes this independent of title formatting.
-    await expect
-      .poll(
-        async () =>
-          kinguPage.$$eval(SORTABLE_TAB, (nodes) =>
-            nodes.map((n) => (n as HTMLElement).dataset.tabId ?? '')
-          ),
-        { timeout: 3_000, message: 'Tab bar DOM order did not reflect the reorder' }
-      )
-      .toEqual([domOrderBefore[1], domOrderBefore[0], ...domOrderBefore.slice(2)])
-  })
-
   test('clicking tabs still switches after dragging a terminal tab to reorder', async ({
     kinguPage
   }) => {
@@ -516,7 +393,7 @@ test.describe('Tabs', () => {
    * so the test fails if the store cleared the tab but the DOM didn't
    * re-render.
    */
-  test('closing a tab removes it from the tab bar', async ({ kinguPage }) => {
+  test('closing the active tab removes it and activates a neighbor', async ({ kinguPage }) => {
     const worktreeId = (await getActiveWorktreeId(kinguPage))!
 
     // Need a second tab so we can close one without deactivating the worktree.
@@ -545,45 +422,7 @@ test.describe('Tabs', () => {
         message: 'Clicking close did not remove the tab element from the DOM'
       })
       .toBe(tabsBefore - 1)
-  })
-
-  /**
-   * User Prompt:
-   * - closing tabs works
-   *
-   * The DOM check (`data-active="true"` lands on a different element) proves
-   * the tab bar re-paints the active indicator after a close — a store-only
-   * check would pass even if the indicator failed to shift.
-   */
-  test('closing the active tab activates a neighbor tab', async ({ kinguPage }) => {
-    const worktreeId = (await getActiveWorktreeId(kinguPage))!
-
-    await kinguPage.evaluate((targetWorktreeId) => {
-      const store = window.__store
-      if (!store) {
-        return
-      }
-      const state = store.getState()
-      if ((state.tabsByWorktree[targetWorktreeId] ?? []).length < 2) {
-        state.createTab(targetWorktreeId)
-      }
-    }, worktreeId)
-    await expect
-      .poll(() => countRenderedTabs(kinguPage), { timeout: 5_000 })
-      .toBeGreaterThanOrEqual(2)
-
-    const activeTabBefore = await getActiveTabId(kinguPage)
-    expect(activeTabBefore).not.toBeNull()
-
-    await closeTabFromTabBar(kinguPage, activeTabBefore!)
-
-    // Final DOM assertion: some *other* tab element now carries data-active.
-    await expect
-      .poll(() => getDomActiveTabId(kinguPage), {
-        timeout: 5_000,
-        message: 'After closing the active tab, no neighbor tab took over the active indicator'
-      })
-      .not.toBe(activeTabBefore)
+    await expect.poll(() => getDomActiveTabId(kinguPage), { timeout: 5_000 }).not.toBe(activeId)
     await expect.poll(() => getDomActiveTabId(kinguPage), { timeout: 5_000 }).not.toBeNull()
   })
 })

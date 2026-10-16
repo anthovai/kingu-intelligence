@@ -3,10 +3,13 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
+import { createHash } from 'node:crypto'
 import {
+  KINGUD_NODE_RUNTIME_MARKER_FILENAME,
   KINGUD_TEMPLATE_MANIFEST_FILENAME,
   KINGUD_TEMPLATE_TARGETS_DIR
 } from '../../src/shared/kingud-artifacts.ts'
+import { NODE_RUNTIME_ASSETS } from '../../src/shared/node-runtime-pin.ts'
 import { writeKingudTemplateTestFixture } from './kingud-template-test-fixture.mjs'
 
 const require = createRequire(import.meta.url)
@@ -14,10 +17,10 @@ const { verifyPackagedKingudTemplate } = require('./verify-packaged-kingud-templ
 const builderConfig = require('../electron-builder.config.cjs')
 const roots = []
 
-async function createFixture() {
+async function createFixture(options) {
   const root = await mkdtemp(join(tmpdir(), 'kingu-packaged-kingud-template-'))
   roots.push(root)
-  const templateDir = await writeKingudTemplateTestFixture(root)
+  const templateDir = await writeKingudTemplateTestFixture(root, options)
   return { root, templateDir }
 }
 
@@ -32,24 +35,78 @@ describe('verifyPackagedKingudTemplate', () => {
     expect(() => verifyPackagedKingudTemplate(fixture.root)).not.toThrow()
   })
 
+  it('accepts the optional rung B compat target beside the default ones', async () => {
+    const fixture = await createFixture({ compat: true })
+
+    expect(() => verifyPackagedKingudTemplate(fixture.root)).not.toThrow()
+  })
+
+  it('rejects a compat target whose runtime reference names the default Node', async () => {
+    const fixture = await createFixture({ compat: true })
+    await writeFile(
+      join(
+        fixture.templateDir,
+        KINGUD_TEMPLATE_TARGETS_DIR,
+        'linux-x64-glibc217',
+        KINGUD_NODE_RUNTIME_MARKER_FILENAME
+      ),
+      `${NODE_RUNTIME_ASSETS['linux-x64-glibc'].executableSha256}\n`
+    )
+
+    expect(() => verifyPackagedKingudTemplate(fixture.root)).toThrow(
+      /linux-x64-glibc217 .*(checksum mismatch|runtime reference)/
+    )
+  })
+
   it('rejects target-native bytes changed after manifest generation', async () => {
     const fixture = await createFixture()
     await writeFile(
-      join(fixture.templateDir, KINGUD_TEMPLATE_TARGETS_DIR, 'linux-x64-glibc', 'watcher.node'),
+      join(
+        fixture.templateDir,
+        KINGUD_TEMPLATE_TARGETS_DIR,
+        'linux-x64-glibc',
+        'node_modules/node-pty/build/Release/pty.node'
+      ),
       'mutated'
     )
 
     expect(() => verifyPackagedKingudTemplate(fixture.root)).toThrow(
-      'linux-x64-glibc watcher checksum mismatch'
+      'linux-x64-glibc node_modules/node-pty/build/Release/pty.node checksum mismatch'
     )
   })
 
-  it('rejects a missing Windows PTY gate worker', async () => {
+  it('rejects a target whose runtime reference names another Node', async () => {
     const fixture = await createFixture()
-    await rm(join(fixture.templateDir, 'windows-bun-pty-gate-entry.js'))
+    const markerPath = join(
+      fixture.templateDir,
+      KINGUD_TEMPLATE_TARGETS_DIR,
+      'darwin-arm64',
+      KINGUD_NODE_RUNTIME_MARKER_FILENAME
+    )
+    await writeFile(markerPath, `${'0'.repeat(64)}\n`)
+    const manifestPath = join(fixture.templateDir, KINGUD_TEMPLATE_MANIFEST_FILENAME)
+    const manifest = JSON.parse(await readFile(manifestPath, 'utf8'))
+    manifest.targets['darwin-arm64'].files[KINGUD_NODE_RUNTIME_MARKER_FILENAME] = createHash(
+      'sha256'
+    )
+      .update(`${'0'.repeat(64)}\n`)
+      .digest('hex')
+    await writeFile(manifestPath, JSON.stringify(manifest))
 
     expect(() => verifyPackagedKingudTemplate(fixture.root)).toThrow(
-      'windows-bun-pty-gate-entry.js'
+      'darwin-arm64 runtime reference disagrees'
+    )
+  })
+
+  it('rejects a stray Bun-era file in a target directory', async () => {
+    const fixture = await createFixture()
+    await writeFile(
+      join(fixture.templateDir, KINGUD_TEMPLATE_TARGETS_DIR, 'linux-x64-musl', '.build-target'),
+      'linux-x64-musl\n'
+    )
+
+    expect(() => verifyPackagedKingudTemplate(fixture.root)).toThrow(
+      'linux-x64-musl file inventory mismatch'
     )
   })
 
@@ -79,14 +136,57 @@ describe('verifyPackagedKingudTemplate', () => {
     )
   })
 
-  it('does not ship the unused deployment template in desktop packages', async () => {
+  it('verifies a partial template only against the targets it was built for', async () => {
+    const fixture = await createFixture()
+    const kept = ['linux-x64-glibc', 'linux-x64-musl']
+    const manifestPath = join(fixture.templateDir, KINGUD_TEMPLATE_MANIFEST_FILENAME)
+    const manifest = JSON.parse(await readFile(manifestPath, 'utf8'))
+    for (const target of Object.keys(manifest.targets).filter((name) => !kept.includes(name))) {
+      delete manifest.targets[target]
+      await rm(join(fixture.templateDir, KINGUD_TEMPLATE_TARGETS_DIR, target), { recursive: true })
+    }
+    await writeFile(manifestPath, JSON.stringify(manifest))
+
+    expect(() => verifyPackagedKingudTemplate(fixture.root, kept)).not.toThrow()
+    expect(() => verifyPackagedKingudTemplate(fixture.root)).toThrow(
+      'target manifest inventory mismatch'
+    )
+    expect(() => verifyPackagedKingudTemplate(fixture.root, ['linux-x64-glibc'])).toThrow(
+      'target manifest inventory mismatch'
+    )
+  })
+
+  // Design D2 reverses the old "unused, excluded" contract: SSH relays and managed kingud deploys
+  // materialize their slot from process.resourcesPath/kingud-template, so every desktop OS ships it.
+  it('ships the deployment template as a resource on every desktop OS, never its runtimes', async () => {
     for (const platform of ['win', 'mac', 'linux']) {
+      expect(builderConfig[platform].extraResources).toContainEqual({
+        from: 'out/kingud-template',
+        to: 'kingud-template'
+      })
+      // electron-builder's copy filter drops a source's root node_modules, so it needs its own entry.
+      expect(builderConfig[platform].extraResources).toContainEqual({
+        from: 'out/kingud-template/node_modules',
+        to: 'kingud-template/node_modules'
+      })
       expect(
         builderConfig[platform].extraResources.some(
-          (resource) => typeof resource === 'object' && resource.to.startsWith('kingud-template')
+          (resource) =>
+            typeof resource === 'object' && /runtimes|node-runtime-cache/.test(resource.from)
         )
       ).toBe(false)
     }
+    // The pinned Node a local build references is ~120 MB and is downloaded on demand instead.
+    expect(builderConfig.files).toEqual(
+      expect.arrayContaining([
+        '!out/kingud{,/**/*}',
+        '!out/kingud-*{,/**/*}',
+        '!out/runtimes{,/**/*}',
+        '!out/node-runtime-cache{,/**/*}'
+      ])
+    )
+    expect(builderConfig.mac.signIgnore).toContain('/kingud-template/')
+    // Release CI builds the template from every lane's slot; one host cannot build it alone.
     const { scripts } = JSON.parse(await readFile(join(process.cwd(), 'package.json'), 'utf8'))
     for (const name of ['build:desktop', 'build:release', 'build:release:parallel']) {
       expect(scripts[name]).not.toContain('build:kingud-template')

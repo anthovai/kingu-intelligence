@@ -36,3 +36,8 @@ export function visibleHostRouteNotice(
   }
   return hostRouteNoticeMessage(notice)
 }
+
+/** Tapping a workspace on a server whose Kingu predates the desktop relay. */
+export function serverUpdateNeededNotice(hostLabel: string): string {
+  return `Update Kingu on ${hostLabel} to open its workspaces from your phone.`
+}

@@ -12,22 +12,41 @@ import {
 } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import {
-  KINGUD_BUILD_TARGET_FILENAME,
+  KINGUD_NODE_PTY_DIR,
+  KINGUD_NODE_RUNTIME_MARKER_FILENAME,
+  KINGUD_SERVER_TARGET_FILENAME,
   KINGUD_TEMPLATE_MANIFEST_FILENAME,
   KINGUD_TEMPLATE_TARGETS_DIR,
-  KINGUD_RIPGREP_ARTIFACTS,
-  kingudTemplateCommonFilenames
+  kingudNodePtySlotFiles,
+  kingudTemplateCommonFilenames,
+  kingudTemplateTargetFilenames
 } from '../../src/shared/kingud-artifacts.ts'
 import { kingudAgentBrowserNativeName } from '../../src/shared/kingud-agent-browser-name.ts'
-import { KINGUD_TEMPLATE_TARGETS } from '../../src/shared/kingud-bun-runtime.ts'
-import { runProcessSync } from './script-child-process.mjs'
-import { materializeWatcherPackage } from './kingud-watcher-package.mjs'
+import {
+  COMPAT_SERVER_TARGET_BASES,
+  COMPAT_SERVER_TARGETS,
+  KINGUD_TEMPLATE_TARGETS,
+  pinnedNodeRuntimeAsset
+} from '../../src/shared/node-runtime-pin.ts'
+import { KINGUD_PREBUILDS_DIR } from './build-kingud-prebuilds.mjs'
+import {
+  COMPAT_SLOT_ADDONS,
+  findCompatAddonGaps,
+  findSlotProblems,
+  readManifest
+} from './kingud-prebuild-slot-contents.mjs'
+import { runProcessSync } from '@kingu/process-host'
 import { verifyPackagedKingudTemplate } from './verify-packaged-kingud-template.cjs'
+import { assertNotLayoutOwnerBuild } from '../layout-owner-build.cjs'
 
 const root = resolve(import.meta.dirname, '../..')
 const outputDir = join(root, 'out', 'kingud-template')
 const buildDir = join(root, 'out', '.kingud-template-build')
 const commonArtifacts = kingudTemplateCommonFilenames()
+
+function isExecutable(filename) {
+  return /(?:^|\/)(?:rg|spawn-helper)$/.test(filename)
+}
 
 function copy(source, destination, executable = false) {
   mkdirSync(dirname(destination), { recursive: true })
@@ -41,82 +60,170 @@ function sha256(path) {
   return createHash('sha256').update(readFileSync(path)).digest('hex')
 }
 
-function targetPlatform(target) {
-  return target.split('-')[0]
-}
-
-function targetArch(target) {
-  return target.split('-')[1]
-}
-
-function buildCommonArtifacts() {
-  rmSync(buildDir, { recursive: true, force: true })
+/** One full package per target; each needs that target's node-pty slot in out/kingud-prebuilds. */
+function buildTargetPackage(target) {
+  const packageDir = join(buildDir, target, 'kingud')
   const result = runProcessSync({
     program: process.execPath,
-    args: [join(root, 'config/scripts/build-kingud-bun.mjs'), '--out-dir', buildDir],
+    args: [
+      join(root, 'config/scripts/build-kingud-node.mjs'),
+      '--target',
+      target,
+      '--out-dir',
+      packageDir
+    ],
     cwd: root,
+    // Why no agent-browser: the template ships inside every desktop build (design D2), and seven
+    // ~10 MB browsers would outweigh everything else in it; a slot without one reports no browser.
+    env: { ...process.env, KINGUD_OMIT_AGENT_BROWSER: '1' },
     stdio: 'inherit',
     timeoutMs: null
   })
   if (result.code !== 0) {
-    throw new Error(`Common kingud artifact build failed with exit ${result.code ?? 'unknown'}`)
+    throw new Error(`kingud ${target} package build failed with exit ${result.code ?? 'unknown'}`)
   }
+  return packageDir
 }
 
-async function stageTarget(target) {
+function stageTarget(target, packageDir) {
   const destination = join(outputDir, KINGUD_TEMPLATE_TARGETS_DIR, target)
-  const targetIdentity = join(destination, KINGUD_BUILD_TARGET_FILENAME)
-  mkdirSync(destination, { recursive: true })
-  writeFileSync(targetIdentity, `${target}\n`)
-  const watcherSource = await materializeWatcherPackage(target)
-  const watcherDestination = join(destination, 'watcher.node')
-  copy(watcherSource, watcherDestination)
-
+  const files = {}
+  for (const filename of kingudTemplateTargetFilenames(target)) {
+    const staged = join(destination, ...filename.split('/'))
+    copy(join(packageDir, ...filename.split('/')), staged, isExecutable(filename))
+    files[filename] = sha256(staged)
+  }
   const browserName = kingudAgentBrowserNativeName(
-    targetPlatform(target),
-    targetArch(target),
+    target.split('-')[0],
+    target.split('-')[1],
     target.endsWith('-musl') ? 'musl' : 'glibc'
   )
-  const browserSource = join(root, 'node_modules', 'agent-browser', 'bin', browserName)
+  const browserSource = join(packageDir, browserName)
+  if (!existsSync(browserSource)) {
+    return { files }
+  }
   const browserDestination = join(destination, browserName)
-  if (existsSync(browserSource)) {
-    copy(browserSource, browserDestination, true)
+  copy(browserSource, browserDestination, true)
+  return { files, browserName, browserSha256: sha256(browserDestination) }
+}
+
+/**
+ * `--targets a,b` builds a partial template for CI jobs that can fill only some prebuild slots
+ * (the SSH hostile-host matrix). A shipped template always carries every target.
+ */
+export function requestedTemplateTargets(argv = process.argv) {
+  const index = argv.indexOf('--targets')
+  if (index === -1) {
+    return KINGUD_TEMPLATE_TARGETS
   }
-  return {
-    targetSha256: sha256(targetIdentity),
-    watcherSha256: sha256(watcherDestination),
-    ...(existsSync(browserDestination)
-      ? { browserName, browserSha256: sha256(browserDestination) }
-      : {})
+  const targets = (argv[index + 1] ?? '').split(',').filter(Boolean)
+  const unknown = targets.filter((target) => !KINGUD_TEMPLATE_TARGETS.includes(target))
+  if (targets.length === 0 || unknown.length > 0) {
+    throw new Error(
+      `--targets needs a comma-separated subset of ${KINGUD_TEMPLATE_TARGETS.join(',')}; got ${argv[index + 1] ?? 'nothing'}`
+    )
   }
+  return [...new Set(targets)]
+}
+
+/**
+ * A compat target (design D6 rung B) is its base target's package with the compat slot's addons
+ * and runtime marker swapped in; everything else is target-independent or libc-static.
+ * Omitted, not failed, when this build has no compat slot: rung B then refuses as unavailable.
+ */
+function stageCompatTarget(compat, basePackageDir) {
+  const problems = findSlotProblems(readManifest(KINGUD_PREBUILDS_DIR), KINGUD_PREBUILDS_DIR, [
+    compat
+  ])
+  if (problems.length > 0) {
+    process.stdout.write(
+      `[build-kingud-template] skipping compat target ${compat}: ${problems.join('; ')}\n`
+    )
+    return null
+  }
+  const destination = join(outputDir, KINGUD_TEMPLATE_TARGETS_DIR, compat)
+  const slotFiles = new Map([
+    ...kingudNodePtySlotFiles(compat).map((file) => [
+      `${KINGUD_NODE_PTY_DIR}/build/Release/${file}`,
+      join(KINGUD_PREBUILDS_DIR, compat, ...file.split('/'))
+    ]),
+    ...Object.entries(COMPAT_SLOT_ADDONS).map(([file, shipped]) => [
+      shipped,
+      join(KINGUD_PREBUILDS_DIR, compat, ...file.split('/'))
+    ])
+  ])
+  // Why fatal: the base binary would pass every check here and fail only on a compat host.
+  const gaps = findCompatAddonGaps(kingudTemplateTargetFilenames(compat), slotFiles)
+  if (gaps.length > 0) {
+    throw new Error(`compat target ${compat} would ship base-target addons: ${gaps.join(', ')}`)
+  }
+  const files = {}
+  for (const filename of kingudTemplateTargetFilenames(compat)) {
+    const staged = join(destination, ...filename.split('/'))
+    if (filename === KINGUD_SERVER_TARGET_FILENAME) {
+      mkdirSync(dirname(staged), { recursive: true })
+      writeFileSync(staged, `${compat}\n`)
+    } else if (filename === KINGUD_NODE_RUNTIME_MARKER_FILENAME) {
+      mkdirSync(dirname(staged), { recursive: true })
+      writeFileSync(staged, `${pinnedNodeRuntimeAsset(compat).executableSha256}\n`)
+    } else {
+      const source = slotFiles.get(filename) ?? join(basePackageDir, ...filename.split('/'))
+      copy(source, staged, isExecutable(filename))
+    }
+    files[filename] = sha256(staged)
+  }
+  return { files }
+}
+
+function sameBytes(left, right) {
+  return sha256(left) === sha256(right)
 }
 
 async function main() {
-  buildCommonArtifacts()
+  // The template is what releases ship as the server; a dark build must never become one.
+  assertNotLayoutOwnerBuild([])
+  const templateTargets = requestedTemplateTargets()
+  rmSync(buildDir, { recursive: true, force: true })
+  const packages = Object.fromEntries(
+    templateTargets.map((target) => [target, buildTargetPackage(target)])
+  )
   rmSync(outputDir, { recursive: true, force: true })
   mkdirSync(outputDir, { recursive: true })
+  const [firstTarget] = templateTargets
   for (const filename of commonArtifacts) {
-    copy(
-      join(buildDir, filename),
-      join(outputDir, filename),
-      KINGUD_RIPGREP_ARTIFACTS.some((artifact) => artifact === filename && artifact.endsWith('/rg'))
-    )
+    const source = join(packages[firstTarget], ...filename.split('/'))
+    // Why check every target: the template keeps one copy, so a per-target difference would ship wrong bytes.
+    for (const target of templateTargets) {
+      if (!sameBytes(source, join(packages[target], ...filename.split('/')))) {
+        throw new Error(`${filename} differs between ${firstTarget} and ${target} packages`)
+      }
+    }
+    copy(source, join(outputDir, ...filename.split('/')), isExecutable(filename))
   }
   const targets = Object.fromEntries(
-    await Promise.all(
-      KINGUD_TEMPLATE_TARGETS.map(async (target) => [target, await stageTarget(target)])
-    )
+    templateTargets.map((target) => [target, stageTarget(target, packages[target])])
   )
+  // A partial CI template stages a compat target only beside its base target.
+  for (const compat of COMPAT_SERVER_TARGETS.filter((candidate) =>
+    templateTargets.includes(COMPAT_SERVER_TARGET_BASES[candidate])
+  )) {
+    const staged = stageCompatTarget(compat, packages[COMPAT_SERVER_TARGET_BASES[compat]])
+    if (staged) {
+      targets[compat] = staged
+    }
+  }
   const commonSha256 = Object.fromEntries(
     commonArtifacts.map((filename) => [filename, sha256(join(outputDir, filename))])
   )
   writeFileSync(
     join(outputDir, KINGUD_TEMPLATE_MANIFEST_FILENAME),
-    `${JSON.stringify({ schemaVersion: 2, commonSha256, targets }, null, 2)}\n`
+    `${JSON.stringify({ schemaVersion: 3, commonSha256, targets }, null, 2)}\n`
   )
-  verifyPackagedKingudTemplate(join(root, 'out'))
+  verifyPackagedKingudTemplate(join(root, 'out'), templateTargets)
   rmSync(buildDir, { recursive: true, force: true })
-  process.stdout.write(`[build-kingud-template] ok — ${KINGUD_TEMPLATE_TARGETS.length} targets\n`)
+  process.stdout.write(`[build-kingud-template] ok — ${Object.keys(targets).length} targets\n`)
 }
 
-await main()
+if (process.argv[1]?.endsWith('build-kingud-template.mjs')) {
+  await main()
+}

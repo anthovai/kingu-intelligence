@@ -1,25 +1,49 @@
 import { build } from 'esbuild'
-import { join } from 'node:path'
+import { createHash } from 'node:crypto'
+import { readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
+import { basename, dirname, join } from 'node:path'
+import { KINGUD_SERVER_ENTRY_FILENAME } from '../../src/shared/kingud-artifacts.ts'
 
 const root = join(import.meta.dirname, '..', '..')
+const { isLayoutOwnerBuild, layoutOwnerDefine } = createRequire(import.meta.url)(
+  '../layout-owner-build.cjs'
+)
 
 export const KINGUD_ENTRY_POINT = 'src/main/kingud/main.ts'
+export const KINGUD_LAUNCHER_ENTRY_POINT = 'src/main/kingud/launcher.ts'
 export const KINGUD_CHILD_ENTRY_POINTS = {
   watcher: 'src/main/ipc/parcel-watcher-process-entry.ts',
   daemon: 'src/main/daemon/daemon-entry.ts',
-  ptyGate: 'src/main/daemon/pty-subprocess/windows-bun-pty-gate-entry.ts',
   writer: 'src/main/persistence/profile-state/profile-state-writer-worker-entry.ts',
-  backup: 'src/main/persistence/profile-state/profile-state-backup-worker-entry.ts'
+  backup: 'src/main/persistence/profile-state/profile-state-backup-worker-entry.ts',
+  foreignSqliteReader: 'src/main/foreign-sqlite-readers/foreign-sqlite-reader-entry.ts',
+  portScanCommandWorker: 'src/main/ports/port-scan-command-worker-entry.ts',
+  sessionScanner: 'src/main/ai-vault/session-scanner-service-entry.ts',
+  workerThreadChildProcess:
+    'src/main/worker-thread-child-process/worker-thread-child-process-entry.ts',
+  claudeProfileSetup: 'src/main/claude-accounts/claude-profile-setup-worker-entry.ts'
 }
 
-export const KINGUD_EXTERNAL_MODULES = [
-  'electron',
-  'node-pty',
-  '@parcel/watcher',
-  'fsevents',
-  'bun:ffi',
-  'bun:sqlite'
-]
+/** Each child ships flat beside kingud.js under its source basename; the runtime resolvers look there. */
+export function kingudChildOutputFilename(entryPoint) {
+  return basename(entryPoint).replace(/\.ts$/, '.js')
+}
+
+export const KINGUD_EXTERNAL_MODULES = ['electron', 'node-pty', '@parcel/watcher', 'fsevents']
+
+// Bundled ESM resolves from the deployed bundle, like CommonJS __filename.
+export const KINGUD_COMMONJS_MODULE_OPTIONS = {
+  banner: {
+    js: 'var __kingudModuleUrl = require("node:url").pathToFileURL(__filename).href;'
+  },
+  define: {
+    'import.meta.url': '__kingudModuleUrl',
+    // Why only when on: an undeclared switch already reads as off, so other builds keep their bytes.
+    ...(isLayoutOwnerBuild() ? { KINGU_LAYOUT_OWNER: layoutOwnerDefine() } : {})
+  },
+  logOverride: { 'empty-import-meta': 'error' }
+}
 
 // Native binaries are staged separately from every JavaScript entry.
 export const externalNativeAddons = {
@@ -41,6 +65,7 @@ const jsoncParserEsm = {
 
 export function buildKingudEntry(outfile) {
   return build({
+    ...KINGUD_COMMONJS_MODULE_OPTIONS,
     entryPoints: [join(root, KINGUD_ENTRY_POINT)],
     bundle: true,
     platform: 'node',
@@ -52,7 +77,48 @@ export function buildKingudEntry(outfile) {
     metafile: true,
     minify: true,
     sourcemap: false,
-    define: { 'process.env.NODE_ENV': '"production"' },
+    define: {
+      ...KINGUD_COMMONJS_MODULE_OPTIONS.define,
+      'process.env.NODE_ENV': '"production"'
+    },
+    logLevel: 'error'
+  })
+}
+
+export function buildKingudCli(outfile) {
+  return build({
+    entryPoints: [join(root, 'src/cli/index.ts')],
+    bundle: true,
+    platform: 'node',
+    target: 'node18',
+    format: 'cjs',
+    outfile,
+    metafile: true,
+    minify: true,
+    sourcemap: false,
+    logLevel: 'error'
+  })
+}
+
+export function buildKingudLauncher(outfile) {
+  const serverSha256 = createHash('sha256')
+    .update(readFileSync(join(dirname(outfile), KINGUD_SERVER_ENTRY_FILENAME)))
+    .digest('hex')
+  return build({
+    ...KINGUD_COMMONJS_MODULE_OPTIONS,
+    entryPoints: [join(root, KINGUD_LAUNCHER_ENTRY_POINT)],
+    bundle: true,
+    platform: 'node',
+    target: 'node18',
+    format: 'cjs',
+    outfile,
+    metafile: true,
+    minify: true,
+    sourcemap: false,
+    define: {
+      ...KINGUD_COMMONJS_MODULE_OPTIONS.define,
+      KINGUD_SERVER_SHA256: JSON.stringify(serverSha256)
+    },
     logLevel: 'error'
   })
 }

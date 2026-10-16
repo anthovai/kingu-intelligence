@@ -169,10 +169,7 @@ async function parentMain() {
   const discardReport = hasFlag('discard-report')
   const marker = `marker_${randomUUID().replace(/-/g, '')}`
   const spec = buildLongSpec(sizeKb, marker)
-  const tempDir = path.join(
-    tmpdir(),
-    `kingu-orchestration-long-prompt-${process.pid}-${Date.now()}`
-  )
+  const tempDir = path.join(tmpdir(), `kingu-orchestration-long-prompt-${process.pid}-${Date.now()}`)
   await mkdir(tempDir, { recursive: true })
   const workerReportPath = path.join(tempDir, 'worker-report.json')
 
@@ -370,7 +367,8 @@ function parseInjectedIds(text) {
   return {
     taskId: /Your task ID is:\s*(task_[A-Za-z0-9_]+)/.exec(text)?.[1] ?? null,
     dispatchId: /--dispatch-id\s+(ctx_[A-Za-z0-9_]+)/.exec(text)?.[1] ?? null,
-    coordinatorHandle: /Your coordinator's terminal handle is:\s*([^\s]+)/.exec(text)?.[1] ?? null
+    coordinatorHandle:
+      /Your coordinator's (?:terminal handle|Kingu session ID) is:\s*(\S+)/.exec(text)?.[1] ?? null
   }
 }
 

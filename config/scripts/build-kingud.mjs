@@ -1,12 +1,16 @@
 #!/usr/bin/env node
-// Ship Bun with kingud; keep module loading compatible with legacy Node launchers.
+// Package the server separately from its compatibility launcher.
 import { fork, spawnSync } from 'node:child_process'
 import { build } from 'esbuild'
 import {
   buildKingudEntry,
+  buildKingudCli,
+  buildKingudLauncher,
   externalNativeAddons,
   KINGUD_EXTERNAL_MODULES,
-  KINGUD_CHILD_ENTRY_POINTS
+  KINGUD_CHILD_ENTRY_POINTS,
+  KINGUD_COMMONJS_MODULE_OPTIONS,
+  kingudChildOutputFilename
 } from './kingud-entry-build.mjs'
 import { createRequire } from 'node:module'
 import {
@@ -16,6 +20,7 @@ import {
   existsSync,
   mkdirSync,
   mkdtempSync,
+  readFileSync,
   rmSync,
   writeFileSync
 } from 'node:fs'
@@ -23,45 +28,65 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
 import { smokeProfileStateWorkers } from './profile-state-worker-smoke.mjs'
+import { smokeForeignSqliteReaderWorker } from './foreign-sqlite-reader-worker-smoke.mjs'
+import { smokeSessionScannerService } from './session-scanner-service-smoke.mjs'
 import { materializeWatcherPackage } from './kingud-watcher-package.mjs'
 import { stageKingudWindowsProcessTree } from './kingud-windows-process-tree.mjs'
+import { stageKingudWindowsCliLauncher } from './kingud-windows-cli-launcher.mjs'
+import { stageKingudWindowsSecurity } from './kingud-windows-security.mjs'
 import {
-  KINGUD_BUILD_TARGET_FILENAME,
   KINGUD_EMOJI_SHORTCODE_DATASET,
-  kingudBunRuntimeFilename,
+  KINGUD_CLI_ENTRY_FILENAME,
+  KINGUD_CLI_PACKAGE_FILENAME,
+  KINGUD_LAUNCHER_FILENAME,
+  KINGUD_SERVER_ENTRY_FILENAME,
+  KINGUD_NODE_PTY_DIR,
+  KINGUD_NODE_PTY_JS_ARTIFACTS,
+  KINGUD_NODE_RUNTIME_MARKER_FILENAME,
   KINGUD_PARCEL_WATCHER_ENTRY,
   KINGUD_PARCEL_WATCHER_NATIVE,
+  KINGUD_SERVER_TARGET_FILENAME,
   KINGUD_VERSION_FILENAME,
-  KINGUD_RIPGREP_ARTIFACTS
+  kingudNodePtySlotFiles,
+  kingudRipgrepArtifact
 } from '../../src/shared/kingud-artifacts.ts'
 import { computeKingudFullVersion } from './kingud-artifact-version.mjs'
-import { KINGUD_BUN_VERSION } from '../../src/shared/kingud-bun-runtime.ts'
+import { NODE_RUNTIME_ASSETS, NODE_RUNTIME_PIN } from '../../src/shared/node-runtime-pin.ts'
+import { findSlotProblems, readManifest } from './kingud-prebuild-slot-contents.mjs'
 import { kingudAgentBrowserNativeName } from '../../src/shared/kingud-agent-browser-name.ts'
+import { runProcessSync } from '@kingu/process-host'
+import { describeProcessFailure } from './process-failure-message.mjs'
+import { resolveBuildSourceCommit } from './build-source-commit.mjs'
 
 const ROOT = join(import.meta.dirname, '..', '..')
 const OUT_DIR = process.env.KINGUD_OUT_DIR
   ? resolve(process.env.KINGUD_OUT_DIR)
   : join(ROOT, 'out', 'kingud')
-// Why beside kingud.js: the watcher runs in a forked child so a native @parcel/watcher
-// fault crashes that child instead of the server, and `resolveWatcherProcessEntryPath`
-// looks for it in the app root. A deployment has no desktop out/main to fall back to.
-const WATCHER_ENTRY = join(ROOT, KINGUD_CHILD_ENTRY_POINTS.watcher)
-const WATCHER_OUT_FILE = join(OUT_DIR, 'parcel-watcher-process-entry.js')
-// Why beside kingud.js: kingud forks the terminal daemon so PTYs outlive the runtime process,
-// and `getDaemonEntryPath()` probes the app root for this exact filename. Without it every
-// kingud restart would SIGKILL every running terminal.
-const DAEMON_ENTRY = join(ROOT, KINGUD_CHILD_ENTRY_POINTS.daemon)
-const DAEMON_OUT_FILE = join(OUT_DIR, 'daemon-entry.js')
-const PTY_GATE_ENTRY = join(ROOT, KINGUD_CHILD_ENTRY_POINTS.ptyGate)
-const PTY_GATE_OUT_FILE = join(OUT_DIR, 'windows-bun-pty-gate-entry.js')
-const OUT_FILE = join(OUT_DIR, 'kingud.js')
+// Why beside kingud.js: every forked child and worker resolves its entry in the app root, and a
+// deployment has no desktop out/main to fall back to. A missing one only shows on a host as a
+// feature that never starts (the daemon's absence makes every restart kill every terminal).
+const childOutFile = (role) =>
+  join(OUT_DIR, kingudChildOutputFilename(KINGUD_CHILD_ENTRY_POINTS[role]))
+const WATCHER_OUT_FILE = childOutFile('watcher')
+const DAEMON_OUT_FILE = childOutFile('daemon')
+const OUT_FILE = join(OUT_DIR, KINGUD_LAUNCHER_FILENAME)
+const SERVER_OUT_FILE = join(OUT_DIR, KINGUD_SERVER_ENTRY_FILENAME)
 const BUILD_TARGET = process.env.KINGUD_BUILD_TARGET
 if (!BUILD_TARGET) {
   throw new Error('KINGUD_BUILD_TARGET is required; run `pnpm build:kingud`')
 }
 const [targetPlatform, targetArch] = BUILD_TARGET.split('-')
 const targetIsWindows = targetPlatform === 'win32'
-const targetIsCurrent = process.env.KINGUD_BUILD_TARGET_IS_CURRENT === '1'
+const runtimeAsset = NODE_RUNTIME_ASSETS[BUILD_TARGET]
+if (!runtimeAsset) {
+  throw new Error(`Unsupported KINGUD_BUILD_TARGET: ${BUILD_TARGET}`)
+}
+// Set only when the build host can run this target's runtime.
+const nodeRuntimePath = process.env.KINGUD_NODE_RUNTIME_PATH || null
+const PREBUILDS_DIR = process.env.KINGUD_PREBUILDS_DIR
+if (!PREBUILDS_DIR) {
+  throw new Error('KINGUD_PREBUILDS_DIR is required; run `pnpm build:kingud`')
+}
 const AGENT_BROWSER_NAME = kingudAgentBrowserNativeName(
   targetPlatform,
   targetArch,
@@ -79,6 +104,7 @@ async function stageParcelWatcher(target) {
   const wrapperSource = requireFromWatcher.resolve('@parcel/watcher/wrapper.js')
   mkdirSync(WATCHER_MODULE_DIR, { recursive: true })
   await build({
+    ...KINGUD_COMMONJS_MODULE_OPTIONS,
     stdin: {
       contents:
         `const {createWrapper}=require(${JSON.stringify(wrapperSource)});` +
@@ -99,43 +125,65 @@ async function stageParcelWatcher(target) {
   copyFileSync(nativeSource, join(OUT_DIR, KINGUD_PARCEL_WATCHER_NATIVE))
 }
 
-rmSync(OUT_DIR, { recursive: true, force: true })
-mkdirSync(OUT_DIR, { recursive: true })
-const bunRuntimeSource = process.env.KINGUD_BUN_RUNTIME_PATH
-if (!bunRuntimeSource) {
-  throw new Error('KINGUD_BUN_RUNTIME_PATH is required; run `pnpm build:kingud`')
-}
-if (targetIsCurrent) {
-  const version = spawnSync(bunRuntimeSource, ['--version'], { encoding: 'utf8' })
-  if (version.status !== 0 || version.stdout.trim() !== KINGUD_BUN_VERSION) {
+/** node-pty's JS plus only this target's prebuild slot, laid out the way node-pty's loader looks. */
+function stageNodePty(target) {
+  const problems = findSlotProblems(readManifest(PREBUILDS_DIR), PREBUILDS_DIR, [target])
+  if (problems.length > 0) {
+    throw new Error(`[build-kingud] node-pty prebuild for ${target}: ${problems.join('; ')}`)
+  }
+  const slotFiles = Object.keys(readManifest(PREBUILDS_DIR).slots[target].files).sort()
+  const expected = kingudNodePtySlotFiles(target).sort()
+  if (slotFiles.join('\0') !== expected.join('\0')) {
     throw new Error(
-      `KINGUD_BUN_RUNTIME_PATH must be Bun ${KINGUD_BUN_VERSION}; got ${version.stdout.trim() || version.stderr.trim()}`
+      `[build-kingud] ${target} prebuild ships ${slotFiles.join(', ')}; kingud-artifacts.ts expects ${expected.join(', ')}`
     )
   }
+  const sourceDir = dirname(createRequire(import.meta.url).resolve('node-pty/package.json'))
+  for (const artifact of KINGUD_NODE_PTY_JS_ARTIFACTS) {
+    const destination = join(OUT_DIR, artifact)
+    mkdirSync(dirname(destination), { recursive: true })
+    copyFileSync(join(sourceDir, artifact.slice(KINGUD_NODE_PTY_DIR.length + 1)), destination)
+  }
+  for (const file of expected) {
+    const destination = join(OUT_DIR, KINGUD_NODE_PTY_DIR, 'build', 'Release', ...file.split('/'))
+    mkdirSync(dirname(destination), { recursive: true })
+    copyFileSync(join(PREBUILDS_DIR, target, ...file.split('/')), destination)
+    if (file === 'spawn-helper') {
+      chmodSync(destination, 0o755)
+    }
+  }
 }
-const bunRuntimeOutput = join(OUT_DIR, kingudBunRuntimeFilename(BUILD_TARGET))
-copyFileSync(bunRuntimeSource, bunRuntimeOutput)
-writeFileSync(join(OUT_DIR, KINGUD_BUILD_TARGET_FILENAME), `${BUILD_TARGET}\n`)
-if (!targetIsWindows) {
-  chmodSync(bunRuntimeOutput, 0o755)
-}
+
+rmSync(OUT_DIR, { recursive: true, force: true })
+mkdirSync(OUT_DIR, { recursive: true })
+writeFileSync(join(OUT_DIR, KINGUD_SERVER_TARGET_FILENAME), `${BUILD_TARGET}\n`)
+writeFileSync(
+  join(OUT_DIR, KINGUD_NODE_RUNTIME_MARKER_FILENAME),
+  `${runtimeAsset.executableSha256}\n`
+)
+stageNodePty(BUILD_TARGET)
 await stageParcelWatcher(BUILD_TARGET)
 stageKingudWindowsProcessTree(ROOT, OUT_DIR, BUILD_TARGET)
+stageKingudWindowsCliLauncher(ROOT, OUT_DIR, BUILD_TARGET)
+stageKingudWindowsSecurity(ROOT, OUT_DIR, BUILD_TARGET, undefined, undefined, {
+  enabled: process.env.KINGU_REUSE_PREPARED_WINDOWS_SECURITY === 'true',
+  runtimePath: nodeRuntimePath
+})
 const emojiDatasetOutput = join(OUT_DIR, KINGUD_EMOJI_SHORTCODE_DATASET)
 mkdirSync(dirname(emojiDatasetOutput), { recursive: true })
 copyFileSync(
   createRequire(import.meta.url).resolve('emojibase-data/en/shortcodes/emojibase.json'),
   emojiDatasetOutput
 )
-if (existsSync(AGENT_BROWSER_SOURCE)) {
+// The desktop template omits it: ~10 MB per target, and kingud already treats it as optional.
+if (existsSync(AGENT_BROWSER_SOURCE) && process.env.KINGUD_OMIT_AGENT_BROWSER !== '1') {
   copyFileSync(AGENT_BROWSER_SOURCE, AGENT_BROWSER_OUTPUT)
   if (!targetIsWindows) {
     chmodSync(AGENT_BROWSER_OUTPUT, 0o755)
   }
 }
-// Why every platform: an SSH deployment can target a different host than the build machine.
-for (const artifact of KINGUD_RIPGREP_ARTIFACTS) {
-  const [, ripgrepPlatform, ripgrepName] = artifact.split('/')
+{
+  const [, ripgrepPlatform, ripgrepName] = kingudRipgrepArtifact(BUILD_TARGET).split('/')
   const outputDir = join(OUT_DIR, 'ripgrep', ripgrepPlatform)
   mkdirSync(outputDir, { recursive: true })
   const outputPath = join(outputDir, ripgrepName)
@@ -143,11 +191,14 @@ for (const artifact of KINGUD_RIPGREP_ARTIFACTS) {
     join(ROOT, 'node_modules', '@vscode', 'ripgrep-universal', 'bin', ripgrepPlatform, ripgrepName),
     outputPath
   )
-  if (!ripgrepPlatform.startsWith('win32-')) {
+  if (!targetIsWindows) {
     chmodSync(outputPath, 0o755)
   }
 }
 cpSync(join(ROOT, 'resources', 'licenses', 'ripgrep'), join(OUT_DIR, 'ripgrep', 'licenses'), {
+  recursive: true
+})
+cpSync(join(ROOT, 'resources', 'native-chat-visuals'), join(OUT_DIR, 'native-chat-visuals'), {
   recursive: true
 })
 
@@ -156,6 +207,7 @@ cpSync(join(ROOT, 'resources', 'licenses', 'ripgrep'), join(OUT_DIR, 'ripgrep', 
  *  their runtime resolvers look for them. */
 function buildForkedChild(entryPoint, outfile) {
   return build({
+    ...KINGUD_COMMONJS_MODULE_OPTIONS,
     entryPoints: [entryPoint],
     bundle: true,
     platform: 'node',
@@ -168,25 +220,31 @@ function buildForkedChild(entryPoint, outfile) {
     minify: true,
     sourcemap: false,
     define: {
+      ...KINGUD_COMMONJS_MODULE_OPTIONS.define,
       'process.env.NODE_ENV': '"production"'
     },
     logLevel: 'error'
   })
 }
 
-const childResults = await Promise.all([
-  buildForkedChild(WATCHER_ENTRY, WATCHER_OUT_FILE),
-  buildForkedChild(DAEMON_ENTRY, DAEMON_OUT_FILE),
-  buildForkedChild(PTY_GATE_ENTRY, PTY_GATE_OUT_FILE),
-  ...['writer', 'backup'].map((role) =>
-    buildForkedChild(
-      join(ROOT, KINGUD_CHILD_ENTRY_POINTS[role]),
-      join(OUT_DIR, `profile-state-${role}-worker-entry.js`)
-    )
+const childResults = await Promise.all(
+  Object.values(KINGUD_CHILD_ENTRY_POINTS).map((entryPoint) =>
+    buildForkedChild(join(ROOT, entryPoint), join(OUT_DIR, kingudChildOutputFilename(entryPoint)))
   )
-])
+)
 
-const result = await buildKingudEntry(OUT_FILE)
+const result = await buildKingudEntry(SERVER_OUT_FILE)
+const cliResult = await buildKingudCli(join(OUT_DIR, KINGUD_CLI_ENTRY_FILENAME))
+const { version: cliVersion } = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'))
+// Why commit: `kingu skills install|update` pins official skills to it, as the desktop CLI does.
+const cliPackage = {
+  type: 'commonjs',
+  private: true,
+  version: cliVersion,
+  commit: resolveBuildSourceCommit()
+}
+writeFileSync(join(OUT_DIR, KINGUD_CLI_PACKAGE_FILENAME), `${JSON.stringify(cliPackage)}\n`)
+const launcherResult = await buildKingudLauncher(OUT_FILE)
 
 const output = Object.values(result.metafile.outputs).find(
   (o) => o.entryPoint === 'src/main/kingud/main.ts'
@@ -211,7 +269,12 @@ function collectImporters(metafiles, matches) {
   return importers
 }
 
-const metafiles = [result.metafile, ...childResults.map((child) => child.metafile)]
+const metafiles = [
+  launcherResult.metafile,
+  result.metafile,
+  cliResult.metafile,
+  ...childResults.map((child) => child.metafile)
+]
 const electronImporters = collectImporters(
   metafiles,
   (specifier) => specifier === 'electron' || specifier.startsWith('electron/')
@@ -251,7 +314,7 @@ if (graphErrors.length > 0) {
   // Node's uncaught-exception report echoes that whole line — which contains every string
   // literal in the bundle. A crash therefore "matches" any expected message, and a textual
   // assertion passes against a bundle that never loaded.
-  const smoke = spawnSync(process.execPath, [OUT_FILE, '--kingud-smoke-load-check'], {
+  const smoke = spawnSync(process.execPath, [SERVER_OUT_FILE, '--kingud-smoke-load-check'], {
     encoding: 'utf8',
     timeout: 60_000
   })
@@ -262,6 +325,17 @@ if (graphErrors.length > 0) {
         `Expected a clean load-check exit, got status=${smoke.status ?? 'none'} ` +
         `signal=${smoke.signal ?? 'none'} ` +
         `error=${smoke.error?.message ?? 'none'}\n${smokeOutput.slice(0, 2000)}`
+    )
+    process.exitCode = 1
+  }
+  const providerSmoke = runProcessSync({
+    program: process.execPath,
+    args: [SERVER_OUT_FILE, '--kingud-structured-provider-load-check'],
+    timeoutMs: 60_000
+  })
+  if (providerSmoke.code !== 0 || providerSmoke.timedOut || providerSmoke.outputTruncated) {
+    console.error(
+      `[build-kingud] the packaged structured provider failed to load.\n${describeProcessFailure(providerSmoke)}`
     )
     process.exitCode = 1
   }
@@ -294,7 +368,7 @@ if (graphErrors.length > 0) {
     )
     process.exitCode = 1
   }
-  const watcherFailure = targetIsCurrent ? await smokeLoadWatcherChild(bunRuntimeOutput) : null
+  const watcherFailure = nodeRuntimePath ? await smokeLoadWatcherChild(nodeRuntimePath) : null
   if (watcherFailure) {
     console.error(
       `[build-kingud] the watcher child failed under the bundled runtime.\n${watcherFailure}`
@@ -303,14 +377,23 @@ if (graphErrors.length > 0) {
   }
 }
 
-try {
-  await smokeProfileStateWorkers(OUT_DIR)
-  if (targetIsCurrent) {
-    await smokeProfileStateWorkers(OUT_DIR, { runtimePath: bunRuntimeOutput })
+/** @type {{ label: string, smoke: (outDir: string, options?: { runtimePath?: string }) => unknown }[]} */
+const workerSmokes = [
+  { label: 'profile state worker', smoke: smokeProfileStateWorkers },
+  { label: 'foreign SQLite reader worker', smoke: smokeForeignSqliteReaderWorker },
+  { label: 'session scanner service', smoke: smokeSessionScannerService }
+]
+// Each shipped child is checked under the build's Node and, when set, the pinned runtime.
+for (const { label, smoke } of workerSmokes) {
+  try {
+    await smoke(OUT_DIR)
+    if (nodeRuntimePath) {
+      await smoke(OUT_DIR, { runtimePath: nodeRuntimePath })
+    }
+  } catch (error) {
+    console.error(`[build-kingud] ${label} check failed:`, error)
+    process.exitCode = 1
   }
-} catch (error) {
-  console.error('[build-kingud] profile state worker check failed:', error)
-  process.exitCode = 1
 }
 
 // Why a content hash and not KINGUD_VERSION alone: the remote install directory is keyed on
@@ -324,7 +407,7 @@ if (process.exitCode !== 1) {
   })
   writeFileSync(join(OUT_DIR, KINGUD_VERSION_FILENAME), fullVersion)
   console.log(
-    `[build-kingud] ok — ${fullVersion}, ${(output.bytes / 1024 / 1024).toFixed(2)} MB, ${Object.keys(output.inputs).length} modules, zero electron and node:sqlite imports, Bun ${KINGUD_BUN_VERSION} included.`
+    `[build-kingud] ok — ${fullVersion}, ${(output.bytes / 1024 / 1024).toFixed(2)} MB, ${Object.keys(output.inputs).length} modules, zero electron and node:sqlite imports, Node ${NODE_RUNTIME_PIN.version} referenced.`
   )
 }
 

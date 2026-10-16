@@ -43,6 +43,7 @@ import {
 } from './paced-terminal-typing'
 import {
   ensureTerminalVisible,
+  getActiveTabId,
   getActiveWorktreeId,
   getAllWorktreeIds,
   switchToWorktree,
@@ -63,9 +64,22 @@ import {
 import {
   sustainedLoadReadyFilePath,
   typingProbeReadyMarker,
+  writeCodexEchoProbeScript,
   writeSustainedAgentLoadScript,
   writeTypingEchoProbeScript
 } from './sustained-agent-typing-load-scripts'
+import {
+  startSynchronizedOutputBlackoutProbe,
+  stopSynchronizedOutputBlackoutProbe,
+  type SynchronizedOutputBlackoutSnapshot
+} from './synchronized-output-blackout-probe'
+import {
+  createGitChurnRepos,
+  registerGitChurnRepos,
+  startGitChurnLoad,
+  stopGitChurnLoad,
+  type GitChurnStats
+} from './git-churn-load'
 import {
   cleanupAccumulatedWorkspaceFixture,
   seedAccumulatedWorkspaceFixture,
@@ -104,6 +118,16 @@ const LOAD_RATE_KBPS = readPositiveInt('KINGU_TYPING_BENCH_RATE_KBPS', 256)
 const KEY_COUNT = readPositiveInt('KINGU_TYPING_BENCH_KEYS', 32)
 const KEY_CADENCE_MS = readPositiveInt('KINGU_TYPING_BENCH_KEY_CADENCE_MS', 250)
 const CPU_WORKERS = readPositiveInt('KINGU_TYPING_BENCH_CPU_WORKERS', 0)
+// Git churn stands in for the sidebar/source-control pollers, which spawn a git
+// child per worktree and are gated on window visibility — so a headless bench
+// window never runs them and the field's dominant main-thread load is missing.
+const GIT_CHURN_REPOS = readPositiveInt('KINGU_TYPING_BENCH_GIT_CHURN_REPOS', 0)
+const GIT_CHURN_FILES = readPositiveInt('KINGU_TYPING_BENCH_GIT_CHURN_FILES', 2000)
+const GIT_CHURN_CONCURRENCY = readPositiveInt('KINGU_TYPING_BENCH_GIT_CHURN_CONCURRENCY', 8)
+// Codex-shaped foreground: rows repainted per keystroke, and the gap the probe
+// itself leaves between the frame body and its closing \x1b[?2026l.
+const CODEX_FRAME_ROWS = readPositiveInt('KINGU_TYPING_BENCH_CODEX_FRAME_ROWS', 20)
+const CODEX_SPLIT_DELAY_MS = Number(process.env.KINGU_TYPING_BENCH_CODEX_SPLIT_DELAY_MS ?? 0) || 0
 const PTY_METADATA = process.env.KINGU_TYPING_BENCH_PTY_METADATA === '1'
 const BENCH_LABEL = process.env.KINGU_TYPING_BENCH_LABEL ?? 'dev'
 // Request optional probes by default; the report records when the build does not install them.
@@ -227,7 +251,9 @@ function writeBenchReport(
   scaleCensus?: unknown,
   accumulatedFixture?: unknown,
   ptyWorkload?: unknown,
-  graphProbe?: RuntimeGraphPublicationProbeSnapshot | null
+  graphProbe?: RuntimeGraphPublicationProbeSnapshot | null,
+  gitChurn?: GitChurnStats | null,
+  blackout?: SynchronizedOutputBlackoutSnapshot | null
 ): void {
   const { measurement, appliedCpuThrottleRate } = measured
   const report = {
@@ -285,7 +311,9 @@ function writeBenchReport(
     scaleCensus: scaleCensus ?? null,
     accumulatedFixture: accumulatedFixture ?? null,
     ptyWorkload: ptyWorkload ?? null,
-    graphProbe: graphProbe ?? null
+    graphProbe: graphProbe ?? null,
+    gitChurn: gitChurn ?? null,
+    synchronizedOutputBlackout: blackout ?? null
   }
   mkdirSync(RESULTS_DIR, { recursive: true })
   const stamp = report.timestamp.replace(/[:.]/g, '-')
@@ -409,9 +437,7 @@ test.describe('Multi-workspace sustained typing latency bench', () => {
   }, testInfo) => {
     await waitForSessionReady(kinguPage)
     const typingWorktreeId = await waitForActiveWorktree(kinguPage)
-    const loadWorktreeId = (await getAllWorktreeIds(kinguPage)).find(
-      (id) => id !== typingWorktreeId
-    )
+    const loadWorktreeId = (await getAllWorktreeIds(kinguPage)).find((id) => id !== typingWorktreeId)
     expect(Boolean(loadWorktreeId), 'bench needs the seeded secondary worktree').toBe(true)
     if (!loadWorktreeId) {
       return
@@ -687,6 +713,192 @@ test.describe('Multi-workspace sustained typing latency bench', () => {
       expect(measurement.inputHalfMs?.count).toBe(KEY_COUNT)
       expect(measurement.totalMs?.count).toBe(KEY_COUNT)
     } finally {
+      for (const worker of cpuWorkers) {
+        worker.kill('SIGKILL')
+      }
+      await stopPtysQuietly(
+        kinguPage,
+        panes.map((pane) => pane.ptyId)
+      )
+      rmSync(loadPath, { force: true })
+      rmSync(probePath, { force: true })
+      rmSync(sidecarPath, { force: true })
+      removeLoadReadyFiles(testRepoPath, runId, panes.length)
+    }
+  })
+
+  /**
+   * The field shape the PTY-only scenarios miss: many repositories being polled
+   * for git status while the user types. Each poll spawns a git child from
+   * main, and PTY input and echo are relayed through that same main event loop.
+   *
+   * Requires --git-churn-repos; without it the scenario would silently be the
+   * visible-split scenario again.
+   */
+  test('typing under sustained git-subprocess churn', async ({
+    kinguPage,
+    testRepoPath
+  }, testInfo) => {
+    test.skip(
+      GIT_CHURN_REPOS === 0,
+      'Set --git-churn-repos to run: this scenario measures git-spawn churn, not PTY bytes'
+    )
+    await waitForSessionReady(kinguPage)
+    await waitForActiveWorktree(kinguPage)
+    await ensureTerminalVisible(kinguPage)
+    await waitForActiveTerminalManager(kinguPage, 30_000)
+
+    const runId = randomUUID()
+    const loadPath = path.join(testRepoPath, `.kingu-mwt-load-${runId}.mjs`)
+    const probePath = path.join(testRepoPath, `.kingu-mwt-probe-${runId}.mjs`)
+    const sidecarPath = path.join(testRepoPath, `.kingu-mwt-arrivals-${runId}.jsonl`)
+    const churnRoot = mkdtempSync(path.join(tmpdir(), 'kingu-git-churn-'))
+    writeSustainedAgentLoadScript(loadPath, runId, testRepoPath)
+    writeTypingEchoProbeScript(probePath, runId, sidecarPath)
+
+    const cpuWorkers = spawnCpuPressureWorkers()
+    let panes: TerminalLoadPane[] = []
+    let gitChurn: GitChurnStats | null = null
+    try {
+      const repos = createGitChurnRepos(churnRoot, GIT_CHURN_REPOS, GIT_CHURN_FILES)
+      const registration = await registerGitChurnRepos(
+        kinguPage,
+        repos.map((repo) => repo.path)
+      )
+      expect(
+        registration,
+        `churn repos were not registered with Kingu: ${registration.failures.join('; ')}`
+      ).toMatchObject({ registered: repos.length })
+      panes = await ensureActiveWorktreePaneLoad(kinguPage, 2)
+      const [typingPane, ...loadPanes] = panes
+      await startSustainedLoadInPanes(kinguPage, loadPanes, loadPath, runId, testRepoPath)
+      await focusPane(kinguPage, typingPane.paneKey)
+
+      await resetDeliveryDebug(kinguPage)
+      await startTypingProbe(kinguPage, typingPane.ptyId, probePath, runId)
+      await startGitChurnLoad(
+        kinguPage,
+        repos.map((repo) => repo.path),
+        { concurrency: GIT_CHURN_CONCURRENCY, admissionTier: 'status' }
+      )
+      const measured = await measureTypingWindow(kinguPage, runId, sidecarPath)
+      gitChurn = await stopGitChurnLoad(kinguPage)
+      const { measurement } = measured
+      writeBenchReport(
+        testInfo,
+        `git-churn-${GIT_CHURN_REPOS}repos-x${GIT_CHURN_CONCURRENCY}`,
+        measured,
+        await readSchedulerDebug(kinguPage),
+        await readMainDeliveryDebug(kinguPage),
+        undefined,
+        null,
+        null,
+        null,
+        undefined,
+        undefined,
+        undefined,
+        null,
+        gitChurn
+      )
+      // The churn must have actually spawned git, or a fast result means nothing:
+      // a loop that only rejects measures the rejection path, not subprocess churn.
+      expect(gitChurn?.settled ?? 0).toBeGreaterThan(0)
+      expect(
+        gitChurn,
+        `git churn never reached git: ${gitChurn?.firstError ?? 'unknown error'}`
+      ).toMatchObject({ failed: 0 })
+      expect(measurement.inputHalfMs?.count).toBe(KEY_COUNT)
+      expect(measurement.totalMs?.count).toBe(KEY_COUNT)
+    } finally {
+      await stopGitChurnLoad(kinguPage).catch(() => null)
+      for (const worker of cpuWorkers) {
+        worker.kill('SIGKILL')
+      }
+      await stopPtysQuietly(
+        kinguPage,
+        panes.map((pane) => pane.ptyId)
+      )
+      rmSync(loadPath, { force: true })
+      rmSync(probePath, { force: true })
+      rmSync(sidecarPath, { force: true })
+      rmSync(churnRoot, { recursive: true, force: true })
+      removeLoadReadyFiles(testRepoPath, runId, panes.length)
+    }
+  })
+
+  /**
+   * The shape that actually matches the report: a Codex-like foreground TUI that
+   * wraps every keystroke repaint in a DEC 2026 synchronized frame, under
+   * background agent load, measured at the RENDER rather than at the xterm
+   * buffer.
+   *
+   * xterm suppresses all row rendering while the synchronized-output latch is
+   * open and force-flushes on a 1000 ms timeout, so a delayed closing
+   * `\x1b[?2026l` freezes the pane for up to a second and then repaints in one
+   * burst. Buffer-observation scenarios score that as a fast echo.
+   */
+  test('typing a DEC 2026 foreground TUI under agent load, measured at the render', async ({
+    kinguPage,
+    testRepoPath
+  }, testInfo) => {
+    await waitForSessionReady(kinguPage)
+    await waitForActiveWorktree(kinguPage)
+    await ensureTerminalVisible(kinguPage)
+    await waitForActiveTerminalManager(kinguPage, 30_000)
+
+    const runId = randomUUID()
+    const loadPath = path.join(testRepoPath, `.kingu-mwt-load-${runId}.mjs`)
+    const probePath = path.join(testRepoPath, `.kingu-mwt-probe-${runId}.mjs`)
+    const sidecarPath = path.join(testRepoPath, `.kingu-mwt-arrivals-${runId}.jsonl`)
+    writeSustainedAgentLoadScript(loadPath, runId, testRepoPath)
+    writeCodexEchoProbeScript(probePath, runId, sidecarPath, {
+      frameRows: CODEX_FRAME_ROWS,
+      splitDelayMs: CODEX_SPLIT_DELAY_MS
+    })
+
+    const cpuWorkers = spawnCpuPressureWorkers()
+    let panes: TerminalLoadPane[] = []
+    let blackout: SynchronizedOutputBlackoutSnapshot | null = null
+    try {
+      panes = await ensureActiveWorktreePaneLoad(kinguPage, Math.max(2, LOAD_PANES + 1))
+      const [typingPane, ...loadPanes] = panes
+      await startSustainedLoadInPanes(kinguPage, loadPanes, loadPath, runId, testRepoPath)
+      await focusPane(kinguPage, typingPane.paneKey)
+
+      await resetDeliveryDebug(kinguPage)
+      await startTypingProbe(kinguPage, typingPane.ptyId, probePath, runId)
+      const activeTabId = await getActiveTabId(kinguPage)
+      const probeInstall = await startSynchronizedOutputBlackoutProbe(kinguPage, activeTabId ?? '')
+      // A probe that did not install would report zero blackouts, which reads
+      // identically to "no bug".
+      expect(probeInstall, `blackout probe not installed: ${probeInstall.reason}`).toMatchObject({
+        installed: true
+      })
+
+      const measured = await measureTypingWindow(kinguPage, runId, sidecarPath)
+      blackout = await stopSynchronizedOutputBlackoutProbe(kinguPage)
+      const { measurement } = measured
+      writeBenchReport(
+        testInfo,
+        `dec2026-render-${LOAD_PANES}panes-${LOAD_RATE_KBPS}kbps-rows${CODEX_FRAME_ROWS}`,
+        measured,
+        await readSchedulerDebug(kinguPage),
+        await readMainDeliveryDebug(kinguPage),
+        undefined,
+        null,
+        null,
+        null,
+        await readTypingScaleCensus(kinguPage).catch(() => null),
+        undefined,
+        undefined,
+        null,
+        null,
+        blackout
+      )
+      expect(measurement.totalMs?.count).toBe(KEY_COUNT)
+      expect(blackout?.renderCount ?? 0).toBeGreaterThan(0)
+    } finally {
+      await stopSynchronizedOutputBlackoutProbe(kinguPage).catch(() => null)
       for (const worker of cpuWorkers) {
         worker.kill('SIGKILL')
       }

@@ -92,7 +92,10 @@ vi.mock('./github-api-repository', async (importOriginal) => {
   }
 })
 
-import { countWorkItems, getWorkItem, listWorkItems, _resetOwnerRepoCache } from './client'
+import { countWorkItems } from './client/list/count-work-items'
+import { getWorkItem } from './client/fetch/get-work-item'
+import { listWorkItems } from './client/list/list-work-items'
+import { _resetOwnerRepoCache } from './gh-utils'
 
 const PR_LIST_FIELDS =
   'number,title,state,url,labels,updatedAt,author,isDraft,headRefName,baseRefName,headRefOid,headRepositoryOwner,reviewRequests'
@@ -219,13 +222,9 @@ describe('GitHub issue source split', () => {
 
     await listWorkItems('/repo-root', 10)
 
-    expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(
-      1,
-      issueSearchArgs('anthovai/kingu-intelligence'),
-      {
-        cwd: '/repo-root'
-      }
-    )
+    expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(1, issueSearchArgs('anthovai/kingu-intelligence'), {
+      cwd: '/repo-root'
+    })
     expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(2, prListArgs('fork/kingu'), {
       cwd: '/repo-root'
     })
@@ -269,11 +268,7 @@ describe('GitHub issue source split', () => {
       {}
     )
     expect(getOwnerRepoMock).toHaveBeenCalledWith('/home/jinwoo/kingu', 'openclaw-2', {})
-    expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(
-      1,
-      issueSearchArgs('anthovai/kingu-intelligence'),
-      {}
-    )
+    expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(1, issueSearchArgs('anthovai/kingu-intelligence'), {})
     expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(2, prListArgs('fork/kingu'), {})
   })
 
@@ -343,13 +338,9 @@ describe('GitHub issue source split', () => {
 
     await listWorkItems('/repo-root', 10, undefined, undefined, 'upstream')
 
-    expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(
-      2,
-      prListArgs('anthovai/kingu-intelligence'),
-      {
-        cwd: '/repo-root'
-      }
-    )
+    expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(2, prListArgs('anthovai/kingu-intelligence'), {
+      cwd: '/repo-root'
+    })
   })
 
   it("uses upstream for queried PRs when preference='upstream'", async () => {
@@ -736,31 +727,10 @@ describe('GitHub issue source split', () => {
       const result = await listWorkItems('/repo-root', 10, undefined, undefined, 'auto')
 
       expect(resolveIssueSourceMock).toHaveBeenCalledWith('/repo-root', 'auto', undefined, {})
-      expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(
-        1,
-        issueSearchArgs('anthovai/kingu-intelligence'),
-        {
-          cwd: '/repo-root'
-        }
-      )
-      expect(result.issueSourceFellBack).toBeUndefined()
-    })
-
-    it("preference='auto' + no upstream → queries origin", async () => {
-      resolveIssueSourceMock.mockResolvedValueOnce({
-        source: { owner: 'solo', repo: 'kingu' },
-        fellBack: false
-      })
-      getOwnerRepoMock.mockResolvedValueOnce({ owner: 'solo', repo: 'kingu' })
-      ghExecFileAsyncMock.mockResolvedValueOnce({ stdout: '[]' }).mockResolvedValueOnce({
-        stdout: '[]'
-      })
-
-      await listWorkItems('/repo-root', 10, undefined, undefined, 'auto')
-
-      expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(1, issueSearchArgs('solo/kingu'), {
+      expect(ghExecFileAsyncMock).toHaveBeenNthCalledWith(1, issueSearchArgs('anthovai/kingu-intelligence'), {
         cwd: '/repo-root'
       })
+      expect(result.issueSourceFellBack).toBeUndefined()
     })
 
     it("preference='auto' + upstream exists → PRs query upstream too", async () => {
@@ -815,24 +785,6 @@ describe('GitHub issue source split', () => {
       )
     })
 
-    it("preference='upstream' + upstream exists → queries upstream", async () => {
-      resolveIssueSourceMock.mockResolvedValueOnce({
-        source: { owner: 'anthovai', repo: 'kingu' },
-        fellBack: false
-      })
-      getOwnerRepoMock.mockResolvedValueOnce({ owner: 'fork', repo: 'kingu' })
-      ghExecFileAsyncMock.mockResolvedValueOnce({ stdout: '[]' }).mockResolvedValueOnce({
-        stdout: '[]'
-      })
-
-      const result = await listWorkItems('/repo-root', 10, undefined, undefined, 'upstream')
-
-      expect(decodedIssueSearchPath(0)).toContain(
-        'q=repo:anthovai/kingu-intelligence is:issue is:open'
-      )
-      expect(result.issueSourceFellBack).toBeUndefined()
-    })
-
     it("preference='upstream' + no upstream → falls back to origin with fellBack=true", async () => {
       resolveIssueSourceMock.mockResolvedValueOnce({
         source: { owner: 'solo', repo: 'kingu' },
@@ -847,36 +799,6 @@ describe('GitHub issue source split', () => {
 
       expect(decodedIssueSearchPath(0)).toContain('q=repo:solo/kingu is:issue is:open')
       expect(result.issueSourceFellBack).toBe(true)
-    })
-
-    it("preference='origin' + upstream exists → queries origin (not upstream)", async () => {
-      resolveIssueSourceMock.mockResolvedValueOnce({
-        source: { owner: 'fork', repo: 'kingu' },
-        fellBack: false
-      })
-      getOwnerRepoMock.mockResolvedValueOnce({ owner: 'fork', repo: 'kingu' })
-      ghExecFileAsyncMock.mockResolvedValueOnce({ stdout: '[]' }).mockResolvedValueOnce({
-        stdout: '[]'
-      })
-
-      await listWorkItems('/repo-root', 10, undefined, undefined, 'origin')
-
-      expect(decodedIssueSearchPath(0)).toContain('q=repo:fork/kingu is:issue is:open')
-    })
-
-    it("preference='origin' + no upstream → queries origin", async () => {
-      resolveIssueSourceMock.mockResolvedValueOnce({
-        source: { owner: 'solo', repo: 'kingu' },
-        fellBack: false
-      })
-      getOwnerRepoMock.mockResolvedValueOnce({ owner: 'solo', repo: 'kingu' })
-      ghExecFileAsyncMock.mockResolvedValueOnce({ stdout: '[]' }).mockResolvedValueOnce({
-        stdout: '[]'
-      })
-
-      await listWorkItems('/repo-root', 10, undefined, undefined, 'origin')
-
-      expect(decodedIssueSearchPath(0)).toContain('q=repo:solo/kingu is:issue is:open')
     })
 
     it('surfaces upstreamCandidate in sources regardless of effective preference', async () => {

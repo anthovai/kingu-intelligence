@@ -106,7 +106,9 @@ describe('createFilePathLinkProvider range bounds', () => {
 
     expect(opened).toBe(true)
     expect(statMock).toHaveBeenCalledWith({
-      filePath: '\\\\wsl.localhost\\Ubuntu\\root\\workspace\\myrepo\\README.md'
+      filePath: '\\\\wsl.localhost\\Ubuntu\\root\\workspace\\myrepo\\README.md',
+      connectionId: undefined,
+      access: { kind: 'user-file' }
     })
     expect(openFileMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -141,7 +143,7 @@ describe('createFilePathLinkProvider range bounds', () => {
     await flushAsyncWork()
 
     expect(opened).toBe(true)
-    expect(openFilePathMock).toHaveBeenCalledWith('/tmp/package.json')
+    expect(openFilePathMock).toHaveBeenCalledWith('/tmp/package.json', 'local')
     expect(openFileMock).not.toHaveBeenCalled()
   })
 
@@ -308,7 +310,8 @@ describe('createFilePathLinkProvider range bounds', () => {
     await flushAsyncWork()
 
     expect(openFilePathMock).toHaveBeenCalledWith(
-      '/private/tmp/kingu-setup-e2e.hOW01f/workspaces/test-wt-5/mobile/packages/expo-two-way-audio/android/src/main/java/expo/modules/twowayaudio/ExpoTwoWayAudioLifeCycleListener.kt'
+      '/private/tmp/kingu-setup-e2e.hOW01f/workspaces/test-wt-5/mobile/packages/expo-two-way-audio/android/src/main/java/expo/modules/twowayaudio/ExpoTwoWayAudioLifeCycleListener.kt',
+      'local'
     )
     expect(preventDefault).toHaveBeenCalled()
     expect(stopPropagation).toHaveBeenCalled()
@@ -321,9 +324,7 @@ describe('createFilePathLinkProvider range bounds', () => {
   it('does not intercept regular URL clicks in the file-path fallback', async () => {
     setPlatform('Macintosh')
     const rows = [
-      makeBufferLine(
-        'PR opened: https://github.com/anthovai/kingu-intelligence-marketing-website/pull/82'
-      )
+      makeBufferLine('PR opened: https://github.com/anthovai/kingu-intelligence-marketing-website/pull/82')
     ]
     const { terminal, element } = makeFallbackTerminal(rows)
     const disposable = installFilePathLinkClickFallback(1, terminal, {
@@ -362,9 +363,7 @@ describe('createFilePathLinkProvider range bounds', () => {
     setPlatform('Macintosh')
     storeState.settings = { openLinksInApp: false }
     const rows = [
-      makeBufferLine(
-        'PR opened: https://github.com/anthovai/kingu-intelligence-marketing-website/pull/82'
-      )
+      makeBufferLine('PR opened: https://github.com/anthovai/kingu-intelligence-marketing-website/pull/82')
     ]
     const { terminal, element } = makeFallbackTerminal(rows)
     const disposable = installHttpLinkClickFallback(terminal, { worktreeId: 'wt-1' })
@@ -397,9 +396,7 @@ describe('createFilePathLinkProvider range bounds', () => {
     setPlatform('Macintosh')
     storeState.settings = { openLinksInApp: false }
     const rows = [
-      makeBufferLine(
-        'PR opened: https://github.com/anthovai/kingu-intelligence-marketing-website/pull/82'
-      )
+      makeBufferLine('PR opened: https://github.com/anthovai/kingu-intelligence-marketing-website/pull/82')
     ]
     const { terminal, element } = makeFallbackTerminal(rows)
     const disposable = installHttpLinkClickFallback(terminal, { worktreeId: 'wt-1' })
@@ -462,9 +459,7 @@ describe('createFilePathLinkProvider range bounds', () => {
     setPlatform('Macintosh')
     storeState.settings = { openLinksInApp: false, openLinksInAppPreferencePrompted: false }
     const rows = [
-      makeBufferLine(
-        'PR opened: https://github.com/anthovai/kingu-intelligence-marketing-website/pull/82'
-      )
+      makeBufferLine('PR opened: https://github.com/anthovai/kingu-intelligence-marketing-website/pull/82')
     ]
     const requestOpenLinksInAppPreference = vi.fn(async () => {
       storeState.settings = { openLinksInApp: true, openLinksInAppPreferencePrompted: true }
@@ -561,7 +556,8 @@ describe('createFilePathLinkProvider range bounds', () => {
 
     expect(opened).toBe(true)
     expect(openFilePathMock).toHaveBeenCalledWith(
-      '/private/tmp/kingu-setup-e2e.hOW01f/workspaces/test-wt-5/mobile/packages/expo-two-way-audio/android/src/main/java/expo/modules/twowayaudio/ExpoTwoWayAudioLifeCycleListener.kt'
+      '/private/tmp/kingu-setup-e2e.hOW01f/workspaces/test-wt-5/mobile/packages/expo-two-way-audio/android/src/main/java/expo/modules/twowayaudio/ExpoTwoWayAudioLifeCycleListener.kt',
+      'local'
     )
   })
 

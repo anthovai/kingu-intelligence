@@ -159,7 +159,7 @@ async function sendPtyCommands(
 ): Promise<void> {
   await page.evaluate((items) => {
     for (const item of items) {
-      window.api.pty.write(item.ptyId, `${item.command}\r`)
+      window.api.pty.write(item.ptyId, `${item.command}\r`, 'driving')
     }
   }, commands)
 }
@@ -397,8 +397,6 @@ test.describe('Terminal output scheduler', () => {
       })
       .toBe(true)
 
-    expect(await getTerminalContent(kinguPage)).not.toContain(
-      'Kingu skipped hidden terminal output'
-    )
+    expect(await getTerminalContent(kinguPage)).not.toContain('Kingu skipped hidden terminal output')
   })
 })

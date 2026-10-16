@@ -9,7 +9,7 @@ const LOCAL_PROJECT = 'E2E Palette Local Project'
 const REMOTE_PROJECT = 'E2E Palette Remote Project'
 const REMOTE_WORKSPACE = 'E2E Palette Remote Workspace'
 const REMOTE_HOST = 'E2E Palette Builder'
-const SEARCH_PLACEHOLDER = 'Search chats, terminals, worktrees, settings, and actions...'
+const SEARCH_PLACEHOLDER = 'Search chats, terminals, workspaces, settings, and actions...'
 
 type PaletteFilterFixture = {
   localRepoId: string
@@ -200,9 +200,7 @@ test.describe('Worktree jump-palette filters', () => {
     await filterTrigger(kinguPage).click()
     await expect(palette(kinguPage).getByText('No results match the active filter')).toBeVisible()
     await expect(
-      palette(kinguPage).getByText(
-        'Clear the filter above, or widen it to more hosts and projects.'
-      )
+      palette(kinguPage).getByText('Clear the filter above, or widen it to more hosts and projects.')
     ).toBeVisible()
 
     // P3: clear restores both rows; reopening replaces ephemeral state with the sidebar scope.
@@ -223,9 +221,9 @@ test.describe('Worktree jump-palette filters', () => {
     await palette(kinguPage).getByPlaceholder(SEARCH_PLACEHOLDER).fill('E2E Palette')
     await expect(filterTrigger(kinguPage)).toContainText('1')
     await expect(worktreeRow(kinguPage, fixture.localWorktreeId)).toBeVisible()
-    await expect(
-      worktreeRow(kinguPage, fixture.remoteWorktreeId, fixture.remoteHostId)
-    ).toHaveCount(0)
+    await expect(worktreeRow(kinguPage, fixture.remoteWorktreeId, fixture.remoteHostId)).toHaveCount(
+      0
+    )
   })
 
   test('opens with the sidebar repository scope without widening it', async ({ kinguPage }) => {
@@ -240,9 +238,9 @@ test.describe('Worktree jump-palette filters', () => {
     await expect(filterTrigger(kinguPage)).toContainText('1')
     await expect(palette(kinguPage).getByLabel(`Remove filter ${LOCAL_PROJECT}`)).toBeVisible()
     await expect(worktreeRow(kinguPage, fixture.localWorktreeId)).toBeVisible()
-    await expect(
-      worktreeRow(kinguPage, fixture.remoteWorktreeId, fixture.remoteHostId)
-    ).toHaveCount(0)
+    await expect(worktreeRow(kinguPage, fixture.remoteWorktreeId, fixture.remoteHostId)).toHaveCount(
+      0
+    )
   })
 
   test('pressing Enter creates a worktree from a typed name', async ({ kinguPage }) => {

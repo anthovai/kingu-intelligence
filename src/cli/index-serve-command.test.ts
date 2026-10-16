@@ -68,9 +68,42 @@ describe('kingu cli worktree awareness', () => {
       pairingAddress: '100.64.1.20',
       noPairing: true,
       mobilePairing: false,
+      grantDesktopControl: false,
       recipeJson: false,
       projectRoot: null
     })
+  })
+
+  it.skipIf(process.platform === 'win32')(
+    'turns on supervision only for an explicit --supervise, and never with --recipe-json',
+    async () => {
+      serveKinguAppMock.mockResolvedValue(0)
+
+      await main(['serve', '--supervise', '--no-pairing'], '/tmp/repo')
+      expect(serveKinguAppMock).toHaveBeenLastCalledWith(
+        expect.objectContaining({ supervise: true, noPairing: true })
+      )
+
+      await main(['serve', '--no-pairing'], '/tmp/repo')
+      expect(serveKinguAppMock.mock.lastCall?.[0]).not.toHaveProperty('supervise')
+
+      serveKinguAppMock.mockClear()
+      await main(
+        ['serve', '--supervise', '--recipe-json', '--project-root', '/workspace/repo'],
+        '/tmp/repo'
+      )
+      expect(serveKinguAppMock).not.toHaveBeenCalled()
+    }
+  )
+
+  it('forwards the pairing-time desktop-control grant', async () => {
+    serveKinguAppMock.mockResolvedValue(0)
+
+    await main(['serve', '--grant-desktop-control'], '/tmp/repo')
+
+    expect(serveKinguAppMock).toHaveBeenCalledWith(
+      expect.objectContaining({ grantDesktopControl: true, mobilePairing: false })
+    )
   })
 
   it('starts a foreground headless server with mobile pairing enabled', async () => {
@@ -87,6 +120,7 @@ describe('kingu cli worktree awareness', () => {
       pairingAddress: '100.64.1.20',
       noPairing: false,
       mobilePairing: true,
+      grantDesktopControl: false,
       recipeJson: false,
       projectRoot: null
     })
@@ -113,6 +147,7 @@ describe('kingu cli worktree awareness', () => {
       pairingAddress: 'wss://sandbox.example.com',
       noPairing: false,
       mobilePairing: false,
+      grantDesktopControl: false,
       recipeJson: true,
       projectRoot: '/workspace/repo'
     })

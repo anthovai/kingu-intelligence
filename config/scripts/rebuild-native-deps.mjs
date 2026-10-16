@@ -19,6 +19,10 @@
  */
 
 import { rebuild } from '@electron/rebuild'
+import {
+  hasAdoptedSharedElectronDist,
+  resolveSharedElectronDistEntry
+} from './shared-electron-dist-cache.mjs'
 import { execFileSync, spawnSync } from 'node:child_process'
 import {
   ensureWindowsProcessTreeCommandLinePatch,
@@ -26,6 +30,7 @@ import {
   stageWindowsProcessTreeNodeAddonApiHeaders,
   windowsProcessTreeAddonPath
 } from './windows-process-tree-gyp-rebuild.mjs'
+import { disableMsbuildFileTrackingOnWindows } from './msbuild-file-tracking.mjs'
 import {
   copyFileSync,
   existsSync,
@@ -80,7 +85,7 @@ const NATIVE_MODULES = [
   'node-pty',
   'cpu-features',
   ...(rebuildPlatform === 'win32'
-    ? ['@kingu/windows-registry', '@vscode/windows-process-tree']
+    ? ['@kingu/windows-registry', '@kingu/windows-security', '@vscode/windows-process-tree']
     : [])
 ]
 const onlyModules = NATIVE_MODULES.filter((m) => !ignoreModules.includes(m))
@@ -164,6 +169,7 @@ try {
       console.warn('[rebuild] Repaired the un-applied windows-process-tree command-line patch.')
     }
   }
+  disableMsbuildFileTrackingOnWindows()
   await rebuild({
     buildPath: projectDir,
     electronVersion,
@@ -310,6 +316,16 @@ function restoreNodePtyWindowsConptyRuntime() {
 function ensureElectronPackageInstalled() {
   repairElectronPathFile()
   if (electronPackageIsUsable()) {
+    const shared = resolveSharedElectronDistEntry({
+      repoRoot: projectDir,
+      electronPackageDir,
+      version: electronVersion,
+      targetPlatform: electronInstallPlatform,
+      targetArch: electronInstallArch
+    })
+    if (shared && !hasAdoptedSharedElectronDist(shared)) {
+      runElectronPackageBinaryInstall()
+    }
     return
   }
 
@@ -592,6 +608,11 @@ function loadNativeModule(moduleName) {
     const registry = projectRequire(moduleName)
     // Why: the package defers loading its .node addon until the first registry call.
     registry.getRegistryKey(registry.HK.CU, 'Environment')
+    return
+  }
+  if (moduleName === '@kingu/windows-security') {
+    // Why: the package defers loading its .node addon until the first call.
+    projectRequire(moduleName).currentUserSid()
     return
   }
   if (moduleName === 'node-pty') {

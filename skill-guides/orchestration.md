@@ -40,8 +40,11 @@ absence included, is a checkpoint.
 | A message carries a legacy authority label                                                                                                     | Compatibility operator  | Load the legacy contract reference before any lifecycle mutation               |
 | No live preamble and no explicit supervision                                                                                                   | Ordinary terminal agent | Do not emit lifecycle messages; use `kingu-cli` for terminal/worktree work      |
 
-Model or effort selection does not make a handoff supervised. Never substitute a
-non-Kingu subagent tool when Kingu orchestration provenance was requested.
+Model or effort selection does not make a handoff supervised: `kingu-cli`'s
+`worktree create --agent` and `agent launch` take `--model` and `--effort`, and
+open a chat or a terminal per the user's Chat UI setting, as `worker-start` does.
+Never substitute a non-Kingu subagent tool when Kingu orchestration provenance was
+requested.
 
 ## Authority and safety floor
 
@@ -49,8 +52,9 @@ non-Kingu subagent tool when Kingu orchestration provenance was requested.
   place workers. A Task is work. A Dispatch is one authoritative Task attempt.
 - Lifecycle authority comes from the active Dispatch, not a terminal title,
   copied ID, old database row, provider transcript, or visible pane.
-- Workers use the exact executable, handle, capability, Task ID, and Dispatch ID
-  in the live preamble. Never reconstruct, translate, or broaden those arguments.
+- Workers use the exact executable, handle, Task ID, and Dispatch ID in the live
+  preamble, plus any other flag it carries. Never reconstruct, translate, or
+  broaden those arguments.
 - After remote start, address the worker by Dispatch ID. The execution host owns
   process, filesystem, transcript, stop, and cleanup facts. Preserve the verdicts
   `live` / `unverifiable` / `exited`; contact loss is not process death.
@@ -65,6 +69,7 @@ non-Kingu subagent tool when Kingu orchestration provenance was requested.
 - Use the executable you used to run `skills get` for the entire run. In the
   examples below, replace `KINGU` with it; do not create a shell variable or run
   `KINGU` literally. If it fails, report that exact error instead of switching.
+- `KINGU status --json` shows your Kingu session ID as `caller.kinguSessionId` when you have one.
 - A successful `orchestration send` proves durable enqueue; its wake or nudge is
   best-effort attention only and does not prove the recipient read or accepted it.
 

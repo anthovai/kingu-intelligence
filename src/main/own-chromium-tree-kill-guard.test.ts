@@ -18,7 +18,7 @@ import {
   installMainProcessTreeKillGate
 } from './own-chromium-tree-kill-guard'
 import { killCodexAppServerProcessTree } from './codex/codex-app-server-process-tree-kill'
-import { setProcessTreeKillGate } from '../shared/child-process/process-tree-kill-gate'
+import { setProcessTreeKillGate } from '@kingu/process-host/process-tree-kill-gate'
 import { resetSelfInitiatedTreeKillLogForTest } from './crash-reporting/self-initiated-tree-kill-log'
 import {
   clearCrashBreadcrumbsForTest,
@@ -81,9 +81,7 @@ describe('refusing to tree-kill our own Chromium processes', () => {
   })
 
   it('classifies a live renderer as foreign even though its ancestry reaches us', () => {
-    expect(classifyWindowsTreeKillTarget(RENDERER_PID, PROCESS_ROWS, KINGU_MAIN_PID)).toBe(
-      'foreign'
-    )
+    expect(classifyWindowsTreeKillTarget(RENDERER_PID, PROCESS_ROWS, KINGU_MAIN_PID)).toBe('foreign')
   })
 
   it.each([

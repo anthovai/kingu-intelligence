@@ -6,22 +6,30 @@ export const SERVE_COMMAND_SPECS: CommandSpec[] = [
     path: ['serve'],
     summary: 'Start an Kingu runtime server without opening a desktop window',
     usage:
-      'kingu serve [--port <port>] [--pairing-address <host>] [--mobile-pairing] [--no-pairing] [--project-root <path>] [--recipe-json] [--json]',
+      'kingu serve [--port <port>] [--pairing-address <host>] [--mobile-pairing] [--no-pairing] [--grant-desktop-control] [--project-root <path>] [--recipe-json] [--supervise] [--force] [--json]',
     allowedFlags: [
       ...GLOBAL_FLAGS,
       'port',
       'pairing-address',
       'mobile-pairing',
       'no-pairing',
+      'grant-desktop-control',
       'project-root',
-      'recipe-json'
+      'recipe-json',
+      'supervise',
+      'force'
     ],
     notes: [
       'Runs in the foreground and prints the bound endpoint, advertised endpoint, and pairing status. Stop it with Ctrl+C.',
       '--pairing-address changes only the client-advertised address; use a reachable LAN, Tailscale, SSH-forward, or reverse-proxy endpoint.',
       'Use --recipe-json with --project-root from VM recipes to print the recipe result JSON and leave the server running.',
       'Use --mobile-pairing to print a mobile-scoped pairing QR/link instead of the default runtime-environment pairing link.',
-      'When the web client bundle is available, the server also prints a browser URL with the pairing data embedded.'
+      "A paired client cannot drive this machine's desktop (kingu computer) unless the offer was created with --grant-desktop-control.",
+      'When the web client bundle is available, the server also prints a browser URL with the pairing data embedded.',
+      'Exits with code 3, without starting anything, when another Kingu already serves this profile or cannot be shown to have stopped.',
+      'On macOS, after Kingu serve aborts at startup (it could not register with Launch Services), later runs from the same environment refuse for 30 minutes with exit code 78. Use --force to try anyway.',
+      '--supervise is for service managers (launchd, systemd). Kingu serve then restarts the server itself with growing delays instead of exiting when it stops, waits while an update replaces the app, and waits while another Kingu serves this profile. After 6 failures in 15 minutes it gives up and exits with code 0 so the manager stops too, and later supervised runs refuse until a new build is installed or --force is passed. Not available on Windows yet.',
+      'Experimental and off by default: set KINGU_TERMINAL_PROCESS_CEILING=<n> (64 or more) before the terminal host starts to have the OS cap how many processes each terminal may run (Linux, through a systemd user scope per terminal, which needs a user manager that outlives logout; Windows, through a job per terminal). `kingu serve` reports the ceiling as on or off, with the reason.'
     ],
     examples: [
       'kingu serve',
@@ -30,5 +38,53 @@ export const SERVE_COMMAND_SPECS: CommandSpec[] = [
       'kingu serve --port 6768 --pairing-address 100.64.1.20',
       'kingu serve --pairing-address 100.64.1.20 --mobile-pairing'
     ]
+  },
+  {
+    path: ['serve', 'restore', 'resume'],
+    summary: 'Resume automatic terminal restores that this host paused',
+    usage: 'kingu serve restore resume [--json]',
+    allowedFlags: [...GLOBAL_FLAGS],
+    notes: [
+      'After its terminal host stops unexpectedly, or while it is overloaded, Kingu keeps restored agent sessions asleep instead of starting them all at once. Each one resumes when you open it.',
+      'This clears that pause so automatic restores start again, within the normal limits. It talks to the Kingu running on this machine and never starts a server.',
+      'It also lists restores from an older Kingu client that this host refused, with the command that resumes each one.'
+    ],
+    examples: ['kingu serve restore resume', 'kingu serve restore resume --json']
+  },
+  {
+    path: ['serve', 'service', 'install'],
+    summary: 'Run kingu serve as a per-user background service that restarts itself',
+    usage:
+      'kingu serve service install [--port <port>] [--pairing-address <host>] [--command <path>] [--dry-run] [--json]',
+    allowedFlags: [...GLOBAL_FLAGS, 'port', 'pairing-address', 'command', 'dry-run'],
+    notes: [
+      'macOS writes a LaunchAgent; Linux writes a systemd user unit. Both run `kingu serve --supervise --no-pairing` for this profile, so the server restarts with growing delays and gives up after repeated failures instead of looping.',
+      'The service never prints a pairing link to its log. Pair clients from the desktop app, or with `kingu serve` in a terminal while the service is stopped.',
+      'On Linux the service stops at logout unless lingering is on (`loginctl enable-linger`); install reports it.',
+      "Reinstalling replaces the unit and clears a previous give-up. --command defaults to the installed Kingu app's `kingu` command on PATH (`kingu-ide` on Linux) and must not be a launcher tied to one Kingu version. --dry-run prints the unit without installing it.",
+      "Needs the Kingu app installed on this machine. The `kingu` command in an Kingu terminal on an SSH host belongs to that connection's server and cannot install a service.",
+      'Not available on Windows yet.'
+    ],
+    examples: ['kingu serve service install', 'kingu serve service install --port 6768 --dry-run']
+  },
+  {
+    path: ['serve', 'service', 'status'],
+    summary: "Show whether this profile's kingu serve service is running",
+    usage: 'kingu serve service status [--json]',
+    allowedFlags: [...GLOBAL_FLAGS],
+    notes: [
+      'Reports live, exited, or unverifiable (when the service manager cannot be asked), plus why the supervisor gave up if it did.'
+    ],
+    examples: ['kingu serve service status', 'kingu serve service status --json']
+  },
+  {
+    path: ['serve', 'service', 'uninstall'],
+    summary: "Stop and remove this profile's kingu serve service",
+    usage: 'kingu serve service uninstall [--json]',
+    allowedFlags: [...GLOBAL_FLAGS],
+    notes: [
+      'Stops the service and removes its unit file. The terminal daemon and its sessions keep running.'
+    ],
+    examples: ['kingu serve service uninstall']
   }
 ]

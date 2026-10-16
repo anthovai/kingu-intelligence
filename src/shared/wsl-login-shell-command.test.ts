@@ -156,9 +156,7 @@ describe('wsl login shell command helpers', () => {
     // Why the captured form: an interactive login shell also prints the distro's
     // rc/motd to stdout (stock Ubuntu ships a sudo hint), so a raw login-shell
     // read cannot be compared byte-for-byte on a real distro.
-    const captured = buildWslCapturedLoginShellCommand(
-      'kingu_value=ok; printf "<%s>" "$kingu_value"'
-    )
+    const captured = buildWslCapturedLoginShellCommand('kingu_value=ok; printf "<%s>" "$kingu_value"')
 
     expect(
       captured.readStdout(
@@ -179,7 +177,7 @@ describe('wsl login shell command helpers', () => {
     ['awk field reference', ['sh', '-c', `echo 'a b' | awk '{print $2}'`], 'b\n'],
     ['literal escaped dollar', ['sh', '-c', `printf '[%s]' "\\$HOME"`], '[$HOME]'],
     ['single-quoted dollar', ['sh', '-c', `printf '[%s]' '$PATH'`], '[$PATH]'],
-    // The shape wslUncDirectoryExists uses: `--` blanked $1, so every existing
+    // The shape wslUncDirectoryExistsAsync uses: `--` blanked $1, so every existing
     // directory probed as missing.
     ['positional argument', ['sh', '-c', 'printf "[%s]" "$1"', 'sh', 'ARG'], '[ARG]'],
     ['shell local', ['sh', '-c', 'x=hi; printf "[%s]" "$x"'], '[hi]']
@@ -247,8 +245,7 @@ describe('wsl login shell command helpers', () => {
       // Why a per-call nonce: `cat` of a file quoting a fixed marker would
       // otherwise be truncated at the quote.
       const captured = buildWslCapturedLoginShellCommand('cat -- /f', 'nonce2')
-      const payload =
-        'see __KINGU_WSL_CAPTURE_BEGIN_nonce1__ and __KINGU_WSL_CAPTURE_END_nonce1__\n'
+      const payload = 'see __KINGU_WSL_CAPTURE_BEGIN_nonce1__ and __KINGU_WSL_CAPTURE_END_nonce1__\n'
 
       expect(
         captured.readStdout(

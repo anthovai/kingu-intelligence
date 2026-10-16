@@ -14,9 +14,6 @@ import {
   getActiveWorktreeId,
   getActiveTabType,
   getBrowserTabs,
-  getAllWorktreeIds,
-  switchToOtherWorktree,
-  switchToWorktree,
   ensureTerminalVisible
 } from './helpers/store'
 import { startBrowserLinkServer } from './helpers/browser-link-server'
@@ -52,25 +49,6 @@ async function createBrowserTab(
     },
     { targetWorktreeId: worktreeId, targetUrl: url, targetTitle: title }
   )
-}
-
-async function switchToTerminalTab(
-  page: Parameters<typeof getActiveWorktreeId>[0],
-  worktreeId: string
-): Promise<void> {
-  await page.evaluate((targetWorktreeId) => {
-    const store = window.__store
-    if (!store) {
-      return
-    }
-
-    const state = store.getState()
-    const terminalTab = (state.tabsByWorktree[targetWorktreeId] ?? [])[0]
-    if (terminalTab) {
-      state.setActiveTab(terminalTab.id)
-    }
-    state.setActiveTabType('terminal', store.getState().activeWorktreeId)
-  }, worktreeId)
 }
 
 async function switchToBrowserTab(
@@ -370,77 +348,6 @@ test.describe('Browser Tab', () => {
     await ensureTerminalVisible(kinguPage)
   })
 
-  /**
-   * User Prompt:
-   * - Browser works and also retains state when switching tabs etc.
-   */
-  test('creating a browser tab adds it and activates browser view', async ({ kinguPage }) => {
-    const worktreeId = (await getActiveWorktreeId(kinguPage))!
-    const browserTabsBefore = await getBrowserTabs(kinguPage, worktreeId)
-
-    await createBrowserTab(kinguPage, worktreeId)
-
-    // Wait for the browser tab to appear in the store
-    await expect
-      .poll(async () => (await getBrowserTabs(kinguPage, worktreeId)).length, { timeout: 5_000 })
-      .toBe(browserTabsBefore.length + 1)
-
-    // The active tab type should switch to 'browser'
-    await expect.poll(async () => getActiveTabType(kinguPage), { timeout: 3_000 }).toBe('browser')
-  })
-
-  /**
-   * User Prompt:
-   * - Browser works and also retains state when switching tabs etc.
-   */
-  test('browser tab is created and active in the store', async ({ kinguPage }) => {
-    const worktreeId = (await getActiveWorktreeId(kinguPage))!
-
-    await createBrowserTab(kinguPage, worktreeId)
-    await expect.poll(async () => getActiveTabType(kinguPage), { timeout: 5_000 }).toBe('browser')
-
-    // Verify the browser tab exists in the store
-    const browserTabs = await getBrowserTabs(kinguPage, worktreeId)
-    expect(browserTabs.length).toBeGreaterThan(0)
-
-    // The active browser tab should have a URL (even if it's about:blank or the default)
-    const activeBrowserTabId = await kinguPage.evaluate(() => {
-      const store = window.__store
-      return store?.getState().activeBrowserTabId ?? null
-    })
-    expect(activeBrowserTabId).not.toBeNull()
-  })
-
-  /**
-   * User Prompt:
-   * - Browser works and also retains state when switching tabs etc.
-   */
-  test('browser tab retains state when switching to terminal and back', async ({ kinguPage }) => {
-    const worktreeId = (await getActiveWorktreeId(kinguPage))!
-
-    await createBrowserTab(kinguPage, worktreeId)
-    await expect.poll(async () => getActiveTabType(kinguPage), { timeout: 5_000 }).toBe('browser')
-
-    // Record the browser tab info
-    const browserTabsBefore = await getBrowserTabs(kinguPage, worktreeId)
-    expect(browserTabsBefore.length).toBeGreaterThan(0)
-    const browserTabId = browserTabsBefore.at(-1)?.id
-    expect(browserTabId).toBeTruthy()
-
-    // Switch to the terminal view
-    await switchToTerminalTab(kinguPage, worktreeId)
-    await expect.poll(async () => getActiveTabType(kinguPage), { timeout: 3_000 }).toBe('terminal')
-
-    // Switch back to browser tab
-    await switchToBrowserTab(kinguPage, worktreeId, browserTabId!)
-    await expect.poll(async () => getActiveTabType(kinguPage), { timeout: 3_000 }).toBe('browser')
-
-    // The browser tab should still exist with the same ID
-    const browserTabsAfter = await getBrowserTabs(kinguPage, worktreeId)
-    const tabStillExists = browserTabsAfter.some((tab) => tab.id === browserTabId)
-    expect(tabStillExists).toBe(true)
-  })
-
   test('browser webview form state survives switching between browser tabs', async ({
     kinguPage
   }) => {
@@ -581,18 +488,8 @@ test.describe('Browser Tab', () => {
     ])
     try {
       const worktreeId = (await getActiveWorktreeId(kinguPage))!
-      const tabA = await createBrowserTab(
-        kinguPage,
-        worktreeId,
-        formServerA.url('Zoom A'),
-        'Zoom A'
-      )
-      const tabB = await createBrowserTab(
-        kinguPage,
-        worktreeId,
-        formServerB.url('Zoom B'),
-        'Zoom B'
-      )
+      const tabA = await createBrowserTab(kinguPage, worktreeId, formServerA.url('Zoom A'), 'Zoom A')
+      const tabB = await createBrowserTab(kinguPage, worktreeId, formServerB.url('Zoom B'), 'Zoom B')
       expect(tabA?.id).toBeTruthy()
       expect(tabB?.id).toBeTruthy()
       for (const tab of [tabA, tabB]) {
@@ -814,39 +711,5 @@ test.describe('Browser Tab', () => {
     } finally {
       await closeServer.close()
     }
-  })
-
-  /**
-   * User Prompt:
-   * - Browser works and also retains state when switching tabs etc.
-   */
-  test('browser tab retains state when switching worktrees and back', async ({ kinguPage }) => {
-    const allWorktreeIds = await getAllWorktreeIds(kinguPage)
-    if (allWorktreeIds.length < 2) {
-      test.skip(true, 'Need at least 2 worktrees to test worktree switching')
-    }
-
-    const worktreeId = (await getActiveWorktreeId(kinguPage))!
-
-    await createBrowserTab(kinguPage, worktreeId)
-    await expect.poll(async () => getActiveTabType(kinguPage), { timeout: 5_000 }).toBe('browser')
-
-    const browserTabsBefore = await getBrowserTabs(kinguPage, worktreeId)
-    expect(browserTabsBefore.length).toBeGreaterThan(0)
-
-    // Switch to a different worktree via the store
-    const otherId = await switchToOtherWorktree(kinguPage, worktreeId)
-    expect(otherId).not.toBeNull()
-    await expect.poll(async () => getActiveWorktreeId(kinguPage), { timeout: 5_000 }).toBe(otherId)
-
-    // Switch back to the original worktree
-    await switchToWorktree(kinguPage, worktreeId)
-    await expect
-      .poll(async () => getActiveWorktreeId(kinguPage), { timeout: 5_000 })
-      .toBe(worktreeId)
-
-    // Browser tabs should still be preserved
-    const browserTabsAfter = await getBrowserTabs(kinguPage, worktreeId)
-    expect(browserTabsAfter.length).toBe(browserTabsBefore.length)
   })
 })

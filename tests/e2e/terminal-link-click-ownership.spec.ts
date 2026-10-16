@@ -12,6 +12,11 @@ import {
 } from './helpers/terminal'
 import { ensureTerminalVisible, waitForActiveWorktree, waitForSessionReady } from './helpers/store'
 
+import {
+  readPanelNavigationObserver,
+  startPanelNavigationObserver
+} from './helpers/plugin-panel-navigation-observer'
+
 const FIXTURE_PATH = path.join(
   process.cwd(),
   'tests/e2e/fixtures/terminal-link-mouse-owner-fixture.cjs'
@@ -92,12 +97,117 @@ async function expectChildMouseReports(mouseLogPath: string): Promise<void> {
     .toBeGreaterThan(0)
 }
 
-async function expectKinguOwnedMouseOutcome(mouseLogPath: string): Promise<void> {
+async function expectKinguOwnedMouseOutcome(
+  mouseLogPath: string,
+  reportsBeforeClick = 0
+): Promise<void> {
   await new Promise<void>((resolve) => setTimeout(resolve, 1_000))
-  expect(childMouseReportCount(mouseLogPath)).toBe(0)
+  expect(childMouseReportCount(mouseLogPath)).toBe(reportsBeforeClick)
+}
+
+async function openLegacyDisabledLinkSettings(kinguPage: Page): Promise<void> {
+  await kinguPage.evaluate(() => {
+    void window.__store?.getState().updateSettings({ terminalLinkActionPopoverEnabled: false })
+  })
+  await expect
+    .poll(() =>
+      kinguPage.evaluate(() => window.__store?.getState().settings?.terminalLinkActionPopoverEnabled)
+    )
+    .toBe(false)
+  await kinguPage.evaluate(() => {
+    const state = window.__store?.getState()
+    state?.openSettingsPage()
+    state?.openSettingsTarget({ pane: 'browser', repoId: null })
+  })
 }
 
 test.describe('terminal link click ownership', () => {
+  test('selecting Actions reenables a legacy-disabled popover and survives renderer reload', async ({
+    kinguPage
+  }, testInfo) => {
+    const { mouseLogPath, ptyId, target } = await startMouseAwareLinkFixture(kinguPage, testInfo)
+    await openLegacyDisabledLinkSettings(kinguPage)
+
+    const choices = kinguPage.getByRole('radiogroup', { name: 'Plain click URL behavior' })
+    await expect(choices.getByRole('radio', { name: 'Leave to terminal' })).toHaveAttribute(
+      'aria-checked',
+      'true'
+    )
+    await choices.getByRole('radio', { name: 'Actions', exact: true }).click()
+    await expect(choices.getByRole('radio', { name: 'Actions', exact: true })).toHaveAttribute(
+      'aria-checked',
+      'true'
+    )
+
+    await kinguPage.reload()
+    await waitForSessionReady(kinguPage)
+    await kinguPage.evaluate(() => {
+      const state = window.__store?.getState()
+      state?.openSettingsPage()
+      state?.openSettingsTarget({ pane: 'browser', repoId: null })
+    })
+    await expect(choices.getByRole('radio', { name: 'Actions', exact: true })).toHaveAttribute(
+      'aria-checked',
+      'true'
+    )
+    await kinguPage.screenshot({ path: testInfo.outputPath('actions-selected-after.png') })
+    await kinguPage.evaluate(() => window.__store?.getState().closeSettingsPage())
+    await waitForActiveTerminalManager(kinguPage)
+    await kinguPage.mouse.click(target.x, target.y)
+    await expect(kinguPage.locator('[data-terminal-link-action-popover]')).toBeVisible()
+    await expect(kinguPage.locator('[data-terminal-link-destination]')).toHaveText(LINK)
+    await expectKinguOwnedMouseOutcome(mouseLogPath)
+    await kinguPage.screenshot({ path: testInfo.outputPath('actions-after.png') })
+    await sendToTerminal(kinguPage, ptyId, 'q')
+  })
+
+  test('explicit Open URL and Leave to terminal choices preserve direct-open modifiers', async ({
+    kinguPage,
+    electronApp
+  }, testInfo) => {
+    const { mouseLogPath, ptyId, target } = await startMouseAwareLinkFixture(kinguPage, testInfo)
+    await startPanelNavigationObserver(electronApp, kinguPage.url())
+    await openLegacyDisabledLinkSettings(kinguPage)
+    const choices = kinguPage.getByRole('radiogroup', { name: 'Plain click URL behavior' })
+    await choices.getByRole('radio', { name: 'Open URL', exact: true }).click()
+    await expect(choices.getByRole('radio', { name: 'Open URL', exact: true })).toHaveAttribute(
+      'aria-checked',
+      'true'
+    )
+    await kinguPage.evaluate(() => window.__store?.getState().closeSettingsPage())
+    await kinguPage.mouse.click(target.x, target.y)
+    await expect
+      .poll(async () => (await readPanelNavigationObserver(electronApp)).externalUrls)
+      .toEqual([LINK])
+    await expectKinguOwnedMouseOutcome(mouseLogPath)
+
+    await kinguPage.evaluate(() => {
+      const state = window.__store?.getState()
+      state?.openSettingsPage()
+      state?.openSettingsTarget({ pane: 'browser', repoId: null })
+    })
+    await choices.getByRole('radio', { name: 'Leave to terminal', exact: true }).click()
+    await expect(
+      choices.getByRole('radio', { name: 'Leave to terminal', exact: true })
+    ).toHaveAttribute('aria-checked', 'true')
+    await kinguPage.evaluate(() => window.__store?.getState().closeSettingsPage())
+    await kinguPage.mouse.click(target.x, target.y)
+    await expectChildMouseReports(mouseLogPath)
+    expect((await readPanelNavigationObserver(electronApp)).externalUrls).toEqual([LINK])
+
+    const reportsBeforeModifiedClick = childMouseReportCount(mouseLogPath)
+    const modifier = process.platform === 'darwin' ? 'Meta' : 'Control'
+    await kinguPage.keyboard.down(modifier)
+    await kinguPage.mouse.click(target.x, target.y)
+    await kinguPage.keyboard.up(modifier)
+    await expect
+      .poll(async () => (await readPanelNavigationObserver(electronApp)).externalUrls)
+      .toEqual([LINK, LINK])
+    await expectKinguOwnedMouseOutcome(mouseLogPath, reportsBeforeModifiedClick)
+    await expect(kinguPage.locator('[data-terminal-link-action-popover]')).toHaveCount(0)
+    await sendToTerminal(kinguPage, ptyId, 'q')
+  })
+
   test('an Kingu-owned plain link click emits no child PTY mouse frames', async ({
     kinguPage
   }, testInfo) => {

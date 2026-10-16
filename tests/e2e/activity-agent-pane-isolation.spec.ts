@@ -116,7 +116,7 @@ async function enableInlineAgentCards(page: Page): Promise<void> {
 
     const state = store.getState()
     if (!state.worktreeCardProperties.includes('inline-agents')) {
-      state.toggleWorktreeCardProperty('inline-agents')
+      state.setWorktreeCardProperties([...state.worktreeCardProperties, 'inline-agents'])
     }
     state.closeActivityPage()
   })
@@ -266,14 +266,13 @@ test.describe('Activity Agent Pane Isolation', () => {
       })
   })
 
-  test('workspace card agent rows focus the matching terminal split pane', async ({
-    kinguPage
-  }) => {
+  test('workspace card agent rows focus the matching terminal split pane', async ({ kinguPage }) => {
     await splitActiveTerminalPane(kinguPage, 'vertical')
     await waitForPaneCount(kinguPage, 2)
     const snapshot = await waitForPaneIdentitySnapshot(kinguPage, 2)
     const [first, second] = await seedActivityThreadsForSplitPanes(kinguPage, snapshot)
 
+    await kinguPage.evaluate(() => window.__store?.getState().setWorktreeCardProperties([]))
     await enableInlineAgentCards(kinguPage)
 
     await clickWorkspaceCardAgentRow(kinguPage, first.prompt)

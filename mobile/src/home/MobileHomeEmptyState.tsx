@@ -1,5 +1,5 @@
 import { QrCode } from 'lucide-react-native'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { colors, radii, spacing } from '../theme/mobile-theme'
 
 const ONBOARDING_STEPS = [
@@ -23,9 +23,10 @@ export function MobileHomeEmptyState(props: {
   isWideLayout: boolean
   onPairDesktop: () => void
 }) {
+  // Scrolls because a phone in landscape is shorter than the hero and the steps together.
   return (
-    <View
-      style={[
+    <ScrollView
+      contentContainerStyle={[
         styles.emptyContainer,
         { paddingBottom: props.bottomInset },
         props.isWideLayout && {
@@ -38,8 +39,8 @@ export function MobileHomeEmptyState(props: {
       <View style={styles.emptyHero}>
         <Text style={styles.emptyTitle}>Connect your desktop</Text>
         <Text style={styles.emptyBody}>
-          Pair with Kingu on your computer to check on your agents, jump into any terminal, and
-          drive work from your phone.
+          Pair with Kingu on your computer to check on your agents, jump into any terminal, and drive
+          work from your phone.
         </Text>
         <Pressable style={styles.primaryButton} onPress={props.onPairDesktop}>
           <QrCode size={17} color={colors.bgBase} />
@@ -60,14 +61,14 @@ export function MobileHomeEmptyState(props: {
           </View>
         ))}
       </View>
-    </View>
+    </ScrollView>
   )
 }
 
 const styles = StyleSheet.create({
-  emptyContainer: { flex: 1 },
+  emptyContainer: { flexGrow: 1 },
   emptyHero: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 32,

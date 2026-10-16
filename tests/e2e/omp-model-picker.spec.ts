@@ -75,14 +75,12 @@ test('OMP model picker dispatches its advertised command and adopts the host rep
   const picker = kinguPage.getByRole('button', { name: 'Model Sonnet 4.5', exact: true })
   await expect(picker).toBeVisible()
   await picker.click()
-  await expect(
-    kinguPage.getByRole('menuitemradio', { name: 'Sonnet 4.6', exact: true })
-  ).toBeVisible()
+  await expect(kinguPage.getByRole('option', { name: 'Sonnet 4.6', exact: true })).toBeVisible()
   await kinguPage.screenshot({
     animations: 'disabled',
     path: testInfo.outputPath('omp-model-choices.png')
   })
-  await kinguPage.getByRole('menuitemradio', { name: 'Sonnet 4.6', exact: true }).click()
+  await kinguPage.getByRole('option', { name: 'Sonnet 4.6', exact: true }).click()
   await expect
     .poll(async () => readFile(output, 'utf8').catch(() => ''))
     .toContain('/kingu-model anthropic/claude-sonnet-4-6')

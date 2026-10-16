@@ -43,19 +43,16 @@ describe('new workspace project targets', () => {
     expect(options[0]).toMatchObject({ label: 'kingu', detail: 'anthovai/kingu-intelligence' })
   })
 
-  it('labels local, SSH, and paired runtime targets', () => {
+  it('labels local, SSH, and paired runtime targets as the host list names them', () => {
     expect(
       getNewWorkspaceRunTarget({ id: 'local', displayName: 'kingu', path: '/src/kingu' }, 'darwin')
-    ).toEqual({ label: LOCAL_HOST_LABEL, detail: '/src/kingu' })
+    ).toEqual({ hostId: 'local', label: LOCAL_HOST_LABEL, detail: '/src/kingu' })
     expect(
       getNewWorkspaceRunTarget({ id: 'local', displayName: 'kingu', path: 'C:\\src\\kingu' })
-    ).toEqual({ label: 'This computer', detail: 'C:\\src\\kingu' })
+    ).toMatchObject({ label: 'This computer' })
     expect(
-      getNewWorkspaceRunTarget(
-        { id: 'local', displayName: 'kingu', path: 'C:\\src\\kingu' },
-        'win32'
-      )
-    ).toEqual({ label: 'Local Windows', detail: 'C:\\src\\kingu' })
+      getNewWorkspaceRunTarget({ id: 'local', displayName: 'kingu', path: 'C:\\src\\kingu' }, 'win32')
+    ).toMatchObject({ label: 'Local Windows' })
     expect(
       getNewWorkspaceRunTarget({
         id: 'ssh',
@@ -63,15 +60,19 @@ describe('new workspace project targets', () => {
         path: 'C:\\src\\kingu',
         executionHostId: 'ssh:Windows%20VM'
       })
-    ).toEqual({ label: 'SSH · Windows VM', detail: 'C:\\src\\kingu' })
-    expect(
-      getNewWorkspaceRunTarget({
-        id: 'runtime',
-        displayName: 'kingu',
-        path: '/src/kingu',
-        executionHostId: 'runtime:devbox'
-      })
-    ).toEqual({ label: 'Remote · devbox', detail: '/src/kingu' })
+    ).toEqual({ hostId: 'ssh:Windows%20VM', label: 'Windows VM', detail: 'C:\\src\\kingu' })
+    const server = {
+      id: 'runtime',
+      displayName: 'kingu',
+      path: '/src/kingu',
+      executionHostId: 'runtime:20269ff3-60aa-4e79-a581-513a3f8e394b'
+    } as const
+    const labels = new Map([[server.executionHostId, 'scratch-server']] as const)
+    expect(getNewWorkspaceRunTarget(server, 'darwin', labels)).toEqual({
+      hostId: server.executionHostId,
+      label: 'scratch-server',
+      detail: '/src/kingu'
+    })
   })
 
   it('shows one target per host when the project has multiple local worktrees', () => {
@@ -90,8 +91,12 @@ describe('new workspace project targets', () => {
     const projectId = buildNewWorkspaceProjectOptions(repos)[0]?.id ?? null
 
     expect(buildNewWorkspaceRunTargetOptions(repos, projectId, 'darwin')).toEqual([
-      expect.objectContaining({ id: 'local-a', label: LOCAL_HOST_LABEL, detail: '/src/kingu-a' }),
-      expect.objectContaining({ id: 'ssh', label: 'SSH · build-server', detail: '/home/dev/kingu' })
+      expect.objectContaining({ id: 'local', label: LOCAL_HOST_LABEL, detail: '/src/kingu-a' }),
+      expect.objectContaining({
+        id: 'ssh:build-server',
+        label: 'build-server',
+        detail: '/home/dev/kingu'
+      })
     ])
   })
 })

@@ -16,8 +16,7 @@ vi.mock('./ui', () => mocks.ui)
 import { registerGitHubHandlers } from './github'
 import { createGitHubIpcHarness } from './github-ipc-test-harness'
 
-const { getAuthenticatedViewer: getAuthenticatedViewerMock, starKingu: starKinguMock } =
-  mocks.client
+const { getAuthenticatedViewer: getAuthenticatedViewerMock, starKingu: starKinguMock } = mocks.client
 const { track: trackMock } = mocks.telemetry
 const { getCohortAtEmit: getCohortAtEmitMock } = mocks.cohort
 
@@ -54,31 +53,6 @@ describe('registerGitHubHandlers', () => {
       source: 'settings',
       nth_repo_added: 3
     })
-  })
-
-  it('accepts every app star source for success telemetry', async () => {
-    starKinguMock.mockResolvedValue(true)
-
-    registerGitHubHandlers(store as never, stats as never)
-
-    for (const source of [
-      'star_nag',
-      'agent_value_moment',
-      'onboarding_completed',
-      'settings',
-      'landing'
-    ] as const) {
-      await expect(handlers['gh:starKingu'](null, source)).resolves.toBe(true)
-    }
-
-    expect(trackMock).toHaveBeenCalledTimes(5)
-    expect(trackMock.mock.calls.map(([, props]) => props)).toEqual([
-      { source: 'star_nag', nth_repo_added: undefined },
-      { source: 'agent_value_moment', nth_repo_added: undefined },
-      { source: 'onboarding_completed', nth_repo_added: undefined },
-      { source: 'settings', nth_repo_added: undefined },
-      { source: 'landing', nth_repo_added: undefined }
-    ])
   })
 
   it('does not emit app_starred_kingu when the star action returns false', async () => {

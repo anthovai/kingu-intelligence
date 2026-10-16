@@ -1,13 +1,19 @@
 import { readFileSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
-import { classifyBunProfileChanges, collectBunProfileInputs } from './bun-profile-change-scope.mjs'
-import { KINGUD_CHILD_ENTRY_POINTS, KINGUD_ENTRY_POINT } from './kingud-entry-build.mjs'
+import { classifyNodeServerChanges, collectNodeServerInputs } from './node-server-change-scope.mjs'
+import {
+  KINGUD_CHILD_ENTRY_POINTS,
+  KINGUD_ENTRY_POINT,
+  KINGUD_LAUNCHER_ENTRY_POINT
+} from './kingud-entry-build.mjs'
 
 const ENTRY_POINTS = [
   KINGUD_ENTRY_POINT,
+  KINGUD_LAUNCHER_ENTRY_POINT,
   ...Object.values(KINGUD_CHILD_ENTRY_POINTS),
   'src/cli/index.ts',
-  'config/scripts/build-kingud-bun.mjs',
+  'config/scripts/build-kingud-node.mjs',
+  'config/scripts/build-kingud-prebuilds.mjs',
   'config/scripts/build-kingud.mjs',
   'config/scripts/ensure-native-runtime.mjs',
   'config/scripts/rebuild-native-deps.mjs',
@@ -19,7 +25,7 @@ const ENTRY_POINTS = [
 ]
 
 export function collectKingudTerminalSmokeInputs() {
-  return collectBunProfileInputs({ entryPoints: ENTRY_POINTS })
+  return collectNodeServerInputs({ entryPoints: ENTRY_POINTS })
 }
 
 export async function classifyKingudTerminalSmokeChanges(
@@ -42,8 +48,8 @@ export async function classifyKingudTerminalSmokeChanges(
   if (forced) {
     return { shouldRun: true, reason: `Smoke input changed: ${forced}` }
   }
-  // Retain the Bun gate's native, worker, toolchain and failed-analysis safeguards.
-  return classifyBunProfileChanges(changedFiles, collect)
+  // Retain the headless-server gate's native, worker, toolchain and failed-analysis safeguards.
+  return classifyNodeServerChanges(changedFiles, collect)
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

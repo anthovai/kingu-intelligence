@@ -5,8 +5,8 @@ export const PROFILE_STATE_COMMAND_SPECS: CommandSpec[] = [
   {
     path: ['profile', 'state', 'exports'],
     summary: 'List retained SQLite backups and JSON exports for profile-state recovery',
-    usage: 'kingu profile state exports [--json]',
-    allowedFlags: [...GLOBAL_FLAGS]
+    usage: 'kingu profile state exports [--profile-id <id>] [--json]',
+    allowedFlags: [...GLOBAL_FLAGS, 'profile-id']
   },
   {
     path: ['profile', 'state', 'rollback'],
@@ -14,11 +14,21 @@ export const PROFILE_STATE_COMMAND_SPECS: CommandSpec[] = [
     summary:
       'Restore a SQLite backup or retained JSON export, or keep the current JSON or SQLite profile',
     usage:
-      'kingu profile state rollback (--backup <id> | --revision <revision> | --current-json | --current-sqlite) [--json]',
-    allowedFlags: [...GLOBAL_FLAGS, 'revision', 'backup', 'current-json', 'current-sqlite'],
+      'kingu profile state rollback (--backup <id> | --revision <revision> | --current-json | --current-sqlite | --latest-json) [--profile-id <id>] [--json]',
+    allowedFlags: [
+      ...GLOBAL_FLAGS,
+      'revision',
+      'backup',
+      'current-json',
+      'current-sqlite',
+      'latest-json',
+      'profile-id'
+    ],
     notes: [
+      '--profile-id selects another profile without changing the active profile. Prepare each profile before installing a JSON-only build.',
       'Kingu must be stopped. Recovery validates the selected artifact and archives the current database family, JSON, and retained recovery artifacts before replacing state.',
       '--backup restores SQLite authority; --revision restores a JSON export for an older compatible runtime.',
+      '--latest-json exports the latest SQLite state and restores it as JSON before launching an older JSON-only build. The current database and recovery artifacts are archived.',
       '--current-json keeps the current kingu-data.json, including edits from an older build. It replaces SQLite state without merging; both copies are archived. The next SQLite-capable start imports the selected JSON.',
       '--current-sqlite keeps the current SQLite state and discards JSON edits from an older build. The JSON is archived, then rewritten from SQLite.'
     ],
@@ -26,6 +36,7 @@ export const PROFILE_STATE_COMMAND_SPECS: CommandSpec[] = [
       'kingu profile state exports',
       'kingu profile state rollback --backup <id>',
       'kingu profile state rollback --revision 1',
+      'kingu profile state rollback --latest-json',
       'kingu profile state rollback --current-json',
       'kingu profile state rollback --current-sqlite'
     ]
